@@ -8,6 +8,12 @@ pub struct Forgejo {
     client: Client,
 }
 
+mod repository;
+mod user;
+
+pub use repository::*;
+pub use user::*;
+
 #[derive(thiserror::Error, Debug)]
 pub enum ForgejoError {
     #[error("url must have a host")]
@@ -63,31 +69,6 @@ impl Forgejo {
             .build()?;
         dbg!(&client);
         Ok(Self { url, client })
-    }
-
-    pub async fn get_repo(&self, user: &str, repo: &str) -> Result<Option<Repo>, ForgejoError> {
-        self.get_opt(&format!("repos/{user}/{repo}/")).await
-    }
-
-    pub async fn create_repo(&self, repo: CreateRepoOption) -> Result<Repo, ForgejoError> {
-        self.post("user/repos", &repo).await
-    }
-
-    /// Returns user info about the authorized user.
-    pub async fn myself(&self) -> Result<User, ForgejoError> {
-        self.get("user").await
-    }
-
-    pub async fn get_user(&self, user: &str) -> Result<Option<User>, ForgejoError> {
-        self.get_opt(&format!("users/{user}/")).await
-    }
-
-    pub async fn get_followers(&self, user: &str) -> Result<Option<Vec<User>>, ForgejoError> {
-        self.get_opt(&format!("users/{user}/followers/")).await
-    }
-
-    pub async fn get_following(&self, user: &str) -> Result<Option<Vec<User>>, ForgejoError> {
-        self.get_opt(&format!("users/{user}/following/")).await
     }
 
     async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ForgejoError> {
@@ -149,75 +130,3 @@ struct ErrorMessage {
     // url: Url
 }
 
-#[derive(serde::Deserialize, Debug, PartialEq)]
-pub struct Repo {
-    pub clone_url: Url,
-    #[serde(with = "time::serde::rfc3339")]
-    pub created_at: time::OffsetDateTime,
-    pub default_branch: String,
-    pub description: String,
-    pub fork: bool,
-    pub forks_count: u64,
-    pub full_name: String,
-
-    pub owner: User,
-}
-
-#[derive(serde::Deserialize, Debug, PartialEq)]
-pub struct User {
-    pub active: bool,
-    pub avatar_url: Url,
-    #[serde(with = "time::serde::rfc3339")]
-    pub created: time::OffsetDateTime,
-    pub description: String,
-    pub email: String,
-    pub followers_count: u64,
-    pub following_count: u64,
-    pub full_name: String,
-    pub id: u64,
-    pub is_admin: bool,
-    pub language: String,
-    #[serde(with = "time::serde::rfc3339")]
-    pub last_login: time::OffsetDateTime,
-    pub location: String,
-    pub login: String,
-    pub login_name: String,
-    pub prohibit_login: bool,
-    pub restricted: bool,
-    pub starred_repos_count: u64,
-    pub website: String,
-}
-
-#[derive(serde::Deserialize, Debug, PartialEq)]
-pub enum UserVisibility {
-    #[serde(rename = "public")]
-    Public,
-    #[serde(rename = "limited")]
-    Limited,
-    #[serde(rename = "private")]
-    Private,
-}
-
-#[derive(serde::Serialize, Debug, PartialEq)]
-pub struct CreateRepoOption {
-    pub auto_init: bool,
-    pub default_branch: String,
-    pub description: Option<String>,
-    pub gitignores: String,
-    pub issue_labels: String,
-    pub license: String,
-    pub name: String,
-    pub private: bool,
-    pub readme: String,
-    pub template: bool,
-    pub trust_model: TrustModel,
-}
-
-#[derive(serde::Serialize, Debug, PartialEq)]
-pub enum TrustModel {
-    Default,
-    Collaborator,
-    Committer,
-    #[serde(rename = "collaboratorcommiter")]
-    CollaboratorCommitter,
-}
