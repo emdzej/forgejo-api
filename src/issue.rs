@@ -4,6 +4,10 @@ impl Forgejo {
     pub async fn get_repo_issues(&mut self, owner: &str, repo: &str, query: IssueQuery) -> Result<Vec<Issue>, ForgejoError> {
         self.get(&query.to_string(owner, repo)).await
     }
+
+    pub async fn create_issue(&mut self, owner: &str, repo: &str, opts: CreateIssueOption) -> Result<Issue, ForgejoError> {
+        self.post(&format!("/repos/{owner}/{repo}/issues"), &opts).await
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -125,4 +129,17 @@ impl IssueQueryType {
             IssueQueryType::Pulls => "pulls",
         }
     }
+}
+
+#[derive(serde::Serialize, Debug, PartialEq, Default)]
+pub struct CreateIssueOption {
+    pub assignees: Vec<String>,
+    pub body: Option<String>,
+    pub closed: Option<bool>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub due_date: Option<time::OffsetDateTime>,
+    pub labels: Vec<u64>,
+    pub milestone: Option<u64>,
+    pub _ref: Option<String>,
+    pub title: String,
 }
