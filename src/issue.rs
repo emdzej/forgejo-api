@@ -6,21 +6,20 @@ impl Forgejo {
     }
 
     pub async fn create_issue(&self, owner: &str, repo: &str, opts: CreateIssueOption) -> Result<Issue, ForgejoError> {
-        self.post(&format!("/repos/{owner}/{repo}/issues"), &opts).await
+        self.post(&format!("repos/{owner}/{repo}/issues"), &opts).await
     }
 
     pub async fn get_issue(&self, owner: &str, repo: &str, id: u64) -> Result<Option<Issue>, ForgejoError> {
-        self.get_opt(&format!("/repos/{owner}/{repo}/issues/{id}")).await
+        self.get_opt(&format!("repos/{owner}/{repo}/issues/{id}")).await
     }
 
     pub async fn delete_issue(&self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
-        self.delete(&format!("/repos/{owner}/{repo}/issues/{id}")).await
+        self.delete(&format!("repos/{owner}/{repo}/issues/{id}")).await
     }
 
     pub async fn edit_issue(&self, owner: &str, repo: &str, id: u64, opts: EditIssueOption) -> Result<Issue, ForgejoError> {
-        self.patch(&format!("/repos/{owner}/{repo}/issues/{id}"), &opts).await
+        self.patch(&format!("repos/{owner}/{repo}/issues/{id}"), &opts).await
     }
-
 
 
     pub async fn get_repo_comments(&self, owner: &str, repo: &str, query: RepoCommentQuery) -> Result<Vec<Comment>, ForgejoError> {
@@ -32,19 +31,19 @@ impl Forgejo {
     }
 
     pub async fn create_comment(&self, owner: &str, repo: &str, issue_id: u64, opts: CreateIssueCommentOption) -> Result<Comment, ForgejoError> {
-        self.post(&format!("/repos/{owner}/{repo}/issues/{issue_id}/comments"), &opts).await
+        self.post(&format!("repos/{owner}/{repo}/issues/{issue_id}/comments"), &opts).await
     }
 
     pub async fn get_comment(&self, owner: &str, repo: &str, id: u64) -> Result<Option<Comment>, ForgejoError> {
-        self.get_opt(&format!("/repos/{owner}/{repo}/issues/comments/{id}")).await
+        self.get_opt(&format!("repos/{owner}/{repo}/issues/comments/{id}")).await
     }
 
     pub async fn delete_comment(&self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
-        self.delete(&format!("/repos/{owner}/{repo}/issues/comments/{id}")).await
+        self.delete(&format!("repos/{owner}/{repo}/issues/comments/{id}")).await
     }
 
     pub async fn edit_comment(&self, owner: &str, repo: &str, id: u64, opts: EditIssueCommentOption) -> Result<Comment, ForgejoError> {
-        self.patch(&format!("/repos/{owner}/{repo}/issues/comments/{id}"), &opts).await
+        self.patch(&format!("repos/{owner}/{repo}/issues/comments/{id}"), &opts).await
     }
 }
 
@@ -154,7 +153,7 @@ pub struct IssueQuery {
 
 impl IssueQuery {
     fn to_string(&self, owner: &str, repo: &str) -> String {
-        format!("/repos/{owner}/{repo}/issues?state={}&labels={}&q={}&type={}&milestones={}&since={}&before={}&created_by={}&assigned_by={}&mentioned_by={}&page={}&limit={}",
+        format!("repos/{owner}/{repo}/issues?state={}&labels={}&q={}&type={}&milestones={}&since={}&before={}&created_by={}&assigned_by={}&mentioned_by={}&page={}&limit={}",
             self.state.map(|s| s.as_str()).unwrap_or_default(),
             self.labels.join(","),
             self.query.as_deref().unwrap_or_default(),
@@ -194,7 +193,7 @@ pub struct IssueCommentQuery {
 
 impl IssueCommentQuery {
     fn to_string(&self, owner: &str, repo: &str, issue_id: u64) -> String {
-        format!("/repos/{owner}/{repo}/issues/{issue_id}/comments?since={}&before={}",
+        format!("repos/{owner}/{repo}/issues/{issue_id}/comments?since={}&before={}",
             self.since.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
             self.before.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
         )
@@ -211,7 +210,7 @@ pub struct RepoCommentQuery {
 
 impl RepoCommentQuery {
     fn to_string(&self, owner: &str, repo: &str) -> String {
-        format!("/repos/{owner}/{repo}/issues/comments?since={}&before={}&page={}&limit={}",
+        format!("repos/{owner}/{repo}/issues/comments?since={}&before={}&page={}&limit={}",
             self.since.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
             self.before.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
             self.page.map(|page| page.to_string()).unwrap_or_default(),
