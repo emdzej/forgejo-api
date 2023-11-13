@@ -27,6 +27,14 @@ pub struct Repo {
     pub owner: User,
 }
 
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct RepositoryMeta {
+    pub full_name: String,
+    pub id: u64,
+    pub name: String,
+    pub owner: String,
+}
+
 #[derive(serde::Serialize, Debug, PartialEq)]
 pub struct CreateRepoOption {
     pub auto_init: bool,
@@ -50,3 +58,31 @@ pub enum TrustModel {
     #[serde(rename = "collaboratorcommiter")]
     CollaboratorCommitter,
 }
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct Milestone {
+    #[serde(with = "time::serde::rfc3339")]
+    pub closed_at: time::OffsetDateTime,
+    pub closed_issues: u64,
+    #[serde(with = "time::serde::rfc3339")]
+    pub created_at: time::OffsetDateTime,
+    pub description: String,
+    #[serde(with = "time::serde::rfc3339")]
+    pub due_on: time::OffsetDateTime,
+    pub id: u64,
+    pub open_issues: u64,
+    pub state: State,
+    pub title: String,
+    #[serde(with = "time::serde::rfc3339")]
+    pub updated_at: time::OffsetDateTime,
+}
+
+// PR structs
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct PullRequestMeta {
+    pub merged: bool,
+    #[serde(with = "time::serde::rfc3339")]
+    pub merged_at: time::OffsetDateTime,
+}
+

@@ -8,9 +8,11 @@ pub struct Forgejo {
     client: Client,
 }
 
+mod issue;
 mod repository;
 mod user;
 
+pub use issue::*;
 pub use repository::*;
 pub use user::*;
 
@@ -90,6 +92,22 @@ impl Forgejo {
     ) -> Result<U, ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.post(url).json(body).build()?;
+        self.execute(request).await
+    }
+
+    async fn delete(&self, path: &str) -> Result<(), ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.delete(url).build()?;
+        self.execute(request).await
+    }
+
+    async fn patch<T: Serialize, U: DeserializeOwned>(
+        &self,
+        path: &str,
+        body: &T,
+    ) -> Result<U, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.patch(url).json(body).build()?;
         self.execute(request).await
     }
 
