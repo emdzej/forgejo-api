@@ -8,6 +8,18 @@ impl Forgejo {
     pub async fn create_issue(&mut self, owner: &str, repo: &str, opts: CreateIssueOption) -> Result<Issue, ForgejoError> {
         self.post(&format!("/repos/{owner}/{repo}/issues"), &opts).await
     }
+
+    pub async fn get_issue(&mut self, owner: &str, repo: &str, id: u64) -> Result<Option<Issue>, ForgejoError> {
+        self.get_opt(&format!("/repos/{owner}/{repo}/issues/{id}")).await
+    }
+
+    pub async fn delete_issue(&mut self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
+        self.delete(&format!("/repos/{owner}/{repo}/issues/{id}")).await
+    }
+
+    pub async fn edit_issue(&mut self, owner: &str, repo: &str, id: u64, opts: EditIssueOption) -> Result<(), ForgejoError> {
+        self.patch(&format!("/repos/{owner}/{repo}/issues/{id}"), &opts).await
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -66,7 +78,7 @@ pub struct Attachment {
     pub uuid: String,
 }
 
-#[derive(serde::Deserialize, Debug, PartialEq, Clone, Copy)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone, Copy)]
 pub enum State {
     Open,
     Closed,
@@ -142,4 +154,18 @@ pub struct CreateIssueOption {
     pub milestone: Option<u64>,
     pub _ref: Option<String>,
     pub title: String,
+}
+
+#[derive(serde::Serialize, Debug, PartialEq, Default)]
+pub struct EditIssueOption {
+    pub assignees: Vec<String>,
+    pub body: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub due_date: Option<time::OffsetDateTime>,
+    pub labels: Vec<u64>,
+    pub milestone: Option<u64>,
+    pub _ref: Option<String>,
+    pub state: Option<State>,
+    pub title: Option<String>,
+    pub unset_due_date: Option<bool>,
 }

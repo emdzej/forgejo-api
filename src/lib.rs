@@ -95,6 +95,22 @@ impl Forgejo {
         self.execute(request).await
     }
 
+    async fn delete(&self, path: &str) -> Result<(), ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.delete(url).build()?;
+        self.execute(request).await
+    }
+
+    async fn patch<T: Serialize, U: DeserializeOwned>(
+        &self,
+        path: &str,
+        body: &T,
+    ) -> Result<U, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.patch(url).json(body).build()?;
+        self.execute(request).await
+    }
+
     async fn execute<T: DeserializeOwned>(&self, request: Request) -> Result<T, ForgejoError> {
         let response = self.client.execute(dbg!(request)).await?;
         match response.status() {
