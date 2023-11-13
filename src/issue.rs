@@ -1,23 +1,23 @@
 use super::*;
 
 impl Forgejo {
-    pub async fn get_repo_issues(&mut self, owner: &str, repo: &str, query: IssueQuery) -> Result<Vec<Issue>, ForgejoError> {
+    pub async fn get_repo_issues(&self, owner: &str, repo: &str, query: IssueQuery) -> Result<Vec<Issue>, ForgejoError> {
         self.get(&query.to_string(owner, repo)).await
     }
 
-    pub async fn create_issue(&mut self, owner: &str, repo: &str, opts: CreateIssueOption) -> Result<Issue, ForgejoError> {
+    pub async fn create_issue(&self, owner: &str, repo: &str, opts: CreateIssueOption) -> Result<Issue, ForgejoError> {
         self.post(&format!("/repos/{owner}/{repo}/issues"), &opts).await
     }
 
-    pub async fn get_issue(&mut self, owner: &str, repo: &str, id: u64) -> Result<Option<Issue>, ForgejoError> {
+    pub async fn get_issue(&self, owner: &str, repo: &str, id: u64) -> Result<Option<Issue>, ForgejoError> {
         self.get_opt(&format!("/repos/{owner}/{repo}/issues/{id}")).await
     }
 
-    pub async fn delete_issue(&mut self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
+    pub async fn delete_issue(&self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
         self.delete(&format!("/repos/{owner}/{repo}/issues/{id}")).await
     }
 
-    pub async fn edit_issue(&mut self, owner: &str, repo: &str, id: u64, opts: EditIssueOption) -> Result<(), ForgejoError> {
+    pub async fn edit_issue(&self, owner: &str, repo: &str, id: u64, opts: EditIssueOption) -> Result<(), ForgejoError> {
         self.patch(&format!("/repos/{owner}/{repo}/issues/{id}"), &opts).await
     }
 }
