@@ -110,7 +110,7 @@ pub enum State {
 }
 
 impl State {
-    fn as_str(&self) -> &'static str {
+    pub(crate) fn as_str(&self) -> &'static str {
         match self {
             State::Open => "open",
             State::Closed => "closed",
