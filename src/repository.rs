@@ -31,6 +31,58 @@ impl Forgejo {
     pub async fn cancel_merge(&self, owner: &str, repo: &str, pr: u64) -> Result<(), ForgejoError> {
         self.delete(&format!("repos/{owner}/{repo}/pulls/{pr}/merge")).await
     }
+
+    pub async fn get_releases(&self, owner: &str, repo: &str, query: ReleaseQuery) -> Result<Vec<Release>, ForgejoError> {
+        self.get(&query.to_string(owner, repo)).await
+    }
+
+    pub async fn get_release(&self, owner: &str, repo: &str, id: u64) -> Result<Option<Release>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/releases/{id}")).await
+    }
+
+    pub async fn get_release_by_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<Option<Release>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/releases/tags/{tag}")).await
+    }
+
+    pub async fn delete_release(&self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
+        self.delete(&format!("repos/{owner}/{repo}/releases/{id}")).await
+    }
+
+    pub async fn delete_release_by_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<(), ForgejoError> {
+        self.delete(&format!("repos/{owner}/{repo}/releases/tags/{tag}")).await
+    }
+
+    pub async fn edit_release(&self, owner: &str, repo: &str, id: u64, opts: EditReleaseOption) -> Result<Release, ForgejoError> {
+        self.patch(&format!("repos/{owner}/{repo}/releases/{id}"), &opts).await
+    }
+
+    pub async fn get_release_attachments(&self, owner: &str, repo: &str, id: u64) -> Result<Vec<Attachment>, ForgejoError> {
+        self.get(&format!("repos/{owner}/{repo}/releases/{id}/assets")).await
+    }
+
+    pub async fn get_release_attachment(&self, owner: &str, repo: &str, release_id: u64, attachment_id: u64) -> Result<Attachment, ForgejoError> {
+        self.get(&format!("repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}")).await
+    }
+
+    pub async fn create_release_attachment(&self, owner: &str, repo: &str, id: u64, name: &str, file: &[u8]) -> Result<Attachment, ForgejoError> {
+        self.post_form(&format!("repos/{owner}/{repo}/releases/{id}/assets?name={name}"), &file).await
+    }
+
+    pub async fn delete_release_attachment(&self, owner: &str, repo: &str, release_id: u64, attachment_id: u64) -> Result<(), ForgejoError> {
+        self.delete(&format!("repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}")).await
+    }
+    
+    pub async fn edit_release_attachment(&self, owner: &str, repo: &str, release_id: u64, attachment_id: u64, opts: EditAttachmentOption) -> Result<Attachment, ForgejoError> {
+        self.patch(&format!("repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}"), &opts).await
+    }
+
+    pub async fn create_release(&self, owner: &str, repo: &str, opts: CreateReleaseOption) -> Result<Release, ForgejoError> {
+        self.post(&format!("repos/{owner}/{repo}/releases"), &opts).await
+    }
+
+    pub async fn latest_release(&self, owner: &str, repo: &str) -> Result<Option<Release>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/releases/latest")).await
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -275,5 +327,73 @@ pub enum MergePrAction {
     Squash,
     #[serde(rename = "manually-merged")]
     ManuallyMerged,
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct Release {
+    pub assets: Vec<Attachment>,
+    pub author: User,
+    pub body: String,
+    #[serde(with = "time::serde::rfc3339")]
+    pub created_at: time::OffsetDateTime,
+    pub draft: bool,
+    pub html_url: Url,
+    pub id: u64,
+    pub name: String,
+    pub prerelease: bool,
+    #[serde(with = "time::serde::rfc3339")]
+    pub published_at: time::OffsetDateTime,
+    pub tag_name: String,
+    pub tarball_url: Url,
+    pub target_commitish: String,
+    pub url: Url,
+    pub zipball_url: Url,
+}
+
+#[derive(serde::Serialize, Debug, PartialEq, Default)]
+pub struct CreateReleaseOption {
+    pub body: String,
+    pub draft: bool,
+    pub name: String,
+    pub prerelease: bool,
+    pub tag_name: String,
+    pub target_commitish: Option<String>,
+}
+
+#[derive(serde::Serialize, Debug, PartialEq, Default)]
+pub struct EditReleaseOption {
+    pub body: Option<String>,
+    pub draft: Option<bool>,
+    pub name: Option<String>,
+    pub prerelease: Option<bool>,
+    pub tag_name: Option<String>,
+    pub target_commitish: Option<String>,
+}
+
+#[derive(Default, Debug)]
+pub struct ReleaseQuery {
+    pub draft: Option<bool>,
+    pub prerelease: Option<bool>,
+    pub page: Option<u32>,
+    pub limit: Option<u32>,
+}
+
+impl ReleaseQuery {
+    fn to_string(&self, owner: &str, repo: &str) -> String {
+        format!("repos/{owner}/{repo}/releases?draft={}&pre-release={}&page={}&limit={}",
+            opt_bool_s(self.draft),
+            opt_bool_s(self.prerelease),
+            self.page.map(|page| page.to_string()).unwrap_or_default(),
+            self.limit.map(|page| page.to_string()).unwrap_or_default(),
+        )
+    }
+}
+
+fn opt_bool_s(b: Option<bool>) -> &'static str {
+    match b {
+        Some(true) => "true",
+        Some(false) => "false",
+        None => "",
+    }
 }
 

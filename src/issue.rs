@@ -103,6 +103,11 @@ pub struct Attachment {
     pub uuid: String,
 }
 
+#[derive(serde::Serialize, Debug, PartialEq, Default)]
+pub struct EditAttachmentOption {
+    pub name: Option<String>,
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone, Copy)]
 pub enum State {
     Open,
