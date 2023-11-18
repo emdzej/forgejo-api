@@ -157,4 +157,3 @@ struct ErrorMessage {
     // intentionally ignored, no need for now
     // url: Url
 }
-

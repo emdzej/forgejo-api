@@ -21,7 +21,6 @@ impl Forgejo {
     pub async fn get_following(&self, user: &str) -> Result<Option<Vec<User>>, ForgejoError> {
         self.get_opt(&format!("users/{user}/following/")).await
     }
-
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -58,4 +57,3 @@ pub enum UserVisibility {
     #[serde(rename = "private")]
     Private,
 }
-
