@@ -197,6 +197,22 @@ impl Forgejo {
         self.get_opt(&format!("repos/{owner}/{repo}/releases/latest"))
             .await
     }
+
+    pub async fn get_tags(&self, owner: &str, repo: &str, query: TagQuery) -> Result<Vec<Tag>, ForgejoError> {
+        self.get(&query.to_string(owner, repo)).await
+    }
+
+    pub async fn create_tag(&self, owner: &str, repo: &str, opts: CreateTagOption) -> Result<Tag, ForgejoError> {
+        self.post(&format!("repos/{owner}/{repo}/tags"), &opts).await
+    }
+
+    pub async fn get_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<Option<Tag>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/tags/{tag}")).await
+    }
+
+    pub async fn delete_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<(), ForgejoError> {
+        self.delete(&format!("repos/{owner}/{repo}/tags/{tag}")).await
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -514,4 +530,44 @@ fn opt_bool_s(b: Option<bool>) -> &'static str {
         Some(false) => "false",
         None => "",
     }
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct Tag {
+    pub commit: CommitMeta,
+    pub id: String,
+    pub message: String,
+    pub name: String,
+    pub tarball_url: Url,
+    pub zipball_url: Url,
+}
+
+#[derive(serde::Serialize, Debug, PartialEq, Default)]
+pub struct CreateTagOption {
+    pub message: Option<String>,
+    pub tag_name: String,
+    pub target: Option<String>,
+}
+
+#[derive(Default, Debug)]
+pub struct TagQuery {
+    pub page: Option<u32>,
+    pub limit: Option<u32>,
+}
+
+impl TagQuery {
+    fn to_string(&self, owner: &str, repo: &str) -> String {
+        format!("repos/{owner}/{repo}/tags?page={}&limit={}",
+            self.page.map(|page| page.to_string()).unwrap_or_default(),
+            self.limit.map(|page| page.to_string()).unwrap_or_default(),
+        )
+    }
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct CommitMeta {
+    #[serde(with = "time::serde::rfc3339")]
+    pub created: time::OffsetDateTime,
+    pub url: Url,
+    pub sha: String,
 }
