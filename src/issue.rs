@@ -1,75 +1,139 @@
 use super::*;
 
 impl Forgejo {
-    pub async fn get_repo_issues(&self, owner: &str, repo: &str, query: IssueQuery) -> Result<Vec<Issue>, ForgejoError> {
+    pub async fn get_repo_issues(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: IssueQuery,
+    ) -> Result<Vec<Issue>, ForgejoError> {
         self.get(&query.to_string(owner, repo)).await
     }
 
-    pub async fn create_issue(&self, owner: &str, repo: &str, opts: CreateIssueOption) -> Result<Issue, ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/issues"), &opts).await
+    pub async fn create_issue(
+        &self,
+        owner: &str,
+        repo: &str,
+        opts: CreateIssueOption,
+    ) -> Result<Issue, ForgejoError> {
+        self.post(&format!("repos/{owner}/{repo}/issues"), &opts)
+            .await
     }
 
-    pub async fn get_issue(&self, owner: &str, repo: &str, id: u64) -> Result<Option<Issue>, ForgejoError> {
-        self.get_opt(&format!("repos/{owner}/{repo}/issues/{id}")).await
+    pub async fn get_issue(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+    ) -> Result<Option<Issue>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/issues/{id}"))
+            .await
     }
 
     pub async fn delete_issue(&self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
-        self.delete(&format!("repos/{owner}/{repo}/issues/{id}")).await
+        self.delete(&format!("repos/{owner}/{repo}/issues/{id}"))
+            .await
     }
 
-    pub async fn edit_issue(&self, owner: &str, repo: &str, id: u64, opts: EditIssueOption) -> Result<Issue, ForgejoError> {
-        self.patch(&format!("repos/{owner}/{repo}/issues/{id}"), &opts).await
+    pub async fn edit_issue(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+        opts: EditIssueOption,
+    ) -> Result<Issue, ForgejoError> {
+        self.patch(&format!("repos/{owner}/{repo}/issues/{id}"), &opts)
+            .await
     }
 
-
-    pub async fn get_repo_comments(&self, owner: &str, repo: &str, query: RepoCommentQuery) -> Result<Vec<Comment>, ForgejoError> {
+    pub async fn get_repo_comments(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: RepoCommentQuery,
+    ) -> Result<Vec<Comment>, ForgejoError> {
         self.get(&query.to_string(owner, repo)).await
     }
 
-    pub async fn get_issue_comments(&self, owner: &str, repo: &str, issue_id: u64, query: IssueCommentQuery) -> Result<Vec<Comment>, ForgejoError> {
+    pub async fn get_issue_comments(
+        &self,
+        owner: &str,
+        repo: &str,
+        issue_id: u64,
+        query: IssueCommentQuery,
+    ) -> Result<Vec<Comment>, ForgejoError> {
         self.get(&query.to_string(owner, repo, issue_id)).await
     }
 
-    pub async fn create_comment(&self, owner: &str, repo: &str, issue_id: u64, opts: CreateIssueCommentOption) -> Result<Comment, ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/issues/{issue_id}/comments"), &opts).await
+    pub async fn create_comment(
+        &self,
+        owner: &str,
+        repo: &str,
+        issue_id: u64,
+        opts: CreateIssueCommentOption,
+    ) -> Result<Comment, ForgejoError> {
+        self.post(
+            &format!("repos/{owner}/{repo}/issues/{issue_id}/comments"),
+            &opts,
+        )
+        .await
     }
 
-    pub async fn get_comment(&self, owner: &str, repo: &str, id: u64) -> Result<Option<Comment>, ForgejoError> {
-        self.get_opt(&format!("repos/{owner}/{repo}/issues/comments/{id}")).await
+    pub async fn get_comment(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+    ) -> Result<Option<Comment>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/issues/comments/{id}"))
+            .await
     }
 
-    pub async fn delete_comment(&self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
-        self.delete(&format!("repos/{owner}/{repo}/issues/comments/{id}")).await
+    pub async fn delete_comment(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+    ) -> Result<(), ForgejoError> {
+        self.delete(&format!("repos/{owner}/{repo}/issues/comments/{id}"))
+            .await
     }
 
-    pub async fn edit_comment(&self, owner: &str, repo: &str, id: u64, opts: EditIssueCommentOption) -> Result<Comment, ForgejoError> {
-        self.patch(&format!("repos/{owner}/{repo}/issues/comments/{id}"), &opts).await
+    pub async fn edit_comment(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+        opts: EditIssueCommentOption,
+    ) -> Result<Comment, ForgejoError> {
+        self.patch(&format!("repos/{owner}/{repo}/issues/comments/{id}"), &opts)
+            .await
     }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
 pub struct Issue {
     pub assets: Vec<Attachment>,
-    pub assignee: User,
-    pub assignees: Vec<User>,
+    pub assignee: Option<User>,
+    pub assignees: Option<Vec<User>>,
     pub body: String,
-    #[serde(with = "time::serde::rfc3339")]
-    pub closed_at: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub closed_at: Option<time::OffsetDateTime>,
     pub comments: u64,
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: time::OffsetDateTime,
-    #[serde(with = "time::serde::rfc3339")]
-    pub due_date: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub due_date: Option<time::OffsetDateTime>,
     pub html_url: Url,
     pub id: u64,
     pub is_locked: bool,
     pub labels: Vec<Label>,
-    pub milestone: Milestone,
+    pub milestone: Option<Milestone>,
     pub number: u64,
     pub original_author: String,
     pub original_author_id: u64,
     pub pin_order: u64,
-    pub pull_request: PullRequestMeta,
+    pub pull_request: Option<PullRequestMeta>,
     #[serde(rename = "ref")]
     pub _ref: String,
     pub repository: RepositoryMeta,
@@ -110,7 +174,9 @@ pub struct EditAttachmentOption {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone, Copy)]
 pub enum State {
+    #[serde(rename = "open")]
     Open,
+    #[serde(rename = "closed")]
     Closed,
 }
 
@@ -134,10 +200,59 @@ pub struct Comment {
     pub issue_url: Url,
     pub original_author: String,
     pub original_author_id: u64,
-    pub pull_request_url: Url,
+    #[serde(deserialize_with = "none_if_blank_url")]
+    pub pull_request_url: Option<Url>,
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: time::OffsetDateTime,
     pub user: User,
+}
+
+fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<Url>, D::Error> {
+    use serde::de::{Error, Unexpected, Visitor};
+    use std::fmt;
+
+    struct EmptyUrlVisitor;
+
+    impl<'de> Visitor<'de> for EmptyUrlVisitor 
+    {
+        type Value = Option<Url>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("option")
+        }
+
+        #[inline]
+        fn visit_unit<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        #[inline]
+        fn visit_none<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        #[inline]
+        fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            if s.is_empty() {
+                return Ok(None);
+            }
+            Url::parse(s).map_err(|err| {
+                let err_s = format!("{}", err);
+                Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
+            }).map(Some)
+        }
+    }
+
+    deserializer.deserialize_str(EmptyUrlVisitor)
 }
 
 #[derive(Default, Debug)]
@@ -198,9 +313,18 @@ pub struct IssueCommentQuery {
 
 impl IssueCommentQuery {
     fn to_string(&self, owner: &str, repo: &str, issue_id: u64) -> String {
-        format!("repos/{owner}/{repo}/issues/{issue_id}/comments?since={}&before={}",
-            self.since.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
-            self.before.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
+        format!(
+            "repos/{owner}/{repo}/issues/{issue_id}/comments?since={}&before={}",
+            self.since
+                .map(|t| t
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap())
+                .unwrap_or_default(),
+            self.before
+                .map(|t| t
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap())
+                .unwrap_or_default(),
         )
     }
 }
@@ -215,9 +339,18 @@ pub struct RepoCommentQuery {
 
 impl RepoCommentQuery {
     fn to_string(&self, owner: &str, repo: &str) -> String {
-        format!("repos/{owner}/{repo}/issues/comments?since={}&before={}&page={}&limit={}",
-            self.since.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
-            self.before.map(|t| t.format(&time::format_description::well_known::Rfc3339).unwrap()).unwrap_or_default(),
+        format!(
+            "repos/{owner}/{repo}/issues/comments?since={}&before={}&page={}&limit={}",
+            self.since
+                .map(|t| t
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap())
+                .unwrap_or_default(),
+            self.before
+                .map(|t| t
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap())
+                .unwrap_or_default(),
             self.page.map(|page| page.to_string()).unwrap_or_default(),
             self.limit.map(|page| page.to_string()).unwrap_or_default(),
         )

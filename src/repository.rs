@@ -12,76 +12,190 @@ impl Forgejo {
         self.post("user/repos", &repo).await
     }
 
-    pub async fn get_pulls(&self, owner: &str, repo: &str, query: PullQuery) -> Result<Vec<PullRequest>, ForgejoError> {
+    pub async fn get_pulls(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: PullQuery,
+    ) -> Result<Vec<PullRequest>, ForgejoError> {
         self.get(&query.to_string(owner, repo)).await
     }
 
-    pub async fn create_pr(&self, owner: &str, repo: &str, opts: CreatePullRequestOption) -> Result<PullRequest, ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/pulls"), &opts).await
+    pub async fn create_pr(
+        &self,
+        owner: &str,
+        repo: &str,
+        opts: CreatePullRequestOption,
+    ) -> Result<PullRequest, ForgejoError> {
+        self.post(&format!("repos/{owner}/{repo}/pulls"), &opts)
+            .await
     }
 
     pub async fn is_merged(&self, owner: &str, repo: &str, pr: u64) -> Result<bool, ForgejoError> {
-        self.get_opt::<()>(&format!("repos/{owner}/{repo}/pulls/{pr}/merge")).await.map(|o| o.is_some())
+        self.get_opt::<()>(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"))
+            .await
+            .map(|o| o.is_some())
     }
 
-    pub async fn merge_pr(&self, owner: &str, repo: &str, pr: u64, opts: MergePullRequestOption) -> Result<(), ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"), &opts).await
+    pub async fn merge_pr(
+        &self,
+        owner: &str,
+        repo: &str,
+        pr: u64,
+        opts: MergePullRequestOption,
+    ) -> Result<(), ForgejoError> {
+        self.post(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"), &opts)
+            .await
     }
 
     pub async fn cancel_merge(&self, owner: &str, repo: &str, pr: u64) -> Result<(), ForgejoError> {
-        self.delete(&format!("repos/{owner}/{repo}/pulls/{pr}/merge")).await
+        self.delete(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"))
+            .await
     }
 
-    pub async fn get_releases(&self, owner: &str, repo: &str, query: ReleaseQuery) -> Result<Vec<Release>, ForgejoError> {
+    pub async fn get_releases(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: ReleaseQuery,
+    ) -> Result<Vec<Release>, ForgejoError> {
         self.get(&query.to_string(owner, repo)).await
     }
 
-    pub async fn get_release(&self, owner: &str, repo: &str, id: u64) -> Result<Option<Release>, ForgejoError> {
-        self.get_opt(&format!("repos/{owner}/{repo}/releases/{id}")).await
+    pub async fn get_release(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+    ) -> Result<Option<Release>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/releases/{id}"))
+            .await
     }
 
-    pub async fn get_release_by_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<Option<Release>, ForgejoError> {
-        self.get_opt(&format!("repos/{owner}/{repo}/releases/tags/{tag}")).await
+    pub async fn get_release_by_tag(
+        &self,
+        owner: &str,
+        repo: &str,
+        tag: &str,
+    ) -> Result<Option<Release>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/releases/tags/{tag}"))
+            .await
     }
 
-    pub async fn delete_release(&self, owner: &str, repo: &str, id: u64) -> Result<(), ForgejoError> {
-        self.delete(&format!("repos/{owner}/{repo}/releases/{id}")).await
+    pub async fn delete_release(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+    ) -> Result<(), ForgejoError> {
+        self.delete(&format!("repos/{owner}/{repo}/releases/{id}"))
+            .await
     }
 
-    pub async fn delete_release_by_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<(), ForgejoError> {
-        self.delete(&format!("repos/{owner}/{repo}/releases/tags/{tag}")).await
+    pub async fn delete_release_by_tag(
+        &self,
+        owner: &str,
+        repo: &str,
+        tag: &str,
+    ) -> Result<(), ForgejoError> {
+        self.delete(&format!("repos/{owner}/{repo}/releases/tags/{tag}"))
+            .await
     }
 
-    pub async fn edit_release(&self, owner: &str, repo: &str, id: u64, opts: EditReleaseOption) -> Result<Release, ForgejoError> {
-        self.patch(&format!("repos/{owner}/{repo}/releases/{id}"), &opts).await
+    pub async fn edit_release(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+        opts: EditReleaseOption,
+    ) -> Result<Release, ForgejoError> {
+        self.patch(&format!("repos/{owner}/{repo}/releases/{id}"), &opts)
+            .await
     }
 
-    pub async fn get_release_attachments(&self, owner: &str, repo: &str, id: u64) -> Result<Vec<Attachment>, ForgejoError> {
-        self.get(&format!("repos/{owner}/{repo}/releases/{id}/assets")).await
+    pub async fn get_release_attachments(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+    ) -> Result<Vec<Attachment>, ForgejoError> {
+        self.get(&format!("repos/{owner}/{repo}/releases/{id}/assets"))
+            .await
     }
 
-    pub async fn get_release_attachment(&self, owner: &str, repo: &str, release_id: u64, attachment_id: u64) -> Result<Attachment, ForgejoError> {
-        self.get(&format!("repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}")).await
+    pub async fn get_release_attachment(
+        &self,
+        owner: &str,
+        repo: &str,
+        release_id: u64,
+        attachment_id: u64,
+    ) -> Result<Attachment, ForgejoError> {
+        self.get(&format!(
+            "repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}"
+        ))
+        .await
     }
 
-    pub async fn create_release_attachment(&self, owner: &str, repo: &str, id: u64, name: &str, file: &[u8]) -> Result<Attachment, ForgejoError> {
-        self.post_form(&format!("repos/{owner}/{repo}/releases/{id}/assets?name={name}"), &file).await
+    pub async fn create_release_attachment(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u64,
+        name: &str,
+        file: &[u8],
+    ) -> Result<Attachment, ForgejoError> {
+        self.post_form(
+            &format!("repos/{owner}/{repo}/releases/{id}/assets?name={name}"),
+            &file,
+        )
+        .await
     }
 
-    pub async fn delete_release_attachment(&self, owner: &str, repo: &str, release_id: u64, attachment_id: u64) -> Result<(), ForgejoError> {
-        self.delete(&format!("repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}")).await
-    }
-    
-    pub async fn edit_release_attachment(&self, owner: &str, repo: &str, release_id: u64, attachment_id: u64, opts: EditAttachmentOption) -> Result<Attachment, ForgejoError> {
-        self.patch(&format!("repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}"), &opts).await
+    pub async fn delete_release_attachment(
+        &self,
+        owner: &str,
+        repo: &str,
+        release_id: u64,
+        attachment_id: u64,
+    ) -> Result<(), ForgejoError> {
+        self.delete(&format!(
+            "repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}"
+        ))
+        .await
     }
 
-    pub async fn create_release(&self, owner: &str, repo: &str, opts: CreateReleaseOption) -> Result<Release, ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/releases"), &opts).await
+    pub async fn edit_release_attachment(
+        &self,
+        owner: &str,
+        repo: &str,
+        release_id: u64,
+        attachment_id: u64,
+        opts: EditAttachmentOption,
+    ) -> Result<Attachment, ForgejoError> {
+        self.patch(
+            &format!("repos/{owner}/{repo}/releases/{release_id}/assets/{attachment_id}"),
+            &opts,
+        )
+        .await
     }
 
-    pub async fn latest_release(&self, owner: &str, repo: &str) -> Result<Option<Release>, ForgejoError> {
-        self.get_opt(&format!("repos/{owner}/{repo}/releases/latest")).await
+    pub async fn create_release(
+        &self,
+        owner: &str,
+        repo: &str,
+        opts: CreateReleaseOption,
+    ) -> Result<Release, ForgejoError> {
+        self.post(&format!("repos/{owner}/{repo}/releases"), &opts)
+            .await
+    }
+
+    pub async fn latest_release(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> Result<Option<Release>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/releases/latest"))
+            .await
     }
 }
 
@@ -133,14 +247,14 @@ pub enum TrustModel {
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
 pub struct Milestone {
-    #[serde(with = "time::serde::rfc3339")]
-    pub closed_at: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub closed_at: Option<time::OffsetDateTime>,
     pub closed_issues: u64,
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: time::OffsetDateTime,
     pub description: String,
-    #[serde(with = "time::serde::rfc3339")]
-    pub due_on: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub due_on: Option<time::OffsetDateTime>,
     pub id: u64,
     pub open_issues: u64,
     pub state: State,
@@ -156,14 +270,14 @@ pub struct PullRequest {
     pub assignees: Vec<User>,
     pub base: PrBranchInfo,
     pub body: String,
-    #[serde(with = "time::serde::rfc3339")]
-    pub closed_at: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub closed_at: Option<time::OffsetDateTime>,
     pub comments: u64,
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: time::OffsetDateTime,
     pub diff_url: Url,
-    #[serde(with = "time::serde::rfc3339")]
-    pub due_date: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub due_date: Option<time::OffsetDateTime>,
     pub head: PrBranchInfo,
     pub html_url: Url,
     pub id: u64,
@@ -173,8 +287,8 @@ pub struct PullRequest {
     pub merge_commit_sha: String,
     pub mergeable: bool,
     pub merged: bool,
-    #[serde(with = "time::serde::rfc3339")]
-    pub merged_at: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub merged_at: Option<time::OffsetDateTime>,
     pub merged_by: User,
     pub milestone: Milestone,
     pub number: u64,
@@ -219,7 +333,7 @@ pub struct PullQuery {
 impl PullQuery {
     fn to_string(&self, owner: &str, repo: &str) -> String {
         use std::fmt::Write;
-        // This is different to other query struct serialization because 
+        // This is different to other query struct serialization because
         // `labels` is serialized so strangely
         let mut s = String::new();
         s.push_str("repos/");
@@ -239,22 +353,26 @@ impl PullQuery {
         }
         if let Some(milestone) = self.milestone {
             s.push_str("sort=");
-            s.write_fmt(format_args!("{milestone}")).expect("writing to a string never fails");
+            s.write_fmt(format_args!("{milestone}"))
+                .expect("writing to a string never fails");
             s.push('&');
         }
         for label in &self.labels {
             s.push_str("labels=");
-            s.write_fmt(format_args!("{label}")).expect("writing to a string never fails");
+            s.write_fmt(format_args!("{label}"))
+                .expect("writing to a string never fails");
             s.push('&');
         }
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to a string never fails");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to a string never fails");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to a string never fails");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to a string never fails");
             s.push('&');
         }
         s
@@ -380,7 +498,8 @@ pub struct ReleaseQuery {
 
 impl ReleaseQuery {
     fn to_string(&self, owner: &str, repo: &str) -> String {
-        format!("repos/{owner}/{repo}/releases?draft={}&pre-release={}&page={}&limit={}",
+        format!(
+            "repos/{owner}/{repo}/releases?draft={}&pre-release={}&page={}&limit={}",
             opt_bool_s(self.draft),
             opt_bool_s(self.prerelease),
             self.page.map(|page| page.to_string()).unwrap_or_default(),
@@ -396,4 +515,3 @@ fn opt_bool_s(b: Option<bool>) -> &'static str {
         None => "",
     }
 }
-
