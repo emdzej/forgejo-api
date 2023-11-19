@@ -272,7 +272,7 @@ pub struct Repository {
     pub repo_transfer: Option<RepoTransfer>,
     pub size: u64,
     pub ssh_url: String,
-    pub starts_count: u64,
+    pub stars_count: u64,
     pub template: bool,
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: time::OffsetDateTime,
