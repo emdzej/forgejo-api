@@ -332,8 +332,8 @@ pub struct PrBranchInfo {
 #[derive(serde::Deserialize, Debug, PartialEq)]
 pub struct PullRequestMeta {
     pub merged: bool,
-    #[serde(with = "time::serde::rfc3339")]
-    pub merged_at: time::OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub merged_at: Option<time::OffsetDateTime>,
 }
 
 #[derive(Debug)]
