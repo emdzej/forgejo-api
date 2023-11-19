@@ -338,10 +338,10 @@ pub struct EditIssueOption {
 
 #[derive(serde::Serialize, Debug, PartialEq, Default)]
 pub struct CreateIssueCommentOption {
-    body: String,
+    pub body: String,
 }
 
 #[derive(serde::Serialize, Debug, PartialEq, Default)]
 pub struct EditIssueCommentOption {
-    body: String,
+    pub body: String,
 }
