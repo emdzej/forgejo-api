@@ -263,7 +263,8 @@ pub struct Repository {
     pub name: String,
     pub open_issue_count: u64,
     pub open_pr_counter: u64,
-    pub original_url: Url,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub original_url: Option<Url>,
     pub owner: User,
     pub permissions: Permission,
     pub private: bool,
