@@ -69,7 +69,6 @@ impl Forgejo {
             .user_agent(user_agent)
             .default_headers(headers)
             .build()?;
-        dbg!(&client);
         Ok(Self { url, client })
     }
 
@@ -122,7 +121,7 @@ impl Forgejo {
     }
 
     async fn execute<T: DeserializeOwned>(&self, request: Request) -> Result<T, ForgejoError> {
-        let response = self.client.execute(dbg!(request)).await?;
+        let response = self.client.execute(request).await?;
         match response.status() {
             status if status.is_success() => Ok(response.json::<T>().await?),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
@@ -138,7 +137,7 @@ impl Forgejo {
         &self,
         request: Request,
     ) -> Result<Option<T>, ForgejoError> {
-        let response = self.client.execute(dbg!(request)).await?;
+        let response = self.client.execute(request).await?;
         match response.status() {
             status if status.is_success() => Ok(Some(response.json::<T>().await?)),
             StatusCode::NOT_FOUND => Ok(None),
