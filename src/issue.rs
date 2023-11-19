@@ -200,59 +200,11 @@ pub struct Comment {
     pub issue_url: Url,
     pub original_author: String,
     pub original_author_id: u64,
-    #[serde(deserialize_with = "none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub pull_request_url: Option<Url>,
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: time::OffsetDateTime,
     pub user: User,
-}
-
-fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<Url>, D::Error> {
-    use serde::de::{Error, Unexpected, Visitor};
-    use std::fmt;
-
-    struct EmptyUrlVisitor;
-
-    impl<'de> Visitor<'de> for EmptyUrlVisitor 
-    {
-        type Value = Option<Url>;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("option")
-        }
-
-        #[inline]
-        fn visit_unit<E>(self) -> Result<Self::Value, E>
-        where
-            E: Error,
-        {
-            Ok(None)
-        }
-
-        #[inline]
-        fn visit_none<E>(self) -> Result<Self::Value, E>
-        where
-            E: Error,
-        {
-            Ok(None)
-        }
-
-        #[inline]
-        fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
-        where
-            E: Error,
-        {
-            if s.is_empty() {
-                return Ok(None);
-            }
-            Url::parse(s).map_err(|err| {
-                let err_s = format!("{}", err);
-                Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
-            }).map(Some)
-        }
-    }
-
-    deserializer.deserialize_str(EmptyUrlVisitor)
 }
 
 #[derive(Default, Debug)]

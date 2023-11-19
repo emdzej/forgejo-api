@@ -8,10 +8,12 @@ pub struct Forgejo {
     client: Client,
 }
 
+mod organization;
 mod issue;
 mod repository;
 mod user;
 
+pub use organization::*;
 pub use issue::*;
 pub use repository::*;
 pub use user::*;
@@ -156,3 +158,54 @@ struct ErrorMessage {
     // intentionally ignored, no need for now
     // url: Url
 }
+
+// Forgejo can return blank strings for URLs. This handles that by deserializing
+// that as `None`
+fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<Url>, D::Error> {
+    use serde::de::{Error, Unexpected, Visitor};
+    use std::fmt;
+
+    struct EmptyUrlVisitor;
+
+    impl<'de> Visitor<'de> for EmptyUrlVisitor 
+    {
+        type Value = Option<Url>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("option")
+        }
+
+        #[inline]
+        fn visit_unit<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        #[inline]
+        fn visit_none<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        #[inline]
+        fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            if s.is_empty() {
+                return Ok(None);
+            }
+            Url::parse(s).map_err(|err| {
+                let err_s = format!("{}", err);
+                Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
+            }).map(Some)
+        }
+    }
+
+    deserializer.deserialize_str(EmptyUrlVisitor)
+}
+

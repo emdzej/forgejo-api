@@ -3,12 +3,12 @@ use super::*;
 /// Repository operations.
 impl Forgejo {
     /// Gets info about the specified repository.
-    pub async fn get_repo(&self, user: &str, repo: &str) -> Result<Option<Repo>, ForgejoError> {
+    pub async fn get_repo(&self, user: &str, repo: &str) -> Result<Option<Repository>, ForgejoError> {
         self.get_opt(&format!("repos/{user}/{repo}/")).await
     }
 
     /// Creates a repository.
-    pub async fn create_repo(&self, repo: CreateRepoOption) -> Result<Repo, ForgejoError> {
+    pub async fn create_repo(&self, repo: CreateRepoOption) -> Result<Repository, ForgejoError> {
         self.post("user/repos", &repo).await
     }
 
@@ -216,17 +216,68 @@ impl Forgejo {
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
-pub struct Repo {
+pub struct Repository {
+    pub allow_merge_commits: bool,
+    pub allow_rebase: bool,
+    pub allow_rebase_explicit: bool,
+    pub allow_rebase_update: bool,
+    pub allow_squash_merge: bool,
+    pub archived: bool,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub archived_at: Option<time::OffsetDateTime>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub avatar_url: Option<Url>,
     pub clone_url: Url,
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: time::OffsetDateTime,
+    pub default_allow_maintainer_edit: bool,
     pub default_branch: String,
+    pub default_delete_branch_after_merge: bool,
+    pub default_merge_style: String,
     pub description: String,
+    pub empty: bool,
+    pub external_tracker: Option<ExternalTracker>,
+    pub external_wiki: Option<ExternalWiki>,
     pub fork: bool,
     pub forks_count: u64,
     pub full_name: String,
-
+    pub has_actions: bool,
+    pub has_issues: bool,
+    pub has_packages: bool,
+    pub has_projects: bool,
+    pub has_pull_request: bool,
+    pub has_releases: bool,
+    pub has_wiki: bool,
+    pub html_url: Url,
+    pub id: u64,
+    pub ignore_whitespace_conflicts: bool,
+    pub internal: bool,
+    pub internal_tracker: Option<InternalTracker>,
+    pub language: String,
+    pub languages_url: Url,
+    pub link: String,
+    pub mirror: bool,
+    pub mirror_interval: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub mirror_updated: Option<time::OffsetDateTime>,
+    pub name: String,
+    pub open_issue_count: u64,
+    pub open_pr_counter: u64,
+    pub original_url: Url,
     pub owner: User,
+    pub permissions: Permission,
+    pub private: bool,
+    pub release_counter: u64,
+    pub repo_transfer: Option<RepoTransfer>,
+    pub size: u64,
+    pub ssh_url: Url,
+    pub starts_count: u64,
+    pub template: bool,
+    #[serde(with = "time::serde::rfc3339")]
+    pub updated_at: time::OffsetDateTime,
+    pub url: Url,
+    pub watchers_count: u64,
+    pub website: Option<String>,
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -324,7 +375,7 @@ pub struct PrBranchInfo {
     pub label: String,
     #[serde(rename = "ref")]
     pub _ref: String,
-    pub repo: Repo,
+    pub repo: Repository,
     pub repo_id: u64,
     pub sha: String,
 }
@@ -571,3 +622,43 @@ pub struct CommitMeta {
     pub url: Url,
     pub sha: String,
 }
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct ExternalTracker {
+    #[serde(rename = "external_tracker_format")]
+    pub format: String,
+    #[serde(rename = "external_tracker_regexp_pattern")]
+    pub regexp_pattern: String,
+    #[serde(rename = "external_tracker_style")]
+    pub style: String,
+    #[serde(rename = "external_tracker_url")]
+    pub url: Url,
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct InternalTracker {
+    pub allow_only_contributors_to_track_time: bool,
+    pub enable_issue_dependencies: bool,
+    pub enable_time_tracker: bool,
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct ExternalWiki {
+    #[serde(rename = "external_wiki_url")]
+    pub url: Url,
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct Permission {
+    pub admin: bool,
+    pub pull: bool,
+    pub push: bool,
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+pub struct RepoTransfer {
+    pub doer: User,
+    pub recipient: User,
+    pub teams: Vec<Team>,
+}
+
