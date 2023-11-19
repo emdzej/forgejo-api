@@ -133,7 +133,7 @@ pub struct Issue {
     pub original_author: String,
     pub original_author_id: u64,
     pub pin_order: u64,
-    pub pull_request: PullRequestMeta,
+    pub pull_request: Option<PullRequestMeta>,
     #[serde(rename = "ref")]
     pub _ref: String,
     pub repository: RepositoryMeta,
