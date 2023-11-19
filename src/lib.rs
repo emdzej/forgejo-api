@@ -63,7 +63,7 @@ impl Forgejo {
         let mut key_header: reqwest::header::HeaderValue = format!("token {api_key}")
             .try_into()
             .map_err(|_| ForgejoError::KeyNotAscii)?;
-        // key_header.set_sensitive(true);
+        key_header.set_sensitive(true);
         headers.insert("Authorization", key_header);
         let client = Client::builder()
             .user_agent(user_agent)
