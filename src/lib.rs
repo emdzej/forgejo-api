@@ -27,7 +27,7 @@ pub enum ForgejoError {
     #[error("API key should be ascii")]
     KeyNotAscii,
     #[error("the response from forgejo was not properly structured")]
-    BadStructure,
+    BadStructure(#[source] reqwest::Error),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
     #[error("{} {}: {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1)]
@@ -37,7 +37,7 @@ pub enum ForgejoError {
 impl From<reqwest::Error> for ForgejoError {
     fn from(e: reqwest::Error) -> Self {
         if e.is_decode() {
-            ForgejoError::BadStructure
+            ForgejoError::BadStructure(e)
         } else {
             ForgejoError::ReqwestError(e)
         }
