@@ -245,7 +245,7 @@ pub struct Repository {
     pub has_issues: bool,
     pub has_packages: bool,
     pub has_projects: bool,
-    pub has_pull_request: bool,
+    pub has_pull_requests: bool,
     pub has_releases: bool,
     pub has_wiki: bool,
     pub html_url: Url,
