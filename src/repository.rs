@@ -270,7 +270,7 @@ pub struct Repository {
     pub release_counter: u64,
     pub repo_transfer: Option<RepoTransfer>,
     pub size: u64,
-    pub ssh_url: Url,
+    pub ssh_url: String,
     pub starts_count: u64,
     pub template: bool,
     #[serde(with = "time::serde::rfc3339")]
