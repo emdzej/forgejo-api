@@ -261,7 +261,7 @@ pub struct Repository {
     #[serde(with = "time::serde::rfc3339::option")]
     pub mirror_updated: Option<time::OffsetDateTime>,
     pub name: String,
-    pub open_issue_count: u64,
+    pub open_issues_count: u64,
     pub open_pr_counter: u64,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub original_url: Option<Url>,
