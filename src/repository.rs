@@ -245,7 +245,7 @@ pub struct Repository {
     pub has_issues: bool,
     pub has_packages: bool,
     pub has_projects: bool,
-    pub has_pull_request: bool,
+    pub has_pull_requests: bool,
     pub has_releases: bool,
     pub has_wiki: bool,
     pub html_url: Url,
@@ -261,7 +261,7 @@ pub struct Repository {
     #[serde(with = "time::serde::rfc3339::option")]
     pub mirror_updated: Option<time::OffsetDateTime>,
     pub name: String,
-    pub open_issue_count: u64,
+    pub open_issues_count: u64,
     pub open_pr_counter: u64,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub original_url: Option<Url>,
@@ -272,7 +272,7 @@ pub struct Repository {
     pub repo_transfer: Option<RepoTransfer>,
     pub size: u64,
     pub ssh_url: String,
-    pub starts_count: u64,
+    pub stars_count: u64,
     pub template: bool,
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: time::OffsetDateTime,
