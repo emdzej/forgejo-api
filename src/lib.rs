@@ -8,11 +8,13 @@ pub struct Forgejo {
     client: Client,
 }
 
+mod misc;
 mod organization;
 mod issue;
 mod repository;
 mod user;
 
+pub use misc::*;
 pub use organization::*;
 pub use issue::*;
 pub use repository::*;
@@ -86,6 +88,12 @@ impl Forgejo {
         self.execute_opt(request).await
     }
 
+    async fn get_str(&self, path: &str) -> Result<String, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.get(url).build()?;
+        self.execute_str(request).await
+    }
+
     async fn post<T: Serialize, U: DeserializeOwned>(
         &self,
         path: &str,
@@ -104,6 +112,26 @@ impl Forgejo {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.post(url).form(body).build()?;
         self.execute(request).await
+    }
+
+    async fn post_str_out<T: Serialize>(
+        &self,
+        path: &str,
+        body: &T,
+    ) -> Result<String, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.post(url).json(body).build()?;
+        self.execute_str(request).await
+    }
+
+    async fn post_raw(
+        &self,
+        path: &str,
+        body: String,
+    ) -> Result<String, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.post(url).body(body).build()?;
+        self.execute_str(request).await
     }
 
     async fn delete(&self, path: &str) -> Result<(), ForgejoError> {
@@ -126,6 +154,19 @@ impl Forgejo {
         let response = self.client.execute(request).await?;
         match response.status() {
             status if status.is_success() => Ok(response.json::<T>().await?),
+            status if status.is_client_error() => Err(ForgejoError::ApiError(
+                status,
+                response.json::<ErrorMessage>().await?.message,
+            )),
+            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+        }
+    }
+
+    /// Like `execute`, but returns a `String`.
+    async fn execute_str(&self, request: Request) -> Result<String, ForgejoError> {
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            status if status.is_success() => Ok(response.text().await?),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
                 response.json::<ErrorMessage>().await?.message,
