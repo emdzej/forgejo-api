@@ -9,12 +9,14 @@ pub struct Forgejo {
 }
 
 mod misc;
+mod notification;
 mod organization;
 mod issue;
 mod repository;
 mod user;
 
 pub use misc::*;
+pub use notification::*;
 pub use organization::*;
 pub use issue::*;
 pub use repository::*;
@@ -147,6 +149,12 @@ impl Forgejo {
     ) -> Result<U, ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.patch(url).json(body).build()?;
+        self.execute(request).await
+    }
+
+    async fn put<T: DeserializeOwned>(&self, path: &str) -> Result<T, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.put(url).build()?;
         self.execute(request).await
     }
 
