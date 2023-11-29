@@ -16,4 +16,5 @@ time = { version = "0.3.22", features = ["parsing", "serde", "formatting"] }
 
 [dev-dependencies]
 eyre = "0.6.9"
-tokio = { version = "1.29.1", features = ["net", "rt", "macros"] }
+tokio = { version = "1.29.1", features = ["net", "fs", "rt", "macros"] }
+git2 = "0.18.1"
