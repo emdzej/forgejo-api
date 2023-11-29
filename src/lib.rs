@@ -9,6 +9,7 @@ pub struct Forgejo {
 }
 
 mod issue;
+mod admin;
 mod misc;
 mod notification;
 mod organization;
@@ -17,6 +18,7 @@ mod repository;
 mod user;
 
 pub use issue::*;
+pub use admin::*;
 pub use misc::*;
 pub use notification::*;
 pub use organization::*;
