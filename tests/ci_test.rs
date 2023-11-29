@@ -96,6 +96,14 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     let branch_ref_name = branch_ref.name().ok_or_else(|| eyre!("branch name not found"))?;
     local_repo.set_head(branch_ref_name)?;
 
+    let mut callbacks = git2::RemoteCallbacks::new();
+    callbacks.credentials(|_url, _username_from_url, _allowed_types| {
+        git2::Cred::userpass_plaintext("TestingAdmin", "password")
+    });
+    let mut push_options = git2::PushOptions::new();
+    push_options.remote_callbacks(callbacks);
+    origin.push(&[branch_ref_name], Some(&mut push_options)).map_err(|e| eyre!("failed to push branch, {e}"))?;
+
     let pr_opt = forgejo_api::CreatePullRequestOption {
         assignee: None,
         assignees: vec!["TestingAdmin".into()],
@@ -107,8 +115,9 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         milestone: None,
         title: "test pr".into(),
     };
-    let pr = api.create_pr("TestingAdmin", "test", pr_opt).await?;
-    ensure!(!api.is_merged("TestingAdmin", "test", pr.number).await?, "pr should not yet be merged");
+    let pr = api.create_pr("TestingAdmin", "test", pr_opt).await.map_err(|e| eyre!("couldn't create pr, {e}"))?;
+    let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.map_err(|e| eyre!("couldn't find unmerged pr {}, {}", pr.number, e))?;
+    ensure!(!is_merged, "pr should not yet be merged");
     let merge_opt = forgejo_api::MergePullRequestOption {
         act: forgejo_api::MergePrAction::Merge,
         merge_commit_id: None,
@@ -119,8 +128,9 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         head_commit_id: None,
         merge_when_checks_succeed: None,
     };
-    api.merge_pr("TestingAdmin", "test", pr.number, merge_opt).await?;
-    ensure!(api.is_merged("TestingAdmin", "test", pr.number).await?, "pr should be merged");
+    api.merge_pr("TestingAdmin", "test", pr.number, merge_opt).await.map_err(|e| eyre!("couldn't merge pr {}, {}", pr.number, e))?;
+    let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.map_err(|e| eyre!("couldn't find merged pr {}, {}", pr.number, e))?;
+    ensure!(is_merged, "pr should be merged");
 
     Ok(())
 }
