@@ -1,4 +1,5 @@
-use forgejo_api::{Forgejo, ForgejoError};
+use forgejo_api::Forgejo;
+use eyre::{eyre, ensure};
 
 #[tokio::test]
 async fn ci() -> eyre::Result<()> {
@@ -8,7 +9,7 @@ async fn ci() -> eyre::Result<()> {
 
     let mut results = Vec::new();
 
-    results.push(user(&api).await.map_err(|e| eyre::eyre!("user error: {e}")));
+    results.push(user(&api).await.map_err(|e| eyre!("user error: {e}")));
 
     let mut errors = 0;
     for res in results.into_iter().filter_map(Result::err) {
@@ -22,6 +23,21 @@ async fn ci() -> eyre::Result<()> {
     Ok(())
 }
 
-async fn user(api: &forgejo_api::Forgejo) -> Result<(), ForgejoError> {
+async fn user(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
+    let myself = api.myself().await?;
+    ensure!(myself.is_admin, "user should be admin");
+    ensure!(myself.login == "TestingAdmin", "user should be named \"TestingAdmin\"");
+
+    let myself_indirect = api
+        .get_user("TestingAdmin")
+        .await?
+        .ok_or_else(|| eyre!("\"TestingAdmin\" not found, but should have been."))?;
+    ensure!(myself == myself_indirect, "result of `myself` does not match result of `get_user`");
+
+    let following = api.get_following("TestingAdmin").await?;
+    ensure!(following == Some(Vec::new()), "following list not empty");
+    let followers = api.get_followers("TestingAdmin").await?;
+    ensure!(followers == Some(Vec::new()), "follower list not empty");
+
     Ok(())
 }
