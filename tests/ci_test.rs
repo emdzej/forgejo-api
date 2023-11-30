@@ -13,9 +13,11 @@ async fn ci() -> eyre::Result<()> {
     results.push(repo(&api).await.wrap_err("repo error"));
 
     let mut errors = 0;
-    for res in results.into_iter().filter_map(Result::err) {
+    for report in results.into_iter().filter_map(Result::err) {
         errors += 1;
-        println!("{res}");
+        for (i, err) in report.chain().enumerate() {
+            println!("{i}. {err}");
+        }
     }
     if errors > 0 {
         eyre::bail!("test failed");
@@ -83,7 +85,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     let mut push_options = git2::PushOptions::new();
     push_options.remote_callbacks(callbacks);
     let mut origin = local_repo.remote("origin", remote_repo.clone_url.as_str())?;
-    origin.push(&[branch_ref_name], Some(&mut push_options))?;
+    origin.push(&[dbg!(branch_ref_name)], Some(&mut push_options))?;
 
     tokio::fs::write("/test_repo/example.rs", "fn add_one(x: u32) -> u32 { x + 1 }").await?;
     let mut index = local_repo.index()?;
@@ -102,7 +104,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     });
     let mut push_options = git2::PushOptions::new();
     push_options.remote_callbacks(callbacks);
-    origin.push(&[branch_ref_name], Some(&mut push_options)).wrap_err("failed to push branch")?;
+    origin.push(&[dbg!(branch_ref_name)], Some(&mut push_options)).wrap_err("failed to push branch")?;
 
     let pr_opt = forgejo_api::CreatePullRequestOption {
         assignee: None,
