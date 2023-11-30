@@ -1,0 +1,14 @@
+when:
+  - event: manual
+steps:
+  test:
+    image: rust
+    environment:
+      - "FORGEJO_API_CI_INSTANCE_URL=http://forgejo-testing:3000/"
+      - FORGEJO_API_CI_TOKEN=0889eabbb0006f15be4af017c4e0d3f51df78f98
+    commands:
+      - cargo test
+
+services:
+  forgejo-testing:
+    image: code.cartoon-aa.xyz/cyborus/ci-forgejo
