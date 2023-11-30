@@ -1,5 +1,5 @@
 use forgejo_api::Forgejo;
-use eyre::{eyre, ensure};
+use eyre::{eyre, ensure, WrapErr};
 
 #[tokio::test]
 async fn ci() -> eyre::Result<()> {
@@ -9,8 +9,8 @@ async fn ci() -> eyre::Result<()> {
 
     let mut results = Vec::new();
 
-    results.push(user(&api).await.map_err(|e| eyre!("user error: {e}")));
-    results.push(repo(&api).await.map_err(|e| eyre!("repo error: {e}")));
+    results.push(user(&api).await.wrap_err("user error"));
+    results.push(repo(&api).await.wrap_err("repo error"));
 
     let mut errors = 0;
     for res in results.into_iter().filter_map(Result::err) {
@@ -102,7 +102,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     });
     let mut push_options = git2::PushOptions::new();
     push_options.remote_callbacks(callbacks);
-    origin.push(&[branch_ref_name], Some(&mut push_options)).map_err(|e| eyre!("failed to push branch, {e}"))?;
+    origin.push(&[branch_ref_name], Some(&mut push_options)).wrap_err("failed to push branch")?;
 
     let pr_opt = forgejo_api::CreatePullRequestOption {
         assignee: None,
@@ -115,8 +115,8 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         milestone: None,
         title: "test pr".into(),
     };
-    let pr = api.create_pr("TestingAdmin", "test", pr_opt).await.map_err(|e| eyre!("couldn't create pr, {e}"))?;
-    let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.map_err(|e| eyre!("couldn't find unmerged pr {}, {}", pr.number, e))?;
+    let pr = api.create_pr("TestingAdmin", "test", pr_opt).await.wrap_err("couldn't create pr")?;
+    let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.wrap_err_with(|| eyre!("couldn't find unmerged pr {}", pr.number))?;
     ensure!(!is_merged, "pr should not yet be merged");
     let merge_opt = forgejo_api::MergePullRequestOption {
         act: forgejo_api::MergePrAction::Merge,
@@ -128,8 +128,8 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         head_commit_id: None,
         merge_when_checks_succeed: None,
     };
-    api.merge_pr("TestingAdmin", "test", pr.number, merge_opt).await.map_err(|e| eyre!("couldn't merge pr {}, {}", pr.number, e))?;
-    let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.map_err(|e| eyre!("couldn't find merged pr {}, {}", pr.number, e))?;
+    api.merge_pr("TestingAdmin", "test", pr.number, merge_opt).await.wrap_err_with(|| eyre!("couldn't merge pr {}", pr.number))?;
+    let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.wrap_err_with(|| eyre!("couldn't find merged pr {}", pr.number))?;
     ensure!(is_merged, "pr should be merged");
 
     Ok(())
