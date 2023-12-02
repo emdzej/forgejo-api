@@ -358,7 +358,7 @@ pub struct PullRequest {
     #[serde(with = "time::serde::rfc3339::option")]
     pub merged_at: Option<time::OffsetDateTime>,
     pub merged_by: User,
-    pub milestone: Milestone,
+    pub milestone: Option<Milestone>,
     pub number: u64,
     pub patch_url: Url,
     pub pin_order: u64,
