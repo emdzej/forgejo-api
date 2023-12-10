@@ -30,26 +30,16 @@ pub enum ForgejoError {
     HostRequired,
     #[error("scheme must be http or https")]
     HttpRequired,
-    #[error("{0}")] // for some reason, you can't use `source` and `transparent` together
-    ReqwestError(#[source] reqwest::Error),
+    #[error(transparent)]
+    ReqwestError(#[from] reqwest::Error),
     #[error("API key should be ascii")]
     KeyNotAscii,
     #[error("the response from forgejo was not properly structured")]
-    BadStructure(#[source] reqwest::Error),
+    BadStructure(#[source] serde_json::Error, String),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
     #[error("{} {}: {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1)]
     ApiError(StatusCode, String),
-}
-
-impl From<reqwest::Error> for ForgejoError {
-    fn from(e: reqwest::Error) -> Self {
-        if e.is_decode() {
-            ForgejoError::BadStructure(e)
-        } else {
-            ForgejoError::ReqwestError(e)
-        }
-    }
 }
 
 impl Forgejo {
@@ -163,7 +153,11 @@ impl Forgejo {
     async fn execute<T: DeserializeOwned>(&self, request: Request) -> Result<T, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
-            status if status.is_success() => Ok(response.json::<T>().await?),
+            status if status.is_success() => {
+                let body = response.text().await?;
+                let out = serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
+                Ok(out)
+            },
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
                 response.json::<ErrorMessage>().await?.message,
@@ -192,7 +186,11 @@ impl Forgejo {
     ) -> Result<Option<T>, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
-            status if status.is_success() => Ok(Some(response.json::<T>().await?)),
+            status if status.is_success() => {
+                let body = response.text().await?;
+                let out = serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
+                Ok(out)
+            },
             StatusCode::NOT_FOUND => Ok(None),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,

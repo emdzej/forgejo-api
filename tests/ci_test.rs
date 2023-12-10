@@ -17,6 +17,11 @@ async fn ci() -> eyre::Result<()> {
         errors += 1;
         for (i, err) in report.chain().enumerate() {
             println!("{i}. {err}");
+            if let Some(err) = err.downcast_ref::<forgejo_api::ForgejoError>() {
+                if let forgejo_api::ForgejoError::BadStructure(_, body) = err {
+                    println!("BODY: {body}");
+                }
+            }
         }
     }
     if errors > 0 {
