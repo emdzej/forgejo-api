@@ -362,7 +362,7 @@ pub struct PullRequest {
     pub number: u64,
     pub patch_url: Url,
     pub pin_order: u64,
-    pub requested_reviewers: Vec<User>,
+    pub requested_reviewers: Option<Vec<User>>,
     pub state: State,
     pub title: String,
     #[serde(with = "time::serde::rfc3339")]
