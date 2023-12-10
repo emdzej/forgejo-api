@@ -80,6 +80,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         trust_model: forgejo_api::TrustModel::Default,
     };
     let remote_repo = api.create_repo(repo_opt).await?;
+    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
     ensure!(remote_repo.owner.login == "TestingAdmin", "repo owner is not \"TestingAdmin\"");
     ensure!(remote_repo.name == "test", "repo owner is not \"test\"");
 
@@ -123,6 +124,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         title: "test pr".into(),
     };
     let pr = api.create_pr("TestingAdmin", "test", pr_opt).await.wrap_err("couldn't create pr")?;
+    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
     let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.wrap_err_with(|| eyre!("couldn't find unmerged pr {}", pr.number))?;
     ensure!(!is_merged, "pr should not yet be merged");
     let merge_opt = forgejo_api::MergePullRequestOption {
