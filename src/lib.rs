@@ -160,7 +160,7 @@ impl Forgejo {
             },
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -173,7 +173,7 @@ impl Forgejo {
             status if status.is_success() => Ok(response.text().await?),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -194,7 +194,7 @@ impl Forgejo {
             StatusCode::NOT_FOUND => Ok(None),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -203,7 +203,7 @@ impl Forgejo {
 
 #[derive(serde::Deserialize)]
 struct ErrorMessage {
-    message: String,
+    message: Option<String>,
     // intentionally ignored, no need for now
     // url: Url
 }
