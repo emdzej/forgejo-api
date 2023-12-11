@@ -147,7 +147,7 @@ impl Forgejo {
     async fn delete(&self, path: &str) -> Result<(), ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.delete(url).build()?;
-        self.execute(request).await
+        self.execute_unit(request).await
     }
 
     async fn patch<T: Serialize, U: DeserializeOwned>(
