@@ -61,7 +61,8 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     let tree = local_repo.find_tree(index.write_tree().unwrap())?;
     let author = git2::Signature::now("TestingAdmin", "admin@noreply.example.org").unwrap();
     let commit_oid = local_repo.commit(None, &author, &author, "bibblybeebly", &tree, &[])?;
-    let branch = local_repo.branch("main", &local_repo.find_commit(commit_oid).unwrap(), true)?;
+    let root_commit = local_repo.find_commit(commit_oid).unwrap();
+    let branch = local_repo.branch("main", &root_commit, true)?;
     let branch_ref = branch.into_reference();
     let branch_ref_name = branch_ref.name().ok_or_else(|| eyre!("branch name not found"))?;
     local_repo.set_head(branch_ref_name)?;
@@ -98,7 +99,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     index.add_all(["."], git2::IndexAddOption::DEFAULT, None)?;
     index.write()?;
     let tree = local_repo.find_tree(index.write_tree().unwrap())?;
-    let commit_oid = local_repo.commit(None, &author, &author, "egg", &tree, &[])?;
+    let commit_oid = local_repo.commit(None, &author, &author, "egg", &tree, &[&root_commit])?;
     let branch = local_repo.branch("test", &local_repo.find_commit(commit_oid).unwrap(), true)?;
     let branch_ref = branch.into_reference();
     let branch_ref_name = branch_ref.name().ok_or_else(|| eyre!("branch name not found"))?;
