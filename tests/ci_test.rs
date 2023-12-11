@@ -125,6 +125,36 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     api.merge_pr("TestingAdmin", "test", pr.number, merge_opt).await.wrap_err_with(|| eyre!("couldn't merge pr {}", pr.number))?;
     let is_merged = api.is_merged("TestingAdmin", "test", pr.number).await.wrap_err_with(|| eyre!("couldn't find merged pr {}", pr.number))?;
     ensure!(is_merged, "pr should be merged");
+    let _ = git().args(["fetch"]).status()?;
+    let _ = git().args(["pull"]).status()?;
+
+    let tag_opt = forgejo_api::CreateTagOption {
+        message: Some("This is a tag!".into()),
+        tag_name: "v1.0".into(),
+        target: None,
+    };
+    api.create_tag("TestingAdmin", "test", tag_opt).await.wrap_err("failed to create tag")?;
+
+    let release_opt = forgejo_api::CreateReleaseOption {
+        body: "This is a release!".into(),
+        draft: true,
+        name: "v1.0".into(),
+        prerelease: false,
+        tag_name: "v1.0".into(),
+        target_commitish: None,
+    };
+    let release = api.create_release("TestingAdmin", "test", release_opt).await.wrap_err("failed to create release")?;
+
+    let release_by_tag = api.get_release_by_tag("TestingAdmin", "test", "v1.0").await.wrap_err("failed to find release")?;
+    let release_latest = api.latest_release("TestingAdmin", "test").await.wrap_err("failed to find latest release")?;
+    ensure!(dbg!(release_by_tag) == dbg!(release_latest), "releases not equal");
+
+    let attachment = api.create_release_attachment("TestingAdmin", "test", release.id, "test.txt", b"This is a file!").await.wrap_err("failed to create release attachment")?;
+    api.delete_release_attachment("TestingAdmin", "test", release.id, attachment.id).await.wrap_err("failed to deleted attachment")?;
+
+    api.delete_release("TestingAdmin", "test", release.id).await.wrap_err("failed to delete release")?;
+
+    api.delete_tag("TestingAdmin", "test", "v1.0").await.wrap_err("failed to delete release")?;
 
     Ok(())
 }
