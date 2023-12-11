@@ -52,20 +52,18 @@ async fn user(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
 
 async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     tokio::fs::create_dir("/test_repo").await?;
-    let local_repo = git2::Repository::init("/test_repo")?;
+    let git = || {
+        let mut cmd = std::process::Command::new("git");
+        cmd.current_dir("/test_repo");
+        cmd
+    };
+    let _ = git().args(["config", "user.name", "TestingAdmin"]).status()?;
+    let _ = git().args(["config", "user.email", "admin@noreply.example.org"]).status()?;
+    let _ = git().args(["init"]).status()?;
     tokio::fs::write("/test_repo/README.md", "# Test\nThis is a test repo").await?;
+    let _ = git().args(["add", "."]).status()?;
+    let _ = git().args(["commit", "-m", "initial commit"]).status()?;
 
-    let mut index = local_repo.index()?;
-    index.add_all(["."], git2::IndexAddOption::DEFAULT, None)?;
-    index.write()?;
-    let tree = local_repo.find_tree(index.write_tree().unwrap())?;
-    let author = git2::Signature::now("TestingAdmin", "admin@noreply.example.org").unwrap();
-    let commit_oid = local_repo.commit(None, &author, &author, "bibblybeebly", &tree, &[])?;
-    let root_commit = local_repo.find_commit(commit_oid).unwrap();
-    let branch = local_repo.branch("main", &root_commit, true)?;
-    let branch_ref = branch.into_reference();
-    let branch_ref_name = branch_ref.name().ok_or_else(|| eyre!("branch name not found"))?;
-    local_repo.set_head(branch_ref_name)?;
 
     let repo_opt = forgejo_api::CreateRepoOption {
         auto_init: false,
@@ -85,33 +83,17 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     ensure!(remote_repo.owner.login == "TestingAdmin", "repo owner is not \"TestingAdmin\"");
     ensure!(remote_repo.name == "test", "repo owner is not \"test\"");
 
-    let mut callbacks = git2::RemoteCallbacks::new();
-    callbacks.credentials(|_url, _username_from_url, _allowed_types| {
-        git2::Cred::userpass_plaintext("TestingAdmin", "password")
-    });
-    let mut push_options = git2::PushOptions::new();
-    push_options.remote_callbacks(callbacks);
-    let mut origin = local_repo.remote("origin", remote_repo.clone_url.as_str())?;
-    origin.push(&[dbg!(branch_ref_name)], Some(&mut push_options))?;
+    let mut remote_url = remote_repo.clone_url.clone();
+    remote_url.set_username("TestingAdmin").unwrap();
+    remote_url.set_password(Some("password")).unwrap();
+    let _ = git().args(["remote", "add", "origin", remote_url.as_str()]).status()?;
+    let _ = git().args(["push", "-u", "origin", "main"]).status()?;
 
+    let _ = git().args(["switch", "-c", "test"]).status()?;
     tokio::fs::write("/test_repo/example.rs", "fn add_one(x: u32) -> u32 { x + 1 }").await?;
-    let mut index = local_repo.index()?;
-    index.add_all(["."], git2::IndexAddOption::DEFAULT, None)?;
-    index.write()?;
-    let tree = local_repo.find_tree(index.write_tree().unwrap())?;
-    let commit_oid = local_repo.commit(None, &author, &author, "egg", &tree, &[&root_commit])?;
-    let branch = local_repo.branch("test", &local_repo.find_commit(commit_oid).unwrap(), true)?;
-    let branch_ref = branch.into_reference();
-    let branch_ref_name = branch_ref.name().ok_or_else(|| eyre!("branch name not found"))?;
-    local_repo.set_head(branch_ref_name)?;
-
-    let mut callbacks = git2::RemoteCallbacks::new();
-    callbacks.credentials(|_url, _username_from_url, _allowed_types| {
-        git2::Cred::userpass_plaintext("TestingAdmin", "password")
-    });
-    let mut push_options = git2::PushOptions::new();
-    push_options.remote_callbacks(callbacks);
-    origin.push(&[dbg!(branch_ref_name)], Some(&mut push_options)).wrap_err("failed to push branch")?;
+    let _ = git().args(["add", "."]).status()?;
+    let _ = git().args(["commit", "-m", "egg"]).status()?;
+    let _ = git().args(["push", "-u", "origin", "test"]).status()?;
 
     let pr_opt = forgejo_api::CreatePullRequestOption {
         assignee: None,
