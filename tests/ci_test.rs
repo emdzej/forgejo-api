@@ -79,6 +79,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         trust_model: forgejo_api::TrustModel::Default,
     };
     let remote_repo = api.create_repo(repo_opt).await?;
+    ensure!(remote_repo.has_pull_requests, "repo does not accept pull requests");
     tokio::time::sleep(std::time::Duration::from_secs(3)).await;
     ensure!(remote_repo.owner.login == "TestingAdmin", "repo owner is not \"TestingAdmin\"");
     ensure!(remote_repo.name == "test", "repo owner is not \"test\"");
