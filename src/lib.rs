@@ -118,6 +118,16 @@ impl Forgejo {
         self.execute_str(request).await
     }
 
+    async fn post_unit<T: Serialize>(
+        &self,
+        path: &str,
+        body: &T,
+    ) -> Result<(), ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.post(url).json(body).build()?;
+        self.execute_unit(request).await
+    }
+
     async fn post_raw(
         &self,
         path: &str,
@@ -171,6 +181,19 @@ impl Forgejo {
         let response = self.client.execute(request).await?;
         match response.status() {
             status if status.is_success() => Ok(response.text().await?),
+            status if status.is_client_error() => Err(ForgejoError::ApiError(
+                status,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+            )),
+            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+        }
+    }
+
+    /// Like `execute`, but returns unit.
+    async fn execute_unit(&self, request: Request) -> Result<(), ForgejoError> {
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            status if status.is_success() => Ok(()),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
                 response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),

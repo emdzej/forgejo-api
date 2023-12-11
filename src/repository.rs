@@ -44,7 +44,7 @@ impl Forgejo {
         pr: u64,
         opts: MergePullRequestOption,
     ) -> Result<(), ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"), &opts)
+        self.post_unit(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"), &opts)
             .await
     }
 
