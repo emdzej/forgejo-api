@@ -140,11 +140,12 @@ impl Forgejo {
         repo: &str,
         id: u64,
         name: &str,
-        file: &[u8],
+        file: Vec<u8>,
     ) -> Result<Attachment, ForgejoError> {
-        self.post_form(
+        self.post_multipart(
             &format!("repos/{owner}/{repo}/releases/{id}/assets?name={name}"),
-            &file,
+            reqwest::multipart::Form::new()
+                .part("attachment", reqwest::multipart::Part::bytes(file).file_name("file").mime_str("*/*").unwrap()),
         )
         .await
     }

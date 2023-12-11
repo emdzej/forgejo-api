@@ -104,13 +104,13 @@ impl Forgejo {
         self.execute(request).await
     }
 
-    async fn post_form<T: Serialize, U: DeserializeOwned>(
+    async fn post_multipart<T: DeserializeOwned>(
         &self,
         path: &str,
-        body: &T,
-    ) -> Result<U, ForgejoError> {
+        body: reqwest::multipart::Form,
+    ) -> Result<T, ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.post(url).form(body).build()?;
+        let request = self.client.post(url).multipart(body).build()?;
         self.execute(request).await
     }
 

@@ -154,7 +154,7 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     let release_latest = api.latest_release("TestingAdmin", "test").await.wrap_err("failed to find latest release")?;
     ensure!(release_by_tag == release_latest, "releases not equal");
 
-    let attachment = api.create_release_attachment("TestingAdmin", "test", release.id, "test.txt", b"This is a file!").await.wrap_err("failed to create release attachment")?;
+    let attachment = api.create_release_attachment("TestingAdmin", "test", release.id, "test.txt", b"This is a file!".to_vec()).await.wrap_err("failed to create release attachment")?;
     api.delete_release_attachment("TestingAdmin", "test", release.id, attachment.id).await.wrap_err("failed to deleted attachment")?;
 
     api.delete_release("TestingAdmin", "test", release.id).await.wrap_err("failed to delete release")?;
