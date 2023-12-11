@@ -57,9 +57,10 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         cmd.current_dir("/test_repo");
         cmd
     };
+    let _ = git().args(["config", "--global", "init.defaultBranch", "main"]).status()?;
+    let _ = git().args(["init"]).status()?;
     let _ = git().args(["config", "user.name", "TestingAdmin"]).status()?;
     let _ = git().args(["config", "user.email", "admin@noreply.example.org"]).status()?;
-    let _ = git().args(["init"]).status()?;
     tokio::fs::write("/test_repo/README.md", "# Test\nThis is a test repo").await?;
     let _ = git().args(["add", "."]).status()?;
     let _ = git().args(["commit", "-m", "initial commit"]).status()?;
