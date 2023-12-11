@@ -128,6 +128,8 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     let _ = git().args(["fetch"]).status()?;
     let _ = git().args(["pull"]).status()?;
 
+    ensure!(api.get_releases("TestingAdmin", "test", forgejo_api::ReleaseQuery::default()).await.wrap_err("releases list not found")?.is_empty(), "there should be no releases yet");
+
     let tag_opt = forgejo_api::CreateTagOption {
         message: Some("This is a tag!".into()),
         tag_name: "v1.0".into(),
