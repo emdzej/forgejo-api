@@ -32,9 +32,7 @@ impl Forgejo {
     }
 
     pub async fn is_merged(&self, owner: &str, repo: &str, pr: u64) -> Result<bool, ForgejoError> {
-        self.get_opt::<()>(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"))
-            .await
-            .map(|o| o.is_some())
+        self.get_exists(&format!("repos/{owner}/{repo}/pulls/{pr}/merge")).await
     }
 
     pub async fn merge_pr(

@@ -88,6 +88,12 @@ impl Forgejo {
         self.execute_str(request).await
     }
 
+    async fn get_exists(&self, path: &str) -> Result<bool, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.get(url).build()?;
+        self.execute_exists(request).await
+    }
+
     async fn post<T: Serialize, U: DeserializeOwned>(
         &self,
         path: &str,
@@ -215,6 +221,23 @@ impl Forgejo {
                 Ok(out)
             },
             StatusCode::NOT_FOUND => Ok(None),
+            status if status.is_client_error() => Err(ForgejoError::ApiError(
+                status,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+            )),
+            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+        }
+    }
+
+    /// Like `execute`, but returns `false` on 404.
+    async fn execute_exists(
+        &self,
+        request: Request,
+    ) -> Result<bool, ForgejoError> {
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            status if status.is_success() => Ok(true),
+            StatusCode::NOT_FOUND => Ok(false),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
                 response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
