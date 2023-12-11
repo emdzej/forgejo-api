@@ -144,10 +144,15 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         target_commitish: None,
     };
     let release = api.create_release("TestingAdmin", "test", release_opt).await.wrap_err("failed to create release")?;
+    let edit_release = forgejo_api::EditReleaseOption {
+        draft: Some(false),
+        ..Default::default()
+    };
+    api.edit_release("TestingAdmin", "test", release.id, edit_release).await.wrap_err("failed to edit release")?;
 
     let release_by_tag = api.get_release_by_tag("TestingAdmin", "test", "v1.0").await.wrap_err("failed to find release")?;
     let release_latest = api.latest_release("TestingAdmin", "test").await.wrap_err("failed to find latest release")?;
-    ensure!(dbg!(release_by_tag) == dbg!(release_latest), "releases not equal");
+    ensure!(release_by_tag == release_latest, "releases not equal");
 
     let attachment = api.create_release_attachment("TestingAdmin", "test", release.id, "test.txt", b"This is a file!").await.wrap_err("failed to create release attachment")?;
     api.delete_release_attachment("TestingAdmin", "test", release.id, attachment.id).await.wrap_err("failed to deleted attachment")?;
