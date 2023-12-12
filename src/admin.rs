@@ -9,7 +9,7 @@ impl Forgejo {
     }
 
     pub async fn admin_run_cron(&self, name: &str) -> Result<(), ForgejoError> {
-        self.post(&format!("admin/cron/{name}"), &()).await
+        self.post_unit(&format!("admin/cron/{name}"), &()).await
     }
 
     pub async fn admin_get_emails(
