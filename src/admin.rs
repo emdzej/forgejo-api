@@ -470,7 +470,7 @@ pub struct PublicKey {
     pub id: u64,
     pub key: String,
     pub key_type: String,
-    pub read_only: bool,
+    pub read_only: Option<bool>,
     pub title: String,
     pub url: Option<Url>,
     pub user: User,
