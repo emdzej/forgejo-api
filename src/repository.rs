@@ -3,7 +3,11 @@ use super::*;
 /// Repository operations.
 impl Forgejo {
     /// Gets info about the specified repository.
-    pub async fn get_repo(&self, user: &str, repo: &str) -> Result<Option<Repository>, ForgejoError> {
+    pub async fn get_repo(
+        &self,
+        user: &str,
+        repo: &str,
+    ) -> Result<Option<Repository>, ForgejoError> {
         self.get_opt(&format!("repos/{user}/{repo}/")).await
     }
 
@@ -32,7 +36,8 @@ impl Forgejo {
     }
 
     pub async fn is_merged(&self, owner: &str, repo: &str, pr: u64) -> Result<bool, ForgejoError> {
-        self.get_exists(&format!("repos/{owner}/{repo}/pulls/{pr}/merge")).await
+        self.get_exists(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"))
+            .await
     }
 
     pub async fn merge_pr(
@@ -144,8 +149,13 @@ impl Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         self.post_multipart(
             &format!("repos/{owner}/{repo}/releases/{id}/assets?name={name}"),
-            reqwest::multipart::Form::new()
-                .part("attachment", reqwest::multipart::Part::bytes(file).file_name("file").mime_str("*/*").unwrap()),
+            reqwest::multipart::Form::new().part(
+                "attachment",
+                reqwest::multipart::Part::bytes(file)
+                    .file_name("file")
+                    .mime_str("*/*")
+                    .unwrap(),
+            ),
         )
         .await
     }
@@ -197,20 +207,38 @@ impl Forgejo {
             .await
     }
 
-    pub async fn get_tags(&self, owner: &str, repo: &str, query: TagQuery) -> Result<Vec<Tag>, ForgejoError> {
+    pub async fn get_tags(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: TagQuery,
+    ) -> Result<Vec<Tag>, ForgejoError> {
         self.get(&query.to_string(owner, repo)).await
     }
 
-    pub async fn create_tag(&self, owner: &str, repo: &str, opts: CreateTagOption) -> Result<Tag, ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/tags"), &opts).await
+    pub async fn create_tag(
+        &self,
+        owner: &str,
+        repo: &str,
+        opts: CreateTagOption,
+    ) -> Result<Tag, ForgejoError> {
+        self.post(&format!("repos/{owner}/{repo}/tags"), &opts)
+            .await
     }
 
-    pub async fn get_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<Option<Tag>, ForgejoError> {
-        self.get_opt(&format!("repos/{owner}/{repo}/tags/{tag}")).await
+    pub async fn get_tag(
+        &self,
+        owner: &str,
+        repo: &str,
+        tag: &str,
+    ) -> Result<Option<Tag>, ForgejoError> {
+        self.get_opt(&format!("repos/{owner}/{repo}/tags/{tag}"))
+            .await
     }
 
     pub async fn delete_tag(&self, owner: &str, repo: &str, tag: &str) -> Result<(), ForgejoError> {
-        self.delete(&format!("repos/{owner}/{repo}/tags/{tag}")).await
+        self.delete(&format!("repos/{owner}/{repo}/tags/{tag}"))
+            .await
     }
 }
 
@@ -608,7 +636,8 @@ pub struct TagQuery {
 
 impl TagQuery {
     fn to_string(&self, owner: &str, repo: &str) -> String {
-        format!("repos/{owner}/{repo}/tags?page={}&limit={}",
+        format!(
+            "repos/{owner}/{repo}/tags?page={}&limit={}",
             self.page.map(|page| page.to_string()).unwrap_or_default(),
             self.limit.map(|page| page.to_string()).unwrap_or_default(),
         )
@@ -661,4 +690,3 @@ pub struct RepoTransfer {
     pub recipient: User,
     pub teams: Vec<Team>,
 }
-

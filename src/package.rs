@@ -3,20 +3,54 @@ use std::fmt::Write;
 use super::*;
 
 impl Forgejo {
-    pub async fn get_user_packages(&self, owner: &str, query: PackagesQuery) -> Result<Vec<Package>, ForgejoError> {
+    pub async fn get_user_packages(
+        &self,
+        owner: &str,
+        query: PackagesQuery,
+    ) -> Result<Vec<Package>, ForgejoError> {
         self.get(&query.path(owner)).await
     }
-    
-    pub async fn get_package(&self, owner: &str, _type: PackageType, name: &str, version: &str) -> Result<Option<Package>, ForgejoError> {
-        self.get_opt(&format!("packages/{owner}/{}/{name}/{version}", _type.as_str())).await
-    }
-    
-    pub async fn delete_package(&self, owner: &str, _type: PackageType, name: &str, version: &str) -> Result<(), ForgejoError> {
-        self.delete(&format!("packages/{owner}/{}/{name}/{version}", _type.as_str())).await
+
+    pub async fn get_package(
+        &self,
+        owner: &str,
+        _type: PackageType,
+        name: &str,
+        version: &str,
+    ) -> Result<Option<Package>, ForgejoError> {
+        self.get_opt(&format!(
+            "packages/{owner}/{}/{name}/{version}",
+            _type.as_str()
+        ))
+        .await
     }
 
-    pub async fn get_package_files(&self, owner: &str, _type: PackageType, name: &str, version: &str) -> Result<Vec<PackageFile>, ForgejoError> {
-        self.get(&format!("packages/{owner}/{}/{name}/{version}", _type.as_str())).await
+    pub async fn delete_package(
+        &self,
+        owner: &str,
+        _type: PackageType,
+        name: &str,
+        version: &str,
+    ) -> Result<(), ForgejoError> {
+        self.delete(&format!(
+            "packages/{owner}/{}/{name}/{version}",
+            _type.as_str()
+        ))
+        .await
+    }
+
+    pub async fn get_package_files(
+        &self,
+        owner: &str,
+        _type: PackageType,
+        name: &str,
+        version: &str,
+    ) -> Result<Vec<PackageFile>, ForgejoError> {
+        self.get(&format!(
+            "packages/{owner}/{}/{name}/{version}",
+            _type.as_str()
+        ))
+        .await
     }
 }
 
@@ -35,12 +69,14 @@ impl PackagesQuery {
         s.push('?');
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(kind) = self.kind {
@@ -63,24 +99,24 @@ impl PackagesQuery {
 pub enum PackageType {
     Alpine,
     Cargo,
-    Chef, 
-    Composer, 
-    Conan, 
-    Conda, 
-    Container, 
-    Cran, 
-    Debian, 
-    Generic, 
-    Go, 
-    Helm, 
-    Maven, 
-    Npm, 
-    Nuget, 
-    Pub, 
-    Pypi, 
-    Rpm, 
-    RubyGems, 
-    Swift, 
+    Chef,
+    Composer,
+    Conan,
+    Conda,
+    Container,
+    Cran,
+    Debian,
+    Generic,
+    Go,
+    Helm,
+    Maven,
+    Npm,
+    Nuget,
+    Pub,
+    Pypi,
+    Rpm,
+    RubyGems,
+    Swift,
     Vagrant,
 }
 

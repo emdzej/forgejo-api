@@ -8,19 +8,19 @@ pub struct Forgejo {
     client: Client,
 }
 
+mod issue;
 mod misc;
 mod notification;
 mod organization;
 mod package;
-mod issue;
 mod repository;
 mod user;
 
+pub use issue::*;
 pub use misc::*;
 pub use notification::*;
 pub use organization::*;
 pub use package::*;
-pub use issue::*;
 pub use repository::*;
 pub use user::*;
 
@@ -124,21 +124,13 @@ impl Forgejo {
         self.execute_str(request).await
     }
 
-    async fn post_unit<T: Serialize>(
-        &self,
-        path: &str,
-        body: &T,
-    ) -> Result<(), ForgejoError> {
+    async fn post_unit<T: Serialize>(&self, path: &str, body: &T) -> Result<(), ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.post(url).json(body).build()?;
         self.execute_unit(request).await
     }
 
-    async fn post_raw(
-        &self,
-        path: &str,
-        body: String,
-    ) -> Result<String, ForgejoError> {
+    async fn post_raw(&self, path: &str, body: String) -> Result<String, ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.post(url).body(body).build()?;
         self.execute_str(request).await
@@ -171,12 +163,17 @@ impl Forgejo {
         match response.status() {
             status if status.is_success() => {
                 let body = response.text().await?;
-                let out = serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
+                let out =
+                    serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
                 Ok(out)
-            },
+            }
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+                response
+                    .json::<ErrorMessage>()
+                    .await?
+                    .message
+                    .unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -189,7 +186,11 @@ impl Forgejo {
             status if status.is_success() => Ok(response.text().await?),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+                response
+                    .json::<ErrorMessage>()
+                    .await?
+                    .message
+                    .unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -202,7 +203,11 @@ impl Forgejo {
             status if status.is_success() => Ok(()),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+                response
+                    .json::<ErrorMessage>()
+                    .await?
+                    .message
+                    .unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -217,30 +222,36 @@ impl Forgejo {
         match response.status() {
             status if status.is_success() => {
                 let body = response.text().await?;
-                let out = serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
+                let out =
+                    serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
                 Ok(out)
-            },
+            }
             StatusCode::NOT_FOUND => Ok(None),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+                response
+                    .json::<ErrorMessage>()
+                    .await?
+                    .message
+                    .unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
     }
 
     /// Like `execute`, but returns `false` on 404.
-    async fn execute_exists(
-        &self,
-        request: Request,
-    ) -> Result<bool, ForgejoError> {
+    async fn execute_exists(&self, request: Request) -> Result<bool, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
             status if status.is_success() => Ok(true),
             StatusCode::NOT_FOUND => Ok(false),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+                response
+                    .json::<ErrorMessage>()
+                    .await?
+                    .message
+                    .unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -256,14 +267,15 @@ struct ErrorMessage {
 
 // Forgejo can return blank strings for URLs. This handles that by deserializing
 // that as `None`
-fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<Url>, D::Error> {
+fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<Url>, D::Error> {
     use serde::de::{Error, Unexpected, Visitor};
     use std::fmt;
 
     struct EmptyUrlVisitor;
 
-    impl<'de> Visitor<'de> for EmptyUrlVisitor 
-    {
+    impl<'de> Visitor<'de> for EmptyUrlVisitor {
         type Value = Option<Url>;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -294,13 +306,14 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Resul
             if s.is_empty() {
                 return Ok(None);
             }
-            Url::parse(s).map_err(|err| {
-                let err_s = format!("{}", err);
-                Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
-            }).map(Some)
+            Url::parse(s)
+                .map_err(|err| {
+                    let err_s = format!("{}", err);
+                    Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
+                })
+                .map(Some)
         }
     }
 
     deserializer.deserialize_str(EmptyUrlVisitor)
 }
-

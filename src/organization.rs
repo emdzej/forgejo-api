@@ -1,5 +1,5 @@
-use std::collections::BTreeMap;
 use crate::*;
+use std::collections::BTreeMap;
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
 pub struct Organization {

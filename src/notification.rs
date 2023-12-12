@@ -1,32 +1,72 @@
 use super::*;
 
 impl Forgejo {
-    pub async fn notifications(&self, query: NotificationQuery) -> Result<Vec<NotificationThread>, ForgejoError> {
-        self.get(&format!("notifications?{}", query.query_string())).await
+    pub async fn notifications(
+        &self,
+        query: NotificationQuery,
+    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+        self.get(&format!("notifications?{}", query.query_string()))
+            .await
     }
 
-    pub async fn set_notifications_state(&self, query: NotificationPutQuery) -> Result<Vec<NotificationThread>, ForgejoError> {
-        self.put(&format!("notifications?{}", query.query_string())).await
+    pub async fn set_notifications_state(
+        &self,
+        query: NotificationPutQuery,
+    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+        self.put(&format!("notifications?{}", query.query_string()))
+            .await
     }
 
     pub async fn notification_count(&self) -> Result<Vec<NotificationCount>, ForgejoError> {
         self.get("notifications/new").await
     }
 
-    pub async fn get_notification(&self, id: u64) -> Result<Option<NotificationThread>, ForgejoError> {
+    pub async fn get_notification(
+        &self,
+        id: u64,
+    ) -> Result<Option<NotificationThread>, ForgejoError> {
         self.get_opt(&format!("notifications/threads/{id}")).await
     }
 
-    pub async fn set_notification_state(&self, id: u64, to_status: ToStatus) -> Result<Option<NotificationThread>, ForgejoError> {
-        self.patch(&format!("notifications/threads/{id}?to-status={}", to_status.as_str()), &()).await
+    pub async fn set_notification_state(
+        &self,
+        id: u64,
+        to_status: ToStatus,
+    ) -> Result<Option<NotificationThread>, ForgejoError> {
+        self.patch(
+            &format!(
+                "notifications/threads/{id}?to-status={}",
+                to_status.as_str()
+            ),
+            &(),
+        )
+        .await
     }
 
-    pub async fn get_repo_notifications(&self, owner: &str, name: &str, query: NotificationQuery) -> Result<Vec<NotificationThread>, ForgejoError> {
-        self.get(&format!("repos/{owner}/{name}/notifications?{}", query.query_string())).await
+    pub async fn get_repo_notifications(
+        &self,
+        owner: &str,
+        name: &str,
+        query: NotificationQuery,
+    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+        self.get(&format!(
+            "repos/{owner}/{name}/notifications?{}",
+            query.query_string()
+        ))
+        .await
     }
 
-    pub async fn set_repo_notifications_state(&self, owner: &str, name: &str, query: NotificationPutQuery) -> Result<Vec<NotificationThread>, ForgejoError> {
-        self.put(&format!("repos/{owner}/{name}/notifications?{}", query.query_string())).await
+    pub async fn set_repo_notifications_state(
+        &self,
+        owner: &str,
+        name: &str,
+        query: NotificationPutQuery,
+    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+        self.put(&format!(
+            "repos/{owner}/{name}/notifications?{}",
+            query.query_string()
+        ))
+        .await
     }
 }
 
@@ -82,12 +122,20 @@ impl NotificationQuery {
         }
         if let Some(since) = &self.since {
             s.push_str("since=");
-            s.push_str(&since.format(&time::format_description::well_known::Rfc3339).unwrap());
+            s.push_str(
+                &since
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap(),
+            );
             s.push('&');
         }
         if let Some(before) = &self.before {
             s.push_str("before=");
-            s.push_str(&before.format(&time::format_description::well_known::Rfc3339).unwrap());
+            s.push_str(
+                &before
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap(),
+            );
             s.push('&');
         }
         if let Some(page) = self.page {
@@ -176,7 +224,11 @@ impl NotificationPutQuery {
         let mut s = String::new();
         if let Some(last_read_at) = &self.last_read_at {
             s.push_str("since=");
-            s.push_str(&last_read_at.format(&time::format_description::well_known::Rfc3339).unwrap());
+            s.push_str(
+                &last_read_at
+                    .format(&time::format_description::well_known::Rfc3339)
+                    .unwrap(),
+            );
             s.push('&');
         }
         if self.all {
