@@ -1,0 +1,12 @@
+when:
+  - event: manual
+  - event: pull_request
+steps:
+  check:
+    image: rust
+    commands:
+      - cargo check
+  check-fmt:
+    image: rust
+    commands:
+      - cargo fmt --check
