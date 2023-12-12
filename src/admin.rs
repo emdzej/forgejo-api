@@ -124,7 +124,7 @@ impl Forgejo {
         user: &str,
         opt: RenameUserOption,
     ) -> Result<(), ForgejoError> {
-        self.post(&format!("admin/users/{user}/rename"), &opt).await
+        self.post_unit(&format!("admin/users/{user}/rename"), &opt).await
     }
 
     pub async fn admin_create_repo(
