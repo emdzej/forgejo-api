@@ -8,6 +8,7 @@ pub struct Forgejo {
     client: Client,
 }
 
+mod admin;
 mod issue;
 mod misc;
 mod notification;
@@ -16,6 +17,7 @@ mod package;
 mod repository;
 mod user;
 
+pub use admin::*;
 pub use issue::*;
 pub use misc::*;
 pub use notification::*;

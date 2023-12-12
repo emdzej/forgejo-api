@@ -11,6 +11,7 @@ async fn ci() -> eyre::Result<()> {
 
     results.push(user(&api).await.wrap_err("user error"));
     results.push(repo(&api).await.wrap_err("repo error"));
+    results.push(admin(&api).await.wrap_err("admin error"));
 
     let mut errors = 0;
     for report in results.into_iter().filter_map(Result::err) {
@@ -230,6 +231,131 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     api.delete_tag("TestingAdmin", "test", "v1.0")
         .await
         .wrap_err("failed to delete release")?;
+
+    Ok(())
+}
+
+async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
+    let user_opt = forgejo_api::CreateUserOption {
+        created_at: None,
+        email: "user@noreply.example.org".into(),
+        full_name: None,
+        login_name: None,
+        must_change_password: false,
+        password: "userpass".into(),
+        restricted: false,
+        send_notify: true,
+        source_id: None,
+        username: "Pipis".into(),
+        visibility: "public".into(),
+    };
+    let _ = api
+        .admin_create_user(user_opt)
+        .await
+        .wrap_err("failed to create user")?;
+
+    let users = api
+        .admin_users(forgejo_api::AdminUserQuery::default())
+        .await
+        .wrap_err("failed to search users")?;
+    ensure!(
+        users.iter().find(|u| u.login == "Pipis").is_some(),
+        "could not find new user"
+    );
+    let users = api
+        .admin_get_emails(forgejo_api::EmailListQuery::default())
+        .await
+        .wrap_err("failed to search emails")?;
+    ensure!(
+        users
+            .iter()
+            .find(|u| u.email == "user@noreply.example.org")
+            .is_some(),
+        "could not find new user"
+    );
+
+    let org_opt = forgejo_api::CreateOrgOption {
+        description: None,
+        full_name: None,
+        location: None,
+        repo_admin_change_team_access: None,
+        username: "test-org".into(),
+        visibility: forgejo_api::OrgVisibility::Public,
+        website: None,
+    };
+    let _ = api
+        .admin_create_org("Pipis", org_opt)
+        .await
+        .wrap_err("failed to create org")?;
+    ensure!(
+        !api.admin_get_orgs(forgejo_api::AdminOrganizationQuery::default())
+            .await?
+            .is_empty(),
+        "org list empty"
+    );
+
+    let key_opt = forgejo_api::CreateKeyOption {
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN68ehQAsbGEwlXPa2AxbAh1QxFQrtRel2jeC0hRlPc1 user@noreply.example.org".into(),
+        read_only: None,
+        title: "Example Key".into(),
+    };
+    let key = api
+        .admin_add_key("Pipis", key_opt)
+        .await
+        .wrap_err("failed to create key")?;
+    api.admin_delete_key("Pipis", key.id)
+        .await
+        .wrap_err("failed to delete key")?;
+
+    let rename_opt = forgejo_api::RenameUserOption {
+        new_username: "Bepis".into(),
+    };
+    api.admin_rename_user("Pipis", rename_opt)
+        .await
+        .wrap_err("failed to rename user")?;
+    api.admin_delete_user("Bepis", true)
+        .await
+        .wrap_err("failed to delete user")?;
+    ensure!(
+        api.admin_delete_user("Ghost", true).await.is_err(),
+        "deleting fake user should fail"
+    );
+
+    let crons = api
+        .admin_get_crons(forgejo_api::CronQuery::default())
+        .await
+        .wrap_err("failed to get crons list")?;
+    api.admin_run_cron(&crons.get(0).ok_or_else(|| eyre!("no crons"))?.name)
+        .await
+        .wrap_err("failed to run cron")?;
+
+    let hook_opt = forgejo_api::CreateHookOption {
+        active: None,
+        authorization_header: None,
+        branch_filter: None,
+        config: forgejo_api::CreateHookOptionConfig {
+            content_type: "json".into(),
+            url: url::Url::parse("http://test.local/").unwrap(),
+            other: Default::default(),
+        },
+        events: Vec::new(),
+        _type: forgejo_api::HookType::Forgejo,
+    };
+    // yarr har har me matey this is me hook
+    let hook = api
+        .admin_create_hook(hook_opt)
+        .await
+        .wrap_err("failed to create hook")?;
+    let edit_hook = forgejo_api::EditHookOption {
+        active: Some(true),
+        ..Default::default()
+    };
+    api.admin_edit_hook(hook.id, edit_hook)
+        .await
+        .wrap_err("failed to edit hook")?;
+    api.admin_delete_hook(hook.id)
+        .await
+        .wrap_err("failed to delete hook")?;
 
     Ok(())
 }
