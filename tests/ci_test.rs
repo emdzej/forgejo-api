@@ -295,7 +295,7 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     );
 
     let key_opt = forgejo_api::CreateKeyOption {
-        key: "ssh-ed25519 00000000000000000000000000000000000000000000000000000000000000000000 user@noreply.example.org".into(),
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN68ehQAsbGEwlXPa2AxbAh1QxFQrtRel2jeC0hRlPc1 user@noreply.example.org".into(),
         read_only: None,
         title: "Example Key".into(),
     };
