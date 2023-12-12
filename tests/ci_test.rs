@@ -329,7 +329,7 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         authorization_header: None,
         branch_filter: None,
         config: forgejo_api::CreateHookOptionConfig {
-            content_type: "text/plain".into(),
+            content_type: "application/json".into(),
             url: url::Url::parse("http://test.local/").unwrap(),
             other: Default::default(),
         },
