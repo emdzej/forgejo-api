@@ -5,7 +5,10 @@ impl Forgejo {
         self.get("gitignore/templates").await
     }
 
-    pub async fn get_gitignore_template(&self, name: &str) -> Result<Option<GitignoreTemplateInfo>, ForgejoError> {
+    pub async fn get_gitignore_template(
+        &self,
+        name: &str,
+    ) -> Result<Option<GitignoreTemplateInfo>, ForgejoError> {
         self.get_opt(&format!("gitignore/templates/{name}")).await
     }
 
@@ -21,7 +24,10 @@ impl Forgejo {
         self.get("licenses").await
     }
 
-    pub async fn get_license(&self, name: &str) -> Result<Option<GitignoreTemplateInfo>, ForgejoError> {
+    pub async fn get_license(
+        &self,
+        name: &str,
+    ) -> Result<Option<GitignoreTemplateInfo>, ForgejoError> {
         self.get_opt(&format!("license/{name}")).await
     }
 
