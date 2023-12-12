@@ -30,26 +30,16 @@ pub enum ForgejoError {
     HostRequired,
     #[error("scheme must be http or https")]
     HttpRequired,
-    #[error("{0}")] // for some reason, you can't use `source` and `transparent` together
-    ReqwestError(#[source] reqwest::Error),
+    #[error(transparent)]
+    ReqwestError(#[from] reqwest::Error),
     #[error("API key should be ascii")]
     KeyNotAscii,
     #[error("the response from forgejo was not properly structured")]
-    BadStructure(#[source] reqwest::Error),
+    BadStructure(#[source] serde_json::Error, String),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
     #[error("{} {}: {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1)]
     ApiError(StatusCode, String),
-}
-
-impl From<reqwest::Error> for ForgejoError {
-    fn from(e: reqwest::Error) -> Self {
-        if e.is_decode() {
-            ForgejoError::BadStructure(e)
-        } else {
-            ForgejoError::ReqwestError(e)
-        }
-    }
 }
 
 impl Forgejo {
@@ -98,6 +88,12 @@ impl Forgejo {
         self.execute_str(request).await
     }
 
+    async fn get_exists(&self, path: &str) -> Result<bool, ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.get(url).build()?;
+        self.execute_exists(request).await
+    }
+
     async fn post<T: Serialize, U: DeserializeOwned>(
         &self,
         path: &str,
@@ -108,13 +104,13 @@ impl Forgejo {
         self.execute(request).await
     }
 
-    async fn post_form<T: Serialize, U: DeserializeOwned>(
+    async fn post_multipart<T: DeserializeOwned>(
         &self,
         path: &str,
-        body: &T,
-    ) -> Result<U, ForgejoError> {
+        body: reqwest::multipart::Form,
+    ) -> Result<T, ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.post(url).form(body).build()?;
+        let request = self.client.post(url).multipart(body).build()?;
         self.execute(request).await
     }
 
@@ -126,6 +122,16 @@ impl Forgejo {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.post(url).json(body).build()?;
         self.execute_str(request).await
+    }
+
+    async fn post_unit<T: Serialize>(
+        &self,
+        path: &str,
+        body: &T,
+    ) -> Result<(), ForgejoError> {
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
+        let request = self.client.post(url).json(body).build()?;
+        self.execute_unit(request).await
     }
 
     async fn post_raw(
@@ -141,7 +147,7 @@ impl Forgejo {
     async fn delete(&self, path: &str) -> Result<(), ForgejoError> {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         let request = self.client.delete(url).build()?;
-        self.execute(request).await
+        self.execute_unit(request).await
     }
 
     async fn patch<T: Serialize, U: DeserializeOwned>(
@@ -163,10 +169,14 @@ impl Forgejo {
     async fn execute<T: DeserializeOwned>(&self, request: Request) -> Result<T, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
-            status if status.is_success() => Ok(response.json::<T>().await?),
+            status if status.is_success() => {
+                let body = response.text().await?;
+                let out = serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
+                Ok(out)
+            },
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -179,7 +189,20 @@ impl Forgejo {
             status if status.is_success() => Ok(response.text().await?),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+            )),
+            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+        }
+    }
+
+    /// Like `execute`, but returns unit.
+    async fn execute_unit(&self, request: Request) -> Result<(), ForgejoError> {
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            status if status.is_success() => Ok(()),
+            status if status.is_client_error() => Err(ForgejoError::ApiError(
+                status,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -192,11 +215,32 @@ impl Forgejo {
     ) -> Result<Option<T>, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
-            status if status.is_success() => Ok(Some(response.json::<T>().await?)),
+            status if status.is_success() => {
+                let body = response.text().await?;
+                let out = serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
+                Ok(out)
+            },
             StatusCode::NOT_FOUND => Ok(None),
             status if status.is_client_error() => Err(ForgejoError::ApiError(
                 status,
-                response.json::<ErrorMessage>().await?.message,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
+            )),
+            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+        }
+    }
+
+    /// Like `execute`, but returns `false` on 404.
+    async fn execute_exists(
+        &self,
+        request: Request,
+    ) -> Result<bool, ForgejoError> {
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            status if status.is_success() => Ok(true),
+            StatusCode::NOT_FOUND => Ok(false),
+            status if status.is_client_error() => Err(ForgejoError::ApiError(
+                status,
+                response.json::<ErrorMessage>().await?.message.unwrap_or_else(|| String::from("[no message]")),
             )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
@@ -205,7 +249,7 @@ impl Forgejo {
 
 #[derive(serde::Deserialize)]
 struct ErrorMessage {
-    message: String,
+    message: Option<String>,
     // intentionally ignored, no need for now
     // url: Url
 }

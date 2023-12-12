@@ -32,9 +32,7 @@ impl Forgejo {
     }
 
     pub async fn is_merged(&self, owner: &str, repo: &str, pr: u64) -> Result<bool, ForgejoError> {
-        self.get_opt::<()>(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"))
-            .await
-            .map(|o| o.is_some())
+        self.get_exists(&format!("repos/{owner}/{repo}/pulls/{pr}/merge")).await
     }
 
     pub async fn merge_pr(
@@ -44,7 +42,7 @@ impl Forgejo {
         pr: u64,
         opts: MergePullRequestOption,
     ) -> Result<(), ForgejoError> {
-        self.post(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"), &opts)
+        self.post_unit(&format!("repos/{owner}/{repo}/pulls/{pr}/merge"), &opts)
             .await
     }
 
@@ -142,11 +140,12 @@ impl Forgejo {
         repo: &str,
         id: u64,
         name: &str,
-        file: &[u8],
+        file: Vec<u8>,
     ) -> Result<Attachment, ForgejoError> {
-        self.post_form(
+        self.post_multipart(
             &format!("repos/{owner}/{repo}/releases/{id}/assets?name={name}"),
-            &file,
+            reqwest::multipart::Form::new()
+                .part("attachment", reqwest::multipart::Part::bytes(file).file_name("file").mime_str("*/*").unwrap()),
         )
         .await
     }
@@ -352,17 +351,17 @@ pub struct PullRequest {
     pub is_locked: bool,
     pub labels: Vec<Label>,
     pub merge_base: String,
-    pub merge_commit_sha: String,
+    pub merge_commit_sha: Option<String>,
     pub mergeable: bool,
     pub merged: bool,
     #[serde(with = "time::serde::rfc3339::option")]
     pub merged_at: Option<time::OffsetDateTime>,
-    pub merged_by: User,
-    pub milestone: Milestone,
+    pub merged_by: Option<User>,
+    pub milestone: Option<Milestone>,
     pub number: u64,
     pub patch_url: Url,
     pub pin_order: u64,
-    pub requested_reviewers: Vec<User>,
+    pub requested_reviewers: Option<Vec<User>>,
     pub state: State,
     pub title: String,
     #[serde(with = "time::serde::rfc3339")]
