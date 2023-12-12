@@ -1,7 +1,7 @@
 use super::*;
 
-use std::fmt::Write;
 use std::collections::BTreeMap;
+use std::fmt::Write;
 
 impl Forgejo {
     pub async fn admin_get_crons(&self, query: CronQuery) -> Result<Vec<Cron>, ForgejoError> {
@@ -12,11 +12,17 @@ impl Forgejo {
         self.post(&format!("admin/cron/{name}"), &()).await
     }
 
-    pub async fn admin_get_emails(&self, query: EmailListQuery) -> Result<Vec<Email>, ForgejoError> {
+    pub async fn admin_get_emails(
+        &self,
+        query: EmailListQuery,
+    ) -> Result<Vec<Email>, ForgejoError> {
         self.get(&query.path()).await
     }
 
-    pub async fn admin_search_emails(&self, query: EmailSearchQuery) -> Result<Vec<Email>, ForgejoError> {
+    pub async fn admin_search_emails(
+        &self,
+        query: EmailSearchQuery,
+    ) -> Result<Vec<Email>, ForgejoError> {
         self.get(&query.path()).await
     }
 
@@ -36,24 +42,40 @@ impl Forgejo {
         self.delete(&format!("admin/hooks/{id}")).await
     }
 
-    pub async fn admin_edit_hook(&self, id: u64, opt: EditHookOption) -> Result<Hook, ForgejoError> {
+    pub async fn admin_edit_hook(
+        &self,
+        id: u64,
+        opt: EditHookOption,
+    ) -> Result<Hook, ForgejoError> {
         self.patch(&format!("admin/hooks/{id}"), &opt).await
     }
 
-    pub async fn admin_get_orgs(&self, query: AdminOrganizationQuery) -> Result<Vec<Organization>, ForgejoError> {
+    pub async fn admin_get_orgs(
+        &self,
+        query: AdminOrganizationQuery,
+    ) -> Result<Vec<Organization>, ForgejoError> {
         self.get(&query.path()).await
     }
 
-    pub async fn admin_unadopted_repos(&self, query: UnadoptedRepoQuery) -> Result<Vec<String>, ForgejoError> {
+    pub async fn admin_unadopted_repos(
+        &self,
+        query: UnadoptedRepoQuery,
+    ) -> Result<Vec<String>, ForgejoError> {
         self.get(&query.path()).await
     }
-    
+
     pub async fn admin_adopt(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
-        self.post(&format!("admin/unadopted/{owner}/{repo}"), &()).await
+        self.post(&format!("admin/unadopted/{owner}/{repo}"), &())
+            .await
     }
 
-    pub async fn admin_delete_unadopted(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
-        self.delete(&format!("admin/unadopted/{owner}/{repo}")).await
+    pub async fn admin_delete_unadopted(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> Result<(), ForgejoError> {
+        self.delete(&format!("admin/unadopted/{owner}/{repo}"))
+            .await
     }
 
     pub async fn admin_users(&self, query: AdminUserQuery) -> Result<Vec<User>, ForgejoError> {
@@ -65,14 +87,23 @@ impl Forgejo {
     }
 
     pub async fn admin_delete_user(&self, user: &str, purge: bool) -> Result<(), ForgejoError> {
-        self.delete(&format!("admin/users/{user}?purge={purge}")).await
+        self.delete(&format!("admin/users/{user}?purge={purge}"))
+            .await
     }
 
-    pub async fn admin_edit_user(&self, user: &str, opt: CreateUserOption) -> Result<User, ForgejoError> {
+    pub async fn admin_edit_user(
+        &self,
+        user: &str,
+        opt: CreateUserOption,
+    ) -> Result<User, ForgejoError> {
         self.patch(&format!("admin/users/{user}"), &opt).await
     }
 
-    pub async fn admin_add_key(&self, user: &str, opt: CreateKeyOption) -> Result<PublicKey, ForgejoError> {
+    pub async fn admin_add_key(
+        &self,
+        user: &str,
+        opt: CreateKeyOption,
+    ) -> Result<PublicKey, ForgejoError> {
         self.patch(&format!("admin/users/{user}/keys"), &opt).await
     }
 
@@ -80,15 +111,27 @@ impl Forgejo {
         self.delete(&format!("admin/users/{user}/keys/{id}")).await
     }
 
-    pub async fn admin_create_org(&self, owner: &str, opt: CreateOrgOption) -> Result<Organization, ForgejoError> {
+    pub async fn admin_create_org(
+        &self,
+        owner: &str,
+        opt: CreateOrgOption,
+    ) -> Result<Organization, ForgejoError> {
         self.post(&format!("admin/users/{owner}/orgs"), &opt).await
     }
-    
-    pub async fn admin_rename_user(&self, user: &str, opt: RenameUserOption) -> Result<(), ForgejoError> {
+
+    pub async fn admin_rename_user(
+        &self,
+        user: &str,
+        opt: RenameUserOption,
+    ) -> Result<(), ForgejoError> {
         self.post(&format!("admin/users/{user}/rename"), &opt).await
     }
-    
-    pub async fn admin_create_repo(&self, owner: &str, opt: CreateRepoOption) -> Result<Repository, ForgejoError> {
+
+    pub async fn admin_create_repo(
+        &self,
+        owner: &str,
+        opt: CreateRepoOption,
+    ) -> Result<Repository, ForgejoError> {
         self.post(&format!("admin/users/{owner}/repos"), &opt).await
     }
 }
@@ -115,12 +158,14 @@ impl CronQuery {
         let mut s = String::from("admin/cron?");
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         s
@@ -147,12 +192,14 @@ impl EmailListQuery {
         let mut s = String::from("admin/emails?");
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         s
@@ -176,12 +223,14 @@ impl EmailSearchQuery {
         }
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         s
@@ -208,17 +257,17 @@ pub struct Hook {
 #[non_exhaustive]
 #[serde(rename_all = "lowercase")]
 pub enum HookType {
-    Forgejo, 
-    Dingtalk, 
-    Discord, 
-    Gitea, 
-    Gogs, 
-    Msteams, 
-    Slack, 
-    Telegram, 
-    Feishu, 
-    Wechatwork, 
-    Packagist
+    Forgejo,
+    Dingtalk,
+    Discord,
+    Gitea,
+    Gogs,
+    Msteams,
+    Slack,
+    Telegram,
+    Feishu,
+    Wechatwork,
+    Packagist,
 }
 
 #[derive(Default, Debug)]
@@ -232,12 +281,14 @@ impl HookQuery {
         let mut s = String::from("admin/hooks?");
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         s
@@ -283,12 +334,14 @@ impl AdminOrganizationQuery {
         let mut s = String::from("admin/orgs?");
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         s
@@ -307,12 +360,14 @@ impl UnadoptedRepoQuery {
         let mut s = String::from("admin/unadopted?");
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if !self.pattern.is_empty() {
@@ -337,7 +392,8 @@ impl AdminUserQuery {
         let mut s = String::from("admin/users?");
         if let Some(source_id) = self.source_id {
             s.push_str("source_id=");
-            s.write_fmt(format_args!("{source_id}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{source_id}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if !self.login_name.is_empty() {
@@ -347,12 +403,14 @@ impl AdminUserQuery {
         }
         if let Some(page) = self.page {
             s.push_str("page=");
-            s.write_fmt(format_args!("{page}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{page}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         if let Some(limit) = self.limit {
             s.push_str("limit=");
-            s.write_fmt(format_args!("{limit}")).expect("writing to string can't fail");
+            s.write_fmt(format_args!("{limit}"))
+                .expect("writing to string can't fail");
             s.push('&');
         }
         s
