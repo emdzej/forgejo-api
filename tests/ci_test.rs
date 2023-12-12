@@ -299,8 +299,8 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         read_only: None,
         title: "Example Key".into(),
     };
-    let key = api.admin_add_key("Pipis", key_opt).await?;
-    api.admin_delete_key("Pipis", key.id).await?;
+    let key = api.admin_add_key("Pipis", key_opt).await.wrap_err("failed to create key")?;
+    api.admin_delete_key("Pipis", key.id).await.wrap_err("failed to delete key")?;
 
     let rename_opt = forgejo_api::RenameUserOption {
         new_username: "Bepis".into(),
