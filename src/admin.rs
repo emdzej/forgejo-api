@@ -104,7 +104,7 @@ impl Forgejo {
         user: &str,
         opt: CreateKeyOption,
     ) -> Result<PublicKey, ForgejoError> {
-        self.patch(&format!("admin/users/{user}/keys"), &opt).await
+        self.post(&format!("admin/users/{user}/keys"), &opt).await
     }
 
     pub async fn admin_delete_key(&self, user: &str, id: u64) -> Result<(), ForgejoError> {
