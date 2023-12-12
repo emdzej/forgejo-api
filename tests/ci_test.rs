@@ -11,7 +11,7 @@ async fn ci() -> eyre::Result<()> {
 
     results.push(user(&api).await.wrap_err("user error"));
     results.push(repo(&api).await.wrap_err("repo error"));
-    results.push(admin(&api).await.wrap_err("repo error"));
+    results.push(admin(&api).await.wrap_err("admin error"));
 
     let mut errors = 0;
     for report in results.into_iter().filter_map(Result::err) {
