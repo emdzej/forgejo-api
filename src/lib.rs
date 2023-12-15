@@ -182,6 +182,27 @@ impl Forgejo {
     }
 
     /// Like `execute`, but returns a `String`.
+    async fn execute_opt_raw(
+        &self,
+        request: Request,
+    ) -> Result<Option<bytes::Bytes>, ForgejoError> {
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            status if status.is_success() => Ok(Some(response.bytes().await?)),
+            StatusCode::NOT_FOUND => Ok(None),
+            status if status.is_client_error() => Err(ForgejoError::ApiError(
+                status,
+                response
+                    .json::<ErrorMessage>()
+                    .await?
+                    .message
+                    .unwrap_or_else(|| String::from("[no message]")),
+            )),
+            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+        }
+    }
+
+    /// Like `execute`, but returns a `String`.
     async fn execute_str(&self, request: Request) -> Result<String, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
