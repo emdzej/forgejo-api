@@ -207,6 +207,34 @@ impl Forgejo {
             .await
     }
 
+    pub async fn download_release_zip(&self, owner: &str, repo: &str, release: u64) -> Result<Option<bytes::Bytes>, ForgejoError> {
+        let release = self.get_release(owner, repo, release).await;
+        let release = match release {
+            Ok(Some(release)) => release,
+            Ok(None) => return Ok(None),
+            Err(e) => return Err(e),
+        };
+        let request = self.client.get(release.zipball_url).build()?;
+        self.execute_opt_raw(request).await
+    }
+
+    pub async fn download_release_tarball(&self, owner: &str, repo: &str, release: u64) -> Result<Option<bytes::Bytes>, ForgejoError> {
+        let release = self.get_release(owner, repo, release).await;
+        let release = match release {
+            Ok(Some(release)) => release,
+            Ok(None) => return Ok(None),
+            Err(e) => return Err(e),
+        };
+        let request = self.client.get(release.tarball_url).build()?;
+        self.execute_opt_raw(request).await
+    }
+
+    pub async fn download_release_attachment(&self, owner: &str, repo: &str, release: u64, attach: u64) -> Result<Option<bytes::Bytes>, ForgejoError> {
+        let release = self.get_release_attachment(owner, repo, release, attach).await?;
+        let request = self.client.get(release.browser_download_url).build()?;
+        self.execute_opt_raw(request).await
+    }
+
     pub async fn get_tags(
         &self,
         owner: &str,
