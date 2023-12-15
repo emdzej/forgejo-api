@@ -180,9 +180,12 @@ impl Forgejo {
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
     }
-    
+
     /// Like `execute`, but returns a `String`.
-    async fn execute_opt_raw(&self, request: Request) -> Result<Option<bytes::Bytes>, ForgejoError> {
+    async fn execute_opt_raw(
+        &self,
+        request: Request,
+    ) -> Result<Option<bytes::Bytes>, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
             status if status.is_success() => Ok(Some(response.bytes().await?)),

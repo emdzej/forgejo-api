@@ -207,7 +207,12 @@ impl Forgejo {
             .await
     }
 
-    pub async fn download_release_zip(&self, owner: &str, repo: &str, release: u64) -> Result<Option<bytes::Bytes>, ForgejoError> {
+    pub async fn download_release_zip(
+        &self,
+        owner: &str,
+        repo: &str,
+        release: u64,
+    ) -> Result<Option<bytes::Bytes>, ForgejoError> {
         let release = self.get_release(owner, repo, release).await;
         let release = match release {
             Ok(Some(release)) => release,
@@ -218,7 +223,12 @@ impl Forgejo {
         self.execute_opt_raw(request).await
     }
 
-    pub async fn download_release_tarball(&self, owner: &str, repo: &str, release: u64) -> Result<Option<bytes::Bytes>, ForgejoError> {
+    pub async fn download_release_tarball(
+        &self,
+        owner: &str,
+        repo: &str,
+        release: u64,
+    ) -> Result<Option<bytes::Bytes>, ForgejoError> {
         let release = self.get_release(owner, repo, release).await;
         let release = match release {
             Ok(Some(release)) => release,
@@ -229,8 +239,16 @@ impl Forgejo {
         self.execute_opt_raw(request).await
     }
 
-    pub async fn download_release_attachment(&self, owner: &str, repo: &str, release: u64, attach: u64) -> Result<Option<bytes::Bytes>, ForgejoError> {
-        let release = self.get_release_attachment(owner, repo, release, attach).await?;
+    pub async fn download_release_attachment(
+        &self,
+        owner: &str,
+        repo: &str,
+        release: u64,
+        attach: u64,
+    ) -> Result<Option<bytes::Bytes>, ForgejoError> {
+        let release = self
+            .get_release_attachment(owner, repo, release, attach)
+            .await?;
         let request = self.client.get(release.browser_download_url).build()?;
         self.execute_opt_raw(request).await
     }

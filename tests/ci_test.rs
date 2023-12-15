@@ -224,10 +224,10 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         api.download_release_attachment("TestingAdmin", "test", release.id, attachment.id)
             .await?
             .as_deref()
-        == Some(b"This is a file!"),
+            == Some(b"This is a file!"),
         "couldn't download attachment"
     );
-        
+
     api.delete_release_attachment("TestingAdmin", "test", release.id, attachment.id)
         .await
         .wrap_err("failed to deleted attachment")?;
