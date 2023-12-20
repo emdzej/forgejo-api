@@ -5,7 +5,7 @@ use forgejo_api::Forgejo;
 async fn ci() -> eyre::Result<()> {
     let url = url::Url::parse(&std::env::var("FORGEJO_API_CI_INSTANCE_URL")?)?;
     let token = std::env::var("FORGEJO_API_CI_TOKEN")?;
-    let api = Forgejo::new(&token, url)?;
+    let api = Forgejo::new(forgejo_api::Auth::Token(&token), url)?;
 
     let mut results = Vec::new();
 
@@ -53,6 +53,22 @@ async fn user(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     ensure!(following == Some(Vec::new()), "following list not empty");
     let followers = api.get_followers("TestingAdmin").await?;
     ensure!(followers == Some(Vec::new()), "follower list not empty");
+
+    let url = url::Url::parse(&std::env::var("FORGEJO_API_CI_INSTANCE_URL")?)?;
+    let password_api = Forgejo::new(
+        forgejo_api::Auth::Password {
+            username: "TestingAdmin",
+            password: "password",
+            mfa: None,
+        },
+        url,
+    )
+    .wrap_err("failed to log in using username and password")?;
+
+    ensure!(
+        api.myself().await? == password_api.myself().await?,
+        "users not equal comparing token-auth and pass-auth"
+    );
 
     Ok(())
 }
