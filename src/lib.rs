@@ -2,6 +2,7 @@ use reqwest::{Client, Request, StatusCode};
 use serde::{de::DeserializeOwned, Serialize};
 use soft_assert::*;
 use url::Url;
+use zeroize::Zeroize;
 
 pub struct Forgejo {
     url: Url,
@@ -42,29 +43,90 @@ pub enum ForgejoError {
     UnexpectedStatusCode(StatusCode),
     #[error("{} {}: {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1)]
     ApiError(StatusCode, String),
+    #[error("the provided authorization was too long to accept")]
+    AuthTooLong,
+}
+
+/// Method of authentication to connect to the Forgejo host with.
+pub enum Auth<'a> {
+    /// Application Access Token. Grants access to scope enabled for the
+    /// provided token, which may include full access.
+    ///
+    /// To learn how to create a token, see
+    /// [the Codeberg docs on the subject](https://docs.codeberg.org/advanced/access-token/).
+    ///
+    /// To learn about token scope, see
+    /// [the official Forgejo docs](https://forgejo.org/docs/latest/user/token-scope/).
+    Token(&'a str),
+    /// Username, password, and 2-factor auth code (if enabled). Grants full
+    /// access to the user's account.
+    Password {
+        username: &'a str,
+        password: &'a str,
+        mfa: Option<&'a str>,
+    },
+    /// No authentication. Only grants access to access public endpoints.
+    None,
 }
 
 impl Forgejo {
-    pub fn new(api_key: &str, url: Url) -> Result<Self, ForgejoError> {
-        Self::with_user_agent(api_key, url, "forgejo-api-rs")
+    pub fn new(auth: Auth, url: Url) -> Result<Self, ForgejoError> {
+        Self::with_user_agent(auth, url, "forgejo-api-rs")
     }
 
-    pub fn with_user_agent(
-        api_key: &str,
-        url: Url,
-        user_agent: &str,
-    ) -> Result<Self, ForgejoError> {
+    pub fn with_user_agent(auth: Auth, url: Url, user_agent: &str) -> Result<Self, ForgejoError> {
         soft_assert!(
             matches!(url.scheme(), "http" | "https"),
             Err(ForgejoError::HttpRequired)
         );
 
         let mut headers = reqwest::header::HeaderMap::new();
-        let mut key_header: reqwest::header::HeaderValue = format!("token {api_key}")
-            .try_into()
-            .map_err(|_| ForgejoError::KeyNotAscii)?;
-        key_header.set_sensitive(true);
-        headers.insert("Authorization", key_header);
+        match auth {
+            Auth::Token(token) => {
+                let mut header: reqwest::header::HeaderValue = format!("token {token}")
+                    .try_into()
+                    .map_err(|_| ForgejoError::KeyNotAscii)?;
+                header.set_sensitive(true);
+                headers.insert("Authorization", header);
+            }
+            Auth::Password {
+                username,
+                password,
+                mfa,
+            } => {
+                let len = (((username.len() + password.len() + 1)
+                    .checked_mul(4)
+                    .ok_or(ForgejoError::AuthTooLong)?)
+                    / 3)
+                    + 1;
+                let mut bytes = vec![0; len];
+
+                // panic safety: len cannot be zero
+                let mut encoder = base64ct::Encoder::<base64ct::Base64>::new(&mut bytes).unwrap();
+
+                // panic safety: len will always be enough
+                encoder.encode(username.as_bytes()).unwrap();
+                encoder.encode(b":").unwrap();
+                encoder.encode(password.as_bytes()).unwrap();
+
+                let b64 = encoder.finish().unwrap();
+
+                let mut header: reqwest::header::HeaderValue =
+                    format!("Basic {b64}").try_into().unwrap(); // panic safety: base64 is always ascii
+                header.set_sensitive(true);
+                headers.insert("Authorization", header);
+
+                bytes.zeroize();
+
+                if let Some(mfa) = mfa {
+                    let mut key_header: reqwest::header::HeaderValue =
+                        mfa.try_into().map_err(|_| ForgejoError::KeyNotAscii)?;
+                    key_header.set_sensitive(true);
+                    headers.insert("X-FORGEJO-OTP", key_header);
+                }
+            }
+            Auth::None => (),
+        }
         let client = Client::builder()
             .user_agent(user_agent)
             .default_headers(headers)
