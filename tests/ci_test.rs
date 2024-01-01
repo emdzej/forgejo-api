@@ -243,6 +243,14 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
             == Some(b"This is a file!"),
         "couldn't download attachment"
     );
+    ensure!(
+        api.download_zip_archive("TestingAdmin", "test", "v1.0").await?.is_some(),
+        "couldn't download zip archive"
+    );
+    ensure!(
+        api.download_tarball_archive("TestingAdmin", "test", "v1.0").await?.is_some(),
+        "couldn't download tape archive"
+    );
 
     api.delete_release_attachment("TestingAdmin", "test", release.id, attachment.id)
         .await
