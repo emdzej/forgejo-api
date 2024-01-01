@@ -213,7 +213,10 @@ impl Forgejo {
         repo: &str,
         target: &str,
     ) -> Result<Option<bytes::Bytes>, ForgejoError> {
-        let request = self.client.get(format!("repos/{owner}/{repo}/archive/{target}.zip")).build()?;
+        let request = self
+            .client
+            .get(format!("repos/{owner}/{repo}/archive/{target}.zip"))
+            .build()?;
         self.execute_opt_raw(request).await
     }
 
@@ -223,7 +226,10 @@ impl Forgejo {
         repo: &str,
         target: &str,
     ) -> Result<Option<bytes::Bytes>, ForgejoError> {
-        let request = self.client.get(format!("repos/{owner}/{repo}/archive/{target}.tar.gz")).build()?;
+        let request = self
+            .client
+            .get(format!("repos/{owner}/{repo}/archive/{target}.tar.gz"))
+            .build()?;
         self.execute_opt_raw(request).await
     }
 

@@ -244,11 +244,15 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         "couldn't download attachment"
     );
     ensure!(
-        api.download_zip_archive("TestingAdmin", "test", "v1.0").await?.is_some(),
+        api.download_zip_archive("TestingAdmin", "test", "v1.0")
+            .await?
+            .is_some(),
         "couldn't download zip archive"
     );
     ensure!(
-        api.download_tarball_archive("TestingAdmin", "test", "v1.0").await?.is_some(),
+        api.download_tarball_archive("TestingAdmin", "test", "v1.0")
+            .await?
+            .is_some(),
         "couldn't download tape archive"
     );
 
