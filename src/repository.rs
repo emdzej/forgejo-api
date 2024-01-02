@@ -215,7 +215,11 @@ impl Forgejo {
     ) -> Result<Option<bytes::Bytes>, ForgejoError> {
         let request = self
             .client
-            .get(format!("repos/{owner}/{repo}/archive/{target}.zip"))
+            .get(
+                self.url
+                    .join(&format!("api/v1/repos/{owner}/{repo}/archive/{target}.zip"))
+                    .unwrap(),
+            )
             .build()?;
         self.execute_opt_raw(request).await
     }
@@ -228,7 +232,13 @@ impl Forgejo {
     ) -> Result<Option<bytes::Bytes>, ForgejoError> {
         let request = self
             .client
-            .get(format!("repos/{owner}/{repo}/archive/{target}.tar.gz"))
+            .get(
+                self.url
+                    .join(&format!(
+                        "api/v1/repos/{owner}/{repo}/archive/{target}.tar.gz"
+                    ))
+                    .unwrap(),
+            )
             .build()?;
         self.execute_opt_raw(request).await
     }
