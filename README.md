@@ -1,6 +1,6 @@
 # forgejo-api
 
-Rust interface to the Forgejo's Web API.
+Rust interface to Forgejo's Web API.
 
 # Licensing
 
