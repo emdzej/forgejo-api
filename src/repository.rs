@@ -343,6 +343,7 @@ pub struct Repository {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub original_url: Option<Url>,
     pub owner: User,
+    pub parent: Option<Box<Repository>>,
     pub permissions: Permission,
     pub private: bool,
     pub release_counter: u64,
