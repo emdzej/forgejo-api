@@ -296,7 +296,7 @@ pub enum SecurityType {
         #[serde(flatten)]
         flow: OAuth2Flow,
         scopes: BTreeMap<String, String>,
-    }
+    },
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -312,13 +312,13 @@ pub enum OAuth2Flow {
     Implicit {
         authorization_url: Url,
     },
-    Password{
+    Password {
         token_url: Url,
     },
-    Application{
+    Application {
         token_url: Url,
     },
-    AccessCode{
+    AccessCode {
         authorization_url: Url,
         token_url: Url,
     },
@@ -334,5 +334,5 @@ pub enum MaybeRef<T> {
     Ref {
         #[serde(rename = "$ref")]
         _ref: String,
-    }
+    },
 }
