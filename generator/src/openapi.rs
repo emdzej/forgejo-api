@@ -92,7 +92,7 @@ pub struct ExternalDocs {
 pub struct Parameter {
     pub name: String,
     #[serde(rename = "in")]
-    pub _in: String,
+    pub _in: ParameterIn,
     pub description: Option<String>,
     pub required: Option<bool>,
     pub schema: Option<MaybeRef<Schema>>,
@@ -116,6 +116,16 @@ pub struct Parameter {
     #[serde(rename = "enum")]
     pub _enum: Option<Vec<serde_json::Value>>,
     pub multiple_of: Option<u64>,
+}
+
+#[derive(serde::Deserialize, Debug, PartialEq)]
+#[serde(rename_all(deserialize = "camelCase"))]
+pub enum ParameterIn {
+    Path,
+    Query,
+    Header,
+    Body,
+    FormData,
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
