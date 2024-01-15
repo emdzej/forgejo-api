@@ -337,12 +337,12 @@ pub enum OAuth2Flow {
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum MaybeRef<T> {
-    Value {
-        #[serde(flatten)]
-        value: T,
-    },
     Ref {
         #[serde(rename = "$ref")]
         _ref: String,
+    },
+    Value {
+        #[serde(flatten)]
+        value: T,
     },
 }
