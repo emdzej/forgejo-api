@@ -392,7 +392,7 @@ fn create_method_request(
             }
         }
     }
-    let mut fmt_str = path.to_string();
+    let mut fmt_str = sanitize_path_arg(path)?;
     let mut fmt_args = String::new();
     if has_query {
         fmt_str.push_str("?{}");
@@ -405,6 +405,32 @@ fn create_method_request(
     };
 
     let out = format!("let request = self.{method}({path_arg}){body_method}.build()?;");
+    Ok(out)
+}
+
+fn sanitize_path_arg(mut path: &str) -> eyre::Result<String> {
+    let mut out = String::new();
+    loop {
+        let (head, tail) = match path.split_once("{") {
+            Some(i) => i,
+            None => {
+                out.push_str(path);
+                break;
+            }
+        };
+        path = tail;
+        out.push_str(head);
+        out.push('{');
+        let (head, tail) = match path.split_once("}") {
+            Some(i) => i,
+            None => {
+                eyre::bail!("unmatched bracket");
+            }
+        };
+        path = tail;
+        out.push_str(&head.to_snake_case());
+        out.push('}');
+    }
     Ok(out)
 }
 
