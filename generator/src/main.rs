@@ -823,7 +823,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                 ParameterType::String => match param.format.as_deref() {
                     Some("date-time" | "date") => {
                         writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
-                        writeln!(&mut handler, "{field_name}.format_into(&mut s, &time::format_description::well_known::Rfc3339).unwrap();")?;
+                        writeln!(&mut handler, "s.push_str(&{field_name}.format(&time::format_description::well_known::Rfc3339).unwrap());")?;
                         writeln!(&mut handler, "s.push('&');")?;
                     }
                     _ => {
@@ -849,7 +849,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                         ParameterType::String => {
                             match param.format.as_deref() {
                                 Some("date-time" | "date") => {
-                                    "item.format_into(&mut s, &time::format_description::well_known::Rfc3339).unwrap();"
+                                    "s.push_str(&item.format(&time::format_description::well_known::Rfc3339).unwrap());"
                                 },
                                 _ => {
                                     "s.push_str(&item);"
