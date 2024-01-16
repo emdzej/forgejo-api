@@ -108,7 +108,7 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                 ParameterIn::Path => {
                     let type_name = param_type(&param, false)?;
                     args.push_str(", ");
-                    args.push_str(&sanitize_ident(param.name.to_snake_case()));
+                    args.push_str(&sanitize_ident(&param.name));
                     args.push_str(": ");
                     args.push_str(&type_name);
                 }
@@ -118,13 +118,13 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                     let schema_ref = param.schema.as_ref().unwrap();
                     let ty = schema_ref_type_name(spec, &schema_ref)?;
                     args.push_str(", ");
-                    args.push_str(&sanitize_ident(param.name.to_snake_case()));
+                    args.push_str(&sanitize_ident(&param.name));
                     args.push_str(": ");
                     args.push_str(&ty);
                 }
                 ParameterIn::FormData => {
                     args.push_str(", ");
-                    args.push_str(&sanitize_ident(param.name.to_snake_case()));
+                    args.push_str(&sanitize_ident(&param.name));
                     args.push_str(": Vec<u8>");
                 }
             }
@@ -421,7 +421,7 @@ fn create_method_request(
                 MaybeRef::Value { value } => value,
                 MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
             };
-            let name = sanitize_ident(param.name.to_snake_case());
+            let name = sanitize_ident(&param.name);
             match param._in {
                 ParameterIn::Path => (/* do nothing */),
                 ParameterIn::Query => has_query = true,
@@ -623,7 +623,8 @@ fn create_patch_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
-fn sanitize_ident(mut s: String) -> String {
+fn sanitize_ident(s: &str) -> String {
+    let mut s = s.to_snake_case();
     let keywords = [
         "as",
         "break",
@@ -703,7 +704,7 @@ fn create_struct_for_definition(
     if let Some(properties) = &schema.properties {
         for (prop_name, prop_schema) in properties {
             let prop_ty = schema_ref_type_name(spec, prop_schema)?;
-            let field_name = sanitize_ident(prop_name.to_snake_case());
+            let field_name = sanitize_ident(prop_name);
             let field_ty = if required.contains(prop_name) {
                 prop_ty
             } else {
@@ -782,7 +783,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
         };
         if param._in == ParameterIn::Query {
             let ty = param_type(param, true)?;
-            let field_name = sanitize_ident(param.name.to_snake_case());
+            let field_name = sanitize_ident(&param.name);
             let required = param.required.unwrap_or_default();
             fields.push_str(&field_name);
             fields.push_str(": ");
