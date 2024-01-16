@@ -711,6 +711,11 @@ fn create_struct_for_definition(
                 (true, false) => format!("Option<{prop_ty}>"),
                 (true, true) => format!("Option<Box<{prop_ty}>>"),
             };
+            if &field_name != prop_name {
+                fields.push_str("#[serde(rename = \"");
+                fields.push_str(prop_name);
+                fields.push_str("\")]\n");
+            }
             fields.push_str(&field_name);
             fields.push_str(": ");
             fields.push_str(&field_ty);
@@ -718,7 +723,7 @@ fn create_struct_for_definition(
         }
     }
 
-    let out = format!("{docs}pub struct {name} {{\n{fields}}}\n\n");
+    let out = format!("{docs}#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
     Ok(out)
 }
 
