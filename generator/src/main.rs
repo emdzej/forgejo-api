@@ -77,7 +77,7 @@ fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String
         .replace("o_auth2", "oauth2");
     let args = fn_args_from_op(spec, op)?;
     let ty = fn_return_from_op(spec, op)?;
-    Ok(format!("fn {name}({args}) -> Result<{ty}, ForgejoError>"))
+    Ok(format!("pub async fn {name}({args}) -> Result<{ty}, ForgejoError>"))
 }
 
 fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
