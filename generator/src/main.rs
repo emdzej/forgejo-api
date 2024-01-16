@@ -14,6 +14,7 @@ fn main() -> eyre::Result<()> {
     let spec = get_spec()?;
     let mut s = String::new();
     s.push_str("use crate::ForgejoError;\n");
+    s.push_str("use std::fmt::Write;\n");
     s.push_str("impl crate::Forgejo {\n");
     for (path, item) in &spec.paths {
         s.push_str(&create_methods_for_path(&spec, path, item).wrap_err_with(|| path.clone())?);
@@ -834,7 +835,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                 ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
                     writeln!(
                         &mut handler,
-                        "s.write_fmt(format_args!(\"{}={{}}&\", {field_name})).unwrap();",
+                        "write!(&mut s, \"{}={{}}&\", {field_name}).unwrap();",
                         param.name
                     )?;
                 }
@@ -858,7 +859,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                         ParameterType::Number |
                             ParameterType::Integer |
                             ParameterType::Boolean => {
-                                "s.write_fmt(format_args!(\"{{item}}\")).unwrap();"
+                                "write!(&mut s, \"{item}\").unwrap();"
                             },
                         ParameterType::Array => {
                             eyre::bail!("nested arrays not supported in query");
