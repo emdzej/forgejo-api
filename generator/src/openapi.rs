@@ -139,7 +139,7 @@ pub enum ParameterType {
     File,
 }
 
-#[derive(serde::Deserialize, Debug, PartialEq)]
+#[derive(serde::Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub enum CollectionFormat {
     Csv,

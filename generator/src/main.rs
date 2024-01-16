@@ -5,8 +5,8 @@ mod openapi;
 use eyre::Context;
 use heck::{ToPascalCase, ToSnakeCase};
 use openapi::{
-    MaybeRef, OpenApiV2, Operation, Parameter, ParameterIn, ParameterType, Primitive, Response,
-    Schema, SchemaType,
+    CollectionFormat, Items, MaybeRef, OpenApiV2, Operation, Parameter, ParameterIn, ParameterType,
+    Primitive, Response, Schema, SchemaType,
 };
 use std::fmt::Write;
 
@@ -25,6 +25,10 @@ fn main() -> eyre::Result<()> {
             let strukt = create_struct_for_definition(&spec, name, schema)?;
             s.push_str(&strukt);
         }
+    }
+    for (path, item) in &spec.paths {
+        let strukt = create_query_structs_for_path(&spec, path, item)?;
+        s.push_str(&strukt);
     }
     save_generated(&mut s)?;
     Ok(())
@@ -84,7 +88,9 @@ fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String
         .replace("o_auth2", "oauth2");
     let args = fn_args_from_op(spec, op)?;
     let ty = fn_return_from_op(spec, op)?;
-    Ok(format!("pub async fn {name}({args}) -> Result<{ty}, ForgejoError>"))
+    Ok(format!(
+        "pub async fn {name}({args}) -> Result<{ty}, ForgejoError>"
+    ))
 }
 
 fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
@@ -100,11 +106,11 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
             };
             match param._in {
                 ParameterIn::Path => {
-                    let type_name = path_param_type(&param)?;
+                    let type_name = param_type(&param, false)?;
                     args.push_str(", ");
                     args.push_str(&sanitize_ident(param.name.to_snake_case()));
                     args.push_str(": ");
-                    args.push_str(type_name);
+                    args.push_str(&type_name);
                 }
                 ParameterIn::Query => has_query = true,
                 ParameterIn::Header => has_headers = true,
@@ -249,32 +255,71 @@ fn schema_type_name(
     }
 }
 
-fn path_param_type(param: &Parameter) -> eyre::Result<&'static str> {
+fn param_type(param: &Parameter, owned: bool) -> eyre::Result<String> {
     let _type = param
         ._type
         .as_ref()
         .ok_or_else(|| eyre::eyre!("no type provided for path param"))?;
-    let type_name = match _type {
-        ParameterType::String => match param.format.as_deref() {
+    param_type_inner(_type, param.format.as_deref(), param.items.as_ref(), owned)
+}
+
+fn param_type_inner(
+    ty: &ParameterType,
+    format: Option<&str>,
+    items: Option<&Items>,
+    owned: bool,
+) -> eyre::Result<String> {
+    let ty_name = match ty {
+        ParameterType::String => match format.as_deref() {
             Some("date") => "time::Date",
             Some("date-time") => "time::OffsetDateTime",
-            _ => "&str",
-        },
-        ParameterType::Number => match param.format.as_deref() {
+            _ => {
+                if owned {
+                    "String"
+                } else {
+                    "&str"
+                }
+            }
+        }
+        .into(),
+        ParameterType::Number => match format.as_deref() {
             Some("float") => "f32",
             Some("double") => "f64",
             _ => "f64",
-        },
-        ParameterType::Integer => match param.format.as_deref() {
+        }
+        .into(),
+        ParameterType::Integer => match format.as_deref() {
             Some("int32") => "u32",
             Some("int64") => "u64",
             _ => "u32",
-        },
-        ParameterType::Boolean => "bool",
-        ParameterType::Array => eyre::bail!("todo: support returning arrays"),
-        ParameterType::File => "Vec<u8>",
+        }
+        .into(),
+        ParameterType::Boolean => "bool".into(),
+        ParameterType::Array => {
+            let item = items
+                .as_ref()
+                .ok_or_else(|| eyre::eyre!("array must have item type defined"))?;
+            let item_ty_name = param_type_inner(
+                &item._type,
+                item.format.as_deref(),
+                item.items.as_deref(),
+                owned,
+            )?;
+            if owned {
+                format!("Vec<{item_ty_name}>")
+            } else {
+                format!("&[{item_ty_name}]")
+            }
+        }
+        ParameterType::File => {
+            if owned {
+                format!("Vec<u8>")
+            } else {
+                format!("&[u8]")
+            }
+        }
     };
-    Ok(type_name)
+    Ok(ty_name)
 }
 
 fn method_docs(op: &Operation) -> eyre::Result<String> {
@@ -403,7 +448,7 @@ fn create_method_request(
     let mut fmt_args = String::new();
     if has_query {
         fmt_str.push_str("?{}");
-        fmt_args.push_str(", query");
+        fmt_args.push_str(", query.to_string()");
     }
     let path_arg = if fmt_str.contains("{") {
         format!("&format!(\"{fmt_str}\"{fmt_args})")
@@ -579,12 +624,59 @@ fn create_patch_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
 
 fn sanitize_ident(mut s: String) -> String {
     let keywords = [
-        "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn",
-        "for", "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref",
-        "return", "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe",
-        "use", "where", "while", "abstract", "become", "box", "do", "final", "macro", "override",
-        "priv", "typeof", "unsized", "virtual", "yield", "async", "await", "dyn", "try",
-        "macro_rules", "union"
+        "as",
+        "break",
+        "const",
+        "continue",
+        "crate",
+        "else",
+        "enum",
+        "extern",
+        "false",
+        "fn",
+        "for",
+        "if",
+        "impl",
+        "in",
+        "let",
+        "loop",
+        "match",
+        "mod",
+        "move",
+        "mut",
+        "pub",
+        "ref",
+        "return",
+        "self",
+        "Self",
+        "static",
+        "struct",
+        "super",
+        "trait",
+        "true",
+        "type",
+        "unsafe",
+        "use",
+        "where",
+        "while",
+        "abstract",
+        "become",
+        "box",
+        "do",
+        "final",
+        "macro",
+        "override",
+        "priv",
+        "typeof",
+        "unsized",
+        "virtual",
+        "yield",
+        "async",
+        "await",
+        "dyn",
+        "try",
+        "macro_rules",
+        "union",
     ];
     if s == "self" {
         s = "this".into();
@@ -595,7 +687,11 @@ fn sanitize_ident(mut s: String) -> String {
     s
 }
 
-fn create_struct_for_definition(spec: &OpenApiV2, name: &str, schema: &Schema) -> eyre::Result<String> {
+fn create_struct_for_definition(
+    spec: &OpenApiV2,
+    name: &str,
+    schema: &Schema,
+) -> eyre::Result<String> {
     if matches!(schema._type, Some(SchemaType::One(Primitive::Array))) {
         return Ok(String::new());
     }
@@ -633,8 +729,197 @@ fn create_struct_docs(schema: &Schema) -> eyre::Result<String> {
                 out.push_str("\n/// \n");
             }
             out
-        },
+        }
         None => String::new(),
     };
     Ok(doc)
+}
+
+fn create_query_structs_for_path(
+    spec: &OpenApiV2,
+    path: &str,
+    item: &openapi::PathItem,
+) -> eyre::Result<String> {
+    let mut s = String::new();
+    if let Some(op) = &item.get {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("GET")?);
+    }
+    if let Some(op) = &item.put {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("PUT")?);
+    }
+    if let Some(op) = &item.post {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("POST")?);
+    }
+    if let Some(op) = &item.delete {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("DELETE")?);
+    }
+    if let Some(op) = &item.options {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("OPTIONS")?);
+    }
+    if let Some(op) = &item.head {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("HEAD")?);
+    }
+    if let Some(op) = &item.patch {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("PATCH")?);
+    }
+    Ok(s)
+}
+
+fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
+    let params = match &op.parameters {
+        Some(params) => params,
+        None => return Ok(String::new()),
+    };
+
+    let mut fields = String::new();
+    let mut imp = String::new();
+    imp.push_str("let mut s = String::new();\n");
+    for param in params {
+        let param = match &param {
+            MaybeRef::Value { value } => value,
+            MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
+        };
+        if param._in == ParameterIn::Query {
+            let ty = param_type(param, true)?;
+            let field_name = sanitize_ident(param.name.to_snake_case());
+            let required = param.required.unwrap_or_default();
+            fields.push_str(&field_name);
+            fields.push_str(": ");
+            if required {
+                fields.push_str(&ty);
+            } else {
+                fields.push_str("Option<");
+                fields.push_str(&ty);
+                fields.push_str(">");
+            }
+            fields.push_str(",\n");
+
+            let mut handler = String::new();
+            let ty = param
+                ._type
+                .as_ref()
+                .ok_or_else(|| eyre::eyre!("no type provided for query field"))?;
+            if required {
+                writeln!(&mut handler, "let {field_name} = self.{field_name};")?;
+            } else {
+                writeln!(
+                    &mut handler,
+                    "if let Some({field_name}) = self.{field_name} {{"
+                )?;
+            }
+            match ty {
+                ParameterType::String => match param.format.as_deref() {
+                    Some("date-time" | "date") => {
+                        writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
+                        writeln!(&mut handler, "{field_name}.format_into(&mut s, &time::format_description::well_known::Rfc3339).unwrap();")?;
+                        writeln!(&mut handler, "s.push('&');")?;
+                    }
+                    _ => {
+                        writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
+                        writeln!(&mut handler, "s.push_str(&{field_name});")?;
+                        writeln!(&mut handler, "s.push('&');")?;
+                    }
+                },
+                ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
+                    writeln!(
+                        &mut handler,
+                        "s.write_fmt(format_args!(\"{}={{}}&\", {field_name})).unwrap();",
+                        param.name
+                    )?;
+                }
+                ParameterType::Array => {
+                    let format = param.collection_format.unwrap_or(CollectionFormat::Csv);
+                    let item = param
+                        .items
+                        .as_ref()
+                        .ok_or_else(|| eyre::eyre!("array must have item type defined"))?;
+                    let item_pusher = match item._type {
+                        ParameterType::String => {
+                            match param.format.as_deref() {
+                                Some("date-time" | "date") => {
+                                    "item.format_into(&mut s, &time::format_description::well_known::Rfc3339).unwrap();"
+                                },
+                                _ => {
+                                    "s.push_str(&item);"
+                                }
+                            }
+                        },
+                        ParameterType::Number |
+                            ParameterType::Integer |
+                            ParameterType::Boolean => {
+                                "s.write_fmt(format_args!(\"{{item}}\")).unwrap();"
+                            },
+                        ParameterType::Array => {
+                            eyre::bail!("nested arrays not supported in query");
+                        },
+                        ParameterType::File => eyre::bail!("cannot send file in query"),
+                    };
+                    match format {
+                        CollectionFormat::Csv => {
+                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, ",")?);
+                        }
+                        CollectionFormat::Ssv => {
+                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, " ")?);
+                        }
+                        CollectionFormat::Tsv => {
+                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, "\\t")?);
+                        }
+                        CollectionFormat::Pipes => {
+                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, "|")?);
+                        }
+                        CollectionFormat::Multi => {
+                            writeln!(&mut handler, "")?;
+                            writeln!(&mut handler, "if !{field_name}.is_empty() {{")?;
+                            writeln!(
+                                &mut handler,
+                                "for (i, item) in {field_name}.iter().enumerate() {{"
+                            )?;
+                            writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
+                            handler.push_str(item_pusher);
+                            handler.push('\n');
+                            writeln!(&mut handler, "s.push('&')")?;
+                            writeln!(&mut handler, "}}")?;
+                            writeln!(&mut handler, "}}")?;
+                        }
+                    }
+                }
+                ParameterType::File => eyre::bail!("cannot send file in query"),
+            }
+            if !required {
+                writeln!(&mut handler, "}}")?;
+            }
+            imp.push_str(&handler);
+        }
+    }
+    imp.push_str("s\n");
+    if fields.is_empty() {
+        return Ok(String::new());
+    } else {
+        let op_name = op
+            .operation_id
+            .as_ref()
+            .ok_or_else(|| eyre::eyre!("no op id found"))?
+            .to_pascal_case();
+        return Ok(format!("pub struct {op_name}Query {{\n{fields}\n}}\n\nimpl {op_name}Query {{\nfn to_string(&self) -> String {{\n{imp}\n}}\n}}"));
+    }
+}
+
+fn simple_query_array(param: &Parameter, item_pusher: &str, name: &str, sep: &str) -> eyre::Result<String,> {
+    let mut out = String::new();
+    writeln!(&mut out, "s.push_str(\"{}=\");", param.name)?;
+    writeln!(&mut out, "")?;
+    writeln!(&mut out, "if !{name}.is_empty() {{")?;
+    writeln!(
+        &mut out,
+        "for (i, item) in {name}.iter().enumerate() {{"
+        )?;
+    out.push_str(item_pusher);
+    out.push('\n');
+    writeln!(&mut out, "if i < {name}.len() - 1 {{")?;
+    writeln!(&mut out, "s.push('{sep}')")?;
+    writeln!(&mut out, "}}")?;
+    writeln!(&mut out, "}}")?;
+    writeln!(&mut out, "s.push('&')")?;
+    writeln!(&mut out, "}}")?;
+    Ok(out)
 }
