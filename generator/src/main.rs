@@ -705,10 +705,11 @@ fn create_struct_for_definition(
         for (prop_name, prop_schema) in properties {
             let prop_ty = schema_ref_type_name(spec, prop_schema)?;
             let field_name = sanitize_ident(prop_name);
-            let field_ty = if required.contains(prop_name) {
-                prop_ty
-            } else {
-                format!("Option<{prop_ty}>")
+            let field_ty = match (!required.contains(prop_name), prop_ty == name) {
+                (false, false) => prop_ty,
+                (false, true) => format!("Box<{prop_ty}>"),
+                (true, false) => format!("Option<{prop_ty}>"),
+                (true, true) => format!("Option<Box<{prop_ty}>>"),
             };
             fields.push_str(&field_name);
             fields.push_str(": ");
