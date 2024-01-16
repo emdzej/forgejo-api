@@ -540,7 +540,7 @@ fn create_method_response(
         out.push_str(handler);
         out.push_str(",\n");
     }
-    out.push_str("_ => Err(ForgejoError::UnexpectedStatusCode)\n");
+    out.push_str("_ => Err(ForgejoError::UnexpectedStatusCode(response.status()))\n");
     out.push_str("}\n");
 
     Ok(out)
