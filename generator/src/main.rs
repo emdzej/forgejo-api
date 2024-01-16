@@ -709,12 +709,19 @@ fn create_struct_for_definition(
         for (prop_name, prop_schema) in properties {
             let prop_ty = schema_ref_type_name(spec, prop_schema)?;
             let field_name = sanitize_ident(prop_name);
-            let field_ty = match (!required.contains(prop_name), prop_ty == name) {
-                (false, false) => prop_ty,
-                (false, true) => format!("Box<{prop_ty}>"),
-                (true, false) => format!("Option<{prop_ty}>"),
-                (true, true) => format!("Option<Box<{prop_ty}>>"),
-            };
+            let mut field_ty = prop_ty.clone();
+            if field_name.ends_with("url") && field_ty == "String" {
+                field_ty = "url::Url".into()
+            }
+            if field_ty == name {
+                field_ty = format!("Box<{field_ty}>")
+            }
+            if !required.contains(prop_name) {
+                field_ty = format!("Option<{field_ty}>")
+            }
+            if field_ty == "Option<url::Url>" {
+                fields.push_str("#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n");
+            }
             if &field_name != prop_name {
                 fields.push_str("#[serde(rename = \"");
                 fields.push_str(prop_name);
