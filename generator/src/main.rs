@@ -884,7 +884,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                             writeln!(&mut handler, "if !{field_name}.is_empty() {{")?;
                             writeln!(
                                 &mut handler,
-                                "for (i, item) in {field_name}.iter().enumerate() {{"
+                                "for item in {field_name} {{"
                             )?;
                             writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
                             handler.push_str(item_pusher);
