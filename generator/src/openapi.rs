@@ -185,7 +185,7 @@ pub struct Responses {
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct Response {
     pub description: String,
-    pub schema: Option<Schema>,
+    pub schema: Option<MaybeRef<Schema>>,
     pub headers: Option<BTreeMap<String, Header>>,
     pub examples: Option<BTreeMap<String, serde_json::Value>>,
 }
@@ -248,6 +248,8 @@ pub struct Schema {
     pub _enum: Option<Vec<serde_json::Value>>,
     #[serde(rename = "type")]
     pub _type: Option<SchemaType>,
+    pub properties: Option<BTreeMap<String, MaybeRef<Schema>>>,
+    pub items: Option<Box<MaybeRef<Schema>>>,
 
     pub discriminator: Option<String>,
     pub read_only: Option<bool>,
