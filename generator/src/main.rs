@@ -875,24 +875,41 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                     };
                     match format {
                         CollectionFormat::Csv => {
-                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, ",")?);
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                ",",
+                            )?);
                         }
                         CollectionFormat::Ssv => {
-                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, " ")?);
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                " ",
+                            )?);
                         }
                         CollectionFormat::Tsv => {
-                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, "\\t")?);
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                "\\t",
+                            )?);
                         }
                         CollectionFormat::Pipes => {
-                            handler.push_str(&simple_query_array(param, item_pusher, &field_name, "|")?);
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                "|",
+                            )?);
                         }
                         CollectionFormat::Multi => {
                             writeln!(&mut handler, "")?;
                             writeln!(&mut handler, "if !{field_name}.is_empty() {{")?;
-                            writeln!(
-                                &mut handler,
-                                "for item in {field_name} {{"
-                            )?;
+                            writeln!(&mut handler, "for item in {field_name} {{")?;
                             writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
                             handler.push_str(item_pusher);
                             handler.push('\n');
@@ -923,15 +940,17 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
     }
 }
 
-fn simple_query_array(param: &Parameter, item_pusher: &str, name: &str, sep: &str) -> eyre::Result<String,> {
+fn simple_query_array(
+    param: &Parameter,
+    item_pusher: &str,
+    name: &str,
+    sep: &str,
+) -> eyre::Result<String> {
     let mut out = String::new();
     writeln!(&mut out, "s.push_str(\"{}=\");", param.name)?;
     writeln!(&mut out, "")?;
     writeln!(&mut out, "if !{name}.is_empty() {{")?;
-    writeln!(
-        &mut out,
-        "for (i, item) in {name}.iter().enumerate() {{"
-        )?;
+    writeln!(&mut out, "for (i, item) in {name}.iter().enumerate() {{")?;
     out.push_str(item_pusher);
     out.push('\n');
     writeln!(&mut out, "if i < {name}.len() - 1 {{")?;
