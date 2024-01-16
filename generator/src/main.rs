@@ -242,7 +242,7 @@ fn schema_type_name(
                             // Checking for a space filters that out
                             (Some(title), _) if !title.contains(' ') => title.to_string(),
                             (_, Some(definition_name)) => definition_name.to_string(),
-                            (_, None) => "serde_json::Map".to_string(),
+                            (_, None) => "serde_json::Map<String, serde_json::Value>".to_string(),
                         }
                     }
                 };
