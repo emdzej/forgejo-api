@@ -18,7 +18,14 @@ fn main() -> eyre::Result<()> {
     for (path, item) in &spec.paths {
         s.push_str(&create_methods_for_path(&spec, path, item).wrap_err_with(|| path.clone())?);
     }
-    s.push('}');
+    s.push_str("}\n");
+
+    if let Some(definitions) = &spec.definitions {
+        for (name, schema) in definitions {
+            let strukt = create_struct_for_definition(&spec, name, schema)?;
+            s.push_str(&strukt);
+        }
+    }
     save_generated(&mut s)?;
     Ok(())
 }
@@ -575,10 +582,59 @@ fn sanitize_ident(mut s: String) -> String {
         "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn",
         "for", "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref",
         "return", "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe",
-        "use", "where", "while",
+        "use", "where", "while", "abstract", "become", "box", "do", "final", "macro", "override",
+        "priv", "typeof", "unsized", "virtual", "yield", "async", "await", "dyn", "try",
+        "macro_rules", "union"
     ];
+    if s == "self" {
+        s = "this".into();
+    }
     if keywords.contains(&&*s) {
         s.insert_str(0, "r#");
     }
     s
+}
+
+fn create_struct_for_definition(spec: &OpenApiV2, name: &str, schema: &Schema) -> eyre::Result<String> {
+    if matches!(schema._type, Some(SchemaType::One(Primitive::Array))) {
+        return Ok(String::new());
+    }
+
+    let docs = create_struct_docs(schema)?;
+    let mut fields = String::new();
+    let required = schema.required.as_deref().unwrap_or_default();
+    if let Some(properties) = &schema.properties {
+        for (prop_name, prop_schema) in properties {
+            let prop_ty = schema_ref_type_name(spec, prop_schema)?;
+            let field_name = sanitize_ident(prop_name.to_snake_case());
+            let field_ty = if required.contains(prop_name) {
+                prop_ty
+            } else {
+                format!("Option<{prop_ty}>")
+            };
+            fields.push_str(&field_name);
+            fields.push_str(": ");
+            fields.push_str(&field_ty);
+            fields.push_str(",\n");
+        }
+    }
+
+    let out = format!("{docs}pub struct {name} {{\n{fields}}}\n\n");
+    Ok(out)
+}
+
+fn create_struct_docs(schema: &Schema) -> eyre::Result<String> {
+    let doc = match &schema.description {
+        Some(desc) => {
+            let mut out = String::new();
+            for line in desc.lines() {
+                out.push_str("/// ");
+                out.push_str(line);
+                out.push_str("\n/// \n");
+            }
+            out
+        },
+        None => String::new(),
+    };
+    Ok(doc)
 }
