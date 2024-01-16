@@ -433,7 +433,7 @@ fn create_method_request(
                     if param_is_string(spec, param)? {
                         body_method = format!(".body({name})");
                     } else {
-                        body_method = format!(".json({name})?");
+                        body_method = format!(".json(&{name})");
                     }
                 }
                 ParameterIn::FormData => {
