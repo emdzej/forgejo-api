@@ -495,8 +495,11 @@ fn create_method_response(
 ) -> eyre::Result<String> {
     let mut has_empty = false;
     let mut only_empty = true;
-    for (_, res) in &op.responses.http_codes {
+    for (code, res) in &op.responses.http_codes {
         let name = response_ref_type_name(spec, res)?;
+        if !code.starts_with("2") {
+            continue;
+        }
         if name == "()" || name == "empty" {
             has_empty = true;
         } else {
@@ -509,7 +512,7 @@ fn create_method_response(
     out.push_str("match response.status().as_u16() {\n");
     for (code, res) in &op.responses.http_codes {
         let (_, res) = deref_response(spec, res)?;
-        if code.starts_with("4") {
+        if !code.starts_with("2") {
             continue;
         }
         out.push_str(code);
