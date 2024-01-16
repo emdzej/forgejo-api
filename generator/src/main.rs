@@ -421,6 +421,7 @@ fn create_method_request(
                 MaybeRef::Value { value } => value,
                 MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
             };
+            let name = sanitize_ident(param.name.to_snake_case());
             match param._in {
                 ParameterIn::Path => (/* do nothing */),
                 ParameterIn::Query => has_query = true,
@@ -430,16 +431,16 @@ fn create_method_request(
                         eyre::bail!("cannot have more than one body parameter");
                     }
                     if param_is_string(spec, param)? {
-                        body_method = format!(".body({})", param.name);
+                        body_method = format!(".body({name})");
                     } else {
-                        body_method = format!(".json({})?", param.name);
+                        body_method = format!(".json({name})?");
                     }
                 }
                 ParameterIn::FormData => {
                     if !body_method.is_empty() {
                         eyre::bail!("cannot have more than one body parameter");
                     }
-                    body_method = format!(".multipart(reqwest::multipart::Form::new().part(\"attachment\", reqwest::multipart::Part::bytes({}).file_name(\"file\").mime_str(\"*/*\").unwrap()))", param.name);
+                    body_method = format!(".multipart(reqwest::multipart::Form::new().part(\"attachment\", reqwest::multipart::Part::bytes({name}).file_name(\"file\").mime_str(\"*/*\").unwrap()))");
                 }
             }
         }
