@@ -912,7 +912,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             .as_ref()
             .ok_or_else(|| eyre::eyre!("no op id found"))?
             .to_pascal_case();
-        return Ok(format!("pub struct {op_name}Query {{\n{fields}\n}}\n\nimpl {op_name}Query {{\nfn to_string(&self) -> String {{\n{imp}\n}}\n}}"));
+        return Ok(format!("pub struct {op_name}Query {{\n{fields}\n}}\n\nimpl {op_name}Query {{\nfn to_string(self) -> String {{\n{imp}\n}}\n}}"));
     }
 }
 
