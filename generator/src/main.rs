@@ -14,13 +14,15 @@ fn main() -> eyre::Result<()> {
     let spec = get_spec()?;
     let mut s = String::new();
     s.push_str("use crate::ForgejoError;\n");
-    s.push_str("use std::fmt::Write;\n");
     s.push_str("impl crate::Forgejo {\n");
     for (path, item) in &spec.paths {
         s.push_str(&create_methods_for_path(&spec, path, item).wrap_err_with(|| path.clone())?);
     }
     s.push_str("}\n");
 
+    s.push_str("use structs::*;\n");
+    s.push_str("pub mod structs {\n");
+    s.push_str("use std::fmt::Write;\n");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
             let strukt = create_struct_for_definition(&spec, name, schema)?;
@@ -31,6 +33,7 @@ fn main() -> eyre::Result<()> {
         let strukt = create_query_structs_for_path(&spec, path, item)?;
         s.push_str(&strukt);
     }
+    s.push_str("\n}");
     save_generated(&mut s)?;
     Ok(())
 }
@@ -936,7 +939,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             .as_ref()
             .ok_or_else(|| eyre::eyre!("no op id found"))?
             .to_pascal_case();
-        return Ok(format!("pub struct {op_name}Query {{\n{fields}\n}}\n\nimpl {op_name}Query {{\nfn to_string(self) -> String {{\n{imp}\n}}\n}}"));
+        return Ok(format!("pub struct {op_name}Query {{\n{fields}\n}}\n\nimpl {op_name}Query {{\npub(crate) fn to_string(self) -> String {{\n{imp}\n}}\n}}"));
     }
 }
 
