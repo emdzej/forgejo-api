@@ -153,12 +153,12 @@ impl Forgejo {
 
     fn delete(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.post(url)
+        self.client.delete(url)
     }
 
     fn patch(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.post(url)
+        self.client.patch(url)
     }
 
     async fn execute(&self, request: Request) -> Result<reqwest::Response, ForgejoError> {
