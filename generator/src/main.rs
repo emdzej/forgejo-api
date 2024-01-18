@@ -738,7 +738,7 @@ fn create_struct_for_definition(
         }
     }
 
-    let out = format!("{docs}#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
+    let out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
     Ok(out)
 }
 

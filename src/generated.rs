@@ -7431,14 +7431,14 @@ pub mod structs {
     use std::fmt::Write;
     /// APIError is an api error with a message
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct APIError {
         pub message: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub url: Option<url::Url>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct AccessToken {
         pub id: Option<u64>,
         pub name: Option<String>,
@@ -7447,7 +7447,7 @@ pub mod structs {
         pub token_last_eight: Option<String>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Activity {
         pub act_user: Option<User>,
         pub act_user_id: Option<u64>,
@@ -7466,7 +7466,7 @@ pub mod structs {
 
     /// ActivityPub type
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ActivityPub {
         #[serde(rename = "@context")]
         pub context: Option<String>,
@@ -7474,14 +7474,14 @@ pub mod structs {
 
     /// AddCollaboratorOption options when adding a user as a collaborator of a repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct AddCollaboratorOption {
         pub permission: Option<String>,
     }
 
     /// AddTimeOption options for adding time to an issue
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct AddTimeOption {
         pub created: Option<time::OffsetDateTime>,
         pub time: u64,
@@ -7490,7 +7490,7 @@ pub mod structs {
 
     /// AnnotatedTag represents an annotated tag
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct AnnotatedTag {
         pub message: Option<String>,
         pub object: Option<AnnotatedTagObject>,
@@ -7504,7 +7504,7 @@ pub mod structs {
 
     /// AnnotatedTagObject contains meta information of the tag object
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct AnnotatedTagObject {
         pub sha: Option<String>,
         #[serde(rename = "type")]
@@ -7515,7 +7515,7 @@ pub mod structs {
 
     /// Attachment a generic attachment
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Attachment {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub browser_download_url: Option<url::Url>,
@@ -7527,7 +7527,7 @@ pub mod structs {
         pub uuid: Option<String>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct BlockedUser {
         pub block_id: Option<u64>,
         pub created_at: Option<time::OffsetDateTime>,
@@ -7535,7 +7535,7 @@ pub mod structs {
 
     /// Branch represents a repository branch
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Branch {
         pub commit: Option<PayloadCommit>,
         pub effective_branch_protection_name: Option<String>,
@@ -7550,7 +7550,7 @@ pub mod structs {
 
     /// BranchProtection represents a branch protection for a repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct BranchProtection {
         pub approvals_whitelist_teams: Option<Vec<String>>,
         pub approvals_whitelist_username: Option<Vec<String>>,
@@ -7581,7 +7581,7 @@ pub mod structs {
 
     /// ChangeFileOperation for creating, updating or deleting a file
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ChangeFileOperation {
         pub content: Option<String>,
         pub from_path: Option<String>,
@@ -7594,7 +7594,7 @@ pub mod structs {
     ///
     /// Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ChangeFilesOptions {
         pub author: Option<Identity>,
         pub branch: Option<String>,
@@ -7608,7 +7608,7 @@ pub mod structs {
 
     /// ChangedFile store information about files affected by the pull request
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ChangedFile {
         pub additions: Option<u64>,
         pub changes: Option<u64>,
@@ -7626,7 +7626,7 @@ pub mod structs {
 
     /// CombinedStatus holds the combined state of several statuses for a single commit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CombinedStatus {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub commit_url: Option<url::Url>,
@@ -7641,7 +7641,7 @@ pub mod structs {
 
     /// Comment represents a comment on a commit or issue
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Comment {
         pub assets: Option<Vec<Attachment>>,
         pub body: Option<String>,
@@ -7659,7 +7659,7 @@ pub mod structs {
         pub user: Option<User>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Commit {
         pub author: Option<User>,
         pub commit: Option<RepoCommit>,
@@ -7677,7 +7677,7 @@ pub mod structs {
 
     /// CommitAffectedFiles store information about files affected by the commit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitAffectedFiles {
         pub filename: Option<String>,
         pub status: Option<String>,
@@ -7685,13 +7685,13 @@ pub mod structs {
 
     /// CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitDateOptions {
         pub author: Option<time::OffsetDateTime>,
         pub committer: Option<time::OffsetDateTime>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitMeta {
         pub created: Option<time::OffsetDateTime>,
         pub sha: Option<String>,
@@ -7701,7 +7701,7 @@ pub mod structs {
 
     /// CommitStats is statistics for a RepoCommit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitStats {
         pub additions: Option<u64>,
         pub deletions: Option<u64>,
@@ -7710,7 +7710,7 @@ pub mod structs {
 
     /// CommitStatus holds a single status of a single Commit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitStatus {
         pub context: Option<String>,
         pub created_at: Option<time::OffsetDateTime>,
@@ -7729,10 +7729,10 @@ pub mod structs {
     ///
     /// It can be "pending", "success", "error" and "failure"
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitStatusState {}
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitUser {
         pub date: Option<String>,
         pub email: Option<String>,
@@ -7741,7 +7741,7 @@ pub mod structs {
 
     /// ContentsResponse contains information about a repo's entry's (dir, file, symlink, submodule) metadata and content
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ContentsResponse {
         #[serde(rename = "_links")]
         pub links: Option<FileLinksResponse>,
@@ -7769,7 +7769,7 @@ pub mod structs {
 
     /// CreateAccessTokenOption options when create access token
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateAccessTokenOption {
         pub name: String,
         pub scopes: Option<Vec<String>>,
@@ -7777,7 +7777,7 @@ pub mod structs {
 
     /// CreateBranchProtectionOption options for creating a branch protection
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateBranchProtectionOption {
         pub approvals_whitelist_teams: Option<Vec<String>>,
         pub approvals_whitelist_username: Option<Vec<String>>,
@@ -7806,7 +7806,7 @@ pub mod structs {
 
     /// CreateBranchRepoOption options when creating a branch in a repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateBranchRepoOption {
         pub new_branch_name: String,
         pub old_branch_name: Option<String>,
@@ -7815,7 +7815,7 @@ pub mod structs {
 
     /// CreateEmailOption options when creating email addresses
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateEmailOption {
         pub emails: Option<Vec<String>>,
     }
@@ -7824,7 +7824,7 @@ pub mod structs {
     ///
     /// Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateFileOptions {
         pub author: Option<Identity>,
         pub branch: Option<String>,
@@ -7838,7 +7838,7 @@ pub mod structs {
 
     /// CreateForkOption options for creating a fork
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateForkOption {
         pub name: Option<String>,
         pub organization: Option<String>,
@@ -7846,7 +7846,7 @@ pub mod structs {
 
     /// CreateGPGKeyOption options create user GPG key
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateGPGKeyOption {
         pub armored_public_key: String,
         pub armored_signature: Option<String>,
@@ -7854,7 +7854,7 @@ pub mod structs {
 
     /// CreateHookOption options when create a hook
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateHookOption {
         pub active: Option<bool>,
         pub authorization_header: Option<String>,
@@ -7869,12 +7869,12 @@ pub mod structs {
     ///
     /// required are "content_type" and "url" Required
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateHookOptionConfig {}
 
     /// CreateIssueCommentOption options for creating a comment on an issue
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateIssueCommentOption {
         pub body: String,
         pub updated_at: Option<time::OffsetDateTime>,
@@ -7882,7 +7882,7 @@ pub mod structs {
 
     /// CreateIssueOption options to create one issue
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateIssueOption {
         pub assignee: Option<String>,
         pub assignees: Option<Vec<String>>,
@@ -7898,7 +7898,7 @@ pub mod structs {
 
     /// CreateKeyOption options when creating a key
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateKeyOption {
         pub key: String,
         pub read_only: Option<bool>,
@@ -7907,7 +7907,7 @@ pub mod structs {
 
     /// CreateLabelOption options for creating a label
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateLabelOption {
         pub color: String,
         pub description: Option<String>,
@@ -7918,7 +7918,7 @@ pub mod structs {
 
     /// CreateMilestoneOption options for creating a milestone
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateMilestoneOption {
         pub description: Option<String>,
         pub due_on: Option<time::OffsetDateTime>,
@@ -7928,7 +7928,7 @@ pub mod structs {
 
     /// CreateOAuth2ApplicationOptions holds options to create an oauth2 application
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateOAuth2ApplicationOptions {
         pub confidential_client: Option<bool>,
         pub name: Option<String>,
@@ -7937,14 +7937,14 @@ pub mod structs {
 
     /// CreateOrUpdateSecretOption options when creating or updating secret
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateOrUpdateSecretOption {
         pub data: String,
     }
 
     /// CreateOrgOption options for creating an organization
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateOrgOption {
         pub description: Option<String>,
         pub email: Option<String>,
@@ -7958,7 +7958,7 @@ pub mod structs {
 
     /// CreatePullRequestOption options when creating a pull request
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreatePullRequestOption {
         pub assignee: Option<String>,
         pub assignees: Option<Vec<String>>,
@@ -7973,7 +7973,7 @@ pub mod structs {
 
     /// CreatePullReviewComment represent a review comment for creation api
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreatePullReviewComment {
         pub body: Option<String>,
         pub new_position: Option<u64>,
@@ -7983,7 +7983,7 @@ pub mod structs {
 
     /// CreatePullReviewOptions are options to create a pull review
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreatePullReviewOptions {
         pub body: Option<String>,
         pub comments: Option<Vec<CreatePullReviewComment>>,
@@ -7991,7 +7991,7 @@ pub mod structs {
         pub event: Option<String>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreatePushMirrorOption {
         pub interval: Option<String>,
         pub remote_address: Option<String>,
@@ -8002,7 +8002,7 @@ pub mod structs {
 
     /// CreateReleaseOption options when creating a release
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateReleaseOption {
         pub body: Option<String>,
         pub draft: Option<bool>,
@@ -8014,7 +8014,7 @@ pub mod structs {
 
     /// CreateRepoOption options when creating repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateRepoOption {
         pub auto_init: Option<bool>,
         pub default_branch: Option<String>,
@@ -8031,7 +8031,7 @@ pub mod structs {
 
     /// CreateStatusOption holds the information needed to create a new CommitStatus for a Commit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateStatusOption {
         pub context: Option<String>,
         pub description: Option<String>,
@@ -8042,7 +8042,7 @@ pub mod structs {
 
     /// CreateTagOption options when creating a tag
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateTagOption {
         pub message: Option<String>,
         pub tag_name: String,
@@ -8051,7 +8051,7 @@ pub mod structs {
 
     /// CreateTeamOption options for creating a team
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateTeamOption {
         pub can_create_org_repo: Option<bool>,
         pub description: Option<String>,
@@ -8064,7 +8064,7 @@ pub mod structs {
 
     /// CreateUserOption create user options
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateUserOption {
         pub created_at: Option<time::OffsetDateTime>,
         pub email: String,
@@ -8081,7 +8081,7 @@ pub mod structs {
 
     /// CreateWikiPageOptions form for creating wiki
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateWikiPageOptions {
         pub content_base64: Option<String>,
         pub message: Option<String>,
@@ -8090,7 +8090,7 @@ pub mod structs {
 
     /// Cron represents a Cron task
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Cron {
         pub exec_times: Option<u64>,
         pub name: Option<String>,
@@ -8101,7 +8101,7 @@ pub mod structs {
 
     /// DeleteEmailOption options when deleting email addresses
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeleteEmailOption {
         pub emails: Option<Vec<String>>,
     }
@@ -8110,7 +8110,7 @@ pub mod structs {
     ///
     /// Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeleteFileOptions {
         pub author: Option<Identity>,
         pub branch: Option<String>,
@@ -8124,14 +8124,14 @@ pub mod structs {
 
     /// DeleteLabelOption options for deleting a label
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeleteLabelsOption {
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
     /// DeployKey a deploy key
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeployKey {
         pub created_at: Option<time::OffsetDateTime>,
         pub fingerprint: Option<String>,
@@ -8147,7 +8147,7 @@ pub mod structs {
 
     /// DismissPullReviewOptions are options to dismiss a pull review
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DismissPullReviewOptions {
         pub message: Option<String>,
         pub priors: Option<bool>,
@@ -8155,14 +8155,14 @@ pub mod structs {
 
     /// EditAttachmentOptions options for editing attachments
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditAttachmentOptions {
         pub name: Option<String>,
     }
 
     /// EditBranchProtectionOption options for editing a branch protection
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditBranchProtectionOption {
         pub approvals_whitelist_teams: Option<Vec<String>>,
         pub approvals_whitelist_username: Option<Vec<String>>,
@@ -8189,21 +8189,21 @@ pub mod structs {
 
     /// EditDeadlineOption options for creating a deadline
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditDeadlineOption {
         pub due_date: time::OffsetDateTime,
     }
 
     /// EditGitHookOption options when modifying one Git hook
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditGitHookOption {
         pub content: Option<String>,
     }
 
     /// EditHookOption options when modify one hook
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditHookOption {
         pub active: Option<bool>,
         pub authorization_header: Option<String>,
@@ -8214,7 +8214,7 @@ pub mod structs {
 
     /// EditIssueCommentOption options for editing a comment
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditIssueCommentOption {
         pub body: String,
         pub updated_at: Option<time::OffsetDateTime>,
@@ -8222,7 +8222,7 @@ pub mod structs {
 
     /// EditIssueOption options for editing an issue
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditIssueOption {
         pub assignee: Option<String>,
         pub assignees: Option<Vec<String>>,
@@ -8239,7 +8239,7 @@ pub mod structs {
 
     /// EditLabelOption options for editing a label
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditLabelOption {
         pub color: Option<String>,
         pub description: Option<String>,
@@ -8250,7 +8250,7 @@ pub mod structs {
 
     /// EditMilestoneOption options for editing a milestone
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditMilestoneOption {
         pub description: Option<String>,
         pub due_on: Option<time::OffsetDateTime>,
@@ -8260,7 +8260,7 @@ pub mod structs {
 
     /// EditOrgOption options for editing an organization
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditOrgOption {
         pub description: Option<String>,
         pub email: Option<String>,
@@ -8273,7 +8273,7 @@ pub mod structs {
 
     /// EditPullRequestOption options when modify pull request
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditPullRequestOption {
         pub allow_maintainer_edit: Option<bool>,
         pub assignee: Option<String>,
@@ -8290,14 +8290,14 @@ pub mod structs {
 
     /// EditReactionOption contain the reaction type
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditReactionOption {
         pub content: Option<String>,
     }
 
     /// EditReleaseOption options when editing a release
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditReleaseOption {
         pub body: Option<String>,
         pub draft: Option<bool>,
@@ -8309,7 +8309,7 @@ pub mod structs {
 
     /// EditRepoOption options when editing a repository's properties
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditRepoOption {
         pub allow_manual_merge: Option<bool>,
         pub allow_merge_commits: Option<bool>,
@@ -8345,7 +8345,7 @@ pub mod structs {
 
     /// EditTeamOption options for editing a team
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditTeamOption {
         pub can_create_org_repo: Option<bool>,
         pub description: Option<String>,
@@ -8358,7 +8358,7 @@ pub mod structs {
 
     /// EditUserOption edit user options
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditUserOption {
         pub active: Option<bool>,
         pub admin: Option<bool>,
@@ -8382,7 +8382,7 @@ pub mod structs {
 
     /// Email an email address belonging to a user
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Email {
         pub email: Option<String>,
         pub primary: Option<bool>,
@@ -8393,7 +8393,7 @@ pub mod structs {
 
     /// ExternalTracker represents settings for external tracker
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ExternalTracker {
         pub external_tracker_format: Option<String>,
         pub external_tracker_regexp_pattern: Option<String>,
@@ -8404,13 +8404,13 @@ pub mod structs {
 
     /// ExternalWiki represents setting for external wiki
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ExternalWiki {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub external_wiki_url: Option<url::Url>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct FileCommitResponse {
         pub author: Option<CommitUser>,
         pub committer: Option<CommitUser>,
@@ -8427,7 +8427,7 @@ pub mod structs {
 
     /// FileDeleteResponse contains information about a repo's file that was deleted
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct FileDeleteResponse {
         pub commit: Option<FileCommitResponse>,
         pub content: Option<()>,
@@ -8436,7 +8436,7 @@ pub mod structs {
 
     /// FileLinksResponse contains the links for a repo's file
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct FileLinksResponse {
         pub git: Option<String>,
         pub html: Option<String>,
@@ -8446,7 +8446,7 @@ pub mod structs {
 
     /// FileResponse contains information about a repo's file
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct FileResponse {
         pub commit: Option<FileCommitResponse>,
         pub content: Option<ContentsResponse>,
@@ -8455,7 +8455,7 @@ pub mod structs {
 
     /// FilesResponse contains information about multiple files from a repo
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct FilesResponse {
         pub commit: Option<FileCommitResponse>,
         pub files: Option<Vec<ContentsResponse>>,
@@ -8464,7 +8464,7 @@ pub mod structs {
 
     /// GPGKey a user GPG key to sign commit and tag in repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GPGKey {
         pub can_certify: Option<bool>,
         pub can_encrypt_comms: Option<bool>,
@@ -8483,7 +8483,7 @@ pub mod structs {
 
     /// GPGKeyEmail an email attached to a GPGKey
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GPGKeyEmail {
         pub email: Option<String>,
         pub verified: Option<bool>,
@@ -8491,7 +8491,7 @@ pub mod structs {
 
     /// GeneralAPISettings contains global api settings exposed by it
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GeneralAPISettings {
         pub default_git_trees_per_page: Option<u64>,
         pub default_max_blob_size: Option<u64>,
@@ -8501,7 +8501,7 @@ pub mod structs {
 
     /// GeneralAttachmentSettings contains global Attachment settings exposed by API
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GeneralAttachmentSettings {
         pub allowed_types: Option<String>,
         pub enabled: Option<bool>,
@@ -8511,7 +8511,7 @@ pub mod structs {
 
     /// GeneralRepoSettings contains global repository settings exposed by API
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GeneralRepoSettings {
         pub http_git_disabled: Option<bool>,
         pub lfs_disabled: Option<bool>,
@@ -8523,7 +8523,7 @@ pub mod structs {
 
     /// GeneralUISettings contains global ui settings exposed by API
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GeneralUISettings {
         pub allowed_reactions: Option<Vec<String>>,
         pub custom_emojis: Option<Vec<String>>,
@@ -8532,7 +8532,7 @@ pub mod structs {
 
     /// GenerateRepoOption options when creating repository using a template
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GenerateRepoOption {
         pub avatar: Option<bool>,
         pub default_branch: Option<String>,
@@ -8550,7 +8550,7 @@ pub mod structs {
 
     /// GitBlobResponse represents a git blob
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GitBlobResponse {
         pub content: Option<String>,
         pub encoding: Option<String>,
@@ -8562,7 +8562,7 @@ pub mod structs {
 
     /// GitEntry represents a git tree
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GitEntry {
         pub mode: Option<String>,
         pub path: Option<String>,
@@ -8576,14 +8576,14 @@ pub mod structs {
 
     /// GitHook represents a Git repository hook
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GitHook {
         pub content: Option<String>,
         pub is_active: Option<bool>,
         pub name: Option<String>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GitObject {
         pub sha: Option<String>,
         #[serde(rename = "type")]
@@ -8594,7 +8594,7 @@ pub mod structs {
 
     /// GitTreeResponse returns a git tree
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GitTreeResponse {
         pub page: Option<u64>,
         pub sha: Option<String>,
@@ -8607,7 +8607,7 @@ pub mod structs {
 
     /// GitignoreTemplateInfo name and text of a gitignore template
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GitignoreTemplateInfo {
         pub name: Option<String>,
         pub source: Option<String>,
@@ -8615,7 +8615,7 @@ pub mod structs {
 
     /// Hook a hook is a web hook when one repository changed
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Hook {
         pub active: Option<bool>,
         pub authorization_header: Option<String>,
@@ -8631,7 +8631,7 @@ pub mod structs {
 
     /// Identity for a person's identity like an author or committer
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Identity {
         pub email: Option<String>,
         pub name: Option<String>,
@@ -8639,7 +8639,7 @@ pub mod structs {
 
     /// InternalTracker represents settings for internal tracker
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct InternalTracker {
         pub allow_only_contributors_to_track_time: Option<bool>,
         pub enable_issue_dependencies: Option<bool>,
@@ -8648,7 +8648,7 @@ pub mod structs {
 
     /// Issue represents an issue in a repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Issue {
         pub assets: Option<Vec<Attachment>>,
         pub assignee: Option<User>,
@@ -8680,13 +8680,13 @@ pub mod structs {
         pub user: Option<User>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueConfig {
         pub blank_issues_enabled: Option<bool>,
         pub contact_links: Option<Vec<IssueConfigContactLink>>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueConfigContactLink {
         pub about: Option<String>,
         pub name: Option<String>,
@@ -8694,7 +8694,7 @@ pub mod structs {
         pub url: Option<url::Url>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueConfigValidation {
         pub message: Option<String>,
         pub valid: Option<bool>,
@@ -8702,14 +8702,14 @@ pub mod structs {
 
     /// IssueDeadline represents an issue deadline
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueDeadline {
         pub due_date: Option<time::OffsetDateTime>,
     }
 
     /// IssueFormField represents a form field
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueFormField {
         pub attributes: Option<serde_json::Map<String, serde_json::Value>>,
         pub id: Option<String>,
@@ -8718,12 +8718,12 @@ pub mod structs {
         pub validations: Option<serde_json::Map<String, serde_json::Value>>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueFormFieldType {}
 
     /// IssueLabelsOption a collection of labels
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueLabelsOption {
         pub labels: Option<Vec<u64>>,
         pub updated_at: Option<time::OffsetDateTime>,
@@ -8731,7 +8731,7 @@ pub mod structs {
 
     /// IssueMeta basic issue information
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueMeta {
         pub index: Option<u64>,
         pub owner: Option<String>,
@@ -8740,7 +8740,7 @@ pub mod structs {
 
     /// IssueTemplate represents an issue template for a repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueTemplate {
         pub about: Option<String>,
         pub body: Option<Vec<IssueFormField>>,
@@ -8755,7 +8755,7 @@ pub mod structs {
 
     /// Label a label to an issue or a pr
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Label {
         pub color: Option<String>,
         pub description: Option<String>,
@@ -8769,7 +8769,7 @@ pub mod structs {
 
     /// LabelTemplate info of a Label template
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct LabelTemplate {
         pub color: Option<String>,
         pub description: Option<String>,
@@ -8779,7 +8779,7 @@ pub mod structs {
 
     /// LicensesInfo contains information about a License
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct LicenseTemplateInfo {
         pub body: Option<String>,
         pub implementation: Option<String>,
@@ -8791,7 +8791,7 @@ pub mod structs {
 
     /// LicensesListEntry is used for the API
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct LicensesTemplateListEntry {
         pub key: Option<String>,
         pub name: Option<String>,
@@ -8801,7 +8801,7 @@ pub mod structs {
 
     /// MarkdownOption markdown options
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct MarkdownOption {
         #[serde(rename = "Context")]
         pub context: Option<String>,
@@ -8815,7 +8815,7 @@ pub mod structs {
 
     /// MarkupOption markup options
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct MarkupOption {
         #[serde(rename = "Context")]
         pub context: Option<String>,
@@ -8831,7 +8831,7 @@ pub mod structs {
 
     /// MergePullRequestForm form for merging Pull Request
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct MergePullRequestOption {
         #[serde(rename = "Do")]
         pub r#do: String,
@@ -8851,7 +8851,7 @@ pub mod structs {
     ///
     /// this is used to interact with api v1
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct MigrateRepoOptions {
         pub auth_password: Option<String>,
         pub auth_token: Option<String>,
@@ -8877,7 +8877,7 @@ pub mod structs {
 
     /// Milestone milestone is a collection of issues on one repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Milestone {
         pub closed_at: Option<time::OffsetDateTime>,
         pub closed_issues: Option<u64>,
@@ -8893,7 +8893,7 @@ pub mod structs {
 
     /// NewIssuePinsAllowed represents an API response that says if new Issue Pins are allowed
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NewIssuePinsAllowed {
         pub issues: Option<bool>,
         pub pull_requests: Option<bool>,
@@ -8901,7 +8901,7 @@ pub mod structs {
 
     /// NodeInfo contains standardized way of exposing metadata about a server running one of the distributed social networks
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NodeInfo {
         pub metadata: Option<serde_json::Map<String, serde_json::Value>>,
         #[serde(rename = "openRegistrations")]
@@ -8915,7 +8915,7 @@ pub mod structs {
 
     /// NodeInfoServices contains the third party sites this server can connect to via their application API
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NodeInfoServices {
         pub inbound: Option<Vec<String>>,
         pub outbound: Option<Vec<String>>,
@@ -8923,7 +8923,7 @@ pub mod structs {
 
     /// NodeInfoSoftware contains Metadata about server software in use
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NodeInfoSoftware {
         pub homepage: Option<String>,
         pub name: Option<String>,
@@ -8933,7 +8933,7 @@ pub mod structs {
 
     /// NodeInfoUsage contains usage statistics for this server
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NodeInfoUsage {
         #[serde(rename = "localComments")]
         pub local_comments: Option<u64>,
@@ -8944,7 +8944,7 @@ pub mod structs {
 
     /// NodeInfoUsageUsers contains statistics about the users of this server
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NodeInfoUsageUsers {
         #[serde(rename = "activeHalfyear")]
         pub active_halfyear: Option<u64>,
@@ -8955,7 +8955,7 @@ pub mod structs {
 
     /// Note contains information related to a git note
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Note {
         pub commit: Option<Commit>,
         pub message: Option<String>,
@@ -8963,14 +8963,14 @@ pub mod structs {
 
     /// NotificationCount number of unread notifications
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NotificationCount {
         pub new: Option<u64>,
     }
 
     /// NotificationSubject contains the notification subject (Issue/Pull/Commit)
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NotificationSubject {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub html_url: Option<url::Url>,
@@ -8988,7 +8988,7 @@ pub mod structs {
 
     /// NotificationThread expose Notification on API
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NotificationThread {
         pub id: Option<u64>,
         pub pinned: Option<bool>,
@@ -9002,10 +9002,10 @@ pub mod structs {
 
     /// NotifySubjectType represent type of notification subject
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NotifySubjectType {}
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct OAuth2Application {
         pub client_id: Option<String>,
         pub client_secret: Option<String>,
@@ -9018,7 +9018,7 @@ pub mod structs {
 
     /// Organization represents an organization
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Organization {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub avatar_url: Option<url::Url>,
@@ -9036,7 +9036,7 @@ pub mod structs {
 
     /// OrganizationPermissions list different users permissions on an organization
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct OrganizationPermissions {
         pub can_create_repository: Option<bool>,
         pub can_read: Option<bool>,
@@ -9047,7 +9047,7 @@ pub mod structs {
 
     /// PRBranchInfo information about a branch
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PRBranchInfo {
         pub label: Option<String>,
         #[serde(rename = "ref")]
@@ -9059,7 +9059,7 @@ pub mod structs {
 
     /// Package represents a package
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Package {
         pub created_at: Option<time::OffsetDateTime>,
         pub creator: Option<User>,
@@ -9076,7 +9076,7 @@ pub mod structs {
 
     /// PackageFile represents a package file
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PackageFile {
         #[serde(rename = "Size")]
         pub size: Option<u64>,
@@ -9090,7 +9090,7 @@ pub mod structs {
 
     /// PayloadCommit represents a commit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PayloadCommit {
         pub added: Option<Vec<String>>,
         pub author: Option<PayloadUser>,
@@ -9107,7 +9107,7 @@ pub mod structs {
 
     /// PayloadCommitVerification represents the GPG verification of a commit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PayloadCommitVerification {
         pub payload: Option<String>,
         pub reason: Option<String>,
@@ -9118,7 +9118,7 @@ pub mod structs {
 
     /// PayloadUser represents the author or committer of a commit
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PayloadUser {
         pub email: Option<String>,
         pub name: Option<String>,
@@ -9127,7 +9127,7 @@ pub mod structs {
 
     /// Permission represents a set of permissions
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Permission {
         pub admin: Option<bool>,
         pub pull: Option<bool>,
@@ -9136,7 +9136,7 @@ pub mod structs {
 
     /// PublicKey publickey is a user key to push code to repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PublicKey {
         pub created_at: Option<time::OffsetDateTime>,
         pub fingerprint: Option<String>,
@@ -9152,7 +9152,7 @@ pub mod structs {
 
     /// PullRequest represents a pull request
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PullRequest {
         pub allow_maintainer_edit: Option<bool>,
         pub assignee: Option<User>,
@@ -9193,7 +9193,7 @@ pub mod structs {
 
     /// PullRequestMeta PR info if an issue is a PR
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PullRequestMeta {
         pub merged: Option<bool>,
         pub merged_at: Option<time::OffsetDateTime>,
@@ -9201,7 +9201,7 @@ pub mod structs {
 
     /// PullReview represents a pull request review
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PullReview {
         pub body: Option<String>,
         pub comments_count: Option<u64>,
@@ -9223,7 +9223,7 @@ pub mod structs {
 
     /// PullReviewComment represents a comment on a pull request review
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PullReviewComment {
         pub body: Option<String>,
         pub commit_id: Option<String>,
@@ -9246,7 +9246,7 @@ pub mod structs {
 
     /// PullReviewRequestOptions are options to add or remove pull review requests
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PullReviewRequestOptions {
         pub reviewers: Option<Vec<String>>,
         pub team_reviewers: Option<Vec<String>>,
@@ -9254,7 +9254,7 @@ pub mod structs {
 
     /// PushMirror represents information of a push mirror
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PushMirror {
         pub created: Option<String>,
         pub interval: Option<String>,
@@ -9268,14 +9268,14 @@ pub mod structs {
 
     /// Reaction contain one reaction
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Reaction {
         pub content: Option<String>,
         pub created_at: Option<time::OffsetDateTime>,
         pub user: Option<User>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Reference {
         pub object: Option<GitObject>,
         #[serde(rename = "ref")]
@@ -9286,7 +9286,7 @@ pub mod structs {
 
     /// Release represents a repository release
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Release {
         pub assets: Option<Vec<Attachment>>,
         pub author: Option<User>,
@@ -9313,21 +9313,21 @@ pub mod structs {
 
     /// RenameUserOption options when renaming a user
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RenameUserOption {
         pub new_username: String,
     }
 
     /// RepoCollaboratorPermission to get repository permission for a collaborator
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RepoCollaboratorPermission {
         pub permission: Option<String>,
         pub role_name: Option<String>,
         pub user: Option<User>,
     }
 
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RepoCommit {
         pub author: Option<CommitUser>,
         pub committer: Option<CommitUser>,
@@ -9340,14 +9340,14 @@ pub mod structs {
 
     /// RepoTopicOptions a collection of repo topic names
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RepoTopicOptions {
         pub topics: Option<Vec<String>>,
     }
 
     /// RepoTransfer represents a pending repo transfer
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RepoTransfer {
         pub doer: Option<User>,
         pub recipient: Option<User>,
@@ -9356,7 +9356,7 @@ pub mod structs {
 
     /// Repository represents a repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Repository {
         pub allow_merge_commits: Option<bool>,
         pub allow_rebase: Option<bool>,
@@ -9426,7 +9426,7 @@ pub mod structs {
 
     /// RepositoryMeta basic repository information
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RepositoryMeta {
         pub full_name: Option<String>,
         pub id: Option<u64>,
@@ -9436,12 +9436,12 @@ pub mod structs {
 
     /// ReviewStateType review state type
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ReviewStateType {}
 
     /// SearchResults results of a successful search
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct SearchResults {
         pub data: Option<Vec<Repository>>,
         pub ok: Option<bool>,
@@ -9449,7 +9449,7 @@ pub mod structs {
 
     /// Secret represents a secret
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Secret {
         pub created_at: Option<time::OffsetDateTime>,
         pub name: Option<String>,
@@ -9457,19 +9457,19 @@ pub mod structs {
 
     /// ServerVersion wraps the version of the server
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ServerVersion {
         pub version: Option<String>,
     }
 
     /// StateType issue state type
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct StateType {}
 
     /// StopWatch represent a running stopwatch
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct StopWatch {
         pub created: Option<time::OffsetDateTime>,
         pub duration: Option<String>,
@@ -9482,7 +9482,7 @@ pub mod structs {
 
     /// SubmitPullReviewOptions are options to submit a pending pull review
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct SubmitPullReviewOptions {
         pub body: Option<String>,
         pub event: Option<String>,
@@ -9490,7 +9490,7 @@ pub mod structs {
 
     /// Tag represents a repository tag
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Tag {
         pub commit: Option<CommitMeta>,
         pub id: Option<String>,
@@ -9504,7 +9504,7 @@ pub mod structs {
 
     /// Team represents a team in an organization
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Team {
         pub can_create_org_repo: Option<bool>,
         pub description: Option<String>,
@@ -9519,12 +9519,12 @@ pub mod structs {
 
     /// TimeStamp defines a timestamp
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TimeStamp {}
 
     /// TimelineComment represents a timeline comment (comment of any type) on a commit or issue
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TimelineComment {
         pub assignee: Option<User>,
         pub assignee_team: Option<Team>,
@@ -9563,14 +9563,14 @@ pub mod structs {
 
     /// TopicName a list of repo topic names
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TopicName {
         pub topics: Option<Vec<String>>,
     }
 
     /// TopicResponse for returning topics
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TopicResponse {
         pub created: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
@@ -9581,7 +9581,7 @@ pub mod structs {
 
     /// TrackedTime worked time for an issue / pr
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TrackedTime {
         pub created: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
@@ -9594,7 +9594,7 @@ pub mod structs {
 
     /// TransferRepoOption options when transfer a repository's ownership
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TransferRepoOption {
         pub new_owner: String,
         pub team_ids: Option<Vec<u64>>,
@@ -9604,7 +9604,7 @@ pub mod structs {
     ///
     /// Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UpdateFileOptions {
         pub author: Option<Identity>,
         pub branch: Option<String>,
@@ -9620,21 +9620,21 @@ pub mod structs {
 
     /// UpdateRepoAvatarUserOption options when updating the repo avatar
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UpdateRepoAvatarOption {
         pub image: Option<String>,
     }
 
     /// UpdateUserAvatarUserOption options when updating the user avatar
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UpdateUserAvatarOption {
         pub image: Option<String>,
     }
 
     /// User represents a user
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct User {
         pub active: Option<bool>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9661,7 +9661,7 @@ pub mod structs {
 
     /// UserHeatmapData represents the data needed to create a heatmap
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UserHeatmapData {
         pub contributions: Option<u64>,
         pub timestamp: Option<u64>,
@@ -9669,7 +9669,7 @@ pub mod structs {
 
     /// UserSettings represents user settings
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UserSettings {
         pub description: Option<String>,
         pub diff_view_style: Option<String>,
@@ -9684,7 +9684,7 @@ pub mod structs {
 
     /// UserSettingsOptions represents options to change user settings
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UserSettingsOptions {
         pub description: Option<String>,
         pub diff_view_style: Option<String>,
@@ -9699,7 +9699,7 @@ pub mod structs {
 
     /// WatchInfo represents an API watch status of one repository
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct WatchInfo {
         pub created_at: Option<time::OffsetDateTime>,
         pub ignored: Option<bool>,
@@ -9713,7 +9713,7 @@ pub mod structs {
 
     /// WikiCommit page commit/revision
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct WikiCommit {
         pub author: Option<CommitUser>,
         pub commiter: Option<CommitUser>,
@@ -9723,7 +9723,7 @@ pub mod structs {
 
     /// WikiCommitList commit/revision list
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct WikiCommitList {
         pub commits: Option<Vec<WikiCommit>>,
         pub count: Option<u64>,
@@ -9731,7 +9731,7 @@ pub mod structs {
 
     /// WikiPage a wiki page
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct WikiPage {
         pub commit_count: Option<u64>,
         pub content_base64: Option<String>,
@@ -9747,7 +9747,7 @@ pub mod structs {
 
     /// WikiPageMetaData wiki page meta information
     ///
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct WikiPageMetaData {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub html_url: Option<url::Url>,
