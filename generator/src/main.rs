@@ -738,6 +738,14 @@ fn create_struct_for_definition(
         }
     }
 
+    if let Some(additonal_schema) = &schema.additional_properties {
+        let prop_ty = schema_ref_type_name(spec, additonal_schema)?;
+        fields.push_str("#[serde(flatten)]\n");
+        fields.push_str("pub additional: std::collections::BTreeMap<String, ");
+        fields.push_str(&prop_ty);
+        fields.push_str(">,\n");
+    }
+
     let out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
     Ok(out)
 }

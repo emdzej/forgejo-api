@@ -7870,7 +7870,10 @@ pub mod structs {
     /// required are "content_type" and "url" Required
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-    pub struct CreateHookOptionConfig {}
+    pub struct CreateHookOptionConfig {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, String>,
+    }
 
     /// CreateIssueCommentOption options for creating a comment on an issue
     ///

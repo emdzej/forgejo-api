@@ -249,6 +249,7 @@ pub struct Schema {
     #[serde(rename = "type")]
     pub _type: Option<SchemaType>,
     pub properties: Option<BTreeMap<String, MaybeRef<Schema>>>,
+    pub additional_properties: Option<Box<MaybeRef<Schema>>>,
     pub items: Option<Box<MaybeRef<Schema>>>,
 
     pub discriminator: Option<String>,
