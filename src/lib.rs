@@ -26,8 +26,8 @@ pub enum ForgejoError {
     BadStructure(#[source] serde_json::Error, String),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
-    #[error("{} {}: {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1)]
-    ApiError(StatusCode, String),
+    #[error("{} {}{}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1.as_ref().map(|s| format!(": {s}")).unwrap_or_default())]
+    ApiError(StatusCode, Option<String>),
     #[error("the provided authorization was too long to accept")]
     AuthTooLong,
 }
@@ -148,22 +148,21 @@ impl Forgejo {
         let response = self.client.execute(request).await?;
         match response.status() {
             status if status.is_success() => Ok(response),
-            status if status.is_client_error() => Err(ForgejoError::ApiError(
-                status,
-                response
-                    .json::<ErrorMessage>()
-                    .await?
-                    .message
-                    .unwrap_or_else(|| String::from("[no message]")),
-            )),
+            status if status.is_client_error() => {
+                Err(ForgejoError::ApiError(status, maybe_err(response).await))
+            }
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
     }
 }
 
+async fn maybe_err(res: reqwest::Response) -> Option<String> {
+    res.json::<ErrorMessage>().await.ok().map(|e| e.message)
+}
+
 #[derive(serde::Deserialize)]
 struct ErrorMessage {
-    message: Option<String>,
+    message: String,
     // intentionally ignored, no need for now
     // url: Url
 }
