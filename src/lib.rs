@@ -119,6 +119,20 @@ impl Forgejo {
         Ok(Self { url, client })
     }
 
+    pub async fn download_release_attachment(
+        &self,
+        owner: &str,
+        repo: &str,
+        release: u64,
+        attach: u64,
+    ) -> Result<bytes::Bytes, ForgejoError> {
+        let release = self
+            .repo_get_release_attachment(owner, repo, release, attach)
+            .await?;
+        let request = self.client.get(format!("/attachments/{}", release.uuid.unwrap())).build()?;
+        Ok(self.execute(request).await?.bytes().await?)
+    }
+
     fn get(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1").unwrap().join(path).unwrap();
         self.client.get(url)
