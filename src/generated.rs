@@ -5,7 +5,7 @@ impl crate::Forgejo {
     /// - `user-id`: user ID of the user
     pub async fn activitypub_person(&self, user_id: u32) -> Result<ActivityPub, ForgejoError> {
         let request = self
-            .get(&format!("/activitypub/user-id/{user_id}"))
+            .get(&format!("activitypub/user-id/{user_id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -19,7 +19,7 @@ impl crate::Forgejo {
     /// - `user-id`: user ID of the user
     pub async fn activitypub_person_inbox(&self, user_id: u32) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/activitypub/user-id/{user_id}/inbox"))
+            .post(&format!("activitypub/user-id/{user_id}/inbox"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -35,7 +35,7 @@ impl crate::Forgejo {
         query: AdminCronListQuery,
     ) -> Result<Vec<Cron>, ForgejoError> {
         let request = self
-            .get(&format!("/admin/cron?{}", query.to_string()))
+            .get(&format!("admin/cron?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -48,7 +48,7 @@ impl crate::Forgejo {
     ///
     /// - `task`: task to run
     pub async fn admin_cron_run(&self, task: &str) -> Result<(), ForgejoError> {
-        let request = self.post(&format!("/admin/cron/{task}")).build()?;
+        let request = self.post(&format!("admin/cron/{task}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -63,7 +63,7 @@ impl crate::Forgejo {
         query: AdminGetAllEmailsQuery,
     ) -> Result<Vec<Email>, ForgejoError> {
         let request = self
-            .get(&format!("/admin/emails?{}", query.to_string()))
+            .get(&format!("admin/emails?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -79,7 +79,7 @@ impl crate::Forgejo {
         query: AdminSearchEmailsQuery,
     ) -> Result<Vec<Email>, ForgejoError> {
         let request = self
-            .get(&format!("/admin/emails/search?{}", query.to_string()))
+            .get(&format!("admin/emails/search?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -95,7 +95,7 @@ impl crate::Forgejo {
         query: AdminListHooksQuery,
     ) -> Result<Vec<Hook>, ForgejoError> {
         let request = self
-            .get(&format!("/admin/hooks?{}", query.to_string()))
+            .get(&format!("admin/hooks?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -108,7 +108,7 @@ impl crate::Forgejo {
     ///
     /// - `body`
     pub async fn admin_create_hook(&self, body: CreateHookOption) -> Result<Hook, ForgejoError> {
-        let request = self.post("/admin/hooks").json(&body).build()?;
+        let request = self.post("admin/hooks").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -120,7 +120,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of the hook to get
     pub async fn admin_get_hook(&self, id: u64) -> Result<Hook, ForgejoError> {
-        let request = self.get(&format!("/admin/hooks/{id}")).build()?;
+        let request = self.get(&format!("admin/hooks/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -132,7 +132,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of the hook to delete
     pub async fn admin_delete_hook(&self, id: u64) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/admin/hooks/{id}")).build()?;
+        let request = self.delete(&format!("admin/hooks/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -150,7 +150,7 @@ impl crate::Forgejo {
         body: EditHookOption,
     ) -> Result<Hook, ForgejoError> {
         let request = self
-            .patch(&format!("/admin/hooks/{id}"))
+            .patch(&format!("admin/hooks/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -167,7 +167,7 @@ impl crate::Forgejo {
         query: AdminGetAllOrgsQuery,
     ) -> Result<Vec<Organization>, ForgejoError> {
         let request = self
-            .get(&format!("/admin/orgs?{}", query.to_string()))
+            .get(&format!("admin/orgs?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -183,7 +183,7 @@ impl crate::Forgejo {
         query: AdminUnadoptedListQuery,
     ) -> Result<Vec<String>, ForgejoError> {
         let request = self
-            .get(&format!("/admin/unadopted?{}", query.to_string()))
+            .get(&format!("admin/unadopted?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -202,7 +202,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/admin/unadopted/{owner}/{repo}"))
+            .post(&format!("admin/unadopted/{owner}/{repo}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -221,7 +221,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/admin/unadopted/{owner}/{repo}"))
+            .delete(&format!("admin/unadopted/{owner}/{repo}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -237,7 +237,7 @@ impl crate::Forgejo {
         query: AdminSearchUsersQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/admin/users?{}", query.to_string()))
+            .get(&format!("admin/users?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -250,7 +250,7 @@ impl crate::Forgejo {
     ///
     /// - `body`
     pub async fn admin_create_user(&self, body: CreateUserOption) -> Result<User, ForgejoError> {
-        let request = self.post("/admin/users").json(&body).build()?;
+        let request = self.post("admin/users").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -267,7 +267,7 @@ impl crate::Forgejo {
         query: AdminDeleteUserQuery,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/admin/users/{username}?{}", query.to_string()))
+            .delete(&format!("admin/users/{username}?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -286,7 +286,7 @@ impl crate::Forgejo {
         body: EditUserOption,
     ) -> Result<User, ForgejoError> {
         let request = self
-            .patch(&format!("/admin/users/{username}"))
+            .patch(&format!("admin/users/{username}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -306,7 +306,7 @@ impl crate::Forgejo {
         key: CreateKeyOption,
     ) -> Result<PublicKey, ForgejoError> {
         let request = self
-            .post(&format!("/admin/users/{username}/keys"))
+            .post(&format!("admin/users/{username}/keys"))
             .json(&key)
             .build()?;
         let response = self.execute(request).await?;
@@ -326,7 +326,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/admin/users/{username}/keys/{id}"))
+            .delete(&format!("admin/users/{username}/keys/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -345,7 +345,7 @@ impl crate::Forgejo {
         organization: CreateOrgOption,
     ) -> Result<Organization, ForgejoError> {
         let request = self
-            .post(&format!("/admin/users/{username}/orgs"))
+            .post(&format!("admin/users/{username}/orgs"))
             .json(&organization)
             .build()?;
         let response = self.execute(request).await?;
@@ -365,7 +365,7 @@ impl crate::Forgejo {
         body: RenameUserOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/admin/users/{username}/rename"))
+            .post(&format!("admin/users/{username}/rename"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -385,7 +385,7 @@ impl crate::Forgejo {
         repository: CreateRepoOption,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .post(&format!("/admin/users/{username}/repos"))
+            .post(&format!("admin/users/{username}/repos"))
             .json(&repository)
             .build()?;
         let response = self.execute(request).await?;
@@ -397,7 +397,7 @@ impl crate::Forgejo {
 
     /// Returns a list of all gitignore templates
     pub async fn list_gitignores_templates(&self) -> Result<Vec<String>, ForgejoError> {
-        let request = self.get("/gitignore/templates").build()?;
+        let request = self.get("gitignore/templates").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -412,7 +412,7 @@ impl crate::Forgejo {
         &self,
         name: &str,
     ) -> Result<GitignoreTemplateInfo, ForgejoError> {
-        let request = self.get(&format!("/gitignore/templates/{name}")).build()?;
+        let request = self.get(&format!("gitignore/templates/{name}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -422,7 +422,7 @@ impl crate::Forgejo {
 
     /// Returns a list of all label templates
     pub async fn list_label_templates(&self) -> Result<Vec<String>, ForgejoError> {
-        let request = self.get("/label/templates").build()?;
+        let request = self.get("label/templates").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -437,7 +437,7 @@ impl crate::Forgejo {
         &self,
         name: &str,
     ) -> Result<Vec<LabelTemplate>, ForgejoError> {
-        let request = self.get(&format!("/label/templates/{name}")).build()?;
+        let request = self.get(&format!("label/templates/{name}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -449,7 +449,7 @@ impl crate::Forgejo {
     pub async fn list_license_templates(
         &self,
     ) -> Result<Vec<LicensesTemplateListEntry>, ForgejoError> {
-        let request = self.get("/licenses").build()?;
+        let request = self.get("licenses").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -464,7 +464,7 @@ impl crate::Forgejo {
         &self,
         name: &str,
     ) -> Result<LicenseTemplateInfo, ForgejoError> {
-        let request = self.get(&format!("/licenses/{name}")).build()?;
+        let request = self.get(&format!("licenses/{name}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -476,7 +476,7 @@ impl crate::Forgejo {
     ///
     /// - `body`
     pub async fn render_markdown(&self, body: MarkdownOption) -> Result<String, ForgejoError> {
-        let request = self.post("/markdown").json(&body).build()?;
+        let request = self.post("markdown").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.text().await?),
@@ -488,7 +488,7 @@ impl crate::Forgejo {
     ///
     /// - `body`: Request body to render
     pub async fn render_markdown_raw(&self, body: String) -> Result<String, ForgejoError> {
-        let request = self.post("/markdown/raw").body(body).build()?;
+        let request = self.post("markdown/raw").body(body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.text().await?),
@@ -500,7 +500,7 @@ impl crate::Forgejo {
     ///
     /// - `body`
     pub async fn render_markup(&self, body: MarkupOption) -> Result<String, ForgejoError> {
-        let request = self.post("/markup").json(&body).build()?;
+        let request = self.post("markup").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.text().await?),
@@ -510,7 +510,7 @@ impl crate::Forgejo {
 
     /// Returns the nodeinfo of the Gitea application
     pub async fn get_node_info(&self) -> Result<NodeInfo, ForgejoError> {
-        let request = self.get("/nodeinfo").build()?;
+        let request = self.get("nodeinfo").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -525,7 +525,7 @@ impl crate::Forgejo {
         query: NotifyGetListQuery,
     ) -> Result<Vec<NotificationThread>, ForgejoError> {
         let request = self
-            .get(&format!("/notifications?{}", query.to_string()))
+            .get(&format!("notifications?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -541,7 +541,7 @@ impl crate::Forgejo {
         query: NotifyReadListQuery,
     ) -> Result<Vec<NotificationThread>, ForgejoError> {
         let request = self
-            .put(&format!("/notifications?{}", query.to_string()))
+            .put(&format!("notifications?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -552,7 +552,7 @@ impl crate::Forgejo {
 
     /// Check if unread notifications exist
     pub async fn notify_new_available(&self) -> Result<NotificationCount, ForgejoError> {
-        let request = self.get("/notifications/new").build()?;
+        let request = self.get("notifications/new").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -564,7 +564,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of notification thread
     pub async fn notify_get_thread(&self, id: &str) -> Result<NotificationThread, ForgejoError> {
-        let request = self.get(&format!("/notifications/threads/{id}")).build()?;
+        let request = self.get(&format!("notifications/threads/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -581,10 +581,7 @@ impl crate::Forgejo {
         query: NotifyReadThreadQuery,
     ) -> Result<NotificationThread, ForgejoError> {
         let request = self
-            .patch(&format!(
-                "/notifications/threads/{id}?{}",
-                query.to_string()
-            ))
+            .patch(&format!("notifications/threads/{id}?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -602,10 +599,7 @@ impl crate::Forgejo {
         org: &str,
         body: CreateRepoOption,
     ) -> Result<Repository, ForgejoError> {
-        let request = self
-            .post(&format!("/org/{org}/repos"))
-            .json(&body)
-            .build()?;
+        let request = self.post(&format!("org/{org}/repos")).json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -619,7 +613,7 @@ impl crate::Forgejo {
         &self,
         query: OrgGetAllQuery,
     ) -> Result<Vec<Organization>, ForgejoError> {
-        let request = self.get(&format!("/orgs?{}", query.to_string())).build()?;
+        let request = self.get(&format!("orgs?{}", query.to_string())).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -634,7 +628,7 @@ impl crate::Forgejo {
         &self,
         organization: CreateOrgOption,
     ) -> Result<Organization, ForgejoError> {
-        let request = self.post("/orgs").json(&organization).build()?;
+        let request = self.post("orgs").json(&organization).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -646,7 +640,7 @@ impl crate::Forgejo {
     ///
     /// - `org`: name of the organization to get
     pub async fn org_get(&self, org: &str) -> Result<Organization, ForgejoError> {
-        let request = self.get(&format!("/orgs/{org}")).build()?;
+        let request = self.get(&format!("orgs/{org}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -658,7 +652,7 @@ impl crate::Forgejo {
     ///
     /// - `org`: organization that is to be deleted
     pub async fn org_delete(&self, org: &str) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/orgs/{org}")).build()?;
+        let request = self.delete(&format!("orgs/{org}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -675,7 +669,7 @@ impl crate::Forgejo {
         org: &str,
         body: EditOrgOption,
     ) -> Result<Organization, ForgejoError> {
-        let request = self.patch(&format!("/orgs/{org}")).json(&body).build()?;
+        let request = self.patch(&format!("orgs/{org}")).json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -692,10 +686,7 @@ impl crate::Forgejo {
         query: OrgListActionsSecretsQuery,
     ) -> Result<Vec<Secret>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/orgs/{org}/actions/secrets?{}",
-                query.to_string()
-            ))
+            .get(&format!("orgs/{org}/actions/secrets?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -716,7 +707,7 @@ impl crate::Forgejo {
         body: CreateOrUpdateSecretOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/orgs/{org}/actions/secrets/{secretname}"))
+            .put(&format!("orgs/{org}/actions/secrets/{secretname}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -733,7 +724,7 @@ impl crate::Forgejo {
     /// - `secretname`: name of the secret
     pub async fn delete_org_secret(&self, org: &str, secretname: &str) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/orgs/{org}/actions/secrets/{secretname}"))
+            .delete(&format!("orgs/{org}/actions/secrets/{secretname}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -752,7 +743,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Activity>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/orgs/{org}/activities/feeds?{}",
+                "orgs/{org}/activities/feeds?{}",
                 query.to_string()
             ))
             .build()?;
@@ -773,7 +764,7 @@ impl crate::Forgejo {
         body: UpdateUserAvatarOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/orgs/{org}/avatar"))
+            .post(&format!("orgs/{org}/avatar"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -787,7 +778,7 @@ impl crate::Forgejo {
     ///
     /// - `org`: name of the organization
     pub async fn org_delete_avatar(&self, org: &str) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/orgs/{org}/avatar")).build()?;
+        let request = self.delete(&format!("orgs/{org}/avatar")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -800,7 +791,7 @@ impl crate::Forgejo {
     /// - `org`: name of the org
     /// - `username`: username of the user
     pub async fn org_block_user(&self, org: &str, username: &str) -> Result<(), ForgejoError> {
-        let request = self.put(&format!("/orgs/{org}/block/{username}")).build()?;
+        let request = self.put(&format!("orgs/{org}/block/{username}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -817,7 +808,7 @@ impl crate::Forgejo {
         query: OrgListHooksQuery,
     ) -> Result<Vec<Hook>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/hooks?{}", query.to_string()))
+            .get(&format!("orgs/{org}/hooks?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -836,7 +827,7 @@ impl crate::Forgejo {
         body: CreateHookOption,
     ) -> Result<Hook, ForgejoError> {
         let request = self
-            .post(&format!("/orgs/{org}/hooks"))
+            .post(&format!("orgs/{org}/hooks"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -851,7 +842,7 @@ impl crate::Forgejo {
     /// - `org`: name of the organization
     /// - `id`: id of the hook to get
     pub async fn org_get_hook(&self, org: &str, id: u64) -> Result<Hook, ForgejoError> {
-        let request = self.get(&format!("/orgs/{org}/hooks/{id}")).build()?;
+        let request = self.get(&format!("orgs/{org}/hooks/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -864,7 +855,7 @@ impl crate::Forgejo {
     /// - `org`: name of the organization
     /// - `id`: id of the hook to delete
     pub async fn org_delete_hook(&self, org: &str, id: u64) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/orgs/{org}/hooks/{id}")).build()?;
+        let request = self.delete(&format!("orgs/{org}/hooks/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -884,7 +875,7 @@ impl crate::Forgejo {
         body: EditHookOption,
     ) -> Result<Hook, ForgejoError> {
         let request = self
-            .patch(&format!("/orgs/{org}/hooks/{id}"))
+            .patch(&format!("orgs/{org}/hooks/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -903,7 +894,7 @@ impl crate::Forgejo {
         query: OrgListLabelsQuery,
     ) -> Result<Vec<Label>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/labels?{}", query.to_string()))
+            .get(&format!("orgs/{org}/labels?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -922,7 +913,7 @@ impl crate::Forgejo {
         body: CreateLabelOption,
     ) -> Result<Label, ForgejoError> {
         let request = self
-            .post(&format!("/orgs/{org}/labels"))
+            .post(&format!("orgs/{org}/labels"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -937,7 +928,7 @@ impl crate::Forgejo {
     /// - `org`: name of the organization
     /// - `id`: id of the label to get
     pub async fn org_get_label(&self, org: &str, id: u64) -> Result<Label, ForgejoError> {
-        let request = self.get(&format!("/orgs/{org}/labels/{id}")).build()?;
+        let request = self.get(&format!("orgs/{org}/labels/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -950,7 +941,7 @@ impl crate::Forgejo {
     /// - `org`: name of the organization
     /// - `id`: id of the label to delete
     pub async fn org_delete_label(&self, org: &str, id: u64) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/orgs/{org}/labels/{id}")).build()?;
+        let request = self.delete(&format!("orgs/{org}/labels/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -970,7 +961,7 @@ impl crate::Forgejo {
         body: EditLabelOption,
     ) -> Result<Label, ForgejoError> {
         let request = self
-            .patch(&format!("/orgs/{org}/labels/{id}"))
+            .patch(&format!("orgs/{org}/labels/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -989,7 +980,7 @@ impl crate::Forgejo {
         query: OrgListBlockedUsersQuery,
     ) -> Result<Vec<BlockedUser>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/list_blocked?{}", query.to_string()))
+            .get(&format!("orgs/{org}/list_blocked?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1007,7 +998,7 @@ impl crate::Forgejo {
         query: OrgListMembersQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/members?{}", query.to_string()))
+            .get(&format!("orgs/{org}/members?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1022,7 +1013,7 @@ impl crate::Forgejo {
     /// - `username`: username of the user
     pub async fn org_is_member(&self, org: &str, username: &str) -> Result<(), ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/members/{username}"))
+            .get(&format!("orgs/{org}/members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1037,7 +1028,7 @@ impl crate::Forgejo {
     /// - `username`: username of the user
     pub async fn org_delete_member(&self, org: &str, username: &str) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/orgs/{org}/members/{username}"))
+            .delete(&format!("orgs/{org}/members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1055,7 +1046,7 @@ impl crate::Forgejo {
         query: OrgListPublicMembersQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/public_members?{}", query.to_string()))
+            .get(&format!("orgs/{org}/public_members?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1074,7 +1065,7 @@ impl crate::Forgejo {
         username: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/public_members/{username}"))
+            .get(&format!("orgs/{org}/public_members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1093,7 +1084,7 @@ impl crate::Forgejo {
         username: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/orgs/{org}/public_members/{username}"))
+            .put(&format!("orgs/{org}/public_members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1108,7 +1099,7 @@ impl crate::Forgejo {
     /// - `username`: username of the user
     pub async fn org_conceal_member(&self, org: &str, username: &str) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/orgs/{org}/public_members/{username}"))
+            .delete(&format!("orgs/{org}/public_members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1126,7 +1117,7 @@ impl crate::Forgejo {
         query: OrgListReposQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/repos?{}", query.to_string()))
+            .get(&format!("orgs/{org}/repos?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1145,7 +1136,7 @@ impl crate::Forgejo {
         body: CreateRepoOption,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .post(&format!("/orgs/{org}/repos"))
+            .post(&format!("orgs/{org}/repos"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1164,7 +1155,7 @@ impl crate::Forgejo {
         query: OrgListTeamsQuery,
     ) -> Result<Vec<Team>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/teams?{}", query.to_string()))
+            .get(&format!("orgs/{org}/teams?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1183,7 +1174,7 @@ impl crate::Forgejo {
         body: CreateTeamOption,
     ) -> Result<Team, ForgejoError> {
         let request = self
-            .post(&format!("/orgs/{org}/teams"))
+            .post(&format!("orgs/{org}/teams"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1202,7 +1193,7 @@ impl crate::Forgejo {
         query: TeamSearchQuery,
     ) -> Result<serde_json::Map<String, serde_json::Value>, ForgejoError> {
         let request = self
-            .get(&format!("/orgs/{org}/teams/search?{}", query.to_string()))
+            .get(&format!("orgs/{org}/teams/search?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1217,7 +1208,7 @@ impl crate::Forgejo {
     /// - `username`: username of the user
     pub async fn org_unblock_user(&self, org: &str, username: &str) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/orgs/{org}/unblock/{username}"))
+            .put(&format!("orgs/{org}/unblock/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1235,7 +1226,7 @@ impl crate::Forgejo {
         query: ListPackagesQuery,
     ) -> Result<Vec<Package>, ForgejoError> {
         let request = self
-            .get(&format!("/packages/{owner}?{}", query.to_string()))
+            .get(&format!("packages/{owner}?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1258,7 +1249,7 @@ impl crate::Forgejo {
         version: &str,
     ) -> Result<Package, ForgejoError> {
         let request = self
-            .get(&format!("/packages/{owner}/{type}/{name}/{version}"))
+            .get(&format!("packages/{owner}/{type}/{name}/{version}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1281,7 +1272,7 @@ impl crate::Forgejo {
         version: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/packages/{owner}/{type}/{name}/{version}"))
+            .delete(&format!("packages/{owner}/{type}/{name}/{version}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1304,7 +1295,7 @@ impl crate::Forgejo {
         version: &str,
     ) -> Result<Vec<PackageFile>, ForgejoError> {
         let request = self
-            .get(&format!("/packages/{owner}/{type}/{name}/{version}/files"))
+            .get(&format!("packages/{owner}/{type}/{name}/{version}/files"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1320,7 +1311,7 @@ impl crate::Forgejo {
         query: IssueSearchIssuesQuery,
     ) -> Result<Vec<Issue>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/issues/search?{}", query.to_string()))
+            .get(&format!("repos/issues/search?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1333,7 +1324,7 @@ impl crate::Forgejo {
     ///
     /// - `body`
     pub async fn repo_migrate(&self, body: MigrateRepoOptions) -> Result<Repository, ForgejoError> {
-        let request = self.post("/repos/migrate").json(&body).build()?;
+        let request = self.post("repos/migrate").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -1345,7 +1336,7 @@ impl crate::Forgejo {
     ///
     pub async fn repo_search(&self, query: RepoSearchQuery) -> Result<SearchResults, ForgejoError> {
         let request = self
-            .get(&format!("/repos/search?{}", query.to_string()))
+            .get(&format!("repos/search?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1359,7 +1350,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     pub async fn repo_get(&self, owner: &str, repo: &str) -> Result<Repository, ForgejoError> {
-        let request = self.get(&format!("/repos/{owner}/{repo}")).build()?;
+        let request = self.get(&format!("repos/{owner}/{repo}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -1372,7 +1363,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo to delete
     /// - `repo`: name of the repo to delete
     pub async fn repo_delete(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/repos/{owner}/{repo}")).build()?;
+        let request = self.delete(&format!("repos/{owner}/{repo}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -1392,7 +1383,7 @@ impl crate::Forgejo {
         body: EditRepoOption,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}"))
+            .patch(&format!("repos/{owner}/{repo}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1417,7 +1408,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .put(&format!(
-                "/repos/{owner}/{repo}/actions/secrets/{secretname}"
+                "repos/{owner}/{repo}/actions/secrets/{secretname}"
             ))
             .json(&body)
             .build()?;
@@ -1442,7 +1433,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/actions/secrets/{secretname}"
+                "repos/{owner}/{repo}/actions/secrets/{secretname}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -1464,7 +1455,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Activity>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/activities/feeds?{}",
+                "repos/{owner}/{repo}/activities/feeds?{}",
                 query.to_string()
             ))
             .build()?;
@@ -1487,7 +1478,7 @@ impl crate::Forgejo {
         archive: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/archive/{archive}"))
+            .get(&format!("repos/{owner}/{repo}/archive/{archive}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1506,7 +1497,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/assignees"))
+            .get(&format!("repos/{owner}/{repo}/assignees"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1527,7 +1518,7 @@ impl crate::Forgejo {
         body: UpdateRepoAvatarOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/avatar"))
+            .post(&format!("repos/{owner}/{repo}/avatar"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1543,7 +1534,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     pub async fn repo_delete_avatar(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/avatar"))
+            .delete(&format!("repos/{owner}/{repo}/avatar"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1562,7 +1553,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<BranchProtection>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/branch_protections"))
+            .get(&format!("repos/{owner}/{repo}/branch_protections"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1583,7 +1574,7 @@ impl crate::Forgejo {
         body: CreateBranchProtectionOption,
     ) -> Result<BranchProtection, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/branch_protections"))
+            .post(&format!("repos/{owner}/{repo}/branch_protections"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1605,7 +1596,7 @@ impl crate::Forgejo {
         name: &str,
     ) -> Result<BranchProtection, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/branch_protections/{name}"))
+            .get(&format!("repos/{owner}/{repo}/branch_protections/{name}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1626,7 +1617,7 @@ impl crate::Forgejo {
         name: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/branch_protections/{name}"))
+            .delete(&format!("repos/{owner}/{repo}/branch_protections/{name}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1649,7 +1640,7 @@ impl crate::Forgejo {
         body: EditBranchProtectionOption,
     ) -> Result<BranchProtection, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/branch_protections/{name}"))
+            .patch(&format!("repos/{owner}/{repo}/branch_protections/{name}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1671,7 +1662,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Branch>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/branches?{}",
+                "repos/{owner}/{repo}/branches?{}",
                 query.to_string()
             ))
             .build()?;
@@ -1694,7 +1685,7 @@ impl crate::Forgejo {
         body: CreateBranchRepoOption,
     ) -> Result<Branch, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/branches"))
+            .post(&format!("repos/{owner}/{repo}/branches"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1716,7 +1707,7 @@ impl crate::Forgejo {
         branch: &str,
     ) -> Result<Branch, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/branches/{branch}"))
+            .get(&format!("repos/{owner}/{repo}/branches/{branch}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1737,7 +1728,7 @@ impl crate::Forgejo {
         branch: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/branches/{branch}"))
+            .delete(&format!("repos/{owner}/{repo}/branches/{branch}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1758,7 +1749,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/collaborators?{}",
+                "repos/{owner}/{repo}/collaborators?{}",
                 query.to_string()
             ))
             .build()?;
@@ -1782,7 +1773,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/collaborators/{collaborator}"
+                "repos/{owner}/{repo}/collaborators/{collaborator}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -1807,7 +1798,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .put(&format!(
-                "/repos/{owner}/{repo}/collaborators/{collaborator}"
+                "repos/{owner}/{repo}/collaborators/{collaborator}"
             ))
             .json(&body)
             .build()?;
@@ -1831,7 +1822,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/collaborators/{collaborator}"
+                "repos/{owner}/{repo}/collaborators/{collaborator}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -1854,7 +1845,7 @@ impl crate::Forgejo {
     ) -> Result<RepoCollaboratorPermission, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/collaborators/{collaborator}/permission"
+                "repos/{owner}/{repo}/collaborators/{collaborator}/permission"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -1876,7 +1867,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Commit>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/commits?{}",
+                "repos/{owner}/{repo}/commits?{}",
                 query.to_string()
             ))
             .build()?;
@@ -1901,7 +1892,7 @@ impl crate::Forgejo {
     ) -> Result<CombinedStatus, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/commits/{ref}/status?{}",
+                "repos/{owner}/{repo}/commits/{ref}/status?{}",
                 query.to_string()
             ))
             .build()?;
@@ -1926,7 +1917,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<CommitStatus>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/commits/{ref}/statuses?{}",
+                "repos/{owner}/{repo}/commits/{ref}/statuses?{}",
                 query.to_string()
             ))
             .build()?;
@@ -1949,7 +1940,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<ContentsResponse>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/contents?{}",
+                "repos/{owner}/{repo}/contents?{}",
                 query.to_string()
             ))
             .build()?;
@@ -1972,7 +1963,7 @@ impl crate::Forgejo {
         body: ChangeFilesOptions,
     ) -> Result<FilesResponse, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/contents"))
+            .post(&format!("repos/{owner}/{repo}/contents"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -1996,7 +1987,7 @@ impl crate::Forgejo {
     ) -> Result<ContentsResponse, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/contents/{filepath}?{}",
+                "repos/{owner}/{repo}/contents/{filepath}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2021,7 +2012,7 @@ impl crate::Forgejo {
         body: UpdateFileOptions,
     ) -> Result<FileResponse, ForgejoError> {
         let request = self
-            .put(&format!("/repos/{owner}/{repo}/contents/{filepath}"))
+            .put(&format!("repos/{owner}/{repo}/contents/{filepath}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2045,7 +2036,7 @@ impl crate::Forgejo {
         body: CreateFileOptions,
     ) -> Result<FileResponse, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/contents/{filepath}"))
+            .post(&format!("repos/{owner}/{repo}/contents/{filepath}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2069,7 +2060,7 @@ impl crate::Forgejo {
         body: DeleteFileOptions,
     ) -> Result<FileDeleteResponse, ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/contents/{filepath}"))
+            .delete(&format!("repos/{owner}/{repo}/contents/{filepath}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2091,7 +2082,7 @@ impl crate::Forgejo {
         body: UpdateFileOptions,
     ) -> Result<FileResponse, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/diffpatch"))
+            .post(&format!("repos/{owner}/{repo}/diffpatch"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2115,7 +2106,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/editorconfig/{filepath}?{}",
+                "repos/{owner}/{repo}/editorconfig/{filepath}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2137,10 +2128,7 @@ impl crate::Forgejo {
         query: ListForksQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/repos/{owner}/{repo}/forks?{}",
-                query.to_string()
-            ))
+            .get(&format!("repos/{owner}/{repo}/forks?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2161,7 +2149,7 @@ impl crate::Forgejo {
         body: CreateForkOption,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/forks"))
+            .post(&format!("repos/{owner}/{repo}/forks"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2183,7 +2171,7 @@ impl crate::Forgejo {
         sha: &str,
     ) -> Result<GitBlobResponse, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/git/blobs/{sha}"))
+            .get(&format!("repos/{owner}/{repo}/git/blobs/{sha}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2206,7 +2194,7 @@ impl crate::Forgejo {
     ) -> Result<Commit, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/git/commits/{sha}?{}",
+                "repos/{owner}/{repo}/git/commits/{sha}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2232,7 +2220,7 @@ impl crate::Forgejo {
     ) -> Result<String, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/git/commits/{sha}.{diff_type}"
+                "repos/{owner}/{repo}/git/commits/{sha}.{diff_type}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -2256,7 +2244,7 @@ impl crate::Forgejo {
     ) -> Result<Note, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/git/notes/{sha}?{}",
+                "repos/{owner}/{repo}/git/notes/{sha}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2277,7 +2265,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<Reference>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/git/refs"))
+            .get(&format!("repos/{owner}/{repo}/git/refs"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2298,7 +2286,7 @@ impl crate::Forgejo {
         r#ref: &str,
     ) -> Result<Vec<Reference>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/git/refs/{ref}"))
+            .get(&format!("repos/{owner}/{repo}/git/refs/{ref}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2319,7 +2307,7 @@ impl crate::Forgejo {
         sha: &str,
     ) -> Result<AnnotatedTag, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/git/tags/{sha}"))
+            .get(&format!("repos/{owner}/{repo}/git/tags/{sha}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2342,7 +2330,7 @@ impl crate::Forgejo {
     ) -> Result<GitTreeResponse, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/git/trees/{sha}?{}",
+                "repos/{owner}/{repo}/git/trees/{sha}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2364,10 +2352,7 @@ impl crate::Forgejo {
         query: RepoListHooksQuery,
     ) -> Result<Vec<Hook>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/repos/{owner}/{repo}/hooks?{}",
-                query.to_string()
-            ))
+            .get(&format!("repos/{owner}/{repo}/hooks?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2388,7 +2373,7 @@ impl crate::Forgejo {
         body: CreateHookOption,
     ) -> Result<Hook, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/hooks"))
+            .post(&format!("repos/{owner}/{repo}/hooks"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2408,7 +2393,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<GitHook>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/hooks/git"))
+            .get(&format!("repos/{owner}/{repo}/hooks/git"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2429,7 +2414,7 @@ impl crate::Forgejo {
         id: &str,
     ) -> Result<GitHook, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/hooks/git/{id}"))
+            .get(&format!("repos/{owner}/{repo}/hooks/git/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2450,7 +2435,7 @@ impl crate::Forgejo {
         id: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/hooks/git/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/hooks/git/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2473,7 +2458,7 @@ impl crate::Forgejo {
         body: EditGitHookOption,
     ) -> Result<GitHook, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/hooks/git/{id}"))
+            .patch(&format!("repos/{owner}/{repo}/hooks/git/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2495,7 +2480,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<Hook, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/hooks/{id}"))
+            .get(&format!("repos/{owner}/{repo}/hooks/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2516,7 +2501,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/hooks/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/hooks/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2539,7 +2524,7 @@ impl crate::Forgejo {
         body: EditHookOption,
     ) -> Result<Hook, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/hooks/{id}"))
+            .patch(&format!("repos/{owner}/{repo}/hooks/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2563,7 +2548,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/hooks/{id}/tests?{}",
+                "repos/{owner}/{repo}/hooks/{id}/tests?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2584,7 +2569,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<IssueConfig, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issue_config"))
+            .get(&format!("repos/{owner}/{repo}/issue_config"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2603,7 +2588,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<IssueConfigValidation, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issue_config/validate"))
+            .get(&format!("repos/{owner}/{repo}/issue_config/validate"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2622,7 +2607,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<IssueTemplate>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issue_templates"))
+            .get(&format!("repos/{owner}/{repo}/issue_templates"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2643,7 +2628,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Issue>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues?{}",
+                "repos/{owner}/{repo}/issues?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2666,7 +2651,7 @@ impl crate::Forgejo {
         body: CreateIssueOption,
     ) -> Result<Issue, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues"))
+            .post(&format!("repos/{owner}/{repo}/issues"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2688,7 +2673,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Comment>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/comments?{}",
+                "repos/{owner}/{repo}/issues/comments?{}",
                 query.to_string()
             ))
             .build()?;
@@ -2711,7 +2696,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<Option<Comment>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issues/comments/{id}"))
+            .get(&format!("repos/{owner}/{repo}/issues/comments/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2733,7 +2718,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/comments/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/issues/comments/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2756,7 +2741,7 @@ impl crate::Forgejo {
         body: EditIssueCommentOption,
     ) -> Result<Option<Comment>, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/issues/comments/{id}"))
+            .patch(&format!("repos/{owner}/{repo}/issues/comments/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -2779,9 +2764,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<Vec<Attachment>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/assets"
-            ))
+            .get(&format!("repos/{owner}/{repo}/issues/comments/{id}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -2806,7 +2789,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/assets?{}",
+                "repos/{owner}/{repo}/issues/comments/{id}/assets?{}",
                 query.to_string()
             ))
             .multipart(
@@ -2841,7 +2824,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -2866,7 +2849,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -2893,7 +2876,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .patch(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
             ))
             .json(&body)
             .build()?;
@@ -2917,7 +2900,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Reaction>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/reactions"
+                "repos/{owner}/{repo}/issues/comments/{id}/reactions"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -2942,7 +2925,7 @@ impl crate::Forgejo {
     ) -> Result<Reaction, ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/reactions"
+                "repos/{owner}/{repo}/issues/comments/{id}/reactions"
             ))
             .json(&content)
             .build()?;
@@ -2969,7 +2952,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/issues/comments/{id}/reactions"
+                "repos/{owner}/{repo}/issues/comments/{id}/reactions"
             ))
             .json(&content)
             .build()?;
@@ -2990,7 +2973,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<Issue>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issues/pinned"))
+            .get(&format!("repos/{owner}/{repo}/issues/pinned"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -3011,7 +2994,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<Issue, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issues/{index}"))
+            .get(&format!("repos/{owner}/{repo}/issues/{index}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -3032,7 +3015,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -3055,7 +3038,7 @@ impl crate::Forgejo {
         body: EditIssueOption,
     ) -> Result<Issue, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/issues/{index}"))
+            .patch(&format!("repos/{owner}/{repo}/issues/{index}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3077,7 +3060,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<Vec<Attachment>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issues/{index}/assets"))
+            .get(&format!("repos/{owner}/{repo}/issues/{index}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -3102,7 +3085,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/assets?{}",
+                "repos/{owner}/{repo}/issues/{index}/assets?{}",
                 query.to_string()
             ))
             .multipart(
@@ -3137,7 +3120,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3162,7 +3145,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3189,7 +3172,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .patch(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
             ))
             .json(&body)
             .build()?;
@@ -3214,7 +3197,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Issue>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/blocks?{}",
+                "repos/{owner}/{repo}/issues/{index}/blocks?{}",
                 query.to_string()
             ))
             .build()?;
@@ -3239,7 +3222,7 @@ impl crate::Forgejo {
         body: IssueMeta,
     ) -> Result<Issue, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues/{index}/blocks"))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/blocks"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3263,7 +3246,7 @@ impl crate::Forgejo {
         body: IssueMeta,
     ) -> Result<Issue, ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}/blocks"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/blocks"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3287,7 +3270,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Comment>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/comments?{}",
+                "repos/{owner}/{repo}/issues/{index}/comments?{}",
                 query.to_string()
             ))
             .build()?;
@@ -3312,7 +3295,7 @@ impl crate::Forgejo {
         body: CreateIssueCommentOption,
     ) -> Result<Comment, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues/{index}/comments"))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/comments"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3337,7 +3320,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/comments/{id}"
+                "repos/{owner}/{repo}/issues/{index}/comments/{id}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3364,7 +3347,7 @@ impl crate::Forgejo {
     ) -> Result<Option<Comment>, ForgejoError> {
         let request = self
             .patch(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/comments/{id}"
+                "repos/{owner}/{repo}/issues/{index}/comments/{id}"
             ))
             .json(&body)
             .build()?;
@@ -3390,7 +3373,7 @@ impl crate::Forgejo {
         body: EditDeadlineOption,
     ) -> Result<IssueDeadline, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues/{index}/deadline"))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/deadline"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3414,7 +3397,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Issue>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/dependencies?{}",
+                "repos/{owner}/{repo}/issues/{index}/dependencies?{}",
                 query.to_string()
             ))
             .build()?;
@@ -3439,9 +3422,7 @@ impl crate::Forgejo {
         body: IssueMeta,
     ) -> Result<Issue, ForgejoError> {
         let request = self
-            .post(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/dependencies"
-            ))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/dependencies"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3465,9 +3446,7 @@ impl crate::Forgejo {
         body: IssueMeta,
     ) -> Result<Issue, ForgejoError> {
         let request = self
-            .delete(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/dependencies"
-            ))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/dependencies"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3489,7 +3468,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<Vec<Label>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/issues/{index}/labels"))
+            .get(&format!("repos/{owner}/{repo}/issues/{index}/labels"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -3512,7 +3491,7 @@ impl crate::Forgejo {
         body: IssueLabelsOption,
     ) -> Result<Vec<Label>, ForgejoError> {
         let request = self
-            .put(&format!("/repos/{owner}/{repo}/issues/{index}/labels"))
+            .put(&format!("repos/{owner}/{repo}/issues/{index}/labels"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3536,7 +3515,7 @@ impl crate::Forgejo {
         body: IssueLabelsOption,
     ) -> Result<Vec<Label>, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues/{index}/labels"))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/labels"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3560,7 +3539,7 @@ impl crate::Forgejo {
         body: DeleteLabelsOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}/labels"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/labels"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3586,7 +3565,7 @@ impl crate::Forgejo {
         body: DeleteLabelsOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}/labels/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/labels/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3603,7 +3582,7 @@ impl crate::Forgejo {
     /// - `index`: index of issue to pin
     pub async fn pin_issue(&self, owner: &str, repo: &str, index: u64) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues/{index}/pin"))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/pin"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -3624,7 +3603,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}/pin"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/pin"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -3648,7 +3627,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .patch(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/pin/{position}"
+                "repos/{owner}/{repo}/issues/{index}/pin/{position}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3672,7 +3651,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Reaction>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/reactions?{}",
+                "repos/{owner}/{repo}/issues/{index}/reactions?{}",
                 query.to_string()
             ))
             .build()?;
@@ -3697,7 +3676,7 @@ impl crate::Forgejo {
         content: EditReactionOption,
     ) -> Result<Reaction, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues/{index}/reactions"))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/reactions"))
             .json(&content)
             .build()?;
         let response = self.execute(request).await?;
@@ -3722,7 +3701,7 @@ impl crate::Forgejo {
         content: EditReactionOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}/reactions"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/reactions"))
             .json(&content)
             .build()?;
         let response = self.execute(request).await?;
@@ -3745,7 +3724,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/stopwatch/delete"
+                "repos/{owner}/{repo}/issues/{index}/stopwatch/delete"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3768,7 +3747,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/stopwatch/start"
+                "repos/{owner}/{repo}/issues/{index}/stopwatch/start"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3791,7 +3770,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/stopwatch/stop"
+                "repos/{owner}/{repo}/issues/{index}/stopwatch/stop"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3815,7 +3794,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/subscriptions?{}",
+                "repos/{owner}/{repo}/issues/{index}/subscriptions?{}",
                 query.to_string()
             ))
             .build()?;
@@ -3839,7 +3818,7 @@ impl crate::Forgejo {
     ) -> Result<WatchInfo, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/subscriptions/check"
+                "repos/{owner}/{repo}/issues/{index}/subscriptions/check"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3864,7 +3843,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .put(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/subscriptions/{user}"
+                "repos/{owner}/{repo}/issues/{index}/subscriptions/{user}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3890,7 +3869,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/subscriptions/{user}"
+                "repos/{owner}/{repo}/issues/{index}/subscriptions/{user}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -3915,7 +3894,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<TimelineComment>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/timeline?{}",
+                "repos/{owner}/{repo}/issues/{index}/timeline?{}",
                 query.to_string()
             ))
             .build()?;
@@ -3940,7 +3919,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<TrackedTime>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/issues/{index}/times?{}",
+                "repos/{owner}/{repo}/issues/{index}/times?{}",
                 query.to_string()
             ))
             .build()?;
@@ -3965,7 +3944,7 @@ impl crate::Forgejo {
         body: AddTimeOption,
     ) -> Result<TrackedTime, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/issues/{index}/times"))
+            .post(&format!("repos/{owner}/{repo}/issues/{index}/times"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -3987,7 +3966,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}/times"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/times"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4010,7 +3989,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/issues/{index}/times/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/issues/{index}/times/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4030,7 +4009,7 @@ impl crate::Forgejo {
         query: RepoListKeysQuery,
     ) -> Result<Vec<DeployKey>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/keys?{}", query.to_string()))
+            .get(&format!("repos/{owner}/{repo}/keys?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4051,7 +4030,7 @@ impl crate::Forgejo {
         body: CreateKeyOption,
     ) -> Result<DeployKey, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/keys"))
+            .post(&format!("repos/{owner}/{repo}/keys"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4073,7 +4052,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<DeployKey, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/keys/{id}"))
+            .get(&format!("repos/{owner}/{repo}/keys/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4094,7 +4073,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/keys/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/keys/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4115,7 +4094,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Label>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/labels?{}",
+                "repos/{owner}/{repo}/labels?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4138,7 +4117,7 @@ impl crate::Forgejo {
         body: CreateLabelOption,
     ) -> Result<Label, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/labels"))
+            .post(&format!("repos/{owner}/{repo}/labels"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4160,7 +4139,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<Label, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/labels/{id}"))
+            .get(&format!("repos/{owner}/{repo}/labels/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4181,7 +4160,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/labels/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/labels/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4204,7 +4183,7 @@ impl crate::Forgejo {
         body: EditLabelOption,
     ) -> Result<Label, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/labels/{id}"))
+            .patch(&format!("repos/{owner}/{repo}/labels/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4224,7 +4203,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<serde_json::Map<String, serde_json::Value>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/languages"))
+            .get(&format!("repos/{owner}/{repo}/languages"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4247,7 +4226,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/media/{filepath}?{}",
+                "repos/{owner}/{repo}/media/{filepath}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4270,7 +4249,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Milestone>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/milestones?{}",
+                "repos/{owner}/{repo}/milestones?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4293,7 +4272,7 @@ impl crate::Forgejo {
         body: CreateMilestoneOption,
     ) -> Result<Milestone, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/milestones"))
+            .post(&format!("repos/{owner}/{repo}/milestones"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4315,7 +4294,7 @@ impl crate::Forgejo {
         id: &str,
     ) -> Result<Milestone, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/milestones/{id}"))
+            .get(&format!("repos/{owner}/{repo}/milestones/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4336,7 +4315,7 @@ impl crate::Forgejo {
         id: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/milestones/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/milestones/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4359,7 +4338,7 @@ impl crate::Forgejo {
         body: EditMilestoneOption,
     ) -> Result<Milestone, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/milestones/{id}"))
+            .patch(&format!("repos/{owner}/{repo}/milestones/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4375,7 +4354,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo to sync
     pub async fn repo_mirror_sync(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/mirror-sync"))
+            .post(&format!("repos/{owner}/{repo}/mirror-sync"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4394,7 +4373,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<NewIssuePinsAllowed, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/new_pin_allowed"))
+            .get(&format!("repos/{owner}/{repo}/new_pin_allowed"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4415,7 +4394,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<NotificationThread>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/notifications?{}",
+                "repos/{owner}/{repo}/notifications?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4438,7 +4417,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<NotificationThread>, ForgejoError> {
         let request = self
             .put(&format!(
-                "/repos/{owner}/{repo}/notifications?{}",
+                "repos/{owner}/{repo}/notifications?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4460,10 +4439,7 @@ impl crate::Forgejo {
         query: RepoListPullRequestsQuery,
     ) -> Result<Vec<PullRequest>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/repos/{owner}/{repo}/pulls?{}",
-                query.to_string()
-            ))
+            .get(&format!("repos/{owner}/{repo}/pulls?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4484,7 +4460,7 @@ impl crate::Forgejo {
         body: CreatePullRequestOption,
     ) -> Result<PullRequest, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/pulls"))
+            .post(&format!("repos/{owner}/{repo}/pulls"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4504,7 +4480,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<PullRequest>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/pulls/pinned"))
+            .get(&format!("repos/{owner}/{repo}/pulls/pinned"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4525,7 +4501,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<PullRequest, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/pulls/{index}"))
+            .get(&format!("repos/{owner}/{repo}/pulls/{index}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4548,7 +4524,7 @@ impl crate::Forgejo {
         body: EditPullRequestOption,
     ) -> Result<PullRequest, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/pulls/{index}"))
+            .patch(&format!("repos/{owner}/{repo}/pulls/{index}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4574,7 +4550,7 @@ impl crate::Forgejo {
     ) -> Result<String, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}.{diff_type}?{}",
+                "repos/{owner}/{repo}/pulls/{index}.{diff_type}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4599,7 +4575,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Commit>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/commits?{}",
+                "repos/{owner}/{repo}/pulls/{index}/commits?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4624,7 +4600,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<ChangedFile>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/files?{}",
+                "repos/{owner}/{repo}/pulls/{index}/files?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4647,7 +4623,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/pulls/{index}/merge"))
+            .get(&format!("repos/{owner}/{repo}/pulls/{index}/merge"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4670,7 +4646,7 @@ impl crate::Forgejo {
         body: MergePullRequestOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/pulls/{index}/merge"))
+            .post(&format!("repos/{owner}/{repo}/pulls/{index}/merge"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4692,7 +4668,7 @@ impl crate::Forgejo {
         index: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/pulls/{index}/merge"))
+            .delete(&format!("repos/{owner}/{repo}/pulls/{index}/merge"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4716,7 +4692,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<PullReview>, ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
+                "repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
             ))
             .json(&body)
             .build()?;
@@ -4742,7 +4718,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
+                "repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
             ))
             .json(&body)
             .build()?;
@@ -4767,7 +4743,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<PullReview>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/reviews?{}",
+                "repos/{owner}/{repo}/pulls/{index}/reviews?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4792,7 +4768,7 @@ impl crate::Forgejo {
         body: CreatePullReviewOptions,
     ) -> Result<PullReview, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/pulls/{index}/reviews"))
+            .post(&format!("repos/{owner}/{repo}/pulls/{index}/reviews"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4816,7 +4792,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<PullReview, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/pulls/{index}/reviews/{id}"))
+            .get(&format!("repos/{owner}/{repo}/pulls/{index}/reviews/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4841,7 +4817,7 @@ impl crate::Forgejo {
         body: SubmitPullReviewOptions,
     ) -> Result<PullReview, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/pulls/{index}/reviews/{id}"))
+            .post(&format!("repos/{owner}/{repo}/pulls/{index}/reviews/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -4865,7 +4841,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/pulls/{index}/reviews/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/pulls/{index}/reviews/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -4889,7 +4865,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<PullReviewComment>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
+                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -4916,7 +4892,7 @@ impl crate::Forgejo {
     ) -> Result<PullReview, ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/dismissals"
+                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/dismissals"
             ))
             .json(&body)
             .build()?;
@@ -4942,7 +4918,7 @@ impl crate::Forgejo {
     ) -> Result<PullReview, ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/undismissals"
+                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/undismissals"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -4966,7 +4942,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/pulls/{index}/update?{}",
+                "repos/{owner}/{repo}/pulls/{index}/update?{}",
                 query.to_string()
             ))
             .build()?;
@@ -4989,7 +4965,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<PushMirror>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/push_mirrors?{}",
+                "repos/{owner}/{repo}/push_mirrors?{}",
                 query.to_string()
             ))
             .build()?;
@@ -5012,7 +4988,7 @@ impl crate::Forgejo {
         body: CreatePushMirrorOption,
     ) -> Result<PushMirror, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/push_mirrors"))
+            .post(&format!("repos/{owner}/{repo}/push_mirrors"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5028,7 +5004,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo to sync
     pub async fn repo_push_mirror_sync(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/push_mirrors-sync"))
+            .post(&format!("repos/{owner}/{repo}/push_mirrors-sync"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5049,7 +5025,7 @@ impl crate::Forgejo {
         name: &str,
     ) -> Result<PushMirror, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/push_mirrors/{name}"))
+            .get(&format!("repos/{owner}/{repo}/push_mirrors/{name}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5070,7 +5046,7 @@ impl crate::Forgejo {
         name: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/push_mirrors/{name}"))
+            .delete(&format!("repos/{owner}/{repo}/push_mirrors/{name}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5093,7 +5069,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/raw/{filepath}?{}",
+                "repos/{owner}/{repo}/raw/{filepath}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -5116,7 +5092,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Release>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/releases?{}",
+                "repos/{owner}/{repo}/releases?{}",
                 query.to_string()
             ))
             .build()?;
@@ -5139,7 +5115,7 @@ impl crate::Forgejo {
         body: CreateReleaseOption,
     ) -> Result<Release, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/releases"))
+            .post(&format!("repos/{owner}/{repo}/releases"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5159,7 +5135,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Release, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/releases/latest"))
+            .get(&format!("repos/{owner}/{repo}/releases/latest"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5180,7 +5156,7 @@ impl crate::Forgejo {
         tag: &str,
     ) -> Result<Release, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/releases/tags/{tag}"))
+            .get(&format!("repos/{owner}/{repo}/releases/tags/{tag}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5201,7 +5177,7 @@ impl crate::Forgejo {
         tag: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/releases/tags/{tag}"))
+            .delete(&format!("repos/{owner}/{repo}/releases/tags/{tag}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5222,7 +5198,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<Release, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/releases/{id}"))
+            .get(&format!("repos/{owner}/{repo}/releases/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5243,7 +5219,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/releases/{id}"))
+            .delete(&format!("repos/{owner}/{repo}/releases/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5266,7 +5242,7 @@ impl crate::Forgejo {
         body: EditReleaseOption,
     ) -> Result<Release, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/releases/{id}"))
+            .patch(&format!("repos/{owner}/{repo}/releases/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5288,7 +5264,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<Vec<Attachment>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/releases/{id}/assets"))
+            .get(&format!("repos/{owner}/{repo}/releases/{id}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5313,7 +5289,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .post(&format!(
-                "/repos/{owner}/{repo}/releases/{id}/assets?{}",
+                "repos/{owner}/{repo}/releases/{id}/assets?{}",
                 query.to_string()
             ))
             .multipart(
@@ -5348,7 +5324,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -5373,7 +5349,7 @@ impl crate::Forgejo {
     ) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!(
-                "/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
             ))
             .build()?;
         let response = self.execute(request).await?;
@@ -5400,7 +5376,7 @@ impl crate::Forgejo {
     ) -> Result<Attachment, ForgejoError> {
         let request = self
             .patch(&format!(
-                "/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
+                "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
             ))
             .json(&body)
             .build()?;
@@ -5421,7 +5397,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/reviewers"))
+            .get(&format!("repos/{owner}/{repo}/reviewers"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5436,7 +5412,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     pub async fn repo_signing_key(&self, owner: &str, repo: &str) -> Result<String, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/signing-key.gpg"))
+            .get(&format!("repos/{owner}/{repo}/signing-key.gpg"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5457,7 +5433,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/stargazers?{}",
+                "repos/{owner}/{repo}/stargazers?{}",
                 query.to_string()
             ))
             .build()?;
@@ -5482,7 +5458,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<CommitStatus>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/statuses/{sha}?{}",
+                "repos/{owner}/{repo}/statuses/{sha}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -5507,7 +5483,7 @@ impl crate::Forgejo {
         body: CreateStatusOption,
     ) -> Result<CommitStatus, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/statuses/{sha}"))
+            .post(&format!("repos/{owner}/{repo}/statuses/{sha}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5529,7 +5505,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/subscribers?{}",
+                "repos/{owner}/{repo}/subscribers?{}",
                 query.to_string()
             ))
             .build()?;
@@ -5550,7 +5526,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<WatchInfo, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/subscription"))
+            .get(&format!("repos/{owner}/{repo}/subscription"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5569,7 +5545,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<WatchInfo, ForgejoError> {
         let request = self
-            .put(&format!("/repos/{owner}/{repo}/subscription"))
+            .put(&format!("repos/{owner}/{repo}/subscription"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5588,7 +5564,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/subscription"))
+            .delete(&format!("repos/{owner}/{repo}/subscription"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5608,7 +5584,7 @@ impl crate::Forgejo {
         query: RepoListTagsQuery,
     ) -> Result<Vec<Tag>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/tags?{}", query.to_string()))
+            .get(&format!("repos/{owner}/{repo}/tags?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5629,7 +5605,7 @@ impl crate::Forgejo {
         body: CreateTagOption,
     ) -> Result<Tag, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/tags"))
+            .post(&format!("repos/{owner}/{repo}/tags"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5651,7 +5627,7 @@ impl crate::Forgejo {
         tag: &str,
     ) -> Result<Tag, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/tags/{tag}"))
+            .get(&format!("repos/{owner}/{repo}/tags/{tag}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5672,7 +5648,7 @@ impl crate::Forgejo {
         tag: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/tags/{tag}"))
+            .delete(&format!("repos/{owner}/{repo}/tags/{tag}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5690,7 +5666,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
     ) -> Result<Vec<Team>, ForgejoError> {
-        let request = self.get(&format!("/repos/{owner}/{repo}/teams")).build()?;
+        let request = self.get(&format!("repos/{owner}/{repo}/teams")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -5710,7 +5686,7 @@ impl crate::Forgejo {
         team: &str,
     ) -> Result<Team, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/teams/{team}"))
+            .get(&format!("repos/{owner}/{repo}/teams/{team}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5731,7 +5707,7 @@ impl crate::Forgejo {
         team: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/repos/{owner}/{repo}/teams/{team}"))
+            .put(&format!("repos/{owner}/{repo}/teams/{team}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5752,7 +5728,7 @@ impl crate::Forgejo {
         team: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/teams/{team}"))
+            .delete(&format!("repos/{owner}/{repo}/teams/{team}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5772,10 +5748,7 @@ impl crate::Forgejo {
         query: RepoTrackedTimesQuery,
     ) -> Result<Vec<TrackedTime>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/repos/{owner}/{repo}/times?{}",
-                query.to_string()
-            ))
+            .get(&format!("repos/{owner}/{repo}/times?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5796,7 +5769,7 @@ impl crate::Forgejo {
         user: &str,
     ) -> Result<Vec<TrackedTime>, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/times/{user}"))
+            .get(&format!("repos/{owner}/{repo}/times/{user}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5817,7 +5790,7 @@ impl crate::Forgejo {
     ) -> Result<TopicName, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/topics?{}",
+                "repos/{owner}/{repo}/topics?{}",
                 query.to_string()
             ))
             .build()?;
@@ -5840,7 +5813,7 @@ impl crate::Forgejo {
         body: RepoTopicOptions,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/repos/{owner}/{repo}/topics"))
+            .put(&format!("repos/{owner}/{repo}/topics"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5862,7 +5835,7 @@ impl crate::Forgejo {
         topic: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/repos/{owner}/{repo}/topics/{topic}"))
+            .put(&format!("repos/{owner}/{repo}/topics/{topic}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5883,7 +5856,7 @@ impl crate::Forgejo {
         topic: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/topics/{topic}"))
+            .delete(&format!("repos/{owner}/{repo}/topics/{topic}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5904,7 +5877,7 @@ impl crate::Forgejo {
         body: TransferRepoOption,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/transfer"))
+            .post(&format!("repos/{owner}/{repo}/transfer"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5924,7 +5897,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/transfer/accept"))
+            .post(&format!("repos/{owner}/{repo}/transfer/accept"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5943,7 +5916,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/transfer/reject"))
+            .post(&format!("repos/{owner}/{repo}/transfer/reject"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5964,7 +5937,7 @@ impl crate::Forgejo {
         body: CreateWikiPageOptions,
     ) -> Result<WikiPage, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{owner}/{repo}/wiki/new"))
+            .post(&format!("repos/{owner}/{repo}/wiki/new"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -5986,7 +5959,7 @@ impl crate::Forgejo {
         page_name: &str,
     ) -> Result<WikiPage, ForgejoError> {
         let request = self
-            .get(&format!("/repos/{owner}/{repo}/wiki/page/{page_name}"))
+            .get(&format!("repos/{owner}/{repo}/wiki/page/{page_name}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6007,7 +5980,7 @@ impl crate::Forgejo {
         page_name: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/repos/{owner}/{repo}/wiki/page/{page_name}"))
+            .delete(&format!("repos/{owner}/{repo}/wiki/page/{page_name}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6030,7 +6003,7 @@ impl crate::Forgejo {
         body: CreateWikiPageOptions,
     ) -> Result<WikiPage, ForgejoError> {
         let request = self
-            .patch(&format!("/repos/{owner}/{repo}/wiki/page/{page_name}"))
+            .patch(&format!("repos/{owner}/{repo}/wiki/page/{page_name}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -6052,7 +6025,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<WikiPageMetaData>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/wiki/pages?{}",
+                "repos/{owner}/{repo}/wiki/pages?{}",
                 query.to_string()
             ))
             .build()?;
@@ -6077,7 +6050,7 @@ impl crate::Forgejo {
     ) -> Result<WikiCommitList, ForgejoError> {
         let request = self
             .get(&format!(
-                "/repos/{owner}/{repo}/wiki/revisions/{page_name}?{}",
+                "repos/{owner}/{repo}/wiki/revisions/{page_name}?{}",
                 query.to_string()
             ))
             .build()?;
@@ -6100,7 +6073,7 @@ impl crate::Forgejo {
         body: GenerateRepoOption,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .post(&format!("/repos/{template_owner}/{template_repo}/generate"))
+            .post(&format!("repos/{template_owner}/{template_repo}/generate"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -6114,7 +6087,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of the repo to get
     pub async fn repo_get_by_id(&self, id: u64) -> Result<Repository, ForgejoError> {
-        let request = self.get(&format!("/repositories/{id}")).build()?;
+        let request = self.get(&format!("repositories/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6124,7 +6097,7 @@ impl crate::Forgejo {
 
     /// Get instance's global settings for api
     pub async fn get_general_api_settings(&self) -> Result<GeneralAPISettings, ForgejoError> {
-        let request = self.get("/settings/api").build()?;
+        let request = self.get("settings/api").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6136,7 +6109,7 @@ impl crate::Forgejo {
     pub async fn get_general_attachment_settings(
         &self,
     ) -> Result<GeneralAttachmentSettings, ForgejoError> {
-        let request = self.get("/settings/attachment").build()?;
+        let request = self.get("settings/attachment").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6148,7 +6121,7 @@ impl crate::Forgejo {
     pub async fn get_general_repository_settings(
         &self,
     ) -> Result<GeneralRepoSettings, ForgejoError> {
-        let request = self.get("/settings/repository").build()?;
+        let request = self.get("settings/repository").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6158,7 +6131,7 @@ impl crate::Forgejo {
 
     /// Get instance's global settings for ui
     pub async fn get_general_ui_settings(&self) -> Result<GeneralUISettings, ForgejoError> {
-        let request = self.get("/settings/ui").build()?;
+        let request = self.get("settings/ui").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6168,7 +6141,7 @@ impl crate::Forgejo {
 
     /// Get default signing-key.gpg
     pub async fn get_signing_key(&self) -> Result<String, ForgejoError> {
-        let request = self.get("/signing-key.gpg").build()?;
+        let request = self.get("signing-key.gpg").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.text().await?),
@@ -6180,7 +6153,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of the team to get
     pub async fn org_get_team(&self, id: u64) -> Result<Team, ForgejoError> {
-        let request = self.get(&format!("/teams/{id}")).build()?;
+        let request = self.get(&format!("teams/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6192,7 +6165,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of the team to delete
     pub async fn org_delete_team(&self, id: u64) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/teams/{id}")).build()?;
+        let request = self.delete(&format!("teams/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6205,7 +6178,7 @@ impl crate::Forgejo {
     /// - `id`: id of the team to edit
     /// - `body`
     pub async fn org_edit_team(&self, id: u32, body: EditTeamOption) -> Result<Team, ForgejoError> {
-        let request = self.patch(&format!("/teams/{id}")).json(&body).build()?;
+        let request = self.patch(&format!("teams/{id}")).json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6223,7 +6196,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Activity>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/teams/{id}/activities/feeds?{}",
+                "teams/{id}/activities/feeds?{}",
                 query.to_string()
             ))
             .build()?;
@@ -6243,7 +6216,7 @@ impl crate::Forgejo {
         query: OrgListTeamMembersQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/teams/{id}/members?{}", query.to_string()))
+            .get(&format!("teams/{id}/members?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6262,7 +6235,7 @@ impl crate::Forgejo {
         username: &str,
     ) -> Result<User, ForgejoError> {
         let request = self
-            .get(&format!("/teams/{id}/members/{username}"))
+            .get(&format!("teams/{id}/members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6277,7 +6250,7 @@ impl crate::Forgejo {
     /// - `username`: username of the user to add
     pub async fn org_add_team_member(&self, id: u64, username: &str) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/teams/{id}/members/{username}"))
+            .put(&format!("teams/{id}/members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6296,7 +6269,7 @@ impl crate::Forgejo {
         username: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/teams/{id}/members/{username}"))
+            .delete(&format!("teams/{id}/members/{username}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6314,7 +6287,7 @@ impl crate::Forgejo {
         query: OrgListTeamReposQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!("/teams/{id}/repos?{}", query.to_string()))
+            .get(&format!("teams/{id}/repos?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6335,7 +6308,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<Repository, ForgejoError> {
         let request = self
-            .get(&format!("/teams/{id}/repos/{org}/{repo}"))
+            .get(&format!("teams/{id}/repos/{org}/{repo}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6356,7 +6329,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/teams/{id}/repos/{org}/{repo}"))
+            .put(&format!("teams/{id}/repos/{org}/{repo}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6377,7 +6350,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/teams/{id}/repos/{org}/{repo}"))
+            .delete(&format!("teams/{id}/repos/{org}/{repo}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6393,7 +6366,7 @@ impl crate::Forgejo {
         query: TopicSearchQuery,
     ) -> Result<Vec<TopicResponse>, ForgejoError> {
         let request = self
-            .get(&format!("/topics/search?{}", query.to_string()))
+            .get(&format!("topics/search?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6404,7 +6377,7 @@ impl crate::Forgejo {
 
     /// Get the authenticated user
     pub async fn user_get_current(&self) -> Result<User, ForgejoError> {
-        let request = self.get("/user").build()?;
+        let request = self.get("user").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6422,7 +6395,7 @@ impl crate::Forgejo {
         body: CreateOrUpdateSecretOption,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .put(&format!("/user/actions/secrets/{secretname}"))
+            .put(&format!("user/actions/secrets/{secretname}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -6438,7 +6411,7 @@ impl crate::Forgejo {
     /// - `secretname`: name of the secret
     pub async fn delete_user_secret(&self, secretname: &str) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/user/actions/secrets/{secretname}"))
+            .delete(&format!("user/actions/secrets/{secretname}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6454,7 +6427,7 @@ impl crate::Forgejo {
         query: UserGetOAuth2ApplicationsQuery,
     ) -> Result<Vec<OAuth2Application>, ForgejoError> {
         let request = self
-            .get(&format!("/user/applications/oauth2?{}", query.to_string()))
+            .get(&format!("user/applications/oauth2?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6470,7 +6443,7 @@ impl crate::Forgejo {
         &self,
         body: CreateOAuth2ApplicationOptions,
     ) -> Result<OAuth2Application, ForgejoError> {
-        let request = self.post("/user/applications/oauth2").json(&body).build()?;
+        let request = self.post("user/applications/oauth2").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6486,7 +6459,7 @@ impl crate::Forgejo {
         id: u64,
     ) -> Result<OAuth2Application, ForgejoError> {
         let request = self
-            .get(&format!("/user/applications/oauth2/{id}"))
+            .get(&format!("user/applications/oauth2/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6500,7 +6473,7 @@ impl crate::Forgejo {
     /// - `id`: token to be deleted
     pub async fn user_delete_oauth2_application(&self, id: u64) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/user/applications/oauth2/{id}"))
+            .delete(&format!("user/applications/oauth2/{id}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6519,7 +6492,7 @@ impl crate::Forgejo {
         body: CreateOAuth2ApplicationOptions,
     ) -> Result<OAuth2Application, ForgejoError> {
         let request = self
-            .patch(&format!("/user/applications/oauth2/{id}"))
+            .patch(&format!("user/applications/oauth2/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -6536,7 +6509,7 @@ impl crate::Forgejo {
         &self,
         body: UpdateUserAvatarOption,
     ) -> Result<(), ForgejoError> {
-        let request = self.post("/user/avatar").json(&body).build()?;
+        let request = self.post("user/avatar").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6546,7 +6519,7 @@ impl crate::Forgejo {
 
     /// Delete Avatar
     pub async fn user_delete_avatar(&self) -> Result<(), ForgejoError> {
-        let request = self.delete("/user/avatar").build()?;
+        let request = self.delete("user/avatar").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6558,7 +6531,7 @@ impl crate::Forgejo {
     ///
     /// - `username`: username of the user
     pub async fn user_block_user(&self, username: &str) -> Result<(), ForgejoError> {
-        let request = self.put(&format!("/user/block/{username}")).build()?;
+        let request = self.put(&format!("user/block/{username}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6568,7 +6541,7 @@ impl crate::Forgejo {
 
     /// List the authenticated user's email addresses
     pub async fn user_list_emails(&self) -> Result<Vec<Email>, ForgejoError> {
-        let request = self.get("/user/emails").build()?;
+        let request = self.get("user/emails").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6583,7 +6556,7 @@ impl crate::Forgejo {
         &self,
         body: CreateEmailOption,
     ) -> Result<Vec<Email>, ForgejoError> {
-        let request = self.post("/user/emails").json(&body).build()?;
+        let request = self.post("user/emails").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6595,7 +6568,7 @@ impl crate::Forgejo {
     ///
     /// - `body`
     pub async fn user_delete_email(&self, body: DeleteEmailOption) -> Result<(), ForgejoError> {
-        let request = self.delete("/user/emails").json(&body).build()?;
+        let request = self.delete("user/emails").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6610,7 +6583,7 @@ impl crate::Forgejo {
         query: UserCurrentListFollowersQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/user/followers?{}", query.to_string()))
+            .get(&format!("user/followers?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6626,7 +6599,7 @@ impl crate::Forgejo {
         query: UserCurrentListFollowingQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!("/user/following?{}", query.to_string()))
+            .get(&format!("user/following?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6639,7 +6612,7 @@ impl crate::Forgejo {
     ///
     /// - `username`: username of followed user
     pub async fn user_current_check_following(&self, username: &str) -> Result<(), ForgejoError> {
-        let request = self.get(&format!("/user/following/{username}")).build()?;
+        let request = self.get(&format!("user/following/{username}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6651,7 +6624,7 @@ impl crate::Forgejo {
     ///
     /// - `username`: username of user to follow
     pub async fn user_current_put_follow(&self, username: &str) -> Result<(), ForgejoError> {
-        let request = self.put(&format!("/user/following/{username}")).build()?;
+        let request = self.put(&format!("user/following/{username}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6663,9 +6636,7 @@ impl crate::Forgejo {
     ///
     /// - `username`: username of user to unfollow
     pub async fn user_current_delete_follow(&self, username: &str) -> Result<(), ForgejoError> {
-        let request = self
-            .delete(&format!("/user/following/{username}"))
-            .build()?;
+        let request = self.delete(&format!("user/following/{username}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6675,7 +6646,7 @@ impl crate::Forgejo {
 
     /// Get a Token to verify
     pub async fn get_verification_token(&self) -> Result<String, ForgejoError> {
-        let request = self.get("/user/gpg_key_token").build()?;
+        let request = self.get("user/gpg_key_token").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.text().await?),
@@ -6685,7 +6656,7 @@ impl crate::Forgejo {
 
     /// Verify a GPG key
     pub async fn user_verify_gpg_key(&self) -> Result<GPGKey, ForgejoError> {
-        let request = self.post("/user/gpg_key_verify").build()?;
+        let request = self.post("user/gpg_key_verify").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6700,7 +6671,7 @@ impl crate::Forgejo {
         query: UserCurrentListGpgKeysQuery,
     ) -> Result<Vec<GPGKey>, ForgejoError> {
         let request = self
-            .get(&format!("/user/gpg_keys?{}", query.to_string()))
+            .get(&format!("user/gpg_keys?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6716,7 +6687,7 @@ impl crate::Forgejo {
         &self,
         form: CreateGPGKeyOption,
     ) -> Result<GPGKey, ForgejoError> {
-        let request = self.post("/user/gpg_keys").json(&form).build()?;
+        let request = self.post("user/gpg_keys").json(&form).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6728,7 +6699,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of key to get
     pub async fn user_current_get_gpg_key(&self, id: u64) -> Result<GPGKey, ForgejoError> {
-        let request = self.get(&format!("/user/gpg_keys/{id}")).build()?;
+        let request = self.get(&format!("user/gpg_keys/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6740,7 +6711,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of key to delete
     pub async fn user_current_delete_gpg_key(&self, id: u64) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/user/gpg_keys/{id}")).build()?;
+        let request = self.delete(&format!("user/gpg_keys/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6755,7 +6726,7 @@ impl crate::Forgejo {
         query: UserListHooksQuery,
     ) -> Result<Vec<Hook>, ForgejoError> {
         let request = self
-            .get(&format!("/user/hooks?{}", query.to_string()))
+            .get(&format!("user/hooks?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6768,7 +6739,7 @@ impl crate::Forgejo {
     ///
     /// - `body`
     pub async fn user_create_hook(&self, body: CreateHookOption) -> Result<Hook, ForgejoError> {
-        let request = self.post("/user/hooks").json(&body).build()?;
+        let request = self.post("user/hooks").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6780,7 +6751,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of the hook to get
     pub async fn user_get_hook(&self, id: u64) -> Result<Hook, ForgejoError> {
-        let request = self.get(&format!("/user/hooks/{id}")).build()?;
+        let request = self.get(&format!("user/hooks/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6792,7 +6763,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of the hook to delete
     pub async fn user_delete_hook(&self, id: u64) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/user/hooks/{id}")).build()?;
+        let request = self.delete(&format!("user/hooks/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6810,7 +6781,7 @@ impl crate::Forgejo {
         body: EditHookOption,
     ) -> Result<Hook, ForgejoError> {
         let request = self
-            .patch(&format!("/user/hooks/{id}"))
+            .patch(&format!("user/hooks/{id}"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -6827,7 +6798,7 @@ impl crate::Forgejo {
         query: UserCurrentListKeysQuery,
     ) -> Result<Vec<PublicKey>, ForgejoError> {
         let request = self
-            .get(&format!("/user/keys?{}", query.to_string()))
+            .get(&format!("user/keys?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6843,7 +6814,7 @@ impl crate::Forgejo {
         &self,
         body: CreateKeyOption,
     ) -> Result<PublicKey, ForgejoError> {
-        let request = self.post("/user/keys").json(&body).build()?;
+        let request = self.post("user/keys").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6855,7 +6826,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of key to get
     pub async fn user_current_get_key(&self, id: u64) -> Result<PublicKey, ForgejoError> {
-        let request = self.get(&format!("/user/keys/{id}")).build()?;
+        let request = self.get(&format!("user/keys/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6867,7 +6838,7 @@ impl crate::Forgejo {
     ///
     /// - `id`: id of key to delete
     pub async fn user_current_delete_key(&self, id: u64) -> Result<(), ForgejoError> {
-        let request = self.delete(&format!("/user/keys/{id}")).build()?;
+        let request = self.delete(&format!("user/keys/{id}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -6882,7 +6853,7 @@ impl crate::Forgejo {
         query: UserListBlockedUsersQuery,
     ) -> Result<Vec<BlockedUser>, ForgejoError> {
         let request = self
-            .get(&format!("/user/list_blocked?{}", query.to_string()))
+            .get(&format!("user/list_blocked?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6898,7 +6869,7 @@ impl crate::Forgejo {
         query: OrgListCurrentUserOrgsQuery,
     ) -> Result<Vec<Organization>, ForgejoError> {
         let request = self
-            .get(&format!("/user/orgs?{}", query.to_string()))
+            .get(&format!("user/orgs?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6914,7 +6885,7 @@ impl crate::Forgejo {
         query: UserCurrentListReposQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!("/user/repos?{}", query.to_string()))
+            .get(&format!("user/repos?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6930,7 +6901,7 @@ impl crate::Forgejo {
         &self,
         body: CreateRepoOption,
     ) -> Result<Repository, ForgejoError> {
-        let request = self.post("/user/repos").json(&body).build()?;
+        let request = self.post("user/repos").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6940,7 +6911,7 @@ impl crate::Forgejo {
 
     /// Get user settings
     pub async fn get_user_settings(&self) -> Result<Vec<UserSettings>, ForgejoError> {
-        let request = self.get("/user/settings").build()?;
+        let request = self.get("user/settings").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6955,7 +6926,7 @@ impl crate::Forgejo {
         &self,
         body: UserSettingsOptions,
     ) -> Result<Vec<UserSettings>, ForgejoError> {
-        let request = self.patch("/user/settings").json(&body).build()?;
+        let request = self.patch("user/settings").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -6970,7 +6941,7 @@ impl crate::Forgejo {
         query: UserCurrentListStarredQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!("/user/starred?{}", query.to_string()))
+            .get(&format!("user/starred?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -6988,7 +6959,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
     ) -> Result<(), ForgejoError> {
-        let request = self.get(&format!("/user/starred/{owner}/{repo}")).build()?;
+        let request = self.get(&format!("user/starred/{owner}/{repo}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -7001,7 +6972,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo to star
     /// - `repo`: name of the repo to star
     pub async fn user_current_put_star(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
-        let request = self.put(&format!("/user/starred/{owner}/{repo}")).build()?;
+        let request = self.put(&format!("user/starred/{owner}/{repo}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -7019,7 +6990,7 @@ impl crate::Forgejo {
         repo: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/user/starred/{owner}/{repo}"))
+            .delete(&format!("user/starred/{owner}/{repo}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7035,7 +7006,7 @@ impl crate::Forgejo {
         query: UserGetStopWatchesQuery,
     ) -> Result<Vec<StopWatch>, ForgejoError> {
         let request = self
-            .get(&format!("/user/stopwatches?{}", query.to_string()))
+            .get(&format!("user/stopwatches?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7051,7 +7022,7 @@ impl crate::Forgejo {
         query: UserCurrentListSubscriptionsQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!("/user/subscriptions?{}", query.to_string()))
+            .get(&format!("user/subscriptions?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7067,7 +7038,7 @@ impl crate::Forgejo {
         query: UserListTeamsQuery,
     ) -> Result<Vec<Team>, ForgejoError> {
         let request = self
-            .get(&format!("/user/teams?{}", query.to_string()))
+            .get(&format!("user/teams?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7083,7 +7054,7 @@ impl crate::Forgejo {
         query: UserCurrentTrackedTimesQuery,
     ) -> Result<Vec<TrackedTime>, ForgejoError> {
         let request = self
-            .get(&format!("/user/times?{}", query.to_string()))
+            .get(&format!("user/times?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7096,7 +7067,7 @@ impl crate::Forgejo {
     ///
     /// - `username`: username of the user
     pub async fn user_unblock_user(&self, username: &str) -> Result<(), ForgejoError> {
-        let request = self.put(&format!("/user/unblock/{username}")).build()?;
+        let request = self.put(&format!("user/unblock/{username}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             204 => Ok(()),
@@ -7111,7 +7082,7 @@ impl crate::Forgejo {
         query: UserSearchQuery,
     ) -> Result<serde_json::Map<String, serde_json::Value>, ForgejoError> {
         let request = self
-            .get(&format!("/users/search?{}", query.to_string()))
+            .get(&format!("users/search?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7124,7 +7095,7 @@ impl crate::Forgejo {
     ///
     /// - `username`: username of user to get
     pub async fn user_get(&self, username: &str) -> Result<User, ForgejoError> {
-        let request = self.get(&format!("/users/{username}")).build()?;
+        let request = self.get(&format!("users/{username}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -7142,7 +7113,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Activity>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/users/{username}/activities/feeds?{}",
+                "users/{username}/activities/feeds?{}",
                 query.to_string()
             ))
             .build()?;
@@ -7162,10 +7133,7 @@ impl crate::Forgejo {
         query: UserListFollowersQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/users/{username}/followers?{}",
-                query.to_string()
-            ))
+            .get(&format!("users/{username}/followers?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7183,10 +7151,7 @@ impl crate::Forgejo {
         query: UserListFollowingQuery,
     ) -> Result<Vec<User>, ForgejoError> {
         let request = self
-            .get(&format!(
-                "/users/{username}/following?{}",
-                query.to_string()
-            ))
+            .get(&format!("users/{username}/following?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7205,7 +7170,7 @@ impl crate::Forgejo {
         target: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/following/{target}"))
+            .get(&format!("users/{username}/following/{target}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7223,7 +7188,7 @@ impl crate::Forgejo {
         query: UserListGpgKeysQuery,
     ) -> Result<Vec<GPGKey>, ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/gpg_keys?{}", query.to_string()))
+            .get(&format!("users/{username}/gpg_keys?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7239,7 +7204,7 @@ impl crate::Forgejo {
         &self,
         username: &str,
     ) -> Result<Vec<UserHeatmapData>, ForgejoError> {
-        let request = self.get(&format!("/users/{username}/heatmap")).build()?;
+        let request = self.get(&format!("users/{username}/heatmap")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
@@ -7256,7 +7221,7 @@ impl crate::Forgejo {
         query: UserListKeysQuery,
     ) -> Result<Vec<PublicKey>, ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/keys?{}", query.to_string()))
+            .get(&format!("users/{username}/keys?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7274,7 +7239,7 @@ impl crate::Forgejo {
         query: OrgListUserOrgsQuery,
     ) -> Result<Vec<Organization>, ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/orgs?{}", query.to_string()))
+            .get(&format!("users/{username}/orgs?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7293,7 +7258,7 @@ impl crate::Forgejo {
         org: &str,
     ) -> Result<OrganizationPermissions, ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/orgs/{org}/permissions"))
+            .get(&format!("users/{username}/orgs/{org}/permissions"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7311,7 +7276,7 @@ impl crate::Forgejo {
         query: UserListReposQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/repos?{}", query.to_string()))
+            .get(&format!("users/{username}/repos?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7329,7 +7294,7 @@ impl crate::Forgejo {
         query: UserListStarredQuery,
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/starred?{}", query.to_string()))
+            .get(&format!("users/{username}/starred?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7348,7 +7313,7 @@ impl crate::Forgejo {
     ) -> Result<Vec<Repository>, ForgejoError> {
         let request = self
             .get(&format!(
-                "/users/{username}/subscriptions?{}",
+                "users/{username}/subscriptions?{}",
                 query.to_string()
             ))
             .build()?;
@@ -7368,7 +7333,7 @@ impl crate::Forgejo {
         query: UserGetTokensQuery,
     ) -> Result<Vec<AccessToken>, ForgejoError> {
         let request = self
-            .get(&format!("/users/{username}/tokens?{}", query.to_string()))
+            .get(&format!("users/{username}/tokens?{}", query.to_string()))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7387,7 +7352,7 @@ impl crate::Forgejo {
         body: CreateAccessTokenOption,
     ) -> Result<AccessToken, ForgejoError> {
         let request = self
-            .post(&format!("/users/{username}/tokens"))
+            .post(&format!("users/{username}/tokens"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
@@ -7407,7 +7372,7 @@ impl crate::Forgejo {
         token: &str,
     ) -> Result<(), ForgejoError> {
         let request = self
-            .delete(&format!("/users/{username}/tokens/{token}"))
+            .delete(&format!("users/{username}/tokens/{token}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7418,7 +7383,7 @@ impl crate::Forgejo {
 
     /// Returns the version of the Gitea application
     pub async fn get_version(&self) -> Result<ServerVersion, ForgejoError> {
-        let request = self.get("/version").build()?;
+        let request = self.get("version").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),

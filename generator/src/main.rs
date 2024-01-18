@@ -488,6 +488,9 @@ fn sanitize_path_arg(mut path: &str) -> eyre::Result<String> {
         out.push_str(&head.to_snake_case());
         out.push('}');
     }
+    if out.starts_with("/") {
+        out.remove(0);
+    }
     Ok(out)
 }
 
