@@ -7419,6 +7419,7 @@ pub mod structs {
         pub comment: Option<Comment>,
         pub comment_id: Option<u64>,
         pub content: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
         pub is_private: Option<bool>,
@@ -7448,6 +7449,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct AddTimeOption {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub time: u64,
         pub user_name: Option<String>,
@@ -7484,6 +7486,7 @@ pub mod structs {
     pub struct Attachment {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub browser_download_url: Option<url::Url>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub download_count: Option<u64>,
         pub id: Option<u64>,
@@ -7495,6 +7498,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct BlockedUser {
         pub block_id: Option<u64>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
     }
 
@@ -7523,6 +7527,7 @@ pub mod structs {
         pub block_on_outdated_branch: Option<bool>,
         pub block_on_rejected_reviews: Option<bool>,
         pub branch_name: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub dismiss_stale_approvals: Option<bool>,
         pub enable_approvals_whitelist: Option<bool>,
@@ -7541,6 +7546,7 @@ pub mod structs {
         pub rule_name: Option<String>,
         pub status_check_contexts: Option<Vec<String>>,
         pub unprotected_file_patterns: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -7610,6 +7616,7 @@ pub mod structs {
     pub struct Comment {
         pub assets: Option<Vec<Attachment>>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub html_url: Option<url::Url>,
@@ -7620,6 +7627,7 @@ pub mod structs {
         pub original_author_id: Option<u64>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub pull_request_url: Option<url::Url>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         pub user: Option<User>,
     }
@@ -7629,6 +7637,7 @@ pub mod structs {
         pub author: Option<User>,
         pub commit: Option<RepoCommit>,
         pub committer: Option<User>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub files: Option<Vec<CommitAffectedFiles>>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -7652,12 +7661,15 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitDateOptions {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub author: Option<time::OffsetDateTime>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub committer: Option<time::OffsetDateTime>,
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitMeta {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub sha: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -7678,6 +7690,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CommitStatus {
         pub context: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub creator: Option<User>,
         pub description: Option<String>,
@@ -7685,6 +7698,7 @@ pub mod structs {
         pub status: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub target_url: Option<url::Url>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub url: Option<url::Url>,
@@ -7845,6 +7859,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateIssueCommentOption {
         pub body: String,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -7856,6 +7871,7 @@ pub mod structs {
         pub assignees: Option<Vec<String>>,
         pub body: Option<String>,
         pub closed: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
         pub labels: Option<Vec<u64>>,
         pub milestone: Option<u64>,
@@ -7889,6 +7905,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateMilestoneOption {
         pub description: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_on: Option<time::OffsetDateTime>,
         pub state: Option<String>,
         pub title: Option<String>,
@@ -7932,6 +7949,7 @@ pub mod structs {
         pub assignees: Option<Vec<String>>,
         pub base: Option<String>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
         pub head: Option<String>,
         pub labels: Option<Vec<u64>>,
@@ -8034,6 +8052,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateUserOption {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub email: String,
         pub full_name: Option<String>,
@@ -8062,7 +8081,9 @@ pub mod structs {
     pub struct Cron {
         pub exec_times: Option<u64>,
         pub name: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub next: Option<time::OffsetDateTime>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub prev: Option<time::OffsetDateTime>,
         pub schedule: Option<String>,
     }
@@ -8094,6 +8115,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeleteLabelsOption {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -8101,6 +8123,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeployKey {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub fingerprint: Option<String>,
         pub id: Option<u64>,
@@ -8159,6 +8182,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditDeadlineOption {
+        #[serde(with = "time::serde::rfc3339")]
         pub due_date: time::OffsetDateTime,
     }
 
@@ -8185,6 +8209,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditIssueCommentOption {
         pub body: String,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -8195,6 +8220,7 @@ pub mod structs {
         pub assignee: Option<String>,
         pub assignees: Option<Vec<String>>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
         pub milestone: Option<u64>,
         #[serde(rename = "ref")]
@@ -8202,6 +8228,7 @@ pub mod structs {
         pub state: Option<String>,
         pub title: Option<String>,
         pub unset_due_date: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -8221,6 +8248,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditMilestoneOption {
         pub description: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_on: Option<time::OffsetDateTime>,
         pub state: Option<String>,
         pub title: Option<String>,
@@ -8248,6 +8276,7 @@ pub mod structs {
         pub assignees: Option<Vec<String>>,
         pub base: Option<String>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
         pub labels: Option<Vec<u64>>,
         pub milestone: Option<u64>,
@@ -8382,6 +8411,7 @@ pub mod structs {
     pub struct FileCommitResponse {
         pub author: Option<CommitUser>,
         pub committer: Option<CommitUser>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub html_url: Option<url::Url>,
@@ -8438,8 +8468,10 @@ pub mod structs {
         pub can_encrypt_comms: Option<bool>,
         pub can_encrypt_storage: Option<bool>,
         pub can_sign: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub emails: Option<Vec<GPGKeyEmail>>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub expires_at: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
         pub key_id: Option<String>,
@@ -8589,11 +8621,13 @@ pub mod structs {
         pub authorization_header: Option<String>,
         pub branch_filter: Option<String>,
         pub config: Option<serde_json::Map<String, serde_json::Value>>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub events: Option<Vec<String>>,
         pub id: Option<u64>,
         #[serde(rename = "type")]
         pub r#type: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -8622,9 +8656,12 @@ pub mod structs {
         pub assignee: Option<User>,
         pub assignees: Option<Vec<User>>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub closed_at: Option<time::OffsetDateTime>,
         pub comments: Option<u64>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub html_url: Option<url::Url>,
@@ -8642,6 +8679,7 @@ pub mod structs {
         pub repository: Option<RepositoryMeta>,
         pub state: Option<String>,
         pub title: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub url: Option<url::Url>,
@@ -8672,6 +8710,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueDeadline {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
     }
 
@@ -8694,6 +8733,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueLabelsOption {
         pub labels: Option<Vec<u64>>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -8847,15 +8887,19 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Milestone {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub closed_at: Option<time::OffsetDateTime>,
         pub closed_issues: Option<u64>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub description: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_on: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
         pub open_issues: Option<u64>,
         pub state: Option<String>,
         pub title: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -8963,6 +9007,7 @@ pub mod structs {
         pub repository: Option<Repository>,
         pub subject: Option<NotificationSubject>,
         pub unread: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub url: Option<url::Url>,
@@ -8978,6 +9023,7 @@ pub mod structs {
         pub client_id: Option<String>,
         pub client_secret: Option<String>,
         pub confidential_client: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
         pub name: Option<String>,
@@ -9029,6 +9075,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Package {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub creator: Option<User>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9067,6 +9114,7 @@ pub mod structs {
         pub message: Option<String>,
         pub modified: Option<Vec<String>>,
         pub removed: Option<Vec<String>>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub timestamp: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub url: Option<url::Url>,
@@ -9106,6 +9154,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PublicKey {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub fingerprint: Option<String>,
         pub id: Option<u64>,
@@ -9127,11 +9176,14 @@ pub mod structs {
         pub assignees: Option<Vec<User>>,
         pub base: Option<PRBranchInfo>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub closed_at: Option<time::OffsetDateTime>,
         pub comments: Option<u64>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub diff_url: Option<url::Url>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
         pub head: Option<PRBranchInfo>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9143,6 +9195,7 @@ pub mod structs {
         pub merge_commit_sha: Option<String>,
         pub mergeable: Option<bool>,
         pub merged: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub merged_at: Option<time::OffsetDateTime>,
         pub merged_by: Option<User>,
         pub milestone: Option<Milestone>,
@@ -9153,6 +9206,7 @@ pub mod structs {
         pub requested_reviewers: Option<Vec<User>>,
         pub state: Option<String>,
         pub title: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub url: Option<url::Url>,
@@ -9164,6 +9218,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PullRequestMeta {
         pub merged: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub merged_at: Option<time::OffsetDateTime>,
     }
 
@@ -9183,8 +9238,10 @@ pub mod structs {
         pub pull_request_url: Option<url::Url>,
         pub stale: Option<bool>,
         pub state: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub submitted_at: Option<time::OffsetDateTime>,
         pub team: Option<Team>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         pub user: Option<User>,
     }
@@ -9195,6 +9252,7 @@ pub mod structs {
     pub struct PullReviewComment {
         pub body: Option<String>,
         pub commit_id: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub diff_hunk: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9208,6 +9266,7 @@ pub mod structs {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub pull_request_url: Option<url::Url>,
         pub resolver: Option<User>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         pub user: Option<User>,
     }
@@ -9239,6 +9298,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Reaction {
         pub content: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub user: Option<User>,
     }
@@ -9259,6 +9319,7 @@ pub mod structs {
         pub assets: Option<Vec<Attachment>>,
         pub author: Option<User>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub draft: Option<bool>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9266,6 +9327,7 @@ pub mod structs {
         pub id: Option<u64>,
         pub name: Option<String>,
         pub prerelease: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub published_at: Option<time::OffsetDateTime>,
         pub tag_name: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9332,11 +9394,13 @@ pub mod structs {
         pub allow_rebase_update: Option<bool>,
         pub allow_squash_merge: Option<bool>,
         pub archived: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub archived_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub avatar_url: Option<url::Url>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub clone_url: Option<url::Url>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub default_allow_maintainer_edit: Option<bool>,
         pub default_branch: Option<String>,
@@ -9368,6 +9432,7 @@ pub mod structs {
         pub link: Option<String>,
         pub mirror: Option<bool>,
         pub mirror_interval: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub mirror_updated: Option<time::OffsetDateTime>,
         pub name: Option<String>,
         pub open_issues_count: Option<u64>,
@@ -9385,6 +9450,7 @@ pub mod structs {
         pub ssh_url: Option<url::Url>,
         pub stars_count: Option<u64>,
         pub template: Option<bool>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub url: Option<url::Url>,
@@ -9419,6 +9485,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct Secret {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub name: Option<String>,
     }
@@ -9439,6 +9506,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct StopWatch {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub duration: Option<String>,
         pub issue_index: Option<u64>,
@@ -9497,6 +9565,7 @@ pub mod structs {
         pub assignee: Option<User>,
         pub assignee_team: Option<Team>,
         pub body: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub dependent_issue: Option<Issue>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9525,6 +9594,7 @@ pub mod structs {
         pub tracked_time: Option<TrackedTime>,
         #[serde(rename = "type")]
         pub r#type: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
         pub user: Option<User>,
     }
@@ -9540,10 +9610,12 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TopicResponse {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
         pub repo_count: Option<u64>,
         pub topic_name: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub updated: Option<time::OffsetDateTime>,
     }
 
@@ -9551,6 +9623,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TrackedTime {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
         pub issue: Option<Issue>,
@@ -9607,6 +9680,7 @@ pub mod structs {
         pub active: Option<bool>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub avatar_url: Option<url::Url>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
         pub description: Option<String>,
         pub email: Option<String>,
@@ -9616,6 +9690,7 @@ pub mod structs {
         pub id: Option<u64>,
         pub is_admin: Option<bool>,
         pub language: Option<String>,
+        #[serde(with = "time::serde::rfc3339::option")]
         pub last_login: Option<time::OffsetDateTime>,
         pub location: Option<String>,
         pub login: Option<String>,
@@ -9669,6 +9744,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct WatchInfo {
+        #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub ignored: Option<bool>,
         pub reason: Option<()>,

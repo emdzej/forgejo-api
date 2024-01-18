@@ -728,6 +728,12 @@ fn create_struct_for_definition(
             if field_ty == "Option<url::Url>" {
                 fields.push_str("#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n");
             }
+            if field_ty == "time::OffsetDateTime" {
+                fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
+            }
+            if field_ty == "Option<time::OffsetDateTime>" {
+                fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
+            }
             if &field_name != prop_name {
                 fields.push_str("#[serde(rename = \"");
                 fields.push_str(prop_name);
