@@ -1,5 +1,5 @@
 use eyre::{ensure, eyre, WrapErr};
-use forgejo_api::{Forgejo, structs::*};
+use forgejo_api::{structs::*, Forgejo};
 
 #[tokio::test]
 async fn ci() -> eyre::Result<()> {
@@ -40,19 +40,23 @@ async fn user(api: &Forgejo) -> eyre::Result<()> {
         "user should be named \"TestingAdmin\""
     );
 
-    let myself_indirect = api
-        .user_get("TestingAdmin")
-        .await?;
+    let myself_indirect = api.user_get("TestingAdmin").await?;
     ensure!(
         myself == myself_indirect,
         "result of `myself` does not match result of `get_user`"
     );
 
-    let query = UserListFollowingQuery { page: None, limit: None };
+    let query = UserListFollowingQuery {
+        page: None,
+        limit: None,
+    };
     let following = api.user_list_following("TestingAdmin", query).await?;
     ensure!(following == Vec::new(), "following list not empty");
 
-    let query = UserListFollowersQuery { page: None, limit: None };
+    let query = UserListFollowersQuery {
+        page: None,
+        limit: None,
+    };
     let followers = api.user_list_followers("TestingAdmin", query).await?;
     ensure!(followers == Vec::new(), "follower list not empty");
 
@@ -118,7 +122,10 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         remote_repo.owner.as_ref().unwrap().login.as_ref().unwrap() == "TestingAdmin",
         "repo owner is not \"TestingAdmin\""
     );
-    ensure!(remote_repo.name.as_ref().unwrap() == "test", "repo owner is not \"test\"");
+    ensure!(
+        remote_repo.name.as_ref().unwrap() == "test",
+        "repo owner is not \"test\""
+    );
     tokio::time::sleep(std::time::Duration::from_secs(3)).await;
 
     let mut remote_url = remote_repo.clone_url.clone().unwrap();
@@ -245,25 +252,42 @@ async fn repo(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
             "test",
             release.id.unwrap(),
             b"This is a file!".to_vec(),
-            RepoCreateReleaseAttachmentQuery { name: Some("test.txt".into()) },
+            RepoCreateReleaseAttachmentQuery {
+                name: Some("test.txt".into()),
+            },
         )
         .await
         .wrap_err("failed to create release attachment")?;
     ensure!(
-        &*api.download_release_attachment("TestingAdmin", "test", release.id.unwrap(), attachment.id.unwrap())
+        &*api
+            .download_release_attachment(
+                "TestingAdmin",
+                "test",
+                release.id.unwrap(),
+                attachment.id.unwrap()
+            )
             .await?
             == b"This is a file!",
         "couldn't download attachment"
     );
-    let _zip_archive = api.repo_get_archive("TestingAdmin", "test", "v1.0.zip")
-        .await.unwrap();
-    let _tar_archive = api.repo_get_archive("TestingAdmin", "test", "v1.0.tar.gz")
-        .await.unwrap();
+    let _zip_archive = api
+        .repo_get_archive("TestingAdmin", "test", "v1.0.zip")
+        .await
+        .unwrap();
+    let _tar_archive = api
+        .repo_get_archive("TestingAdmin", "test", "v1.0.tar.gz")
+        .await
+        .unwrap();
     // check these contents when their return value is fixed
 
-    api.repo_delete_release_attachment("TestingAdmin", "test", release.id.unwrap(), attachment.id.unwrap())
-        .await
-        .wrap_err("failed to deleted attachment")?;
+    api.repo_delete_release_attachment(
+        "TestingAdmin",
+        "test",
+        release.id.unwrap(),
+        attachment.id.unwrap(),
+    )
+    .await
+    .wrap_err("failed to deleted attachment")?;
 
     api.repo_delete_release("TestingAdmin", "test", release.id.unwrap())
         .await
@@ -306,7 +330,10 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         .await
         .wrap_err("failed to search users")?;
     ensure!(
-        users.iter().find(|u| u.login.as_ref().unwrap() == "Pipis").is_some(),
+        users
+            .iter()
+            .find(|u| u.login.as_ref().unwrap() == "Pipis")
+            .is_some(),
         "could not find new user"
     );
     let query = AdminGetAllEmailsQuery {
@@ -344,9 +371,7 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         limit: None,
     };
     ensure!(
-        !api.admin_get_all_orgs(query)
-            .await?
-            .is_empty(),
+        !api.admin_get_all_orgs(query).await?.is_empty(),
         "org list empty"
     );
 
@@ -369,15 +394,11 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
     api.admin_rename_user("Pipis", rename_opt)
         .await
         .wrap_err("failed to rename user")?;
-    let query = AdminDeleteUserQuery {
-        purge: Some(true),
-    };
+    let query = AdminDeleteUserQuery { purge: Some(true) };
     api.admin_delete_user("Bepis", query)
         .await
         .wrap_err("failed to delete user")?;
-    let query = AdminDeleteUserQuery {
-        purge: Some(true),
-    };
+    let query = AdminDeleteUserQuery { purge: Some(true) };
     ensure!(
         api.admin_delete_user("Ghost", query).await.is_err(),
         "deleting fake user should fail"
@@ -391,9 +412,16 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         .admin_cron_list(query)
         .await
         .wrap_err("failed to get crons list")?;
-    api.admin_cron_run(&crons.get(0).ok_or_else(|| eyre!("no crons"))?.name.as_ref().unwrap())
-        .await
-        .wrap_err("failed to run cron")?;
+    api.admin_cron_run(
+        &crons
+            .get(0)
+            .ok_or_else(|| eyre!("no crons"))?
+            .name
+            .as_ref()
+            .unwrap(),
+    )
+    .await
+    .wrap_err("failed to run cron")?;
 
     let hook_opt = CreateHookOption {
         active: None,
@@ -402,7 +430,11 @@ async fn admin(api: &forgejo_api::Forgejo) -> eyre::Result<()> {
         config: CreateHookOptionConfig {
             // content_type: "json".into(),
             // url: url::Url::parse("http://test.local/").unwrap(),
-            additional: [("content_type".into(), "json".into()), ("url".into(), "http://test.local/".into())].into(),
+            additional: [
+                ("content_type".into(), "json".into()),
+                ("url".into(), "http://test.local/".into()),
+            ]
+            .into(),
         },
         events: Some(Vec::new()),
         r#type: "forgejo".into(),

@@ -129,7 +129,10 @@ impl Forgejo {
         let release = self
             .repo_get_release_attachment(owner, repo, release, attach)
             .await?;
-        let request = self.client.get(format!("/attachments/{}", release.uuid.unwrap())).build()?;
+        let request = self
+            .client
+            .get(format!("/attachments/{}", release.uuid.unwrap()))
+            .build()?;
         Ok(self.execute(request).await?.bytes().await?)
     }
 
