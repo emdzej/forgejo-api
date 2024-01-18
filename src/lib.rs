@@ -137,27 +137,27 @@ impl Forgejo {
     }
 
     fn get(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1").unwrap().join(path).unwrap();
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         self.client.get(url)
     }
 
     fn put(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1").unwrap().join(path).unwrap();
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         self.client.put(url)
     }
 
     fn post(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1").unwrap().join(path).unwrap();
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         self.client.post(url)
     }
 
     fn delete(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1").unwrap().join(path).unwrap();
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         self.client.post(url)
     }
 
     fn patch(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1").unwrap().join(path).unwrap();
+        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         self.client.post(url)
     }
 
