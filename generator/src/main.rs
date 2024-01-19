@@ -925,20 +925,23 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             match ty {
                 ParameterType::String => match param.format.as_deref() {
                     Some("date-time" | "date") => {
-                        writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
-                        writeln!(&mut handler, "s.push_str(&{field_name}.format(&time::format_description::well_known::Rfc3339).unwrap());")?;
-                        writeln!(&mut handler, "s.push('&');")?;
+                        writeln!(
+                            &mut handler,
+                            "write!(f, \"{}={{field_name}}&\", field_name = {field_name}.format(&time::format_description::well_known::Rfc3339).unwrap())?;",
+                            param.name)?;
                     }
                     _ => {
-                        writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
-                        writeln!(&mut handler, "s.push_str(&{field_name});")?;
-                        writeln!(&mut handler, "s.push('&');")?;
+                        writeln!(
+                            &mut handler,
+                            "write!(f, \"{}={{{}}}&\")?;",
+                            param.name, field_name
+                        )?;
                     }
                 },
                 ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
                     writeln!(
                         &mut handler,
-                        "write!(&mut s, \"{}={{}}&\", {field_name}).unwrap();",
+                        "write!(f, \"{}={{{field_name}}}&\")?;",
                         param.name
                     )?;
                 }
@@ -952,17 +955,17 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                         ParameterType::String => {
                             match param.format.as_deref() {
                                 Some("date-time" | "date") => {
-                                    "s.push_str(&item.format(&time::format_description::well_known::Rfc3339).unwrap());"
+                                    "write!(f, \"{{date}}\", item.format(&time::format_description::well_known::Rfc3339).unwrap())?;"
                                 },
                                 _ => {
-                                    "s.push_str(&item);"
+                                    "write!(f, \"{item}\")?;"
                                 }
                             }
                         },
                         ParameterType::Number |
                             ParameterType::Integer |
                             ParameterType::Boolean => {
-                                "write!(&mut s, \"{item}\").unwrap();"
+                                "write!(f, \"{item}\")?;"
                             },
                         ParameterType::Array => {
                             eyre::bail!("nested arrays not supported in query");
@@ -1003,13 +1006,13 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                             )?);
                         }
                         CollectionFormat::Multi => {
-                            writeln!(&mut handler, "")?;
+                            writeln!(&mut handler)?;
                             writeln!(&mut handler, "if !{field_name}.is_empty() {{")?;
                             writeln!(&mut handler, "for item in {field_name} {{")?;
-                            writeln!(&mut handler, "s.push_str(\"{}=\");", param.name)?;
+                            writeln!(&mut handler, "write!(f, \"{}=\")?;", param.name)?;
                             handler.push_str(item_pusher);
                             handler.push('\n');
-                            writeln!(&mut handler, "s.push('&')")?;
+                            writeln!(&mut handler, "write!(f, '&')?;")?;
                             writeln!(&mut handler, "}}")?;
                             writeln!(&mut handler, "}}")?;
                         }
@@ -1023,16 +1026,36 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             imp.push_str(&handler);
         }
     }
-    if fields.is_empty() {
-        return Ok(String::new());
+
+    let result = if fields.is_empty() {
+        String::new()
     } else {
         let op_name = op
             .operation_id
             .as_ref()
             .ok_or_else(|| eyre::eyre!("no op id found"))?
             .to_pascal_case();
-        return Ok(format!("pub struct {op_name}Query {{\n{fields}\n}}\n\nimpl {op_name}Query {{\npub(crate) fn to_string(self) -> String {{\n{imp}\n}}\n}}"));
-    }
+        // human readable format string + added whitespace so that the generate text is human
+        // readable as well
+        format!(
+            "
+pub struct {op_name}Query {{
+    {fields}
+}}
+
+impl std::fmt::Display for {op_name}Query {{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{
+        {imp}
+        Ok(())
+    }}
+}}
+",
+            fields = fields.replace('\n', "\n    ").trim(),
+            imp = imp.replace('\n', "\n        ").trim()
+        )
+    };
+
+    Ok(result)
 }
 
 fn simple_query_array(
@@ -1042,17 +1065,19 @@ fn simple_query_array(
     sep: &str,
 ) -> eyre::Result<String> {
     let mut out = String::new();
-    writeln!(&mut out, "s.push_str(\"{}=\");", param.name)?;
-    writeln!(&mut out, "")?;
+
+    writeln!(&mut out)?;
     writeln!(&mut out, "if !{name}.is_empty() {{")?;
-    writeln!(&mut out, "for (i, item) in {name}.iter().enumerate() {{")?;
+    writeln!(&mut out, "for item in {name} {{")?;
+    writeln!(&mut out, "write!(f, \"{}=\")?;", param.name)?;
     out.push_str(item_pusher);
     out.push('\n');
     writeln!(&mut out, "if i < {name}.len() - 1 {{")?;
     writeln!(&mut out, "s.push('{sep}')")?;
     writeln!(&mut out, "}}")?;
     writeln!(&mut out, "}}")?;
-    writeln!(&mut out, "s.push('&')")?;
+    writeln!(&mut out, "write!(f, '&')?;")?;
     writeln!(&mut out, "}}")?;
+
     Ok(out)
 }
