@@ -13,7 +13,8 @@ async fn user() {
     let myself = api.user_get_current().await.unwrap();
     assert!(myself.is_admin.unwrap(), "user should be admin");
     assert_eq!(
-        myself.login.as_ref().unwrap(), "TestingAdmin",
+        myself.login.as_ref().unwrap(),
+        "TestingAdmin",
         "user should be named \"TestingAdmin\""
     );
 
@@ -27,14 +28,20 @@ async fn user() {
         page: None,
         limit: None,
     };
-    let following = api.user_list_following("TestingAdmin", query).await.unwrap();
+    let following = api
+        .user_list_following("TestingAdmin", query)
+        .await
+        .unwrap();
     assert_eq!(following, Vec::new(), "following list not empty");
 
     let query = UserListFollowersQuery {
         page: None,
         limit: None,
     };
-    let followers = api.user_list_followers("TestingAdmin", query).await.unwrap();
+    let followers = api
+        .user_list_followers("TestingAdmin", query)
+        .await
+        .unwrap();
     assert_eq!(followers, Vec::new(), "follower list not empty");
 
     let url = url::Url::parse(&std::env::var("FORGEJO_API_CI_INSTANCE_URL").unwrap()).unwrap();
@@ -66,17 +73,25 @@ async fn repo() {
     };
     let _ = git()
         .args(["config", "--global", "init.defaultBranch", "main"])
-        .status().unwrap();
+        .status()
+        .unwrap();
     let _ = git().args(["init"]).status().unwrap();
     let _ = git()
         .args(["config", "user.name", "TestingAdmin"])
-        .status().unwrap();
+        .status()
+        .unwrap();
     let _ = git()
         .args(["config", "user.email", "admin@noreply.example.org"])
-        .status().unwrap();
-    tokio::fs::write("/test_repo/README.md", "# Test\nThis is a test repo").await.unwrap();
+        .status()
+        .unwrap();
+    tokio::fs::write("/test_repo/README.md", "# Test\nThis is a test repo")
+        .await
+        .unwrap();
     let _ = git().args(["add", "."]).status().unwrap();
-    let _ = git().args(["commit", "-m", "initial commit"]).status().unwrap();
+    let _ = git()
+        .args(["commit", "-m", "initial commit"])
+        .status()
+        .unwrap();
 
     let repo_opt = CreateRepoOption {
         auto_init: Some(false),
@@ -111,18 +126,26 @@ async fn repo() {
     remote_url.set_password(Some("password")).unwrap();
     let _ = git()
         .args(["remote", "add", "origin", remote_url.as_str()])
-        .status().unwrap();
-    let _ = git().args(["push", "-u", "origin", "main"]).status().unwrap();
+        .status()
+        .unwrap();
+    let _ = git()
+        .args(["push", "-u", "origin", "main"])
+        .status()
+        .unwrap();
 
     let _ = git().args(["switch", "-c", "test"]).status().unwrap();
     tokio::fs::write(
         "/test_repo/example.rs",
         "fn add_one(x: u32) -> u32 { x + 1 }",
     )
-    .await.unwrap();
+    .await
+    .unwrap();
     let _ = git().args(["add", "."]).status().unwrap();
     let _ = git().args(["commit", "-m", "egg"]).status().unwrap();
-    let _ = git().args(["push", "-u", "origin", "test"]).status().unwrap();
+    let _ = git()
+        .args(["push", "-u", "origin", "test"])
+        .status()
+        .unwrap();
 
     let pr_opt = CreatePullRequestOption {
         assignee: None,
@@ -244,7 +267,8 @@ async fn repo() {
                 release.id.unwrap(),
                 attachment.id.unwrap()
             )
-            .await.unwrap()
+            .await
+            .unwrap()
             == b"This is a file!",
         "couldn't download attachment"
     );
@@ -391,16 +415,9 @@ async fn admin() {
         .admin_cron_list(query)
         .await
         .expect("failed to get crons list");
-    api.admin_cron_run(
-        &crons
-            .get(0)
-            .expect("no crons")
-            .name
-            .as_ref()
-            .unwrap(),
-    )
-    .await
-    .expect("failed to run cron");
+    api.admin_cron_run(&crons.get(0).expect("no crons").name.as_ref().unwrap())
+        .await
+        .expect("failed to run cron");
 
     let hook_opt = CreateHookOption {
         active: None,
