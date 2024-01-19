@@ -1023,7 +1023,6 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             imp.push_str(&handler);
         }
     }
-    imp.push_str("s\n");
     if fields.is_empty() {
         return Ok(String::new());
     } else {
