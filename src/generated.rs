@@ -9446,8 +9446,7 @@ pub mod structs {
         pub release_counter: Option<u64>,
         pub repo_transfer: Option<RepoTransfer>,
         pub size: Option<u64>,
-        #[serde(deserialize_with = "crate::none_if_blank_url")]
-        pub ssh_url: Option<url::Url>,
+        pub ssh_url: Option<String>,
         pub stars_count: Option<u64>,
         pub template: Option<bool>,
         #[serde(with = "time::serde::rfc3339::option")]

@@ -790,7 +790,7 @@ fn create_struct_for_definition(
             let prop_ty = schema_ref_type_name(spec, prop_schema)?;
             let field_name = sanitize_ident(prop_name);
             let mut field_ty = prop_ty.clone();
-            if field_name.ends_with("url") && field_ty == "String" {
+            if field_name.ends_with("url") && field_name != "ssh_url" && field_ty == "String" {
                 field_ty = "url::Url".into()
             }
             if field_ty == name {
