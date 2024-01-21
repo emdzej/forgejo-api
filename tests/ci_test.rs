@@ -65,10 +65,10 @@ async fn user() {
 async fn repo() {
     let api = get_api();
 
-    tokio::fs::create_dir("/test_repo").await.unwrap();
+    tokio::fs::create_dir("./test_repo").await.unwrap();
     let git = || {
         let mut cmd = std::process::Command::new("git");
-        cmd.current_dir("/test_repo");
+        cmd.current_dir("./test_repo");
         cmd
     };
     let _ = git()
@@ -84,7 +84,7 @@ async fn repo() {
         .args(["config", "user.email", "admin@noreply.example.org"])
         .status()
         .unwrap();
-    tokio::fs::write("/test_repo/README.md", "# Test\nThis is a test repo")
+    tokio::fs::write("./test_repo/README.md", "# Test\nThis is a test repo")
         .await
         .unwrap();
     let _ = git().args(["add", "."]).status().unwrap();
@@ -135,7 +135,7 @@ async fn repo() {
 
     let _ = git().args(["switch", "-c", "test"]).status().unwrap();
     tokio::fs::write(
-        "/test_repo/example.rs",
+        "./test_repo/example.rs",
         "fn add_one(x: u32) -> u32 { x + 1 }",
     )
     .await
