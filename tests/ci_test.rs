@@ -433,7 +433,7 @@ async fn admin() {
             .into(),
         },
         events: Some(Vec::new()),
-        r#type: "forgejo".into(),
+        r#type: "gitea".into(),
     };
     // yarr har har me matey this is me hook
     let hook = api
