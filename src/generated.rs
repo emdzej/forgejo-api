@@ -1864,7 +1864,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoGetAllCommitsQuery,
-    ) -> Result<Vec<Commit>, ForgejoError> {
+    ) -> Result<(reqwest::header::HeaderMap, Vec<Commit>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/commits?{}",
@@ -1873,7 +1873,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().clone(), response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4572,7 +4572,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoGetPullRequestCommitsQuery,
-    ) -> Result<Vec<Commit>, ForgejoError> {
+    ) -> Result<(reqwest::header::HeaderMap, Vec<Commit>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/pulls/{index}/commits?{}",
@@ -4581,7 +4581,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().clone(), response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4597,7 +4597,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoGetPullRequestFilesQuery,
-    ) -> Result<Vec<ChangedFile>, ForgejoError> {
+    ) -> Result<(reqwest::header::HeaderMap, Vec<ChangedFile>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/pulls/{index}/files?{}",
@@ -4606,7 +4606,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().clone(), response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }

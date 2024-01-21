@@ -153,50 +153,85 @@ fn query_struct_name(op: &Operation) -> eyre::Result<String> {
     Ok(ty)
 }
 
-fn fn_return_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
-    let mut names = op
+fn fn_return_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<ResponseType> {
+    let mut responses = op
         .responses
         .http_codes
         .iter()
         .filter(|(k, _)| k.starts_with("2"))
         .map(|(_, v)| response_ref_type_name(spec, v))
         .collect::<Result<Vec<_>, _>>()?;
+    let mut iter = responses.into_iter();
+    let mut response = iter
+        .next()
+        .ok_or_else(|| eyre::eyre!("must have at least one response type"))?;
+    for next in iter {
+        response = response.merge(next)?;
+    }
 
-    names.sort();
-    names.dedup();
-    let name = match names.len() {
-        0 => eyre::bail!("no type name found"),
-        1 => {
-            let name = names.pop().unwrap();
-            if name == "empty" {
-                "()".into()
-            } else {
-                name
-            }
-        }
-        2 if names[0] == "empty" || names[1] == "empty" => {
-            let name = if names[0] == "empty" {
-                names.remove(1)
-            } else {
-                names.remove(0)
-            };
-            format!("Option<{name}>")
-        }
-        _ => eyre::bail!("too many possible return types"),
-    };
-
-    Ok(name)
+    Ok(response)
 }
 
-fn response_ref_type_name(spec: &OpenApiV2, schema: &MaybeRef<Response>) -> eyre::Result<String> {
-    let (name, response) = deref_response(spec, schema)?;
-    if let Some(schema) = &response.schema {
-        schema_ref_type_name(spec, schema)
-    } else if let Some(name) = name {
-        Ok(name.into())
-    } else {
-        Ok("()".into())
+#[derive(Debug, Default)]
+struct ResponseType {
+    headers: Option<String>,
+    body: Option<String>,
+}
+
+impl ResponseType {
+    fn merge(self, other: Self) -> eyre::Result<Self> {
+        let mut new = Self::default();
+        match (self.headers, other.headers) {
+            (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
+            (Some(a), None) => new.headers = Some(format!("Option<{a}>")),
+            (None, Some(b)) => new.headers = Some(format!("Option<{b}>")),
+            (a, b) => new.headers = a.or(b),
+        };
+        match (self.body.as_deref(), other.body.as_deref()) {
+            (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
+            (Some(a), Some("()") | None) => new.body = Some(format!("Option<{a}>")),
+            (Some("()") | None, Some(b)) => new.body = Some(format!("Option<{b}>")),
+            (a, b) => new.body = self.body.or(other.body),
+        };
+        Ok(new)
     }
+}
+
+impl std::fmt::Display for ResponseType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut tys = Vec::new();
+        tys.extend(self.headers.as_deref());
+        tys.extend(self.body.as_deref());
+        match tys[..] {
+            [single] => f.write_str(single),
+            _ => {
+                write!(f, "(")?;
+                for (i, item) in tys.iter().copied().enumerate() {
+                    f.write_str(item)?;
+                    if i + 1 < tys.len() {
+                        write!(f, ", ")?;
+                    }
+                }
+                write!(f, ")")?;
+                Ok(())
+            }
+        }
+    }
+}
+
+fn response_ref_type_name(
+    spec: &OpenApiV2,
+    schema: &MaybeRef<Response>,
+) -> eyre::Result<ResponseType> {
+    let (_, response) = deref_response(spec, schema)?;
+    let mut ty = ResponseType::default();
+    if response.headers.is_some() {
+        ty.headers = Some("reqwest::header::HeaderMap".into());
+    }
+    if let Some(schema) = &response.schema {
+        ty.body = Some(schema_ref_type_name(spec, schema)?);
+    };
+    Ok(ty)
 }
 
 fn schema_ref_type_name(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Result<String> {
@@ -503,16 +538,17 @@ fn create_method_response(
     let mut has_empty = false;
     let mut only_empty = true;
     for (code, res) in &op.responses.http_codes {
-        let name = response_ref_type_name(spec, res)?;
+        let response = response_ref_type_name(spec, res)?;
         if !code.starts_with("2") {
             continue;
         }
-        if name == "()" || name == "empty" {
+        if matches!(response.body.as_deref(), Some("()") | None) {
             has_empty = true;
         } else {
             only_empty = false;
         }
     }
+    let fn_ret = fn_return_from_op(spec, op)?;
     let optional = has_empty && !only_empty;
     let mut out = String::new();
     out.push_str("let response = self.execute(request).await?;\n");
@@ -523,32 +559,70 @@ fn create_method_response(
             continue;
         }
         out.push_str(code);
-        out.push_str(" => ");
-        let handler = match &res.schema {
+        out.push_str(" => Ok(");
+        let mut handlers = Vec::new();
+        let header_handler = match &res.headers {
+            Some(_) => {
+                if fn_ret
+                    .headers
+                    .as_ref()
+                    .map(|s| s.starts_with("Option<"))
+                    .unwrap()
+                {
+                    Some("Some(response.headers().clone())")
+                } else {
+                    Some("response.headers().clone()")
+                }
+            }
+            None => {
+                if fn_ret.headers.is_some() {
+                    dbg!(&fn_ret);
+                    panic!();
+                    Some("None")
+                } else {
+                    None
+                }
+            }
+        };
+        handlers.extend(header_handler);
+        let body_handler = match &res.schema {
             Some(schema) if schema_is_string(spec, schema)? => {
                 if optional {
-                    "Ok(Some(response.text().await?))"
+                    Some("Some(response.text().await?)")
                 } else {
-                    "Ok(response.text().await?)"
+                    Some("response.text().await?")
                 }
             }
             Some(_) => {
                 if optional {
-                    "Ok(Some(response.json().await?))"
+                    Some("Some(response.json().await?)")
                 } else {
-                    "Ok(response.json().await?)"
+                    Some("response.json().await?")
                 }
             }
             None => {
                 if optional {
-                    "Ok(None)"
+                    Some("None")
                 } else {
-                    "Ok(())"
+                    None
                 }
             }
         };
-        out.push_str(handler);
-        out.push_str(",\n");
+        handlers.extend(body_handler);
+        match handlers[..] {
+            [single] => out.push_str(single),
+            _ => {
+                out.push('(');
+                for (i, item) in handlers.iter().copied().enumerate() {
+                    out.push_str(item);
+                    if i + 1 < handlers.len() {
+                        out.push_str(", ");
+                    }
+                }
+                out.push(')');
+            }
+        }
+        out.push_str("),\n");
     }
     out.push_str("_ => Err(ForgejoError::UnexpectedStatusCode(response.status()))\n");
     out.push_str("}\n");
