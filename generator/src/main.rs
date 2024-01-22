@@ -1,4 +1,4 @@
-use std::ffi::OsString;
+use std::ffi::{OsStr, OsString};
 
 mod openapi;
 
@@ -34,7 +34,7 @@ fn main() -> eyre::Result<()> {
         s.push_str(&strukt);
     }
     s.push_str("\n}");
-    save_generated(&mut s)?;
+    save_generated(&s)?;
     Ok(())
 }
 
@@ -49,8 +49,21 @@ fn get_spec() -> eyre::Result<OpenApiV2> {
 fn save_generated(contents: &str) -> eyre::Result<()> {
     let path = std::env::var_os("FORGEJO_API_GENERATED_PATH")
         .unwrap_or_else(|| OsString::from("./src/generated.rs"));
-    std::fs::write(path, contents)?;
+    std::fs::write(path.as_os_str(), contents)?;
+    run_rustfmt_on(path.as_os_str());
     Ok(())
+}
+
+fn run_rustfmt_on(path: &OsStr) {
+    let mut rustfmt = std::process::Command::new("rustfmt");
+
+    rustfmt.arg(path);
+    rustfmt.args(["--edition", "2021"]);
+
+    if let Err(e) = rustfmt.status() {
+        println!("Tried to format {path:?}, but failed to do so! :(");
+        println!("Error:\n{e}");
+    }
 }
 
 fn create_methods_for_path(
@@ -1049,9 +1062,7 @@ impl std::fmt::Display for {op_name}Query {{
         Ok(())
     }}
 }}
-",
-            fields = fields.replace('\n', "\n    ").trim(),
-            imp = imp.replace('\n', "\n        ").trim()
+"
         )
     };
 
