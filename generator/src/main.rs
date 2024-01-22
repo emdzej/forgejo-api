@@ -1066,18 +1066,21 @@ fn simple_query_array(
 ) -> eyre::Result<String> {
     let mut out = String::new();
 
-    writeln!(&mut out)?;
-    writeln!(&mut out, "if !{name}.is_empty() {{")?;
-    writeln!(&mut out, "for item in {name} {{")?;
-    writeln!(&mut out, "write!(f, \"{}=\")?;", param.name)?;
-    out.push_str(item_pusher);
-    out.push('\n');
-    writeln!(&mut out, "if i < {name}.len() - 1 {{")?;
-    writeln!(&mut out, "s.push('{sep}')")?;
-    writeln!(&mut out, "}}")?;
-    writeln!(&mut out, "}}")?;
-    writeln!(&mut out, "write!(f, '&')?;")?;
-    writeln!(&mut out, "}}")?;
+    writeln!(
+        &mut out,
+        "
+if !{name}.is_empty() {{
+    for item in {name} {{
+        write!(f, \"{}=\")?;
+        {item_pusher}
+        if i < {name}.len() - 1 {{
+            write!(f, '{sep}')?;
+        }}
+    }}
+    write!(f, '&')?;
+}}",
+        param.name
+    )?;
 
     Ok(out)
 }
