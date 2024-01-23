@@ -1048,8 +1048,6 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             .as_ref()
             .ok_or_else(|| eyre::eyre!("no op id found"))?
             .to_pascal_case();
-        // human readable format string + added whitespace so that the generate text is human
-        // readable as well
         format!(
             "
 pub struct {op_name}Query {{
