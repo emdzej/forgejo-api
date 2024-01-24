@@ -1079,8 +1079,8 @@ fn simple_query_array(
         &mut out,
         "
 if !{name}.is_empty() {{
+    write!(f, \"{}=\")?;
     for (item, i) in {name}.iter().enumerate() {{
-        write!(f, \"{}=\")?;
         {item_pusher}
         if i < {name}.len() - 1 {{
             write!(f, '{sep}')?;
