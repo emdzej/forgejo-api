@@ -7393,7 +7393,6 @@ impl crate::Forgejo {
 }
 use structs::*;
 pub mod structs {
-    use std::fmt::Write;
     /// APIError is an api error with a message
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -9805,115 +9804,117 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl AdminCronListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for AdminCronListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct AdminGetAllEmailsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl AdminGetAllEmailsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for AdminGetAllEmailsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct AdminSearchEmailsQuery {
         pub q: Option<String>,
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl AdminSearchEmailsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(q) = self.q {
-                s.push_str("q=");
-                s.push_str(&q);
-                s.push('&');
+    impl std::fmt::Display for AdminSearchEmailsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(q) = &self.q {
+                write!(f, "q={q}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct AdminListHooksQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl AdminListHooksQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for AdminListHooksQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct AdminGetAllOrgsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl AdminGetAllOrgsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for AdminGetAllOrgsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct AdminUnadoptedListQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
         pub pattern: Option<String>,
     }
 
-    impl AdminUnadoptedListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for AdminUnadoptedListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            if let Some(pattern) = self.pattern {
-                s.push_str("pattern=");
-                s.push_str(&pattern);
-                s.push('&');
+            if let Some(pattern) = &self.pattern {
+                write!(f, "pattern={pattern}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct AdminSearchUsersQuery {
         pub source_id: Option<u64>,
         pub login_name: Option<String>,
@@ -9921,39 +9922,39 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl AdminSearchUsersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(source_id) = self.source_id {
-                write!(&mut s, "source_id={}&", source_id).unwrap();
+    impl std::fmt::Display for AdminSearchUsersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(source_id) = &self.source_id {
+                write!(f, "source_id={source_id}&")?;
             }
-            if let Some(login_name) = self.login_name {
-                s.push_str("login_name=");
-                s.push_str(&login_name);
-                s.push('&');
+            if let Some(login_name) = &self.login_name {
+                write!(f, "login_name={login_name}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct AdminDeleteUserQuery {
         pub purge: Option<bool>,
     }
 
-    impl AdminDeleteUserQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(purge) = self.purge {
-                write!(&mut s, "purge={}&", purge).unwrap();
+    impl std::fmt::Display for AdminDeleteUserQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(purge) = &self.purge {
+                write!(f, "purge={purge}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct NotifyGetListQuery {
         pub all: Option<bool>,
         pub status_types: Option<Vec<String>>,
@@ -9964,57 +9965,58 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl NotifyGetListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(all) = self.all {
-                write!(&mut s, "all={}&", all).unwrap();
+    impl std::fmt::Display for NotifyGetListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(all) = &self.all {
+                write!(f, "all={all}&")?;
             }
-            if let Some(status_types) = self.status_types {
+            if let Some(status_types) = &self.status_types {
                 if !status_types.is_empty() {
                     for item in status_types {
-                        s.push_str("status-types=");
-                        s.push_str(&item);
-                        s.push('&')
+                        write!(f, "status-types=")?;
+                        write!(f, "{item}")?;
+                        write!(f, "&")?;
                     }
                 }
             }
-            if let Some(subject_type) = self.subject_type {
+            if let Some(subject_type) = &self.subject_type {
                 if !subject_type.is_empty() {
                     for item in subject_type {
-                        s.push_str("subject-type=");
-                        s.push_str(&item);
-                        s.push('&')
+                        write!(f, "subject-type=")?;
+                        write!(f, "{item}")?;
+                        write!(f, "&")?;
                     }
                 }
             }
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct NotifyReadListQuery {
         pub last_read_at: Option<time::OffsetDateTime>,
         pub all: Option<String>,
@@ -10022,235 +10024,241 @@ pub mod structs {
         pub to_status: Option<String>,
     }
 
-    impl NotifyReadListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(last_read_at) = self.last_read_at {
-                s.push_str("last_read_at=");
-                s.push_str(
-                    &last_read_at
+    impl std::fmt::Display for NotifyReadListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(last_read_at) = &self.last_read_at {
+                write!(
+                    f,
+                    "last_read_at={field_name}&",
+                    field_name = last_read_at
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(all) = self.all {
-                s.push_str("all=");
-                s.push_str(&all);
-                s.push('&');
+            if let Some(all) = &self.all {
+                write!(f, "all={all}&")?;
             }
-            if let Some(status_types) = self.status_types {
+            if let Some(status_types) = &self.status_types {
                 if !status_types.is_empty() {
                     for item in status_types {
-                        s.push_str("status-types=");
-                        s.push_str(&item);
-                        s.push('&')
+                        write!(f, "status-types=")?;
+                        write!(f, "{item}")?;
+                        write!(f, "&")?;
                     }
                 }
             }
-            if let Some(to_status) = self.to_status {
-                s.push_str("to-status=");
-                s.push_str(&to_status);
-                s.push('&');
+            if let Some(to_status) = &self.to_status {
+                write!(f, "to-status={to_status}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct NotifyReadThreadQuery {
         pub to_status: Option<String>,
     }
 
-    impl NotifyReadThreadQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(to_status) = self.to_status {
-                s.push_str("to-status=");
-                s.push_str(&to_status);
-                s.push('&');
+    impl std::fmt::Display for NotifyReadThreadQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(to_status) = &self.to_status {
+                write!(f, "to-status={to_status}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgGetAllQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgGetAllQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgGetAllQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListActionsSecretsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListActionsSecretsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListActionsSecretsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListActivityFeedsQuery {
         pub date: Option<time::Date>,
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListActivityFeedsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(date) = self.date {
-                s.push_str("date=");
-                s.push_str(
-                    &date
+    impl std::fmt::Display for OrgListActivityFeedsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(date) = &self.date {
+                write!(
+                    f,
+                    "date={field_name}&",
+                    field_name = date
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListHooksQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListHooksQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListHooksQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListLabelsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListLabelsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListLabelsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListBlockedUsersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListBlockedUsersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListBlockedUsersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListMembersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListMembersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListMembersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListPublicMembersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListPublicMembersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListPublicMembersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListReposQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListReposQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListReposQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListTeamsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListTeamsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListTeamsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct TeamSearchQuery {
         pub q: Option<String>,
         pub include_desc: Option<bool>,
@@ -10258,26 +10266,25 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl TeamSearchQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(q) = self.q {
-                s.push_str("q=");
-                s.push_str(&q);
-                s.push('&');
+    impl std::fmt::Display for TeamSearchQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(q) = &self.q {
+                write!(f, "q={q}&")?;
             }
-            if let Some(include_desc) = self.include_desc {
-                write!(&mut s, "include_desc={}&", include_desc).unwrap();
+            if let Some(include_desc) = &self.include_desc {
+                write!(f, "include_desc={include_desc}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct ListPackagesQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
@@ -10285,28 +10292,25 @@ pub mod structs {
         pub q: Option<String>,
     }
 
-    impl ListPackagesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for ListPackagesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            if let Some(r#type) = self.r#type {
-                s.push_str("type=");
-                s.push_str(&r#type);
-                s.push('&');
+            if let Some(r#type) = &self.r#type {
+                write!(f, "type={type}&")?;
             }
-            if let Some(q) = self.q {
-                s.push_str("q=");
-                s.push_str(&q);
-                s.push('&');
+            if let Some(q) = &self.q {
+                write!(f, "q={q}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueSearchIssuesQuery {
         pub state: Option<String>,
         pub labels: Option<String>,
@@ -10327,89 +10331,76 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl IssueSearchIssuesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(state) = self.state {
-                s.push_str("state=");
-                s.push_str(&state);
-                s.push('&');
+    impl std::fmt::Display for IssueSearchIssuesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(state) = &self.state {
+                write!(f, "state={state}&")?;
             }
-            if let Some(labels) = self.labels {
-                s.push_str("labels=");
-                s.push_str(&labels);
-                s.push('&');
+            if let Some(labels) = &self.labels {
+                write!(f, "labels={labels}&")?;
             }
-            if let Some(milestones) = self.milestones {
-                s.push_str("milestones=");
-                s.push_str(&milestones);
-                s.push('&');
+            if let Some(milestones) = &self.milestones {
+                write!(f, "milestones={milestones}&")?;
             }
-            if let Some(q) = self.q {
-                s.push_str("q=");
-                s.push_str(&q);
-                s.push('&');
+            if let Some(q) = &self.q {
+                write!(f, "q={q}&")?;
             }
-            if let Some(priority_repo_id) = self.priority_repo_id {
-                write!(&mut s, "priority_repo_id={}&", priority_repo_id).unwrap();
+            if let Some(priority_repo_id) = &self.priority_repo_id {
+                write!(f, "priority_repo_id={priority_repo_id}&")?;
             }
-            if let Some(r#type) = self.r#type {
-                s.push_str("type=");
-                s.push_str(&r#type);
-                s.push('&');
+            if let Some(r#type) = &self.r#type {
+                write!(f, "type={type}&")?;
             }
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(assigned) = self.assigned {
-                write!(&mut s, "assigned={}&", assigned).unwrap();
+            if let Some(assigned) = &self.assigned {
+                write!(f, "assigned={assigned}&")?;
             }
-            if let Some(created) = self.created {
-                write!(&mut s, "created={}&", created).unwrap();
+            if let Some(created) = &self.created {
+                write!(f, "created={created}&")?;
             }
-            if let Some(mentioned) = self.mentioned {
-                write!(&mut s, "mentioned={}&", mentioned).unwrap();
+            if let Some(mentioned) = &self.mentioned {
+                write!(f, "mentioned={mentioned}&")?;
             }
-            if let Some(review_requested) = self.review_requested {
-                write!(&mut s, "review_requested={}&", review_requested).unwrap();
+            if let Some(review_requested) = &self.review_requested {
+                write!(f, "review_requested={review_requested}&")?;
             }
-            if let Some(reviewed) = self.reviewed {
-                write!(&mut s, "reviewed={}&", reviewed).unwrap();
+            if let Some(reviewed) = &self.reviewed {
+                write!(f, "reviewed={reviewed}&")?;
             }
-            if let Some(owner) = self.owner {
-                s.push_str("owner=");
-                s.push_str(&owner);
-                s.push('&');
+            if let Some(owner) = &self.owner {
+                write!(f, "owner={owner}&")?;
             }
-            if let Some(team) = self.team {
-                s.push_str("team=");
-                s.push_str(&team);
-                s.push('&');
+            if let Some(team) = &self.team {
+                write!(f, "team={team}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoSearchQuery {
         pub q: Option<String>,
         pub topic: Option<bool>,
@@ -10430,132 +10421,128 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoSearchQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(q) = self.q {
-                s.push_str("q=");
-                s.push_str(&q);
-                s.push('&');
+    impl std::fmt::Display for RepoSearchQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(q) = &self.q {
+                write!(f, "q={q}&")?;
             }
-            if let Some(topic) = self.topic {
-                write!(&mut s, "topic={}&", topic).unwrap();
+            if let Some(topic) = &self.topic {
+                write!(f, "topic={topic}&")?;
             }
-            if let Some(include_desc) = self.include_desc {
-                write!(&mut s, "includeDesc={}&", include_desc).unwrap();
+            if let Some(include_desc) = &self.include_desc {
+                write!(f, "includeDesc={include_desc}&")?;
             }
-            if let Some(uid) = self.uid {
-                write!(&mut s, "uid={}&", uid).unwrap();
+            if let Some(uid) = &self.uid {
+                write!(f, "uid={uid}&")?;
             }
-            if let Some(priority_owner_id) = self.priority_owner_id {
-                write!(&mut s, "priority_owner_id={}&", priority_owner_id).unwrap();
+            if let Some(priority_owner_id) = &self.priority_owner_id {
+                write!(f, "priority_owner_id={priority_owner_id}&")?;
             }
-            if let Some(team_id) = self.team_id {
-                write!(&mut s, "team_id={}&", team_id).unwrap();
+            if let Some(team_id) = &self.team_id {
+                write!(f, "team_id={team_id}&")?;
             }
-            if let Some(starred_by) = self.starred_by {
-                write!(&mut s, "starredBy={}&", starred_by).unwrap();
+            if let Some(starred_by) = &self.starred_by {
+                write!(f, "starredBy={starred_by}&")?;
             }
-            if let Some(private) = self.private {
-                write!(&mut s, "private={}&", private).unwrap();
+            if let Some(private) = &self.private {
+                write!(f, "private={private}&")?;
             }
-            if let Some(is_private) = self.is_private {
-                write!(&mut s, "is_private={}&", is_private).unwrap();
+            if let Some(is_private) = &self.is_private {
+                write!(f, "is_private={is_private}&")?;
             }
-            if let Some(template) = self.template {
-                write!(&mut s, "template={}&", template).unwrap();
+            if let Some(template) = &self.template {
+                write!(f, "template={template}&")?;
             }
-            if let Some(archived) = self.archived {
-                write!(&mut s, "archived={}&", archived).unwrap();
+            if let Some(archived) = &self.archived {
+                write!(f, "archived={archived}&")?;
             }
-            if let Some(mode) = self.mode {
-                s.push_str("mode=");
-                s.push_str(&mode);
-                s.push('&');
+            if let Some(mode) = &self.mode {
+                write!(f, "mode={mode}&")?;
             }
-            if let Some(exclusive) = self.exclusive {
-                write!(&mut s, "exclusive={}&", exclusive).unwrap();
+            if let Some(exclusive) = &self.exclusive {
+                write!(f, "exclusive={exclusive}&")?;
             }
-            if let Some(sort) = self.sort {
-                s.push_str("sort=");
-                s.push_str(&sort);
-                s.push('&');
+            if let Some(sort) = &self.sort {
+                write!(f, "sort={sort}&")?;
             }
-            if let Some(order) = self.order {
-                s.push_str("order=");
-                s.push_str(&order);
-                s.push('&');
+            if let Some(order) = &self.order {
+                write!(f, "order={order}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListActivityFeedsQuery {
         pub date: Option<time::Date>,
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListActivityFeedsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(date) = self.date {
-                s.push_str("date=");
-                s.push_str(
-                    &date
+    impl std::fmt::Display for RepoListActivityFeedsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(date) = &self.date {
+                write!(
+                    f,
+                    "date={field_name}&",
+                    field_name = date
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListBranchesQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListBranchesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListBranchesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListCollaboratorsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListCollaboratorsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListCollaboratorsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetAllCommitsQuery {
         pub sha: Option<String>,
         pub path: Option<String>,
@@ -10567,59 +10554,55 @@ pub mod structs {
         pub not: Option<String>,
     }
 
-    impl RepoGetAllCommitsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(sha) = self.sha {
-                s.push_str("sha=");
-                s.push_str(&sha);
-                s.push('&');
+    impl std::fmt::Display for RepoGetAllCommitsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(sha) = &self.sha {
+                write!(f, "sha={sha}&")?;
             }
-            if let Some(path) = self.path {
-                s.push_str("path=");
-                s.push_str(&path);
-                s.push('&');
+            if let Some(path) = &self.path {
+                write!(f, "path={path}&")?;
             }
-            if let Some(stat) = self.stat {
-                write!(&mut s, "stat={}&", stat).unwrap();
+            if let Some(stat) = &self.stat {
+                write!(f, "stat={stat}&")?;
             }
-            if let Some(verification) = self.verification {
-                write!(&mut s, "verification={}&", verification).unwrap();
+            if let Some(verification) = &self.verification {
+                write!(f, "verification={verification}&")?;
             }
-            if let Some(files) = self.files {
-                write!(&mut s, "files={}&", files).unwrap();
+            if let Some(files) = &self.files {
+                write!(f, "files={files}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            if let Some(not) = self.not {
-                s.push_str("not=");
-                s.push_str(&not);
-                s.push('&');
+            if let Some(not) = &self.not {
+                write!(f, "not={not}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetCombinedStatusByRefQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoGetCombinedStatusByRefQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoGetCombinedStatusByRefQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListStatusesByRefQuery {
         pub sort: Option<String>,
         pub state: Option<String>,
@@ -10627,181 +10610,179 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoListStatusesByRefQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(sort) = self.sort {
-                s.push_str("sort=");
-                s.push_str(&sort);
-                s.push('&');
+    impl std::fmt::Display for RepoListStatusesByRefQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(sort) = &self.sort {
+                write!(f, "sort={sort}&")?;
             }
-            if let Some(state) = self.state {
-                s.push_str("state=");
-                s.push_str(&state);
-                s.push('&');
+            if let Some(state) = &self.state {
+                write!(f, "state={state}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetContentsListQuery {
         pub r#ref: Option<String>,
     }
 
-    impl RepoGetContentsListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(r#ref) = self.r#ref {
-                s.push_str("ref=");
-                s.push_str(&r#ref);
-                s.push('&');
+    impl std::fmt::Display for RepoGetContentsListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(r#ref) = &self.r#ref {
+                write!(f, "ref={ref}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetContentsQuery {
         pub r#ref: Option<String>,
     }
 
-    impl RepoGetContentsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(r#ref) = self.r#ref {
-                s.push_str("ref=");
-                s.push_str(&r#ref);
-                s.push('&');
+    impl std::fmt::Display for RepoGetContentsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(r#ref) = &self.r#ref {
+                write!(f, "ref={ref}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetEditorConfigQuery {
         pub r#ref: Option<String>,
     }
 
-    impl RepoGetEditorConfigQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(r#ref) = self.r#ref {
-                s.push_str("ref=");
-                s.push_str(&r#ref);
-                s.push('&');
+    impl std::fmt::Display for RepoGetEditorConfigQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(r#ref) = &self.r#ref {
+                write!(f, "ref={ref}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct ListForksQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl ListForksQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for ListForksQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetSingleCommitQuery {
         pub stat: Option<bool>,
         pub verification: Option<bool>,
         pub files: Option<bool>,
     }
 
-    impl RepoGetSingleCommitQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(stat) = self.stat {
-                write!(&mut s, "stat={}&", stat).unwrap();
+    impl std::fmt::Display for RepoGetSingleCommitQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(stat) = &self.stat {
+                write!(f, "stat={stat}&")?;
             }
-            if let Some(verification) = self.verification {
-                write!(&mut s, "verification={}&", verification).unwrap();
+            if let Some(verification) = &self.verification {
+                write!(f, "verification={verification}&")?;
             }
-            if let Some(files) = self.files {
-                write!(&mut s, "files={}&", files).unwrap();
+            if let Some(files) = &self.files {
+                write!(f, "files={files}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetNoteQuery {
         pub verification: Option<bool>,
         pub files: Option<bool>,
     }
 
-    impl RepoGetNoteQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(verification) = self.verification {
-                write!(&mut s, "verification={}&", verification).unwrap();
+    impl std::fmt::Display for RepoGetNoteQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(verification) = &self.verification {
+                write!(f, "verification={verification}&")?;
             }
-            if let Some(files) = self.files {
-                write!(&mut s, "files={}&", files).unwrap();
+            if let Some(files) = &self.files {
+                write!(f, "files={files}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct GetTreeQuery {
         pub recursive: Option<bool>,
         pub page: Option<u32>,
         pub per_page: Option<u32>,
     }
 
-    impl GetTreeQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(recursive) = self.recursive {
-                write!(&mut s, "recursive={}&", recursive).unwrap();
+    impl std::fmt::Display for GetTreeQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(recursive) = &self.recursive {
+                write!(f, "recursive={recursive}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(per_page) = self.per_page {
-                write!(&mut s, "per_page={}&", per_page).unwrap();
+            if let Some(per_page) = &self.per_page {
+                write!(f, "per_page={per_page}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListHooksQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListHooksQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListHooksQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoTestHookQuery {
         pub r#ref: Option<String>,
     }
 
-    impl RepoTestHookQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(r#ref) = self.r#ref {
-                s.push_str("ref=");
-                s.push_str(&r#ref);
-                s.push('&');
+    impl std::fmt::Display for RepoTestHookQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(r#ref) = &self.r#ref {
+                write!(f, "ref={ref}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueListIssuesQuery {
         pub state: Option<String>,
         pub labels: Option<String>,
@@ -10817,76 +10798,61 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl IssueListIssuesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(state) = self.state {
-                s.push_str("state=");
-                s.push_str(&state);
-                s.push('&');
+    impl std::fmt::Display for IssueListIssuesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(state) = &self.state {
+                write!(f, "state={state}&")?;
             }
-            if let Some(labels) = self.labels {
-                s.push_str("labels=");
-                s.push_str(&labels);
-                s.push('&');
+            if let Some(labels) = &self.labels {
+                write!(f, "labels={labels}&")?;
             }
-            if let Some(q) = self.q {
-                s.push_str("q=");
-                s.push_str(&q);
-                s.push('&');
+            if let Some(q) = &self.q {
+                write!(f, "q={q}&")?;
             }
-            if let Some(r#type) = self.r#type {
-                s.push_str("type=");
-                s.push_str(&r#type);
-                s.push('&');
+            if let Some(r#type) = &self.r#type {
+                write!(f, "type={type}&")?;
             }
-            if let Some(milestones) = self.milestones {
-                s.push_str("milestones=");
-                s.push_str(&milestones);
-                s.push('&');
+            if let Some(milestones) = &self.milestones {
+                write!(f, "milestones={milestones}&")?;
             }
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(created_by) = self.created_by {
-                s.push_str("created_by=");
-                s.push_str(&created_by);
-                s.push('&');
+            if let Some(created_by) = &self.created_by {
+                write!(f, "created_by={created_by}&")?;
             }
-            if let Some(assigned_by) = self.assigned_by {
-                s.push_str("assigned_by=");
-                s.push_str(&assigned_by);
-                s.push('&');
+            if let Some(assigned_by) = &self.assigned_by {
+                write!(f, "assigned_by={assigned_by}&")?;
             }
-            if let Some(mentioned_by) = self.mentioned_by {
-                s.push_str("mentioned_by=");
-                s.push_str(&mentioned_by);
-                s.push('&');
+            if let Some(mentioned_by) = &self.mentioned_by {
+                write!(f, "mentioned_by={mentioned_by}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueGetRepoCommentsQuery {
         pub since: Option<time::OffsetDateTime>,
         pub before: Option<time::OffsetDateTime>,
@@ -10894,183 +10860,187 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl IssueGetRepoCommentsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+    impl std::fmt::Display for IssueGetRepoCommentsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueCreateIssueCommentAttachmentQuery {
         pub name: Option<String>,
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
-    impl IssueCreateIssueCommentAttachmentQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(name) = self.name {
-                s.push_str("name=");
-                s.push_str(&name);
-                s.push('&');
+    impl std::fmt::Display for IssueCreateIssueCommentAttachmentQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(name) = &self.name {
+                write!(f, "name={name}&")?;
             }
-            if let Some(updated_at) = self.updated_at {
-                s.push_str("updated_at=");
-                s.push_str(
-                    &updated_at
+            if let Some(updated_at) = &self.updated_at {
+                write!(
+                    f,
+                    "updated_at={field_name}&",
+                    field_name = updated_at
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueCreateIssueAttachmentQuery {
         pub name: Option<String>,
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
-    impl IssueCreateIssueAttachmentQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(name) = self.name {
-                s.push_str("name=");
-                s.push_str(&name);
-                s.push('&');
+    impl std::fmt::Display for IssueCreateIssueAttachmentQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(name) = &self.name {
+                write!(f, "name={name}&")?;
             }
-            if let Some(updated_at) = self.updated_at {
-                s.push_str("updated_at=");
-                s.push_str(
-                    &updated_at
+            if let Some(updated_at) = &self.updated_at {
+                write!(
+                    f,
+                    "updated_at={field_name}&",
+                    field_name = updated_at
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueListBlocksQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl IssueListBlocksQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for IssueListBlocksQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueGetCommentsQuery {
         pub since: Option<time::OffsetDateTime>,
         pub before: Option<time::OffsetDateTime>,
     }
 
-    impl IssueGetCommentsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+    impl std::fmt::Display for IssueGetCommentsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueListIssueDependenciesQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl IssueListIssueDependenciesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for IssueListIssueDependenciesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueGetIssueReactionsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl IssueGetIssueReactionsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for IssueGetIssueReactionsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueSubscriptionsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl IssueSubscriptionsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for IssueSubscriptionsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueGetCommentsAndTimelineQuery {
         pub since: Option<time::OffsetDateTime>,
         pub page: Option<u32>,
@@ -11078,36 +11048,37 @@ pub mod structs {
         pub before: Option<time::OffsetDateTime>,
     }
 
-    impl IssueGetCommentsAndTimelineQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+    impl std::fmt::Display for IssueGetCommentsAndTimelineQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueTrackedTimesQuery {
         pub user: Option<String>,
         pub since: Option<time::OffsetDateTime>,
@@ -11116,41 +11087,40 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl IssueTrackedTimesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(user) = self.user {
-                s.push_str("user=");
-                s.push_str(&user);
-                s.push('&');
+    impl std::fmt::Display for IssueTrackedTimesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(user) = &self.user {
+                write!(f, "user={user}&")?;
             }
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListKeysQuery {
         pub key_id: Option<u32>,
         pub fingerprint: Option<String>,
@@ -11158,58 +11128,57 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoListKeysQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(key_id) = self.key_id {
-                write!(&mut s, "key_id={}&", key_id).unwrap();
+    impl std::fmt::Display for RepoListKeysQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(key_id) = &self.key_id {
+                write!(f, "key_id={key_id}&")?;
             }
-            if let Some(fingerprint) = self.fingerprint {
-                s.push_str("fingerprint=");
-                s.push_str(&fingerprint);
-                s.push('&');
+            if let Some(fingerprint) = &self.fingerprint {
+                write!(f, "fingerprint={fingerprint}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueListLabelsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl IssueListLabelsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for IssueListLabelsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetRawFileOrLfsQuery {
         pub r#ref: Option<String>,
     }
 
-    impl RepoGetRawFileOrLfsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(r#ref) = self.r#ref {
-                s.push_str("ref=");
-                s.push_str(&r#ref);
-                s.push('&');
+    impl std::fmt::Display for RepoGetRawFileOrLfsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(r#ref) = &self.r#ref {
+                write!(f, "ref={ref}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct IssueGetMilestonesListQuery {
         pub state: Option<String>,
         pub name: Option<String>,
@@ -11217,28 +11186,25 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl IssueGetMilestonesListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(state) = self.state {
-                s.push_str("state=");
-                s.push_str(&state);
-                s.push('&');
+    impl std::fmt::Display for IssueGetMilestonesListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(state) = &self.state {
+                write!(f, "state={state}&")?;
             }
-            if let Some(name) = self.name {
-                s.push_str("name=");
-                s.push_str(&name);
-                s.push('&');
+            if let Some(name) = &self.name {
+                write!(f, "name={name}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct NotifyGetRepoListQuery {
         pub all: Option<bool>,
         pub status_types: Option<Vec<String>>,
@@ -11249,57 +11215,58 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl NotifyGetRepoListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(all) = self.all {
-                write!(&mut s, "all={}&", all).unwrap();
+    impl std::fmt::Display for NotifyGetRepoListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(all) = &self.all {
+                write!(f, "all={all}&")?;
             }
-            if let Some(status_types) = self.status_types {
+            if let Some(status_types) = &self.status_types {
                 if !status_types.is_empty() {
                     for item in status_types {
-                        s.push_str("status-types=");
-                        s.push_str(&item);
-                        s.push('&')
+                        write!(f, "status-types=")?;
+                        write!(f, "{item}")?;
+                        write!(f, "&")?;
                     }
                 }
             }
-            if let Some(subject_type) = self.subject_type {
+            if let Some(subject_type) = &self.subject_type {
                 if !subject_type.is_empty() {
                     for item in subject_type {
-                        s.push_str("subject-type=");
-                        s.push_str(&item);
-                        s.push('&')
+                        write!(f, "subject-type=")?;
+                        write!(f, "{item}")?;
+                        write!(f, "&")?;
                     }
                 }
             }
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct NotifyReadRepoListQuery {
         pub all: Option<String>,
         pub status_types: Option<Vec<String>>,
@@ -11307,40 +11274,37 @@ pub mod structs {
         pub last_read_at: Option<time::OffsetDateTime>,
     }
 
-    impl NotifyReadRepoListQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(all) = self.all {
-                s.push_str("all=");
-                s.push_str(&all);
-                s.push('&');
+    impl std::fmt::Display for NotifyReadRepoListQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(all) = &self.all {
+                write!(f, "all={all}&")?;
             }
-            if let Some(status_types) = self.status_types {
+            if let Some(status_types) = &self.status_types {
                 if !status_types.is_empty() {
                     for item in status_types {
-                        s.push_str("status-types=");
-                        s.push_str(&item);
-                        s.push('&')
+                        write!(f, "status-types=")?;
+                        write!(f, "{item}")?;
+                        write!(f, "&")?;
                     }
                 }
             }
-            if let Some(to_status) = self.to_status {
-                s.push_str("to-status=");
-                s.push_str(&to_status);
-                s.push('&');
+            if let Some(to_status) = &self.to_status {
+                write!(f, "to-status={to_status}&")?;
             }
-            if let Some(last_read_at) = self.last_read_at {
-                s.push_str("last_read_at=");
-                s.push_str(
-                    &last_read_at
+            if let Some(last_read_at) = &self.last_read_at {
+                write!(
+                    f,
+                    "last_read_at={field_name}&",
+                    field_name = last_read_at
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListPullRequestsQuery {
         pub state: Option<String>,
         pub sort: Option<String>,
@@ -11350,53 +11314,51 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoListPullRequestsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(state) = self.state {
-                s.push_str("state=");
-                s.push_str(&state);
-                s.push('&');
+    impl std::fmt::Display for RepoListPullRequestsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(state) = &self.state {
+                write!(f, "state={state}&")?;
             }
-            if let Some(sort) = self.sort {
-                s.push_str("sort=");
-                s.push_str(&sort);
-                s.push('&');
+            if let Some(sort) = &self.sort {
+                write!(f, "sort={sort}&")?;
             }
-            if let Some(milestone) = self.milestone {
-                write!(&mut s, "milestone={}&", milestone).unwrap();
+            if let Some(milestone) = &self.milestone {
+                write!(f, "milestone={milestone}&")?;
             }
-            if let Some(labels) = self.labels {
+            if let Some(labels) = &self.labels {
                 if !labels.is_empty() {
                     for item in labels {
-                        s.push_str("labels=");
-                        write!(&mut s, "{item}").unwrap();
-                        s.push('&')
+                        write!(f, "labels=")?;
+                        write!(f, "{item}")?;
+                        write!(f, "&")?;
                     }
                 }
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoDownloadPullDiffOrPatchQuery {
         pub binary: Option<bool>,
     }
 
-    impl RepoDownloadPullDiffOrPatchQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(binary) = self.binary {
-                write!(&mut s, "binary={}&", binary).unwrap();
+    impl std::fmt::Display for RepoDownloadPullDiffOrPatchQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(binary) = &self.binary {
+                write!(f, "binary={binary}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetPullRequestCommitsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
@@ -11404,24 +11366,25 @@ pub mod structs {
         pub files: Option<bool>,
     }
 
-    impl RepoGetPullRequestCommitsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoGetPullRequestCommitsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            if let Some(verification) = self.verification {
-                write!(&mut s, "verification={}&", verification).unwrap();
+            if let Some(verification) = &self.verification {
+                write!(f, "verification={verification}&")?;
             }
-            if let Some(files) = self.files {
-                write!(&mut s, "files={}&", files).unwrap();
+            if let Some(files) = &self.files {
+                write!(f, "files={files}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetPullRequestFilesQuery {
         pub skip_to: Option<String>,
         pub whitespace: Option<String>,
@@ -11429,92 +11392,89 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoGetPullRequestFilesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(skip_to) = self.skip_to {
-                s.push_str("skip-to=");
-                s.push_str(&skip_to);
-                s.push('&');
+    impl std::fmt::Display for RepoGetPullRequestFilesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(skip_to) = &self.skip_to {
+                write!(f, "skip-to={skip_to}&")?;
             }
-            if let Some(whitespace) = self.whitespace {
-                s.push_str("whitespace=");
-                s.push_str(&whitespace);
-                s.push('&');
+            if let Some(whitespace) = &self.whitespace {
+                write!(f, "whitespace={whitespace}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListPullReviewsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListPullReviewsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListPullReviewsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoUpdatePullRequestQuery {
         pub style: Option<String>,
     }
 
-    impl RepoUpdatePullRequestQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(style) = self.style {
-                s.push_str("style=");
-                s.push_str(&style);
-                s.push('&');
+    impl std::fmt::Display for RepoUpdatePullRequestQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(style) = &self.style {
+                write!(f, "style={style}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListPushMirrorsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListPushMirrorsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListPushMirrorsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetRawFileQuery {
         pub r#ref: Option<String>,
     }
 
-    impl RepoGetRawFileQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(r#ref) = self.r#ref {
-                s.push_str("ref=");
-                s.push_str(&r#ref);
-                s.push('&');
+    impl std::fmt::Display for RepoGetRawFileQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(r#ref) = &self.r#ref {
+                write!(f, "ref={ref}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListReleasesQuery {
         pub draft: Option<bool>,
         pub pre_release: Option<bool>,
@@ -11523,59 +11483,60 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoListReleasesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(draft) = self.draft {
-                write!(&mut s, "draft={}&", draft).unwrap();
+    impl std::fmt::Display for RepoListReleasesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(draft) = &self.draft {
+                write!(f, "draft={draft}&")?;
             }
-            if let Some(pre_release) = self.pre_release {
-                write!(&mut s, "pre-release={}&", pre_release).unwrap();
+            if let Some(pre_release) = &self.pre_release {
+                write!(f, "pre-release={pre_release}&")?;
             }
-            if let Some(per_page) = self.per_page {
-                write!(&mut s, "per_page={}&", per_page).unwrap();
+            if let Some(per_page) = &self.per_page {
+                write!(f, "per_page={per_page}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoCreateReleaseAttachmentQuery {
         pub name: Option<String>,
     }
 
-    impl RepoCreateReleaseAttachmentQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(name) = self.name {
-                s.push_str("name=");
-                s.push_str(&name);
-                s.push('&');
+    impl std::fmt::Display for RepoCreateReleaseAttachmentQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(name) = &self.name {
+                write!(f, "name={name}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListStargazersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListStargazersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListStargazersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListStatusesQuery {
         pub sort: Option<String>,
         pub state: Option<String>,
@@ -11583,62 +11544,61 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoListStatusesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(sort) = self.sort {
-                s.push_str("sort=");
-                s.push_str(&sort);
-                s.push('&');
+    impl std::fmt::Display for RepoListStatusesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(sort) = &self.sort {
+                write!(f, "sort={sort}&")?;
             }
-            if let Some(state) = self.state {
-                s.push_str("state=");
-                s.push_str(&state);
-                s.push('&');
+            if let Some(state) = &self.state {
+                write!(f, "state={state}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListSubscribersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListSubscribersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListSubscribersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListTagsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListTagsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListTagsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoTrackedTimesQuery {
         pub user: Option<String>,
         pub since: Option<time::OffsetDateTime>,
@@ -11647,398 +11607,413 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl RepoTrackedTimesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(user) = self.user {
-                s.push_str("user=");
-                s.push_str(&user);
-                s.push('&');
+    impl std::fmt::Display for RepoTrackedTimesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(user) = &self.user {
+                write!(f, "user={user}&")?;
             }
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoListTopicsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoListTopicsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoListTopicsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetWikiPagesQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl RepoGetWikiPagesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoGetWikiPagesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct RepoGetWikiPageRevisionsQuery {
         pub page: Option<u32>,
     }
 
-    impl RepoGetWikiPageRevisionsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for RepoGetWikiPageRevisionsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListTeamActivityFeedsQuery {
         pub date: Option<time::Date>,
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListTeamActivityFeedsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(date) = self.date {
-                s.push_str("date=");
-                s.push_str(
-                    &date
+    impl std::fmt::Display for OrgListTeamActivityFeedsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(date) = &self.date {
+                write!(
+                    f,
+                    "date={field_name}&",
+                    field_name = date
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListTeamMembersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListTeamMembersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListTeamMembersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListTeamReposQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListTeamReposQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListTeamReposQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct TopicSearchQuery {
         pub q: String,
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl TopicSearchQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            let q = self.q;
-            s.push_str("q=");
-            s.push_str(&q);
-            s.push('&');
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for TopicSearchQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            let q = &self.q;
+            write!(f, "q={q}&")?;
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserGetOAuth2ApplicationsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserGetOAuth2ApplicationsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserGetOAuth2ApplicationsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentListFollowersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserCurrentListFollowersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserCurrentListFollowersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentListFollowingQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserCurrentListFollowingQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserCurrentListFollowingQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentListGpgKeysQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserCurrentListGpgKeysQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserCurrentListGpgKeysQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListHooksQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListHooksQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListHooksQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentListKeysQuery {
         pub fingerprint: Option<String>,
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserCurrentListKeysQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(fingerprint) = self.fingerprint {
-                s.push_str("fingerprint=");
-                s.push_str(&fingerprint);
-                s.push('&');
+    impl std::fmt::Display for UserCurrentListKeysQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(fingerprint) = &self.fingerprint {
+                write!(f, "fingerprint={fingerprint}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListBlockedUsersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListBlockedUsersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListBlockedUsersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListCurrentUserOrgsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListCurrentUserOrgsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListCurrentUserOrgsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentListReposQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserCurrentListReposQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserCurrentListReposQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentListStarredQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserCurrentListStarredQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserCurrentListStarredQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserGetStopWatchesQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserGetStopWatchesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserGetStopWatchesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentListSubscriptionsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserCurrentListSubscriptionsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserCurrentListSubscriptionsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListTeamsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListTeamsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListTeamsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserCurrentTrackedTimesQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
@@ -12046,36 +12021,37 @@ pub mod structs {
         pub before: Option<time::OffsetDateTime>,
     }
 
-    impl UserCurrentTrackedTimesQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserCurrentTrackedTimesQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            if let Some(since) = self.since {
-                s.push_str("since=");
-                s.push_str(
-                    &since
+            if let Some(since) = &self.since {
+                write!(
+                    f,
+                    "since={field_name}&",
+                    field_name = since
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(before) = self.before {
-                s.push_str("before=");
-                s.push_str(
-                    &before
+            if let Some(before) = &self.before {
+                write!(
+                    f,
+                    "before={field_name}&",
+                    field_name = before
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserSearchQuery {
         pub q: Option<String>,
         pub uid: Option<u64>,
@@ -12083,26 +12059,25 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl UserSearchQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(q) = self.q {
-                s.push_str("q=");
-                s.push_str(&q);
-                s.push('&');
+    impl std::fmt::Display for UserSearchQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(q) = &self.q {
+                write!(f, "q={q}&")?;
             }
-            if let Some(uid) = self.uid {
-                write!(&mut s, "uid={}&", uid).unwrap();
+            if let Some(uid) = &self.uid {
+                write!(f, "uid={uid}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListActivityFeedsQuery {
         pub only_performed_by: Option<bool>,
         pub date: Option<time::Date>,
@@ -12110,187 +12085,194 @@ pub mod structs {
         pub limit: Option<u32>,
     }
 
-    impl UserListActivityFeedsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(only_performed_by) = self.only_performed_by {
-                write!(&mut s, "only-performed-by={}&", only_performed_by).unwrap();
+    impl std::fmt::Display for UserListActivityFeedsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(only_performed_by) = &self.only_performed_by {
+                write!(f, "only-performed-by={only_performed_by}&")?;
             }
-            if let Some(date) = self.date {
-                s.push_str("date=");
-                s.push_str(
-                    &date
+            if let Some(date) = &self.date {
+                write!(
+                    f,
+                    "date={field_name}&",
+                    field_name = date
                         .format(&time::format_description::well_known::Rfc3339)
-                        .unwrap(),
-                );
-                s.push('&');
+                        .unwrap()
+                )?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListFollowersQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListFollowersQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListFollowersQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListFollowingQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListFollowingQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListFollowingQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListGpgKeysQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListGpgKeysQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListGpgKeysQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListKeysQuery {
         pub fingerprint: Option<String>,
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListKeysQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(fingerprint) = self.fingerprint {
-                s.push_str("fingerprint=");
-                s.push_str(&fingerprint);
-                s.push('&');
+    impl std::fmt::Display for UserListKeysQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(fingerprint) = &self.fingerprint {
+                write!(f, "fingerprint={fingerprint}&")?;
             }
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct OrgListUserOrgsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl OrgListUserOrgsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for OrgListUserOrgsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListReposQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListReposQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListReposQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListStarredQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListStarredQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListStarredQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserListSubscriptionsQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserListSubscriptionsQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserListSubscriptionsQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
+
     pub struct UserGetTokensQuery {
         pub page: Option<u32>,
         pub limit: Option<u32>,
     }
 
-    impl UserGetTokensQuery {
-        pub(crate) fn to_string(self) -> String {
-            let mut s = String::new();
-            if let Some(page) = self.page {
-                write!(&mut s, "page={}&", page).unwrap();
+    impl std::fmt::Display for UserGetTokensQuery {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            if let Some(page) = &self.page {
+                write!(f, "page={page}&")?;
             }
-            if let Some(limit) = self.limit {
-                write!(&mut s, "limit={}&", limit).unwrap();
+            if let Some(limit) = &self.limit {
+                write!(f, "limit={limit}&")?;
             }
-            s
+
+            Ok(())
         }
     }
 }
