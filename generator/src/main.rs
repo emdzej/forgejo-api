@@ -22,7 +22,6 @@ fn main() -> eyre::Result<()> {
 
     s.push_str("use structs::*;\n");
     s.push_str("pub mod structs {\n");
-    s.push_str("use std::fmt::Write;\n");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
             let strukt = create_struct_for_definition(&spec, name, schema)?;
@@ -900,7 +899,6 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
 
     let mut fields = String::new();
     let mut imp = String::new();
-    imp.push_str("let mut s = String::new();\n");
     for param in params {
         let param = match &param {
             MaybeRef::Value { value } => value,
@@ -928,11 +926,11 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                 .as_ref()
                 .ok_or_else(|| eyre::eyre!("no type provided for query field"))?;
             if required {
-                writeln!(&mut handler, "let {field_name} = self.{field_name};")?;
+                writeln!(&mut handler, "let {field_name} = &self.{field_name};")?;
             } else {
                 writeln!(
                     &mut handler,
-                    "if let Some({field_name}) = self.{field_name} {{"
+                    "if let Some({field_name}) = &self.{field_name} {{"
                 )?;
             }
             match ty {
@@ -947,15 +945,16 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                         writeln!(
                             &mut handler,
                             "write!(f, \"{}={{{}}}&\")?;",
-                            param.name, field_name
+                            param.name, field_name.strip_prefix("r#").unwrap_or(&field_name)
                         )?;
                     }
                 },
                 ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
                     writeln!(
                         &mut handler,
-                        "write!(f, \"{}={{{field_name}}}&\")?;",
-                        param.name
+                        "write!(f, \"{}={{{}}}&\")?;",
+                        param.name,
+                        field_name.strip_prefix("r#").unwrap_or(&field_name)
                     )?;
                 }
                 ParameterType::Array => {
@@ -1025,7 +1024,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                             writeln!(&mut handler, "write!(f, \"{}=\")?;", param.name)?;
                             handler.push_str(item_pusher);
                             handler.push('\n');
-                            writeln!(&mut handler, "write!(f, '&')?;")?;
+                            writeln!(&mut handler, "write!(f, \"&\")?;")?;
                             writeln!(&mut handler, "}}")?;
                             writeln!(&mut handler, "}}")?;
                         }
@@ -1083,10 +1082,10 @@ if !{name}.is_empty() {{
     for (item, i) in {name}.iter().enumerate() {{
         {item_pusher}
         if i < {name}.len() - 1 {{
-            write!(f, '{sep}')?;
+            write!(f, \"{sep}\")?;
         }}
     }}
-    write!(f, '&')?;
+    write!(f, \"&\")?;
 }}",
         param.name
     )?;
