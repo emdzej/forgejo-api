@@ -945,7 +945,8 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                         writeln!(
                             &mut handler,
                             "write!(f, \"{}={{{}}}&\")?;",
-                            param.name, field_name.strip_prefix("r#").unwrap_or(&field_name)
+                            param.name,
+                            field_name.strip_prefix("r#").unwrap_or(&field_name)
                         )?;
                     }
                 },
