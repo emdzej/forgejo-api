@@ -588,8 +588,6 @@ fn create_method_response(
             }
             None => {
                 if fn_ret.headers.is_some() {
-                    dbg!(&fn_ret);
-                    panic!();
                     Some("None")
                 } else {
                     None
