@@ -1,0 +1,338 @@
+use crate::openapi::*;
+use eyre::WrapErr;
+use heck::ToPascalCase;
+use std::fmt::Write;
+
+pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
+    let mut s = String::new();
+    s.push_str("use structs::*;\n");
+    s.push_str("pub mod structs {\n");
+    if let Some(definitions) = &spec.definitions {
+        for (name, schema) in definitions {
+            let strukt = create_struct_for_definition(&spec, name, schema)?;
+            s.push_str(&strukt);
+        }
+    }
+    for (path, item) in &spec.paths {
+        let strukt = create_query_structs_for_path(&spec, path, item)?;
+        s.push_str(&strukt);
+    }
+    s.push_str("\n}");
+    Ok(s)
+}
+
+pub fn create_struct_for_definition(
+    spec: &OpenApiV2,
+    name: &str,
+    schema: &Schema,
+) -> eyre::Result<String> {
+    if matches!(schema._type, Some(SchemaType::One(Primitive::Array))) {
+        return Ok(String::new());
+    }
+
+    let docs = create_struct_docs(schema)?;
+    let mut fields = String::new();
+    let required = schema.required.as_deref().unwrap_or_default();
+    if let Some(properties) = &schema.properties {
+        for (prop_name, prop_schema) in properties {
+            let prop_ty = crate::schema_ref_type_name(spec, prop_schema)?;
+            let field_name = crate::sanitize_ident(prop_name);
+            let mut field_ty = prop_ty.clone();
+            if field_name.ends_with("url") && field_name != "ssh_url" && field_ty == "String" {
+                field_ty = "url::Url".into()
+            }
+            if field_ty == name {
+                field_ty = format!("Box<{field_ty}>")
+            }
+            if !required.contains(prop_name) {
+                field_ty = format!("Option<{field_ty}>")
+            }
+            if field_ty == "Option<url::Url>" {
+                fields.push_str("#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n");
+            }
+            if field_ty == "time::OffsetDateTime" {
+                fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
+            }
+            if field_ty == "Option<time::OffsetDateTime>" {
+                fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
+            }
+            if &field_name != prop_name {
+                fields.push_str("#[serde(rename = \"");
+                fields.push_str(prop_name);
+                fields.push_str("\")]\n");
+            }
+            fields.push_str("pub ");
+            fields.push_str(&field_name);
+            fields.push_str(": ");
+            fields.push_str(&field_ty);
+            fields.push_str(",\n");
+        }
+    }
+
+    if let Some(additonal_schema) = &schema.additional_properties {
+        let prop_ty = crate::schema_ref_type_name(spec, additonal_schema)?;
+        fields.push_str("#[serde(flatten)]\n");
+        fields.push_str("pub additional: std::collections::BTreeMap<String, ");
+        fields.push_str(&prop_ty);
+        fields.push_str(">,\n");
+    }
+
+    let out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
+    Ok(out)
+}
+
+fn create_struct_docs(schema: &Schema) -> eyre::Result<String> {
+    let doc = match &schema.description {
+        Some(desc) => {
+            let mut out = String::new();
+            for line in desc.lines() {
+                out.push_str("/// ");
+                out.push_str(line);
+                out.push_str("\n/// \n");
+            }
+            out
+        }
+        None => String::new(),
+    };
+    Ok(doc)
+}
+
+pub fn create_query_structs_for_path(
+    spec: &OpenApiV2,
+    path: &str,
+    item: &PathItem,
+) -> eyre::Result<String> {
+    let mut s = String::new();
+    if let Some(op) = &item.get {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("GET")?);
+    }
+    if let Some(op) = &item.put {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("PUT")?);
+    }
+    if let Some(op) = &item.post {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("POST")?);
+    }
+    if let Some(op) = &item.delete {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("DELETE")?);
+    }
+    if let Some(op) = &item.options {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("OPTIONS")?);
+    }
+    if let Some(op) = &item.head {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("HEAD")?);
+    }
+    if let Some(op) = &item.patch {
+        s.push_str(&create_query_struct(spec, path, op).wrap_err("PATCH")?);
+    }
+    Ok(s)
+}
+
+pub fn query_struct_name(op: &Operation) -> eyre::Result<String> {
+    let mut ty = op
+        .operation_id
+        .as_deref()
+        .ok_or_else(|| eyre::eyre!("operation did not have id"))?
+        .to_pascal_case()
+        .replace("o_auth2", "oauth2");
+    ty.push_str("Query");
+    Ok(ty)
+}
+
+fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
+    let params = match &op.parameters {
+        Some(params) => params,
+        None => return Ok(String::new()),
+    };
+
+    let mut fields = String::new();
+    let mut imp = String::new();
+    for param in params {
+        let param = match &param {
+            MaybeRef::Value { value } => value,
+            MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
+        };
+        if param._in == ParameterIn::Query {
+            let ty = crate::methods::param_type(param, true)?;
+            let field_name = crate::sanitize_ident(&param.name);
+            let required = param.required.unwrap_or_default();
+            fields.push_str("pub ");
+            fields.push_str(&field_name);
+            fields.push_str(": ");
+            if required {
+                fields.push_str(&ty);
+            } else {
+                fields.push_str("Option<");
+                fields.push_str(&ty);
+                fields.push_str(">");
+            }
+            fields.push_str(",\n");
+
+            let mut handler = String::new();
+            let ty = param
+                ._type
+                .as_ref()
+                .ok_or_else(|| eyre::eyre!("no type provided for query field"))?;
+            if required {
+                writeln!(&mut handler, "let {field_name} = &self.{field_name};")?;
+            } else {
+                writeln!(
+                    &mut handler,
+                    "if let Some({field_name}) = &self.{field_name} {{"
+                )?;
+            }
+            match ty {
+                ParameterType::String => match param.format.as_deref() {
+                    Some("date-time" | "date") => {
+                        writeln!(
+                            &mut handler,
+                            "write!(f, \"{}={{field_name}}&\", field_name = {field_name}.format(&time::format_description::well_known::Rfc3339).unwrap())?;",
+                            param.name)?;
+                    }
+                    _ => {
+                        writeln!(
+                            &mut handler,
+                            "write!(f, \"{}={{{}}}&\")?;",
+                            param.name,
+                            field_name.strip_prefix("r#").unwrap_or(&field_name)
+                        )?;
+                    }
+                },
+                ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
+                    writeln!(
+                        &mut handler,
+                        "write!(f, \"{}={{{}}}&\")?;",
+                        param.name,
+                        field_name.strip_prefix("r#").unwrap_or(&field_name)
+                    )?;
+                }
+                ParameterType::Array => {
+                    let format = param.collection_format.unwrap_or(CollectionFormat::Csv);
+                    let item = param
+                        .items
+                        .as_ref()
+                        .ok_or_else(|| eyre::eyre!("array must have item type defined"))?;
+                    let item_pusher = match item._type {
+                        ParameterType::String => {
+                            match param.format.as_deref() {
+                                Some("date-time" | "date") => {
+                                    "write!(f, \"{{date}}\", item.format(&time::format_description::well_known::Rfc3339).unwrap())?;"
+                                },
+                                _ => {
+                                    "write!(f, \"{item}\")?;"
+                                }
+                            }
+                        },
+                        ParameterType::Number |
+                            ParameterType::Integer |
+                            ParameterType::Boolean => {
+                                "write!(f, \"{item}\")?;"
+                            },
+                        ParameterType::Array => {
+                            eyre::bail!("nested arrays not supported in query");
+                        },
+                        ParameterType::File => eyre::bail!("cannot send file in query"),
+                    };
+                    match format {
+                        CollectionFormat::Csv => {
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                ",",
+                            )?);
+                        }
+                        CollectionFormat::Ssv => {
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                " ",
+                            )?);
+                        }
+                        CollectionFormat::Tsv => {
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                "\\t",
+                            )?);
+                        }
+                        CollectionFormat::Pipes => {
+                            handler.push_str(&simple_query_array(
+                                param,
+                                item_pusher,
+                                &field_name,
+                                "|",
+                            )?);
+                        }
+                        CollectionFormat::Multi => {
+                            writeln!(&mut handler)?;
+                            writeln!(&mut handler, "if !{field_name}.is_empty() {{")?;
+                            writeln!(&mut handler, "for item in {field_name} {{")?;
+                            writeln!(&mut handler, "write!(f, \"{}=\")?;", param.name)?;
+                            handler.push_str(item_pusher);
+                            handler.push('\n');
+                            writeln!(&mut handler, "write!(f, \"&\")?;")?;
+                            writeln!(&mut handler, "}}")?;
+                            writeln!(&mut handler, "}}")?;
+                        }
+                    }
+                }
+                ParameterType::File => eyre::bail!("cannot send file in query"),
+            }
+            if !required {
+                writeln!(&mut handler, "}}")?;
+            }
+            imp.push_str(&handler);
+        }
+    }
+
+    let result = if fields.is_empty() {
+        String::new()
+    } else {
+        let op_name = query_struct_name(op)?;
+        format!(
+            "
+pub struct {op_name} {{
+    {fields}
+}}
+
+impl std::fmt::Display for {op_name} {{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{
+        {imp}
+        Ok(())
+    }}
+}}
+"
+        )
+    };
+
+    Ok(result)
+}
+
+fn simple_query_array(
+    param: &Parameter,
+    item_pusher: &str,
+    name: &str,
+    sep: &str,
+) -> eyre::Result<String> {
+    let mut out = String::new();
+
+    writeln!(
+        &mut out,
+        "
+if !{name}.is_empty() {{
+    write!(f, \"{}=\")?;
+    for (item, i) in {name}.iter().enumerate() {{
+        {item_pusher}
+        if i < {name}.len() - 1 {{
+            write!(f, \"{sep}\")?;
+        }}
+    }}
+    write!(f, \"&\")?;
+}}",
+        param.name
+    )?;
+
+    Ok(out)
+}
