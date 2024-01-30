@@ -137,8 +137,7 @@ fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String
 fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let mut args = "&self".to_string();
     let mut has_query = false;
-    let mut has_headers = false;
-    let mut has_form = false;
+    // let mut has_headers = false;
     if let Some(params) = &op.parameters {
         for param in params {
             let full_param = match &param {
@@ -153,8 +152,8 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                     args.push_str(": ");
                     args.push_str(&type_name);
                 }
-                ParameterIn::Query { param } => has_query = true,
-                ParameterIn::Header { param }=> has_headers = true,
+                ParameterIn::Query { param: _ } => has_query = true,
+                ParameterIn::Header { param: _ }=> (), // has_headers = true,
                 ParameterIn::Body { schema } => {
                     let ty = crate::schema_ref_type_name(spec, schema)?;
                     args.push_str(", ");
@@ -162,7 +161,7 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                     args.push_str(": ");
                     args.push_str(&ty);
                 }
-                ParameterIn::FormData { param } => {
+                ParameterIn::FormData { param: _ } => {
                     args.push_str(", ");
                     args.push_str(&crate::sanitize_ident(&full_param.name));
                     args.push_str(": Vec<u8>");
@@ -303,7 +302,7 @@ fn create_method_body(
     op: &Operation,
 ) -> eyre::Result<String> {
     let request = create_method_request(spec, method, path, op)?;
-    let response = create_method_response(spec, method, path, op)?;
+    let response = create_method_response(spec, op)?;
     Ok(format!("{request}\n    {response}"))
 }
 
@@ -314,7 +313,7 @@ fn create_method_request(
     op: &Operation,
 ) -> eyre::Result<String> {
     let mut has_query = false;
-    let mut has_headers = false;
+    // let mut has_headers = false;
     let mut body_method = String::new();
     if let Some(params) = &op.parameters {
         for param in params {
@@ -324,10 +323,10 @@ fn create_method_request(
             };
             let name = crate::sanitize_ident(&param.name);
             match &param._in {
-                ParameterIn::Path { param } => (/* do nothing */),
-                ParameterIn::Query { param }  => has_query = true,
-                ParameterIn::Header { param }  => has_headers = true,
-                ParameterIn::Body { schema } => {
+                ParameterIn::Path { param: _ } => (/* do nothing */),
+                ParameterIn::Query { param: _ }  => has_query = true,
+                ParameterIn::Header { param: _ }  => (), // _has_headers = true,
+                ParameterIn::Body { schema: _ } => {
                     if !body_method.is_empty() {
                         eyre::bail!("cannot have more than one body parameter");
                     }
@@ -337,7 +336,7 @@ fn create_method_request(
                         body_method = format!(".json(&{name})");
                     }
                 }
-                ParameterIn::FormData { param }  => {
+                ParameterIn::FormData { param: _ }  => {
                     if !body_method.is_empty() {
                         eyre::bail!("cannot have more than one body parameter");
                     }
@@ -347,12 +346,11 @@ fn create_method_request(
         }
     }
     let mut fmt_str = sanitize_path_arg(path)?;
-    let mut fmt_args = String::new();
     if has_query {
         fmt_str.push_str("?{query}");
     }
     let path_arg = if fmt_str.contains("{") {
-        format!("&format!(\"{fmt_str}\"{fmt_args})")
+        format!("&format!(\"{fmt_str}\")")
     } else {
         format!("\"{fmt_str}\"")
     };
@@ -407,8 +405,6 @@ fn sanitize_path_arg(mut path: &str) -> eyre::Result<String> {
 
 fn create_method_response(
     spec: &OpenApiV2,
-    method: &str,
-    path: &str,
     op: &Operation,
 ) -> eyre::Result<String> {
     let mut has_empty = false;
@@ -523,7 +519,7 @@ impl ResponseType {
             (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
             (Some(a), Some("()") | None) => new.body = Some(format!("Option<{a}>")),
             (Some("()") | None, Some(b)) => new.body = Some(format!("Option<{b}>")),
-            (a, b) => new.body = self.body.or(other.body),
+            (_, _) => new.body = self.body.or(other.body),
         };
         Ok(new)
     }

@@ -98,7 +98,7 @@ fn schema_type_name(
                 };
                 Ok(name.to_owned())
             }
-            SchemaType::List(list) => todo!(),
+            SchemaType::List(_) => todo!(),
         }
     } else {
         Ok("()".into())
