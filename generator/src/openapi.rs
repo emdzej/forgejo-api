@@ -3,6 +3,132 @@ use std::collections::{BTreeMap, BTreeSet};
 use eyre::WrapErr;
 use url::Url;
 
+trait JsonDeref: std::any::Any {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any>;
+}
+
+impl JsonDeref for bool {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
+}
+
+impl JsonDeref for u64 {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
+}
+
+impl JsonDeref for f64 {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
+}
+
+impl JsonDeref for String {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
+}
+
+impl JsonDeref for Url {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
+}
+
+impl<T: JsonDeref> JsonDeref for Option<T> {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        match self {
+            Some(x) => x.deref_any(path),
+            None => Err(eyre::eyre!("not found")),
+        }
+    }
+}
+
+impl<T: JsonDeref> JsonDeref for Box<T> {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        T::deref_any(&**self, path)
+    }
+}
+
+impl<T: JsonDeref> JsonDeref for Vec<T> {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        let idx = head.parse::<usize>().wrap_err("not found")?;
+        let value = self.get(idx).ok_or_else(|| eyre::eyre!("not found"))?;
+        value.deref_any(tail)
+    }
+}
+
+impl<T: JsonDeref> JsonDeref for BTreeMap<String, T> {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        let value = self.get(head).ok_or_else(|| eyre::eyre!("not found"))?;
+        value.deref_any(tail)
+    }
+}
+
+impl JsonDeref for serde_json::Value {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        match self {
+            serde_json::Value::Null => eyre::bail!("not found"),
+            serde_json::Value::Bool(b) => b.deref_any(path),
+            serde_json::Value::Number(x) => x.deref_any(path),
+            serde_json::Value::String(s) => s.deref_any(path),
+            serde_json::Value::Array(list) => list.deref_any(path),
+            serde_json::Value::Object(map) => map.deref_any(path),
+        }
+    }
+}
+
+impl JsonDeref for serde_json::Map<String, serde_json::Value> {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        let value = self.get(head).ok_or_else(|| eyre::eyre!("not found"))?;
+        value.deref_any(tail)
+    }
+}
+
+impl JsonDeref for serde_json::Number {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            eyre::bail!("not found")
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct OpenApiV2 {
@@ -21,6 +147,36 @@ pub struct OpenApiV2 {
     pub security: Option<Vec<BTreeMap<String, Vec<String>>>>,
     pub tags: Option<Vec<Tag>>,
     pub external_docs: Option<ExternalDocs>,
+}
+
+impl JsonDeref for OpenApiV2 {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        let path = path
+            .strip_prefix("#/")
+            .ok_or_else(|| eyre::eyre!("invalid ref prefix"))?;
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "swagger" => self.swagger.deref_any(tail),
+            "info" => self.info.deref_any(tail),
+            "host" => self.host.deref_any(tail),
+            "base_path" => self.base_path.deref_any(tail),
+            "schemes" => self.schemes.deref_any(tail),
+            "consumes" => self.consumes.deref_any(tail),
+            "produces" => self.produces.deref_any(tail),
+            "paths" => self.paths.deref_any(tail),
+            "definitions" => self.definitions.deref_any(tail),
+            "parameters" => self.parameters.deref_any(tail),
+            "responses" => self.responses.deref_any(tail),
+            "security_definitions" => self.security_definitions.deref_any(tail),
+            "security" => self.security.deref_any(tail),
+            "tags" => self.tags.deref_any(tail),
+            "external_docs" => self.external_docs.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 impl OpenApiV2 {
@@ -77,6 +233,13 @@ impl OpenApiV2 {
         }
         Ok(())
     }
+
+    pub fn deref<T: std::any::Any>(&self, path: &str) -> eyre::Result<&T> {
+        self.deref_any(path).and_then(|a| {
+            a.downcast_ref::<T>()
+                .ok_or_else(|| eyre::eyre!("incorrect type found at reference"))
+        })
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -90,6 +253,24 @@ pub struct SpecInfo {
     pub version: String,
 }
 
+impl JsonDeref for SpecInfo {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "title" => self.title.deref_any(tail),
+            "description" => self.description.deref_any(tail),
+            "terms_of_service" => self.terms_of_service.deref_any(tail),
+            "contact" => self.contact.deref_any(tail),
+            "license" => self.license.deref_any(tail),
+            "version" => self.version.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct Contact {
@@ -98,11 +279,40 @@ pub struct Contact {
     pub email: Option<String>,
 }
 
+impl JsonDeref for Contact {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "name" => self.name.deref_any(tail),
+            "url" => self.url.deref_any(tail),
+            "email" => self.email.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct License {
     pub name: String,
     pub url: Option<Url>,
+}
+
+impl JsonDeref for License {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "name" => self.name.deref_any(tail),
+            "url" => self.url.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -118,6 +328,27 @@ pub struct PathItem {
     pub head: Option<Operation>,
     pub patch: Option<Operation>,
     pub parameters: Option<Vec<MaybeRef<Parameter>>>,
+}
+
+impl JsonDeref for PathItem {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "$ref" => self._ref.deref_any(tail),
+            "get" => self.get.deref_any(tail),
+            "put" => self.put.deref_any(tail),
+            "post" => self.post.deref_any(tail),
+            "delete" => self.delete.deref_any(tail),
+            "options" => self.options.deref_any(tail),
+            "head" => self.head.deref_any(tail),
+            "patch" => self.patch.deref_any(tail),
+            "parameters" => self.parameters.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 impl PathItem {
@@ -171,6 +402,30 @@ pub struct Operation {
     pub security: Option<Vec<BTreeMap<String, Vec<String>>>>,
 }
 
+impl JsonDeref for Operation {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "tags" => self.tags.deref_any(tail),
+            "summary" => self.summary.deref_any(tail),
+            "description" => self.description.deref_any(tail),
+            "external_docs" => self.external_docs.deref_any(tail),
+            "operation_id" => self.operation_id.deref_any(tail),
+            "consumes" => self.consumes.deref_any(tail),
+            "produces" => self.produces.deref_any(tail),
+            "parameters" => self.parameters.deref_any(tail),
+            "responses" => self.responses.deref_any(tail),
+            "schemes" => self.schemes.deref_any(tail),
+            "deprecated" => self.deprecated.deref_any(tail),
+            "security" => self.security.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
+}
+
 impl Operation {
     fn validate<'a>(&'a self, ids: &mut BTreeSet<&'a str>) -> eyre::Result<()> {
         if let Some(operation_id) = self.operation_id.as_deref() {
@@ -204,6 +459,20 @@ pub struct ExternalDocs {
     pub url: Url,
 }
 
+impl JsonDeref for ExternalDocs {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "description" => self.description.deref_any(tail),
+            "url" => self.url.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct Parameter {
@@ -211,6 +480,33 @@ pub struct Parameter {
     pub description: Option<String>,
     #[serde(flatten)]
     pub _in: ParameterIn,
+}
+
+impl JsonDeref for Parameter {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "name" => self.name.deref_any(tail),
+            "description" => self.description.deref_any(tail),
+            "in" => {
+                if tail.is_empty() {
+                    Ok(match &self._in {
+                        ParameterIn::Body { schema: _ } => &"body" as _,
+                        ParameterIn::Path { param: _ } => &"path" as _,
+                        ParameterIn::Query { param: _ } => &"query" as _,
+                        ParameterIn::Header { param: _ } => &"header" as _,
+                        ParameterIn::FormData { param: _ } => &"formData" as _,
+                    })
+                } else {
+                    eyre::bail!("not found")
+                }
+            }
+            _ => self._in.deref_any(path),
+        }
+    }
 }
 
 impl Parameter {
@@ -242,6 +538,22 @@ pub enum ParameterIn {
         #[serde(flatten)]
         param: NonBodyParameter,
     },
+}
+
+impl JsonDeref for ParameterIn {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match self {
+            ParameterIn::Body { schema } => match head {
+                "schema" => schema.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+            ParameterIn::Path { param }
+            | ParameterIn::Query { param }
+            | ParameterIn::Header { param }
+            | ParameterIn::FormData { param } => param.deref_any(path),
+        }
+    }
 }
 
 impl ParameterIn {
@@ -290,6 +602,37 @@ pub struct NonBodyParameter {
     #[serde(rename = "enum")]
     pub _enum: Option<Vec<serde_json::Value>>,
     pub multiple_of: Option<u64>,
+}
+
+impl JsonDeref for NonBodyParameter {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "required" => self.required.deref_any(tail),
+            "type" => self._type.deref_any(tail),
+            "format" => self.format.deref_any(tail),
+            "allow_empty_value" => self.allow_empty_value.deref_any(tail),
+            "items" => self.items.deref_any(tail),
+            "collection_format" => self.collection_format.deref_any(tail),
+            "default" => self.default.deref_any(tail),
+            "maximum" => self.maximum.deref_any(tail),
+            "exclusive_maximum" => self.exclusive_maximum.deref_any(tail),
+            "minimum" => self.minimum.deref_any(tail),
+            "exclusive_minimum" => self.exclusive_minimum.deref_any(tail),
+            "max_length" => self.max_length.deref_any(tail),
+            "min_length" => self.min_length.deref_any(tail),
+            "pattern" => self.pattern.deref_any(tail), // should be regex
+            "max_items" => self.max_items.deref_any(tail),
+            "min_items" => self.min_items.deref_any(tail),
+            "unique_items" => self.unique_items.deref_any(tail),
+            "enum" => self._enum.deref_any(tail),
+            "multiple_of" => self.multiple_of.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 impl NonBodyParameter {
@@ -347,6 +690,16 @@ pub enum ParameterType {
     File,
 }
 
+impl JsonDeref for ParameterType {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
+}
+
 impl ParameterType {
     fn matches_value(&self, value: &serde_json::Value) -> bool {
         match (self, value) {
@@ -368,6 +721,16 @@ pub enum CollectionFormat {
     Tsv,
     Pipes,
     Multi,
+}
+
+impl JsonDeref for CollectionFormat {
+    fn deref_any<'a>(&'a self, path: &str) -> eyre::Result<&'a dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -392,6 +755,35 @@ pub struct Items {
     #[serde(rename = "enum")]
     pub _enum: Option<Vec<serde_json::Value>>,
     pub multiple_of: Option<u64>,
+}
+
+impl JsonDeref for Items {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "type" => self._type.deref_any(tail),
+            "format" => self.format.deref_any(tail),
+            "items" => self.items.deref_any(tail),
+            "collection_format" => self.collection_format.deref_any(tail),
+            "default" => self.default.deref_any(tail),
+            "maximum" => self.maximum.deref_any(tail),
+            "exclusive_maximum" => self.exclusive_maximum.deref_any(tail),
+            "minimum" => self.minimum.deref_any(tail),
+            "exclusive_minimum" => self.exclusive_minimum.deref_any(tail),
+            "max_length" => self.max_length.deref_any(tail),
+            "min_length" => self.min_length.deref_any(tail),
+            "pattern" => self.pattern.deref_any(tail), // should be regex
+            "max_items" => self.max_items.deref_any(tail),
+            "min_items" => self.min_items.deref_any(tail),
+            "unique_items" => self.unique_items.deref_any(tail),
+            "enum" => self._enum.deref_any(tail),
+            "multiple_of" => self.multiple_of.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 impl Items {
@@ -451,6 +843,23 @@ pub struct Responses {
     pub http_codes: BTreeMap<String, MaybeRef<Response>>,
 }
 
+impl JsonDeref for Responses {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "default" => self.default.deref_any(tail),
+            code => self
+                .http_codes
+                .get(code)
+                .map(|r| r as _)
+                .ok_or_else(|| eyre::eyre!("not found")),
+        }
+    }
+}
+
 impl Responses {
     fn validate(&self) -> eyre::Result<()> {
         if self.default.is_none() && self.http_codes.is_empty() {
@@ -480,6 +889,22 @@ pub struct Response {
     pub schema: Option<MaybeRef<Schema>>,
     pub headers: Option<BTreeMap<String, Header>>,
     pub examples: Option<BTreeMap<String, serde_json::Value>>,
+}
+
+impl JsonDeref for Response {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "description" => self.description.deref_any(tail),
+            "schema" => self.schema.deref_any(tail),
+            "headers" => self.headers.deref_any(tail),
+            "examples" => self.examples.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 impl Response {
@@ -519,6 +944,36 @@ pub struct Header {
     #[serde(rename = "enum")]
     pub _enum: Option<Vec<serde_json::Value>>,
     pub multiple_of: Option<u64>,
+}
+
+impl JsonDeref for Header {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "description" => self.description.deref_any(tail),
+            "type" => self._type.deref_any(tail),
+            "format" => self.format.deref_any(tail),
+            "items" => self.items.deref_any(tail),
+            "collection_format" => self.collection_format.deref_any(tail),
+            "default" => self.default.deref_any(tail),
+            "maximum" => self.maximum.deref_any(tail),
+            "exclusive_maximum" => self.exclusive_maximum.deref_any(tail),
+            "minimum" => self.minimum.deref_any(tail),
+            "exclusive_minimum" => self.exclusive_minimum.deref_any(tail),
+            "max_length" => self.max_length.deref_any(tail),
+            "min_length" => self.min_length.deref_any(tail),
+            "pattern" => self.pattern.deref_any(tail), // should be regex
+            "max_items" => self.max_items.deref_any(tail),
+            "min_items" => self.min_items.deref_any(tail),
+            "unique_items" => self.unique_items.deref_any(tail),
+            "enum" => self._enum.deref_any(tail),
+            "multiple_of" => self.multiple_of.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 impl Header {
@@ -575,6 +1030,21 @@ pub struct Tag {
     pub external_docs: Option<ExternalDocs>,
 }
 
+impl JsonDeref for Tag {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "name" => self.name.deref_any(tail),
+            "description" => self.description.deref_any(tail),
+            "external_docs" => self.external_docs.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct Schema {
@@ -609,6 +1079,46 @@ pub struct Schema {
     pub xml: Option<Xml>,
     pub external_docs: Option<ExternalDocs>,
     pub example: Option<serde_json::Value>,
+}
+
+impl JsonDeref for Schema {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "format" => self.format.deref_any(tail),
+            "title" => self.title.deref_any(tail),
+            "description" => self.description.deref_any(tail),
+            "default" => self.default.deref_any(tail),
+            "multiple_of" => self.multiple_of.deref_any(tail),
+            "maximum" => self.maximum.deref_any(tail),
+            "exclusive_maximum" => self.exclusive_maximum.deref_any(tail),
+            "minimum" => self.minimum.deref_any(tail),
+            "exclusive_minimum" => self.exclusive_minimum.deref_any(tail),
+            "max_length" => self.max_length.deref_any(tail),
+            "min_length" => self.min_length.deref_any(tail),
+            "pattern" => self.pattern.deref_any(tail), // should be regex
+            "max_items" => self.max_items.deref_any(tail),
+            "min_items" => self.min_items.deref_any(tail),
+            "unique_items" => self.unique_items.deref_any(tail),
+            "max_properties" => self.max_properties.deref_any(tail),
+            "min_properties" => self.min_properties.deref_any(tail),
+            "required" => self.required.deref_any(tail),
+            "enum" => self._enum.deref_any(tail),
+            "type" => self._type.deref_any(tail),
+            "properties" => self.properties.deref_any(tail),
+            "additional_properties" => self.additional_properties.deref_any(tail),
+            "items" => self.items.deref_any(tail),
+            "discriminator" => self.discriminator.deref_any(tail),
+            "read_only" => self.read_only.deref_any(tail),
+            "xml" => self.xml.deref_any(tail),
+            "external_docs" => self.external_docs.deref_any(tail),
+            "example" => self.example.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 impl Schema {
@@ -701,6 +1211,15 @@ pub enum SchemaType {
     List(Vec<Primitive>),
 }
 
+impl JsonDeref for SchemaType {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        match self {
+            SchemaType::One(i) => i.deref_any(path),
+            SchemaType::List(list) => list.deref_any(path),
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub enum Primitive {
@@ -711,6 +1230,16 @@ pub enum Primitive {
     Null,
     Object,
     String,
+}
+
+impl JsonDeref for Primitive {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            Err(eyre::eyre!("not found"))
+        }
+    }
 }
 
 impl Primitive {
@@ -736,12 +1265,43 @@ pub struct Xml {
     pub wrapped: Option<bool>,
 }
 
+impl JsonDeref for Xml {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "name" => self.name.deref_any(tail),
+            "namespace" => self.namespace.deref_any(tail),
+            "prefix" => self.prefix.deref_any(tail),
+            "attribute" => self.attribute.deref_any(tail),
+            "wrapped" => self.wrapped.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct SecurityScheme {
     #[serde(flatten)]
     pub _type: SecurityType,
     pub description: Option<String>,
+}
+
+impl JsonDeref for SecurityScheme {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match head {
+            "type" => self._type.deref_any(tail),
+            "description" => self.description.deref_any(tail),
+            _ => eyre::bail!("not found: {head}"),
+        }
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -760,11 +1320,43 @@ pub enum SecurityType {
     },
 }
 
+impl JsonDeref for SecurityType {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match self {
+            SecurityType::Basic => eyre::bail!("not found: {head}"),
+            SecurityType::ApiKey { name, _in } => match head {
+                "name" => name.deref_any(tail),
+                "in" => _in.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+            SecurityType::OAuth2 { flow, scopes } => match head {
+                "flow" => flow.deref_any(tail),
+                "scopes" => scopes.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub enum KeyIn {
     Query,
     Header,
+}
+
+impl JsonDeref for KeyIn {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            Ok(self)
+        } else {
+            eyre::bail!("not found")
+        }
+    }
 }
 
 #[derive(serde::Deserialize, Debug, PartialEq)]
@@ -785,6 +1377,37 @@ pub enum OAuth2Flow {
     },
 }
 
+impl JsonDeref for OAuth2Flow {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match self {
+            OAuth2Flow::Implicit { authorization_url } => match head {
+                "authorizationUrl" => authorization_url.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+            OAuth2Flow::Password { token_url } => match head {
+                "tokenUrl" => token_url.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+            OAuth2Flow::Application { token_url } => match head {
+                "tokenUrl" => token_url.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+            OAuth2Flow::AccessCode {
+                authorization_url,
+                token_url,
+            } => match head {
+                "authorizationUrl" => authorization_url.deref_any(tail),
+                "tokenUrl" => token_url.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+        }
+    }
+}
+
 #[derive(serde::Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum MaybeRef<T> {
@@ -796,4 +1419,29 @@ pub enum MaybeRef<T> {
         #[serde(flatten)]
         value: T,
     },
+}
+
+impl<T: JsonDeref> JsonDeref for MaybeRef<T> {
+    fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
+        if path.is_empty() {
+            return Ok(self);
+        }
+        let (head, tail) = path.split_once("/").unwrap_or((path, ""));
+        match self {
+            MaybeRef::Ref { _ref } => match head {
+                "$ref" => _ref.deref_any(tail),
+                _ => eyre::bail!("not found: {head}"),
+            },
+            MaybeRef::Value { value } => value.deref_any(path),
+        }
+    }
+}
+
+impl<T: std::any::Any> MaybeRef<T> {
+    pub fn deref<'a>(&'a self, spec: &'a OpenApiV2) -> eyre::Result<&'a T> {
+        match self {
+            MaybeRef::Ref { _ref } => spec.deref(_ref),
+            MaybeRef::Value { value } => Ok(value),
+        }
+    }
 }

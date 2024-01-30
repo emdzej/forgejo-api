@@ -46,7 +46,12 @@ fn run_rustfmt_on(path: &OsStr) {
 }
 
 fn schema_ref_type_name(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Result<String> {
-    let (name, schema) = deref_definition(spec, &schema)?;
+    let name = if let MaybeRef::Ref { _ref } = schema {
+        _ref.rsplit_once("/").map(|(_, b)| b)
+    } else {
+        None
+    };
+    let schema = schema.deref(spec)?;
     schema_type_name(spec, name, schema)
 }
 
@@ -105,29 +110,8 @@ fn schema_type_name(
     }
 }
 
-fn deref_definition<'a>(
-    spec: &'a OpenApiV2,
-    r: &'a MaybeRef<Schema>,
-) -> eyre::Result<(Option<&'a str>, &'a Schema)> {
-    let r = match r {
-        MaybeRef::Value { value } => return Ok((None, value)),
-        MaybeRef::Ref { _ref } => _ref,
-    };
-    let name = r
-        .strip_prefix("#/definitions/")
-        .ok_or_else(|| eyre::eyre!("invalid definition reference"))?;
-    let global_definitions = spec
-        .definitions
-        .as_ref()
-        .ok_or_else(|| eyre::eyre!("no global definitions"))?;
-    let definition = global_definitions
-        .get(name)
-        .ok_or_else(|| eyre::eyre!("referenced definition does not exist"))?;
-    Ok((Some(name), definition))
-}
-
 fn schema_is_string(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Result<bool> {
-    let (_, schema) = deref_definition(spec, schema)?;
+    let schema = schema.deref(spec)?;
     let is_str = match schema._type {
         Some(SchemaType::One(Primitive::String)) => true,
         _ => false,

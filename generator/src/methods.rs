@@ -142,10 +142,7 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     // let mut has_headers = false;
     if let Some(params) = &op.parameters {
         for param in params {
-            let full_param = match &param {
-                MaybeRef::Value { value } => value,
-                MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
-            };
+            let full_param = param.deref(spec)?;
             match &full_param._in {
                 ParameterIn::Path { param } => {
                     let type_name = param_type(&param, false)?;
@@ -270,7 +267,7 @@ fn response_ref_type_name(
     spec: &OpenApiV2,
     schema: &MaybeRef<Response>,
 ) -> eyre::Result<ResponseType> {
-    let (_, response) = deref_response(spec, schema)?;
+    let response = schema.deref(spec)?;
     let mut ty = ResponseType::default();
     if response.headers.is_some() {
         ty.headers = Some("reqwest::header::HeaderMap".into());
@@ -279,27 +276,6 @@ fn response_ref_type_name(
         ty.body = Some(crate::schema_ref_type_name(spec, schema)?);
     };
     Ok(ty)
-}
-
-fn deref_response<'a>(
-    spec: &'a OpenApiV2,
-    r: &'a MaybeRef<Response>,
-) -> eyre::Result<(Option<&'a str>, &'a Response)> {
-    let r = match r {
-        MaybeRef::Value { value } => return Ok((None, value)),
-        MaybeRef::Ref { _ref } => _ref,
-    };
-    let name = r
-        .strip_prefix("#/responses/")
-        .ok_or_else(|| eyre::eyre!("invalid response reference"))?;
-    let global_responses = spec
-        .responses
-        .as_ref()
-        .ok_or_else(|| eyre::eyre!("no global responses"))?;
-    let response = global_responses
-        .get(name)
-        .ok_or_else(|| eyre::eyre!("referenced response does not exist"))?;
-    Ok((Some(name), response))
 }
 
 fn create_method_body(
@@ -431,7 +407,7 @@ fn create_method_response(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
     out.push_str("let response = self.execute(request).await?;\n");
     out.push_str("match response.status().as_u16() {\n");
     for (code, res) in &op.responses.http_codes {
-        let (_, res) = deref_response(spec, res)?;
+        let res = res.deref(spec)?;
         if !code.starts_with("2") {
             continue;
         }
