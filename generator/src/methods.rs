@@ -349,8 +349,7 @@ fn create_method_request(
     let mut fmt_str = sanitize_path_arg(path)?;
     let mut fmt_args = String::new();
     if has_query {
-        fmt_str.push_str("?{}");
-        fmt_args.push_str(", query.to_string()");
+        fmt_str.push_str("?{query}");
     }
     let path_arg = if fmt_str.contains("{") {
         format!("&format!(\"{fmt_str}\"{fmt_args})")
