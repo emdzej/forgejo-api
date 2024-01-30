@@ -97,9 +97,7 @@ fn create_struct_docs(schema: &Schema) -> eyre::Result<String> {
     Ok(doc)
 }
 
-pub fn create_query_structs_for_path(
-    item: &PathItem,
-) -> eyre::Result<String> {
+pub fn create_query_structs_for_path(item: &PathItem) -> eyre::Result<String> {
     let mut s = String::new();
     if let Some(op) = &item.get {
         s.push_str(&create_query_struct(op).wrap_err("GET")?);
@@ -149,7 +147,7 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
             MaybeRef::Value { value } => value,
             MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
         };
-        if let ParameterIn::Query { param: query_param} = &param._in {
+        if let ParameterIn::Query { param: query_param } = &param._in {
             let ty = crate::methods::param_type(query_param, true)?;
             let field_name = crate::sanitize_ident(&param.name);
             fields.push_str("pub ");
@@ -199,7 +197,9 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
                     )?;
                 }
                 ParameterType::Array => {
-                    let format = query_param.collection_format.unwrap_or(CollectionFormat::Csv);
+                    let format = query_param
+                        .collection_format
+                        .unwrap_or(CollectionFormat::Csv);
                     let item = query_param
                         .items
                         .as_ref()

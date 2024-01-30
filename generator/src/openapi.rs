@@ -247,20 +247,19 @@ pub enum ParameterIn {
 impl ParameterIn {
     fn validate(&self) -> eyre::Result<()> {
         match self {
-            ParameterIn::Path { param } => { 
-                eyre::ensure!(
-                    param.required,
-                    "path parameters must be required"
-                );
+            ParameterIn::Path { param } => {
+                eyre::ensure!(param.required, "path parameters must be required");
                 param.validate().wrap_err("path param")
-            },
+            }
             ParameterIn::Query { param } => param.validate().wrap_err("query param"),
             ParameterIn::Header { param } => param.validate().wrap_err("header param"),
-            ParameterIn::Body { schema } => if let MaybeRef::Value { value } = schema {
+            ParameterIn::Body { schema } => {
+                if let MaybeRef::Value { value } = schema {
                     value.validate().wrap_err("body param")
                 } else {
                     Ok(())
-                },
+                }
+            }
             ParameterIn::FormData { param } => param.validate().wrap_err("form param"),
         }
     }
