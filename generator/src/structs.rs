@@ -151,14 +151,13 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             MaybeRef::Value { value } => value,
             MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
         };
-        if param._in == ParameterIn::Query {
-            let ty = crate::methods::param_type(param, true)?;
+        if let ParameterIn::Query { param: query_param} = &param._in {
+            let ty = crate::methods::param_type(query_param, true)?;
             let field_name = crate::sanitize_ident(&param.name);
-            let required = param.required.unwrap_or_default();
             fields.push_str("pub ");
             fields.push_str(&field_name);
             fields.push_str(": ");
-            if required {
+            if query_param.required {
                 fields.push_str(&ty);
             } else {
                 fields.push_str("Option<");
@@ -168,11 +167,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
             fields.push_str(",\n");
 
             let mut handler = String::new();
-            let ty = param
-                ._type
-                .as_ref()
-                .ok_or_else(|| eyre::eyre!("no type provided for query field"))?;
-            if required {
+            if query_param.required {
                 writeln!(&mut handler, "let {field_name} = &self.{field_name};")?;
             } else {
                 writeln!(
@@ -180,8 +175,8 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                     "if let Some({field_name}) = &self.{field_name} {{"
                 )?;
             }
-            match ty {
-                ParameterType::String => match param.format.as_deref() {
+            match &query_param._type {
+                ParameterType::String => match query_param.format.as_deref() {
                     Some("date-time" | "date") => {
                         writeln!(
                             &mut handler,
@@ -206,14 +201,14 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                     )?;
                 }
                 ParameterType::Array => {
-                    let format = param.collection_format.unwrap_or(CollectionFormat::Csv);
-                    let item = param
+                    let format = query_param.collection_format.unwrap_or(CollectionFormat::Csv);
+                    let item = query_param
                         .items
                         .as_ref()
                         .ok_or_else(|| eyre::eyre!("array must have item type defined"))?;
                     let item_pusher = match item._type {
                         ParameterType::String => {
-                            match param.format.as_deref() {
+                            match query_param.format.as_deref() {
                                 Some("date-time" | "date") => {
                                     "write!(f, \"{{date}}\", item.format(&time::format_description::well_known::Rfc3339).unwrap())?;"
                                 },
@@ -280,7 +275,7 @@ fn create_query_struct(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Re
                 }
                 ParameterType::File => eyre::bail!("cannot send file in query"),
             }
-            if !required {
+            if !query_param.required {
                 writeln!(&mut handler, "}}")?;
             }
             imp.push_str(&handler);

@@ -106,7 +106,7 @@ fn method_docs(op: &Operation) -> eyre::Result<String> {
                 MaybeRef::Ref { _ref } => eyre::bail!("pipis"),
             };
             match param._in {
-                ParameterIn::Path | ParameterIn::Body | ParameterIn::FormData => {
+                ParameterIn::Path { param: _ } | ParameterIn::Body { schema: _ } | ParameterIn::FormData { param: _ } => {
                     write!(&mut out, "/// - `{}`", param.name)?;
                     if let Some(description) = &param.description {
                         write!(&mut out, ": {}", description)?;
@@ -141,31 +141,30 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let mut has_form = false;
     if let Some(params) = &op.parameters {
         for param in params {
-            let param = match &param {
+            let full_param = match &param {
                 MaybeRef::Value { value } => value,
                 MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
             };
-            match param._in {
-                ParameterIn::Path => {
+            match &full_param._in {
+                ParameterIn::Path { param } => {
                     let type_name = param_type(&param, false)?;
                     args.push_str(", ");
-                    args.push_str(&crate::sanitize_ident(&param.name));
+                    args.push_str(&crate::sanitize_ident(&full_param.name));
                     args.push_str(": ");
                     args.push_str(&type_name);
                 }
-                ParameterIn::Query => has_query = true,
-                ParameterIn::Header => has_headers = true,
-                ParameterIn::Body => {
-                    let schema_ref = param.schema.as_ref().unwrap();
-                    let ty = crate::schema_ref_type_name(spec, &schema_ref)?;
+                ParameterIn::Query { param } => has_query = true,
+                ParameterIn::Header { param }=> has_headers = true,
+                ParameterIn::Body { schema } => {
+                    let ty = crate::schema_ref_type_name(spec, schema)?;
                     args.push_str(", ");
-                    args.push_str(&crate::sanitize_ident(&param.name));
+                    args.push_str(&crate::sanitize_ident(&full_param.name));
                     args.push_str(": ");
                     args.push_str(&ty);
                 }
-                ParameterIn::FormData => {
+                ParameterIn::FormData { param } => {
                     args.push_str(", ");
-                    args.push_str(&crate::sanitize_ident(&param.name));
+                    args.push_str(&crate::sanitize_ident(&full_param.name));
                     args.push_str(": Vec<u8>");
                 }
             }
@@ -179,12 +178,8 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     Ok(args)
 }
 
-pub fn param_type(param: &Parameter, owned: bool) -> eyre::Result<String> {
-    let _type = param
-        ._type
-        .as_ref()
-        .ok_or_else(|| eyre::eyre!("no type provided for path param"))?;
-    param_type_inner(_type, param.format.as_deref(), param.items.as_ref(), owned)
+pub fn param_type(param: &NonBodyParameter, owned: bool) -> eyre::Result<String> {
+    param_type_inner(&param._type, param.format.as_deref(), param.items.as_ref(), owned)
 }
 
 fn param_type_inner(
@@ -328,11 +323,11 @@ fn create_method_request(
                 MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
             };
             let name = crate::sanitize_ident(&param.name);
-            match param._in {
-                ParameterIn::Path => (/* do nothing */),
-                ParameterIn::Query => has_query = true,
-                ParameterIn::Header => has_headers = true,
-                ParameterIn::Body => {
+            match &param._in {
+                ParameterIn::Path { param } => (/* do nothing */),
+                ParameterIn::Query { param }  => has_query = true,
+                ParameterIn::Header { param }  => has_headers = true,
+                ParameterIn::Body { schema } => {
                     if !body_method.is_empty() {
                         eyre::bail!("cannot have more than one body parameter");
                     }
@@ -342,7 +337,7 @@ fn create_method_request(
                         body_method = format!(".json(&{name})");
                     }
                 }
-                ParameterIn::FormData => {
+                ParameterIn::FormData { param }  => {
                     if !body_method.is_empty() {
                         eyre::bail!("cannot have more than one body parameter");
                     }
@@ -368,17 +363,13 @@ fn create_method_request(
 }
 
 fn param_is_string(spec: &OpenApiV2, param: &Parameter) -> eyre::Result<bool> {
-    match param._in {
-        ParameterIn::Body => {
-            let schema_ref = param
-                .schema
-                .as_ref()
-                .ok_or_else(|| eyre::eyre!("body param did not have schema"))?;
-            crate::schema_is_string(spec, schema_ref)
+    match &param._in {
+        ParameterIn::Body { schema } => {
+            crate::schema_is_string(spec, schema)
         }
-        _ => {
+        ParameterIn::Path { param } | ParameterIn::Query { param } | ParameterIn::Header { param } | ParameterIn::FormData { param } => {
             let is_str = match param._type {
-                Some(ParameterType::String) => true,
+                ParameterType::String => true,
                 _ => false,
             };
             Ok(is_str)

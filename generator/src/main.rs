@@ -21,6 +21,7 @@ fn get_spec() -> eyre::Result<OpenApiV2> {
         .unwrap_or_else(|| OsString::from("./swagger.v1.json"));
     let file = std::fs::read(path)?;
     let spec = serde_json::from_slice::<OpenApiV2>(&file)?;
+    spec.validate()?;
     Ok(spec)
 }
 
