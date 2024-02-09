@@ -7398,7 +7398,7 @@ pub mod structs {
         pub from_path: Option<String>,
         /// indicates what to do with the file
         ///
-        pub operation: String,
+        pub operation: ChangeFileOperationOperation,
         /// path to the existing or new file
         ///
         pub path: String,
@@ -7754,7 +7754,7 @@ pub mod structs {
         pub config: CreateHookOptionConfig,
         pub events: Option<Vec<String>>,
         #[serde(rename = "type")]
-        pub r#type: String,
+        pub r#type: CreateHookOptionType,
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -7864,7 +7864,7 @@ pub mod structs {
         pub description: Option<String>,
         #[serde(with = "time::serde::rfc3339::option")]
         pub due_on: Option<time::OffsetDateTime>,
-        pub state: Option<String>,
+        pub state: Option<CreateMilestoneOptionState>,
         pub title: Option<String>,
     }
 
@@ -7912,7 +7912,7 @@ pub mod structs {
         pub username: String,
         /// possible values are `public` (default), `limited` or `private`
         ///
-        pub visibility: Option<String>,
+        pub visibility: Option<CreateOrgOptionVisibility>,
         pub website: Option<String>,
     }
 
@@ -8034,7 +8034,7 @@ pub mod structs {
         pub template: Option<bool>,
         /// TrustModel of the repository
         ///
-        pub trust_model: Option<String>,
+        pub trust_model: Option<CreateRepoOptionTrustModel>,
     }
 
     /// TrustModel of the repository
@@ -8086,9 +8086,9 @@ pub mod structs {
         pub description: Option<String>,
         pub includes_all_repositories: Option<bool>,
         pub name: String,
-        pub permission: Option<String>,
+        pub permission: Option<CreateTeamOptionPermission>,
         pub units: Option<Vec<String>>,
-        pub units_map: Option<serde_json::Map<String, serde_json::Value>>,
+        pub units_map: Option<CreateTeamOptionUnitsMap>,
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8289,7 +8289,7 @@ pub mod structs {
         pub active: Option<bool>,
         pub authorization_header: Option<String>,
         pub branch_filter: Option<String>,
-        pub config: Option<serde_json::Map<String, serde_json::Value>>,
+        pub config: Option<EditHookOptionConfig>,
         pub events: Option<Vec<String>>,
     }
 
@@ -8362,7 +8362,7 @@ pub mod structs {
         pub repo_admin_change_team_access: Option<bool>,
         /// possible values are `public`, `limited` or `private`
         ///
-        pub visibility: Option<String>,
+        pub visibility: Option<EditOrgOptionVisibility>,
         pub website: Option<String>,
     }
 
@@ -8524,9 +8524,9 @@ pub mod structs {
         pub description: Option<String>,
         pub includes_all_repositories: Option<bool>,
         pub name: String,
-        pub permission: Option<String>,
+        pub permission: Option<EditTeamOptionPermission>,
         pub units: Option<Vec<String>>,
-        pub units_map: Option<serde_json::Map<String, serde_json::Value>>,
+        pub units_map: Option<EditTeamOptionUnitsMap>,
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8852,7 +8852,7 @@ pub mod structs {
         pub active: Option<bool>,
         pub authorization_header: Option<String>,
         pub branch_filter: Option<String>,
-        pub config: Option<serde_json::Map<String, serde_json::Value>>,
+        pub config: Option<HookConfig>,
         #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
         pub events: Option<Vec<String>>,
@@ -8962,11 +8962,11 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueFormField {
-        pub attributes: Option<serde_json::Map<String, serde_json::Value>>,
+        pub attributes: Option<IssueFormFieldAttributes>,
         pub id: Option<String>,
         #[serde(rename = "type")]
         pub r#type: Option<String>,
-        pub validations: Option<serde_json::Map<String, serde_json::Value>>,
+        pub validations: Option<IssueFormFieldValidations>,
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -9154,7 +9154,7 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct MergePullRequestOption {
         #[serde(rename = "Do")]
-        pub r#do: String,
+        pub r#do: MergePullRequestOptionDo,
         #[serde(rename = "MergeCommitID")]
         pub merge_commit_id: Option<String>,
         #[serde(rename = "MergeMessageField")]
@@ -9212,7 +9212,7 @@ pub mod structs {
         /// Name of User or Organisation who will own Repo after migration
         ///
         pub repo_owner: Option<String>,
-        pub service: Option<String>,
+        pub service: Option<MigrateRepoOptionsService>,
         /// deprecated (only for backwards compatibility)
         ///
         pub uid: Option<u64>,
@@ -9277,7 +9277,7 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct NodeInfo {
-        pub metadata: Option<serde_json::Map<String, serde_json::Value>>,
+        pub metadata: Option<NodeInfoMetadata>,
         #[serde(rename = "openRegistrations")]
         pub open_registrations: Option<bool>,
         pub protocols: Option<Vec<String>>,
@@ -9924,9 +9924,9 @@ pub mod structs {
         pub includes_all_repositories: Option<bool>,
         pub name: Option<String>,
         pub organization: Option<Organization>,
-        pub permission: Option<String>,
+        pub permission: Option<TeamPermission>,
         pub units: Option<Vec<String>>,
-        pub units_map: Option<serde_json::Map<String, serde_json::Value>>,
+        pub units_map: Option<TeamUnitsMap>,
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -11129,7 +11129,7 @@ pub mod structs {
         pub limit: Option<u32>,
         /// package type filter
         ///
-        pub r#type: Option<ListPackagesQueryRType>,
+        pub r#type: Option<ListPackagesQueryType>,
         /// name filter
         ///
         pub q: Option<String>,
@@ -11155,7 +11155,7 @@ pub mod structs {
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-    pub enum ListPackagesQueryRType {
+    pub enum ListPackagesQueryType {
         Alpine,
         Cargo,
         Chef,
@@ -11179,30 +11179,30 @@ pub mod structs {
         Vagrant,
     }
 
-    impl ListPackagesQueryRType {
+    impl ListPackagesQueryType {
         fn as_str(&self) -> &'static str {
             match self {
-                ListPackagesQueryRType::Alpine => "alpine",
-                ListPackagesQueryRType::Cargo => "cargo",
-                ListPackagesQueryRType::Chef => "chef",
-                ListPackagesQueryRType::Composer => "composer",
-                ListPackagesQueryRType::Conan => "conan",
-                ListPackagesQueryRType::Conda => "conda",
-                ListPackagesQueryRType::Container => "container",
-                ListPackagesQueryRType::Cran => "cran",
-                ListPackagesQueryRType::Debian => "debian",
-                ListPackagesQueryRType::Generic => "generic",
-                ListPackagesQueryRType::Go => "go",
-                ListPackagesQueryRType::Helm => "helm",
-                ListPackagesQueryRType::Maven => "maven",
-                ListPackagesQueryRType::Npm => "npm",
-                ListPackagesQueryRType::Nuget => "nuget",
-                ListPackagesQueryRType::Pub => "pub",
-                ListPackagesQueryRType::Pypi => "pypi",
-                ListPackagesQueryRType::Rpm => "rpm",
-                ListPackagesQueryRType::Rubygems => "rubygems",
-                ListPackagesQueryRType::Swift => "swift",
-                ListPackagesQueryRType::Vagrant => "vagrant",
+                ListPackagesQueryType::Alpine => "alpine",
+                ListPackagesQueryType::Cargo => "cargo",
+                ListPackagesQueryType::Chef => "chef",
+                ListPackagesQueryType::Composer => "composer",
+                ListPackagesQueryType::Conan => "conan",
+                ListPackagesQueryType::Conda => "conda",
+                ListPackagesQueryType::Container => "container",
+                ListPackagesQueryType::Cran => "cran",
+                ListPackagesQueryType::Debian => "debian",
+                ListPackagesQueryType::Generic => "generic",
+                ListPackagesQueryType::Go => "go",
+                ListPackagesQueryType::Helm => "helm",
+                ListPackagesQueryType::Maven => "maven",
+                ListPackagesQueryType::Npm => "npm",
+                ListPackagesQueryType::Nuget => "nuget",
+                ListPackagesQueryType::Pub => "pub",
+                ListPackagesQueryType::Pypi => "pypi",
+                ListPackagesQueryType::Rpm => "rpm",
+                ListPackagesQueryType::Rubygems => "rubygems",
+                ListPackagesQueryType::Swift => "swift",
+                ListPackagesQueryType::Vagrant => "vagrant",
             }
         }
     }
@@ -11873,7 +11873,7 @@ pub mod structs {
         pub q: Option<String>,
         /// filter by type (issues / pulls) if set
         ///
-        pub r#type: Option<IssueListIssuesQueryRType>,
+        pub r#type: Option<IssueListIssuesQueryType>,
         /// comma separated list of milestone names or ids. It uses names and fall back to ids. Fetch only issues that have any of this milestones. Non existent milestones are discarded
         ///
         pub milestones: Option<String>,
@@ -11973,16 +11973,16 @@ pub mod structs {
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-    pub enum IssueListIssuesQueryRType {
+    pub enum IssueListIssuesQueryType {
         Issues,
         Pulls,
     }
 
-    impl IssueListIssuesQueryRType {
+    impl IssueListIssuesQueryType {
         fn as_str(&self) -> &'static str {
             match self {
-                IssueListIssuesQueryRType::Issues => "issues",
-                IssueListIssuesQueryRType::Pulls => "pulls",
+                IssueListIssuesQueryType::Issues => "issues",
+                IssueListIssuesQueryType::Pulls => "pulls",
             }
         }
     }

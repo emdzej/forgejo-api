@@ -55,6 +55,59 @@ pub fn create_struct_for_definition(
             let prop_ty = crate::schema_ref_type_name(spec, prop_schema)?;
             let field_name = crate::sanitize_ident(prop_name);
             let mut field_ty = prop_ty.clone();
+            if let MaybeRef::Value { value } = &prop_schema {
+                fn schema_subtypes(
+                    spec: &OpenApiV2,
+                    ty_name: &str,
+                    name: &str,
+                    schema: &Schema,
+                    subtypes: &mut Vec<String>,
+                    ty: &mut String,
+                ) -> eyre::Result<bool> {
+                    let b = match schema {
+                        Schema {
+                            _type: Some(SchemaType::One(Primitive::Object)),
+                            ..
+                        } => {
+                            let name = format!("{ty_name}{}", name.to_pascal_case());
+                            let subtype = create_struct_for_definition(spec, &name, schema)?;
+                            subtypes.push(subtype);
+                            *ty = name;
+                            true
+                        }
+                        Schema {
+                            _type: Some(SchemaType::One(Primitive::String)),
+                            _enum: Some(_enum),
+                            ..
+                        } => {
+                            let name = format!("{ty_name}{}", name.to_pascal_case());
+                            let subtype = create_enum(&name, schema.description.as_deref(), _enum)?;
+                            subtypes.push(subtype);
+                            *ty = name;
+                            true
+                        }
+                        Schema {
+                            _type: Some(SchemaType::One(Primitive::Array)),
+                            items: Some(items),
+                            ..
+                        } => {
+                            if let MaybeRef::Value { value } = &**items {
+                                if schema_subtypes(spec, ty_name, name, value, subtypes, ty)? {
+                                    *ty = format!("Vec<{ty}>");
+                                    true
+                                } else {
+                                    false
+                                }
+                            } else {
+                                false
+                            }
+                        }
+                        _ => false,
+                    };
+                    Ok(b)
+                }
+                schema_subtypes(spec, name, prop_name, value, &mut subtypes, &mut field_ty)?;
+            }
             if field_name.ends_with("url") && field_name != "ssh_url" && field_ty == "String" {
                 field_ty = "url::Url".into()
             }
@@ -92,17 +145,6 @@ pub fn create_struct_for_definition(
             fields.push_str(": ");
             fields.push_str(&field_ty);
             fields.push_str(",\n");
-
-            if let MaybeRef::Value { value } = &prop_schema {
-                if value._type == Some(SchemaType::One(Primitive::Object))
-                    || (value._type == Some(SchemaType::One(Primitive::String))
-                        && value._enum.is_some())
-                {
-                    let name = format!("{name}{}", prop_name.to_pascal_case());
-                    let subtype = create_struct_for_definition(spec, &name, value)?;
-                    subtypes.push(subtype);
-                }
-            }
         }
     }
 
