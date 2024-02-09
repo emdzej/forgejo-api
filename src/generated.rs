@@ -7409,6 +7409,7 @@ pub mod structs {
 
     /// indicates what to do with the file
     ///
+
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub enum ChangeFileOperationOperation {
         Create,
@@ -7416,6 +7417,15 @@ pub mod structs {
         Delete,
     }
 
+    impl ChangeFileOperationOperation {
+        fn as_str(&self) -> &'static str {
+            match self {
+                ChangeFileOperationOperation::Create => "create",
+                ChangeFileOperationOperation::Update => "update",
+                ChangeFileOperationOperation::Delete => "delete",
+            }
+        }
+    }
     /// ChangeFilesOptions options for creating, updating or deleting multiple files
     ///
     /// Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
@@ -7762,6 +7772,23 @@ pub mod structs {
         Packagist,
     }
 
+    impl CreateHookOptionType {
+        fn as_str(&self) -> &'static str {
+            match self {
+                CreateHookOptionType::Forgejo => "forgejo",
+                CreateHookOptionType::Dingtalk => "dingtalk",
+                CreateHookOptionType::Discord => "discord",
+                CreateHookOptionType::Gitea => "gitea",
+                CreateHookOptionType::Gogs => "gogs",
+                CreateHookOptionType::Msteams => "msteams",
+                CreateHookOptionType::Slack => "slack",
+                CreateHookOptionType::Telegram => "telegram",
+                CreateHookOptionType::Feishu => "feishu",
+                CreateHookOptionType::Wechatwork => "wechatwork",
+                CreateHookOptionType::Packagist => "packagist",
+            }
+        }
+    }
     /// CreateHookOptionConfig has all config options in it
     ///
     /// required are "content_type" and "url" Required
@@ -7847,6 +7874,14 @@ pub mod structs {
         Closed,
     }
 
+    impl CreateMilestoneOptionState {
+        fn as_str(&self) -> &'static str {
+            match self {
+                CreateMilestoneOptionState::Open => "open",
+                CreateMilestoneOptionState::Closed => "closed",
+            }
+        }
+    }
     /// CreateOAuth2ApplicationOptions holds options to create an oauth2 application
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -7883,6 +7918,7 @@ pub mod structs {
 
     /// possible values are `public` (default), `limited` or `private`
     ///
+
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub enum CreateOrgOptionVisibility {
         Public,
@@ -7890,6 +7926,15 @@ pub mod structs {
         Private,
     }
 
+    impl CreateOrgOptionVisibility {
+        fn as_str(&self) -> &'static str {
+            match self {
+                CreateOrgOptionVisibility::Public => "public",
+                CreateOrgOptionVisibility::Limited => "limited",
+                CreateOrgOptionVisibility::Private => "private",
+            }
+        }
+    }
     /// CreatePullRequestOption options when creating a pull request
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -7994,6 +8039,7 @@ pub mod structs {
 
     /// TrustModel of the repository
     ///
+
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub enum CreateRepoOptionTrustModel {
         Default,
@@ -8002,6 +8048,16 @@ pub mod structs {
         Collaboratorcommitter,
     }
 
+    impl CreateRepoOptionTrustModel {
+        fn as_str(&self) -> &'static str {
+            match self {
+                CreateRepoOptionTrustModel::Default => "default",
+                CreateRepoOptionTrustModel::Collaborator => "collaborator",
+                CreateRepoOptionTrustModel::Committer => "committer",
+                CreateRepoOptionTrustModel::Collaboratorcommitter => "collaboratorcommitter",
+            }
+        }
+    }
     /// CreateStatusOption holds the information needed to create a new CommitStatus for a Commit
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8042,6 +8098,15 @@ pub mod structs {
         Admin,
     }
 
+    impl CreateTeamOptionPermission {
+        fn as_str(&self) -> &'static str {
+            match self {
+                CreateTeamOptionPermission::Read => "read",
+                CreateTeamOptionPermission::Write => "write",
+                CreateTeamOptionPermission::Admin => "admin",
+            }
+        }
+    }
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateTeamOptionUnitsMap {
         #[serde(flatten)]
@@ -8303,6 +8368,7 @@ pub mod structs {
 
     /// possible values are `public`, `limited` or `private`
     ///
+
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub enum EditOrgOptionVisibility {
         Public,
@@ -8310,6 +8376,15 @@ pub mod structs {
         Private,
     }
 
+    impl EditOrgOptionVisibility {
+        fn as_str(&self) -> &'static str {
+            match self {
+                EditOrgOptionVisibility::Public => "public",
+                EditOrgOptionVisibility::Limited => "limited",
+                EditOrgOptionVisibility::Private => "private",
+            }
+        }
+    }
     /// EditPullRequestOption options when modify pull request
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8461,6 +8536,15 @@ pub mod structs {
         Admin,
     }
 
+    impl EditTeamOptionPermission {
+        fn as_str(&self) -> &'static str {
+            match self {
+                EditTeamOptionPermission::Read => "read",
+                EditTeamOptionPermission::Write => "write",
+                EditTeamOptionPermission::Admin => "admin",
+            }
+        }
+    }
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditTeamOptionUnitsMap {
         #[serde(flatten)]
@@ -9092,6 +9176,17 @@ pub mod structs {
         ManuallyMerged,
     }
 
+    impl MergePullRequestOptionDo {
+        fn as_str(&self) -> &'static str {
+            match self {
+                MergePullRequestOptionDo::Merge => "merge",
+                MergePullRequestOptionDo::Rebase => "rebase",
+                MergePullRequestOptionDo::RebaseMerge => "rebase-merge",
+                MergePullRequestOptionDo::Squash => "squash",
+                MergePullRequestOptionDo::ManuallyMerged => "manually-merged",
+            }
+        }
+    }
     /// MigrateRepoOptions options for migrating repository's
     ///
     /// this is used to interact with api v1
@@ -9136,6 +9231,20 @@ pub mod structs {
         Codebase,
     }
 
+    impl MigrateRepoOptionsService {
+        fn as_str(&self) -> &'static str {
+            match self {
+                MigrateRepoOptionsService::Git => "git",
+                MigrateRepoOptionsService::Github => "github",
+                MigrateRepoOptionsService::Gitea => "gitea",
+                MigrateRepoOptionsService::Gitlab => "gitlab",
+                MigrateRepoOptionsService::Gogs => "gogs",
+                MigrateRepoOptionsService::Onedev => "onedev",
+                MigrateRepoOptionsService::Gitbucket => "gitbucket",
+                MigrateRepoOptionsService::Codebase => "codebase",
+            }
+        }
+    }
     /// Milestone milestone is a collection of issues on one repository
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -9829,6 +9938,17 @@ pub mod structs {
         Owner,
     }
 
+    impl TeamPermission {
+        fn as_str(&self) -> &'static str {
+            match self {
+                TeamPermission::None => "none",
+                TeamPermission::Read => "read",
+                TeamPermission::Write => "write",
+                TeamPermission::Admin => "admin",
+                TeamPermission::Owner => "owner",
+            }
+        }
+    }
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TeamUnitsMap {
         #[serde(flatten)]
@@ -10587,7 +10707,7 @@ pub mod structs {
         pub status_types: Option<Vec<String>>,
         /// filter notifications by subject type
         ///
-        pub subject_type: Option<Vec<String>>,
+        pub subject_type: Option<Vec<NotifyGetListQuerySubjectType>>,
         /// Only show notifications updated after the given time. This is a timestamp in RFC 3339 format
         ///
         pub since: Option<time::OffsetDateTime>,
@@ -10620,7 +10740,7 @@ pub mod structs {
                 if !subject_type.is_empty() {
                     for item in subject_type {
                         write!(f, "subject-type=")?;
-                        write!(f, "{item}")?;
+                        write!(f, "{}", item.as_str())?;
                         write!(f, "&")?;
                     }
                 }
@@ -10654,6 +10774,24 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum NotifyGetListQuerySubjectType {
+        Issue,
+        Pull,
+        Commit,
+        Repository,
+    }
+
+    impl NotifyGetListQuerySubjectType {
+        fn as_str(&self) -> &'static str {
+            match self {
+                NotifyGetListQuerySubjectType::Issue => "issue",
+                NotifyGetListQuerySubjectType::Pull => "pull",
+                NotifyGetListQuerySubjectType::Commit => "commit",
+                NotifyGetListQuerySubjectType::Repository => "repository",
+            }
+        }
+    }
     pub struct NotifyReadListQuery {
         /// Describes the last point that notifications were checked. Anything updated since this time will not be updated.
         ///
@@ -10991,7 +11129,7 @@ pub mod structs {
         pub limit: Option<u32>,
         /// package type filter
         ///
-        pub r#type: Option<String>,
+        pub r#type: Option<ListPackagesQueryRType>,
         /// name filter
         ///
         pub q: Option<String>,
@@ -11006,7 +11144,7 @@ pub mod structs {
                 write!(f, "limit={limit}&")?;
             }
             if let Some(r#type) = &self.r#type {
-                write!(f, "type={type}&")?;
+                write!(f, "type={}&", r#type.as_str())?;
             }
             if let Some(q) = &self.q {
                 write!(f, "q={q}&")?;
@@ -11016,6 +11154,58 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum ListPackagesQueryRType {
+        Alpine,
+        Cargo,
+        Chef,
+        Composer,
+        Conan,
+        Conda,
+        Container,
+        Cran,
+        Debian,
+        Generic,
+        Go,
+        Helm,
+        Maven,
+        Npm,
+        Nuget,
+        Pub,
+        Pypi,
+        Rpm,
+        Rubygems,
+        Swift,
+        Vagrant,
+    }
+
+    impl ListPackagesQueryRType {
+        fn as_str(&self) -> &'static str {
+            match self {
+                ListPackagesQueryRType::Alpine => "alpine",
+                ListPackagesQueryRType::Cargo => "cargo",
+                ListPackagesQueryRType::Chef => "chef",
+                ListPackagesQueryRType::Composer => "composer",
+                ListPackagesQueryRType::Conan => "conan",
+                ListPackagesQueryRType::Conda => "conda",
+                ListPackagesQueryRType::Container => "container",
+                ListPackagesQueryRType::Cran => "cran",
+                ListPackagesQueryRType::Debian => "debian",
+                ListPackagesQueryRType::Generic => "generic",
+                ListPackagesQueryRType::Go => "go",
+                ListPackagesQueryRType::Helm => "helm",
+                ListPackagesQueryRType::Maven => "maven",
+                ListPackagesQueryRType::Npm => "npm",
+                ListPackagesQueryRType::Nuget => "nuget",
+                ListPackagesQueryRType::Pub => "pub",
+                ListPackagesQueryRType::Pypi => "pypi",
+                ListPackagesQueryRType::Rpm => "rpm",
+                ListPackagesQueryRType::Rubygems => "rubygems",
+                ListPackagesQueryRType::Swift => "swift",
+                ListPackagesQueryRType::Vagrant => "vagrant",
+            }
+        }
+    }
     pub struct IssueSearchIssuesQuery {
         /// whether issue is open or closed
         ///
@@ -11413,10 +11603,10 @@ pub mod structs {
     pub struct RepoListStatusesByRefQuery {
         /// type of sort
         ///
-        pub sort: Option<String>,
+        pub sort: Option<RepoListStatusesByRefQuerySort>,
         /// type of state
         ///
-        pub state: Option<String>,
+        pub state: Option<RepoListStatusesByRefQueryState>,
         /// page number of results to return (1-based)
         ///
         pub page: Option<u32>,
@@ -11428,10 +11618,10 @@ pub mod structs {
     impl std::fmt::Display for RepoListStatusesByRefQuery {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             if let Some(sort) = &self.sort {
-                write!(f, "sort={sort}&")?;
+                write!(f, "sort={}&", sort.as_str())?;
             }
             if let Some(state) = &self.state {
-                write!(f, "state={state}&")?;
+                write!(f, "state={}&", state.as_str())?;
             }
             if let Some(page) = &self.page {
                 write!(f, "page={page}&")?;
@@ -11444,6 +11634,47 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoListStatusesByRefQuerySort {
+        Oldest,
+        Recentupdate,
+        Leastupdate,
+        Leastindex,
+        Highestindex,
+    }
+
+    impl RepoListStatusesByRefQuerySort {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoListStatusesByRefQuerySort::Oldest => "oldest",
+                RepoListStatusesByRefQuerySort::Recentupdate => "recentupdate",
+                RepoListStatusesByRefQuerySort::Leastupdate => "leastupdate",
+                RepoListStatusesByRefQuerySort::Leastindex => "leastindex",
+                RepoListStatusesByRefQuerySort::Highestindex => "highestindex",
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoListStatusesByRefQueryState {
+        Pending,
+        Success,
+        Error,
+        Failure,
+        Warning,
+    }
+
+    impl RepoListStatusesByRefQueryState {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoListStatusesByRefQueryState::Pending => "pending",
+                RepoListStatusesByRefQueryState::Success => "success",
+                RepoListStatusesByRefQueryState::Error => "error",
+                RepoListStatusesByRefQueryState::Failure => "failure",
+                RepoListStatusesByRefQueryState::Warning => "warning",
+            }
+        }
+    }
     pub struct RepoGetContentsListQuery {
         /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
         ///
@@ -11633,7 +11864,7 @@ pub mod structs {
     pub struct IssueListIssuesQuery {
         /// whether issue is open or closed
         ///
-        pub state: Option<String>,
+        pub state: Option<IssueListIssuesQueryState>,
         /// comma separated list of labels. Fetch only issues that have any of this labels. Non existent labels are discarded
         ///
         pub labels: Option<String>,
@@ -11642,7 +11873,7 @@ pub mod structs {
         pub q: Option<String>,
         /// filter by type (issues / pulls) if set
         ///
-        pub r#type: Option<String>,
+        pub r#type: Option<IssueListIssuesQueryRType>,
         /// comma separated list of milestone names or ids. It uses names and fall back to ids. Fetch only issues that have any of this milestones. Non existent milestones are discarded
         ///
         pub milestones: Option<String>,
@@ -11672,7 +11903,7 @@ pub mod structs {
     impl std::fmt::Display for IssueListIssuesQuery {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             if let Some(state) = &self.state {
-                write!(f, "state={state}&")?;
+                write!(f, "state={}&", state.as_str())?;
             }
             if let Some(labels) = &self.labels {
                 write!(f, "labels={labels}&")?;
@@ -11681,7 +11912,7 @@ pub mod structs {
                 write!(f, "q={q}&")?;
             }
             if let Some(r#type) = &self.r#type {
-                write!(f, "type={type}&")?;
+                write!(f, "type={}&", r#type.as_str())?;
             }
             if let Some(milestones) = &self.milestones {
                 write!(f, "milestones={milestones}&")?;
@@ -11724,6 +11955,37 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum IssueListIssuesQueryState {
+        Closed,
+        Open,
+        All,
+    }
+
+    impl IssueListIssuesQueryState {
+        fn as_str(&self) -> &'static str {
+            match self {
+                IssueListIssuesQueryState::Closed => "closed",
+                IssueListIssuesQueryState::Open => "open",
+                IssueListIssuesQueryState::All => "all",
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum IssueListIssuesQueryRType {
+        Issues,
+        Pulls,
+    }
+
+    impl IssueListIssuesQueryRType {
+        fn as_str(&self) -> &'static str {
+            match self {
+                IssueListIssuesQueryRType::Issues => "issues",
+                IssueListIssuesQueryRType::Pulls => "pulls",
+            }
+        }
+    }
     pub struct IssueGetRepoCommentsQuery {
         /// if provided, only comments updated since the provided time are returned.
         ///
@@ -12161,7 +12423,7 @@ pub mod structs {
         pub status_types: Option<Vec<String>>,
         /// filter notifications by subject type
         ///
-        pub subject_type: Option<Vec<String>>,
+        pub subject_type: Option<Vec<NotifyGetRepoListQuerySubjectType>>,
         /// Only show notifications updated after the given time. This is a timestamp in RFC 3339 format
         ///
         pub since: Option<time::OffsetDateTime>,
@@ -12194,7 +12456,7 @@ pub mod structs {
                 if !subject_type.is_empty() {
                     for item in subject_type {
                         write!(f, "subject-type=")?;
-                        write!(f, "{item}")?;
+                        write!(f, "{}", item.as_str())?;
                         write!(f, "&")?;
                     }
                 }
@@ -12228,6 +12490,24 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum NotifyGetRepoListQuerySubjectType {
+        Issue,
+        Pull,
+        Commit,
+        Repository,
+    }
+
+    impl NotifyGetRepoListQuerySubjectType {
+        fn as_str(&self) -> &'static str {
+            match self {
+                NotifyGetRepoListQuerySubjectType::Issue => "issue",
+                NotifyGetRepoListQuerySubjectType::Pull => "pull",
+                NotifyGetRepoListQuerySubjectType::Commit => "commit",
+                NotifyGetRepoListQuerySubjectType::Repository => "repository",
+            }
+        }
+    }
     pub struct NotifyReadRepoListQuery {
         /// If true, mark all notifications on this repo. Default value is false
         ///
@@ -12277,10 +12557,10 @@ pub mod structs {
     pub struct RepoListPullRequestsQuery {
         /// State of pull request: open or closed (optional)
         ///
-        pub state: Option<String>,
+        pub state: Option<RepoListPullRequestsQueryState>,
         /// Type of sort
         ///
-        pub sort: Option<String>,
+        pub sort: Option<RepoListPullRequestsQuerySort>,
         /// ID of the milestone
         ///
         pub milestone: Option<u64>,
@@ -12298,10 +12578,10 @@ pub mod structs {
     impl std::fmt::Display for RepoListPullRequestsQuery {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             if let Some(state) = &self.state {
-                write!(f, "state={state}&")?;
+                write!(f, "state={}&", state.as_str())?;
             }
             if let Some(sort) = &self.sort {
-                write!(f, "sort={sort}&")?;
+                write!(f, "sort={}&", sort.as_str())?;
             }
             if let Some(milestone) = &self.milestone {
                 write!(f, "milestone={milestone}&")?;
@@ -12326,6 +12606,45 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoListPullRequestsQueryState {
+        Closed,
+        Open,
+        All,
+    }
+
+    impl RepoListPullRequestsQueryState {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoListPullRequestsQueryState::Closed => "closed",
+                RepoListPullRequestsQueryState::Open => "open",
+                RepoListPullRequestsQueryState::All => "all",
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoListPullRequestsQuerySort {
+        Oldest,
+        Recentupdate,
+        Leastupdate,
+        Mostcomment,
+        Leastcomment,
+        Priority,
+    }
+
+    impl RepoListPullRequestsQuerySort {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoListPullRequestsQuerySort::Oldest => "oldest",
+                RepoListPullRequestsQuerySort::Recentupdate => "recentupdate",
+                RepoListPullRequestsQuerySort::Leastupdate => "leastupdate",
+                RepoListPullRequestsQuerySort::Mostcomment => "mostcomment",
+                RepoListPullRequestsQuerySort::Leastcomment => "leastcomment",
+                RepoListPullRequestsQuerySort::Priority => "priority",
+            }
+        }
+    }
     pub struct RepoDownloadPullDiffOrPatchQuery {
         /// whether to include binary file changes. if true, the diff is applicable with `git apply`
         ///
@@ -12382,7 +12701,7 @@ pub mod structs {
         pub skip_to: Option<String>,
         /// whitespace behavior
         ///
-        pub whitespace: Option<String>,
+        pub whitespace: Option<RepoGetPullRequestFilesQueryWhitespace>,
         /// page number of results to return (1-based)
         ///
         pub page: Option<u32>,
@@ -12397,7 +12716,7 @@ pub mod structs {
                 write!(f, "skip-to={skip_to}&")?;
             }
             if let Some(whitespace) = &self.whitespace {
-                write!(f, "whitespace={whitespace}&")?;
+                write!(f, "whitespace={}&", whitespace.as_str())?;
             }
             if let Some(page) = &self.page {
                 write!(f, "page={page}&")?;
@@ -12410,6 +12729,24 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoGetPullRequestFilesQueryWhitespace {
+        IgnoreAll,
+        IgnoreChange,
+        IgnoreEol,
+        ShowAll,
+    }
+
+    impl RepoGetPullRequestFilesQueryWhitespace {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoGetPullRequestFilesQueryWhitespace::IgnoreAll => "ignore-all",
+                RepoGetPullRequestFilesQueryWhitespace::IgnoreChange => "ignore-change",
+                RepoGetPullRequestFilesQueryWhitespace::IgnoreEol => "ignore-eol",
+                RepoGetPullRequestFilesQueryWhitespace::ShowAll => "show-all",
+            }
+        }
+    }
     pub struct RepoListPullReviewsQuery {
         /// page number of results to return (1-based)
         ///
@@ -12435,19 +12772,33 @@ pub mod structs {
     pub struct RepoUpdatePullRequestQuery {
         /// how to update pull request
         ///
-        pub style: Option<String>,
+        pub style: Option<RepoUpdatePullRequestQueryStyle>,
     }
 
     impl std::fmt::Display for RepoUpdatePullRequestQuery {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             if let Some(style) = &self.style {
-                write!(f, "style={style}&")?;
+                write!(f, "style={}&", style.as_str())?;
             }
 
             Ok(())
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoUpdatePullRequestQueryStyle {
+        Merge,
+        Rebase,
+    }
+
+    impl RepoUpdatePullRequestQueryStyle {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoUpdatePullRequestQueryStyle::Merge => "merge",
+                RepoUpdatePullRequestQueryStyle::Rebase => "rebase",
+            }
+        }
+    }
     pub struct RepoListPushMirrorsQuery {
         /// page number of results to return (1-based)
         ///
@@ -12567,10 +12918,10 @@ pub mod structs {
     pub struct RepoListStatusesQuery {
         /// type of sort
         ///
-        pub sort: Option<String>,
+        pub sort: Option<RepoListStatusesQuerySort>,
         /// type of state
         ///
-        pub state: Option<String>,
+        pub state: Option<RepoListStatusesQueryState>,
         /// page number of results to return (1-based)
         ///
         pub page: Option<u32>,
@@ -12582,10 +12933,10 @@ pub mod structs {
     impl std::fmt::Display for RepoListStatusesQuery {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             if let Some(sort) = &self.sort {
-                write!(f, "sort={sort}&")?;
+                write!(f, "sort={}&", sort.as_str())?;
             }
             if let Some(state) = &self.state {
-                write!(f, "state={state}&")?;
+                write!(f, "state={}&", state.as_str())?;
             }
             if let Some(page) = &self.page {
                 write!(f, "page={page}&")?;
@@ -12598,6 +12949,47 @@ pub mod structs {
         }
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoListStatusesQuerySort {
+        Oldest,
+        Recentupdate,
+        Leastupdate,
+        Leastindex,
+        Highestindex,
+    }
+
+    impl RepoListStatusesQuerySort {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoListStatusesQuerySort::Oldest => "oldest",
+                RepoListStatusesQuerySort::Recentupdate => "recentupdate",
+                RepoListStatusesQuerySort::Leastupdate => "leastupdate",
+                RepoListStatusesQuerySort::Leastindex => "leastindex",
+                RepoListStatusesQuerySort::Highestindex => "highestindex",
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum RepoListStatusesQueryState {
+        Pending,
+        Success,
+        Error,
+        Failure,
+        Warning,
+    }
+
+    impl RepoListStatusesQueryState {
+        fn as_str(&self) -> &'static str {
+            match self {
+                RepoListStatusesQueryState::Pending => "pending",
+                RepoListStatusesQueryState::Success => "success",
+                RepoListStatusesQueryState::Error => "error",
+                RepoListStatusesQueryState::Failure => "failure",
+                RepoListStatusesQueryState::Warning => "warning",
+            }
+        }
+    }
     pub struct RepoListSubscribersQuery {
         /// page number of results to return (1-based)
         ///

@@ -41,7 +41,7 @@ pub fn create_struct_for_definition(
 
     if schema._type == Some(SchemaType::One(Primitive::String)) {
         if let Some(_enum) = &schema._enum {
-            return create_enum(name, schema);
+            return create_enum(name, schema.description.as_deref(), _enum);
         }
     }
 
@@ -121,31 +121,52 @@ pub fn create_struct_for_definition(
     Ok(out)
 }
 
-fn create_enum(name: &str, schema: &Schema) -> eyre::Result<String> {
-    let _enum = schema
-        ._enum
-        .as_deref()
-        .ok_or_else(|| eyre::eyre!("cannot create enum from non-enum schema"))?;
+fn create_enum(
+    name: &str,
+    desc: Option<&str>,
+    _enum: &[serde_json::Value],
+) -> eyre::Result<String> {
     let mut variants = String::new();
-
-    let docs = create_struct_docs(schema)?;
+    let mut imp = String::new();
+    imp.push_str("match self {");
+    let docs = create_struct_docs_str(desc)?;
     for variant in _enum {
         match variant {
             serde_json::Value::String(s) => {
                 let variant_name = s.to_pascal_case();
                 variants.push_str(&variant_name);
                 variants.push_str(",\n");
+
+                writeln!(&mut imp, "{name}::{variant_name} => \"{s}\",")?;
             }
             x => eyre::bail!("cannot create enum variant. expected string, got {x:?}"),
         }
     }
+    imp.push_str("}");
 
-    let out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub enum {name} {{\n{variants}}}\n\n");
+    let out = format!(
+        "
+{docs}
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub enum {name} {{
+    {variants}
+}}
+
+impl {name} {{
+    fn as_str(&self) -> &'static str {{
+        {imp}
+    }}
+}}"
+    );
     Ok(out)
 }
 
 fn create_struct_docs(schema: &Schema) -> eyre::Result<String> {
-    let doc = match &schema.description {
+    create_struct_docs_str(schema.description.as_deref())
+}
+
+fn create_struct_docs_str(description: Option<&str>) -> eyre::Result<String> {
+    let doc = match description {
         Some(desc) => {
             let mut out = String::new();
             for line in desc.lines() {
@@ -203,6 +224,8 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
         None => return Ok(String::new()),
     };
 
+    let op_name = query_struct_name(op)?;
+    let mut enums = Vec::new();
     let mut fields = String::new();
     let mut imp = String::new();
     for param in params {
@@ -211,8 +234,35 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
             MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
         };
         if let ParameterIn::Query { param: query_param } = &param._in {
-            let ty = crate::methods::param_type(query_param, true)?;
             let field_name = crate::sanitize_ident(&param.name);
+            let ty = match &query_param {
+                NonBodyParameter {
+                    _type: ParameterType::String,
+                    _enum: Some(_enum),
+                    ..
+                } => {
+                    let name = format!("{op_name}{}", param.name.to_pascal_case());
+                    let enum_def = create_enum(&name, None, _enum)?;
+                    enums.push(enum_def);
+                    name
+                }
+                NonBodyParameter {
+                    _type: ParameterType::Array,
+                    items:
+                        Some(Items {
+                            _type: ParameterType::String,
+                            _enum: Some(_enum),
+                            ..
+                        }),
+                    ..
+                } => {
+                    let name = format!("{op_name}{}", param.name.to_pascal_case());
+                    let enum_def = create_enum(&name, None, _enum)?;
+                    enums.push(enum_def);
+                    format!("Vec<{name}>")
+                }
+                _ => crate::methods::param_type(query_param, true)?,
+            };
             if let Some(desc) = &param.description {
                 for line in desc.lines() {
                     fields.push_str("/// ");
@@ -242,22 +292,32 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
                 )?;
             }
             match &query_param._type {
-                ParameterType::String => match query_param.format.as_deref() {
-                    Some("date-time" | "date") => {
+                ParameterType::String => {
+                    if let Some(_enum) = &query_param._enum {
                         writeln!(
                             &mut handler,
-                            "write!(f, \"{}={{field_name}}&\", field_name = {field_name}.format(&time::format_description::well_known::Rfc3339).unwrap())?;",
-                            param.name)?;
-                    }
-                    _ => {
-                        writeln!(
-                            &mut handler,
-                            "write!(f, \"{}={{{}}}&\")?;",
-                            param.name,
-                            field_name.strip_prefix("r#").unwrap_or(&field_name)
+                            "write!(f, \"{}={{}}&\", {}.as_str())?;",
+                            param.name, field_name,
                         )?;
+                    } else {
+                        match query_param.format.as_deref() {
+                            Some("date-time" | "date") => {
+                                writeln!(
+                                    &mut handler,
+                                    "write!(f, \"{}={{field_name}}&\", field_name = {field_name}.format(&time::format_description::well_known::Rfc3339).unwrap())?;",
+                                    param.name)?;
+                            }
+                            _ => {
+                                writeln!(
+                                    &mut handler,
+                                    "write!(f, \"{}={{{}}}&\")?;",
+                                    param.name,
+                                    field_name.strip_prefix("r#").unwrap_or(&field_name)
+                                )?;
+                            }
+                        }
                     }
-                },
+                }
                 ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
                     writeln!(
                         &mut handler,
@@ -276,23 +336,25 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
                         .ok_or_else(|| eyre::eyre!("array must have item type defined"))?;
                     let item_pusher = match item._type {
                         ParameterType::String => {
-                            match query_param.format.as_deref() {
-                                Some("date-time" | "date") => {
-                                    "write!(f, \"{{date}}\", item.format(&time::format_description::well_known::Rfc3339).unwrap())?;"
-                                },
-                                _ => {
-                                    "write!(f, \"{item}\")?;"
+                            if let Some(_enum) = &item._enum {
+                                "write!(f, \"{}\", item.as_str())?;"
+                            } else {
+                                match query_param.format.as_deref() {
+                                    Some("date-time" | "date") => {
+                                        "write!(f, \"{{date}}\", item.format(&time::format_description::well_known::Rfc3339).unwrap())?;"
+                                    },
+                                    _ => {
+                                        "write!(f, \"{item}\")?;"
+                                    }
                                 }
                             }
-                        },
-                        ParameterType::Number |
-                            ParameterType::Integer |
-                            ParameterType::Boolean => {
-                                "write!(f, \"{item}\")?;"
-                            },
+                        }
+                        ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
+                            "write!(f, \"{item}\")?;"
+                        }
                         ParameterType::Array => {
                             eyre::bail!("nested arrays not supported in query");
-                        },
+                        }
                         ParameterType::File => eyre::bail!("cannot send file in query"),
                     };
                     match format {
@@ -353,8 +415,7 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
     let result = if fields.is_empty() {
         String::new()
     } else {
-        let op_name = query_struct_name(op)?;
-        format!(
+        let mut out = format!(
             "
 pub struct {op_name} {{
     {fields}
@@ -367,7 +428,13 @@ impl std::fmt::Display for {op_name} {{
     }}
 }}
 "
-        )
+        );
+
+        for _enum in enums {
+            out.push_str(&_enum);
+        }
+
+        out
     };
 
     Ok(result)
