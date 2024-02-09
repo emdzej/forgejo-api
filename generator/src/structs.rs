@@ -39,6 +39,14 @@ pub fn create_struct_for_definition(
         return Ok(String::new());
     }
 
+    if schema._type == Some(SchemaType::One(Primitive::String)) {
+        if let Some(_enum) = &schema._enum {
+            return create_enum(name, schema);
+        }
+    }
+
+    let mut subtypes = Vec::new();
+
     let docs = create_struct_docs(schema)?;
     let mut fields = String::new();
     let required = schema.required.as_deref().unwrap_or_default();
@@ -84,6 +92,17 @@ pub fn create_struct_for_definition(
             fields.push_str(": ");
             fields.push_str(&field_ty);
             fields.push_str(",\n");
+
+            if let MaybeRef::Value { value } = &prop_schema {
+                if value._type == Some(SchemaType::One(Primitive::Object))
+                    || (value._type == Some(SchemaType::One(Primitive::String))
+                        && value._enum.is_some())
+                {
+                    let name = format!("{name}{}", prop_name.to_pascal_case());
+                    let subtype = create_struct_for_definition(spec, &name, value)?;
+                    subtypes.push(subtype);
+                }
+            }
         }
     }
 
@@ -95,7 +114,33 @@ pub fn create_struct_for_definition(
         fields.push_str(">,\n");
     }
 
-    let out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
+    let mut out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
+    for subtype in subtypes {
+        out.push_str(&subtype);
+    }
+    Ok(out)
+}
+
+fn create_enum(name: &str, schema: &Schema) -> eyre::Result<String> {
+    let _enum = schema
+        ._enum
+        .as_deref()
+        .ok_or_else(|| eyre::eyre!("cannot create enum from non-enum schema"))?;
+    let mut variants = String::new();
+
+    let docs = create_struct_docs(schema)?;
+    for variant in _enum {
+        match variant {
+            serde_json::Value::String(s) => {
+                let variant_name = s.to_pascal_case();
+                variants.push_str(&variant_name);
+                variants.push_str(",\n");
+            }
+            x => eyre::bail!("cannot create enum variant. expected string, got {x:?}"),
+        }
+    }
+
+    let out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub enum {name} {{\n{variants}}}\n\n");
     Ok(out)
 }
 

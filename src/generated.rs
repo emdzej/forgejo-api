@@ -7407,6 +7407,15 @@ pub mod structs {
         pub sha: Option<String>,
     }
 
+    /// indicates what to do with the file
+    ///
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum ChangeFileOperationOperation {
+        Create,
+        Update,
+        Delete,
+    }
+
     /// ChangeFilesOptions options for creating, updating or deleting multiple files
     ///
     /// Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
@@ -7738,6 +7747,21 @@ pub mod structs {
         pub r#type: String,
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum CreateHookOptionType {
+        Forgejo,
+        Dingtalk,
+        Discord,
+        Gitea,
+        Gogs,
+        Msteams,
+        Slack,
+        Telegram,
+        Feishu,
+        Wechatwork,
+        Packagist,
+    }
+
     /// CreateHookOptionConfig has all config options in it
     ///
     /// required are "content_type" and "url" Required
@@ -7817,6 +7841,12 @@ pub mod structs {
         pub title: Option<String>,
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum CreateMilestoneOptionState {
+        Open,
+        Closed,
+    }
+
     /// CreateOAuth2ApplicationOptions holds options to create an oauth2 application
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -7849,6 +7879,15 @@ pub mod structs {
         ///
         pub visibility: Option<String>,
         pub website: Option<String>,
+    }
+
+    /// possible values are `public` (default), `limited` or `private`
+    ///
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum CreateOrgOptionVisibility {
+        Public,
+        Limited,
+        Private,
     }
 
     /// CreatePullRequestOption options when creating a pull request
@@ -7953,6 +7992,16 @@ pub mod structs {
         pub trust_model: Option<String>,
     }
 
+    /// TrustModel of the repository
+    ///
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum CreateRepoOptionTrustModel {
+        Default,
+        Collaborator,
+        Committer,
+        Collaboratorcommitter,
+    }
+
     /// CreateStatusOption holds the information needed to create a new CommitStatus for a Commit
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -7984,6 +8033,19 @@ pub mod structs {
         pub permission: Option<String>,
         pub units: Option<Vec<String>>,
         pub units_map: Option<serde_json::Map<String, serde_json::Value>>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum CreateTeamOptionPermission {
+        Read,
+        Write,
+        Admin,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct CreateTeamOptionUnitsMap {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, String>,
     }
 
     /// CreateUserOption create user options
@@ -8166,6 +8228,12 @@ pub mod structs {
         pub events: Option<Vec<String>>,
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct EditHookOptionConfig {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, String>,
+    }
+
     /// EditIssueCommentOption options for editing a comment
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8231,6 +8299,15 @@ pub mod structs {
         ///
         pub visibility: Option<String>,
         pub website: Option<String>,
+    }
+
+    /// possible values are `public`, `limited` or `private`
+    ///
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum EditOrgOptionVisibility {
+        Public,
+        Limited,
+        Private,
     }
 
     /// EditPullRequestOption options when modify pull request
@@ -8375,6 +8452,19 @@ pub mod structs {
         pub permission: Option<String>,
         pub units: Option<Vec<String>>,
         pub units_map: Option<serde_json::Map<String, serde_json::Value>>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum EditTeamOptionPermission {
+        Read,
+        Write,
+        Admin,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct EditTeamOptionUnitsMap {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, String>,
     }
 
     /// EditUserOption edit user options
@@ -8689,6 +8779,12 @@ pub mod structs {
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct HookConfig {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, String>,
+    }
+
     /// Identity for a person's identity like an author or committer
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8787,6 +8883,18 @@ pub mod structs {
         #[serde(rename = "type")]
         pub r#type: Option<String>,
         pub validations: Option<serde_json::Map<String, serde_json::Value>>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct IssueFormFieldAttributes {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, ()>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct IssueFormFieldValidations {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, ()>,
     }
 
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8975,6 +9083,15 @@ pub mod structs {
         pub merge_when_checks_succeed: Option<bool>,
     }
 
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum MergePullRequestOptionDo {
+        Merge,
+        Rebase,
+        RebaseMerge,
+        Squash,
+        ManuallyMerged,
+    }
+
     /// MigrateRepoOptions options for migrating repository's
     ///
     /// this is used to interact with api v1
@@ -9005,6 +9122,18 @@ pub mod structs {
         ///
         pub uid: Option<u64>,
         pub wiki: Option<bool>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum MigrateRepoOptionsService {
+        Git,
+        Github,
+        Gitea,
+        Gitlab,
+        Gogs,
+        Onedev,
+        Gitbucket,
+        Codebase,
     }
 
     /// Milestone milestone is a collection of issues on one repository
@@ -9048,6 +9177,9 @@ pub mod structs {
         pub usage: Option<NodeInfoUsage>,
         pub version: Option<String>,
     }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct NodeInfoMetadata {}
 
     /// NodeInfoServices contains the third party sites this server can connect to via their application API
     ///
@@ -9686,6 +9818,21 @@ pub mod structs {
         pub permission: Option<String>,
         pub units: Option<Vec<String>>,
         pub units_map: Option<serde_json::Map<String, serde_json::Value>>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub enum TeamPermission {
+        None,
+        Read,
+        Write,
+        Admin,
+        Owner,
+    }
+
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct TeamUnitsMap {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, String>,
     }
 
     /// TimeStamp defines a timestamp

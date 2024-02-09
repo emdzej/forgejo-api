@@ -103,8 +103,7 @@ fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
         for param in params {
             let param = param.deref(spec)?;
             match &param._in {
-                ParameterIn::Path { param: _ }
-                | ParameterIn::FormData { param: _ } => {
+                ParameterIn::Path { param: _ } | ParameterIn::FormData { param: _ } => {
                     write!(&mut out, "/// - `{}`", param.name)?;
                     if let Some(description) = &param.description {
                         write!(&mut out, ": {}", description)?;
