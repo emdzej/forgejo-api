@@ -250,7 +250,7 @@ fn fn_return_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<ResponseT
         .http_codes
         .iter()
         .filter(|(k, _)| k.starts_with("2"))
-        .map(|(_, v)| response_ref_type_name(spec, v))
+        .map(|(_, v)| response_ref_type_name(spec, v, op))
         .collect::<Result<Vec<_>, _>>()?;
     let mut iter = responses.into_iter();
     let mut response = iter
@@ -266,6 +266,7 @@ fn fn_return_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<ResponseT
 fn response_ref_type_name(
     spec: &OpenApiV2,
     schema: &MaybeRef<Response>,
+    op: &Operation,
 ) -> eyre::Result<ResponseType> {
     let response = schema.deref(spec)?;
     let mut ty = ResponseType::default();
@@ -282,8 +283,37 @@ fn response_ref_type_name(
         };
         ty.headers = Some(format!("{}Headers", parent_name));
     }
-    if let Some(schema) = &response.schema {
-        ty.body = Some(crate::schema_ref_type_name(spec, schema)?);
+    let produces = op
+        .produces
+        .as_deref()
+        .or_else(|| spec.produces.as_deref())
+        .unwrap_or_default();
+    // can't use .contains() because Strings
+    let produces_json = produces.iter().any(|i| matches!(&**i, "application/json"));
+    let produces_text = produces.iter().any(|i| i.starts_with("text/"));
+    let produces_other = produces
+        .iter()
+        .any(|i| !matches!(&**i, "application/json") && !i.starts_with("text/"));
+    match (produces_json, produces_text, produces_other) {
+        (true, false, false) => {
+            if let Some(schema) = &response.schema {
+                ty.kind = Some(ResponseKind::Json);
+                ty.body = Some(crate::schema_ref_type_name(spec, schema)?);
+            };
+        }
+        (false, _, true) => {
+            ty.kind = Some(ResponseKind::Bytes);
+            ty.body = Some("Vec<u8>".into());
+        }
+        (false, true, false) => {
+            ty.kind = Some(ResponseKind::Text);
+            ty.body = Some("String".into());
+        }
+        (false, false, false) => {
+            ty.kind = None;
+            ty.body = None;
+        }
+        _ => eyre::bail!("produces value unsupported. json: {produces_json}, text: {produces_text}, other: {produces_other}"),
     };
     Ok(ty)
 }
@@ -401,7 +431,7 @@ fn create_method_response(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
     let mut has_empty = false;
     let mut only_empty = true;
     for (code, res) in &op.responses.http_codes {
-        let response = response_ref_type_name(spec, res)?;
+        let response = response_ref_type_name(spec, res, op)?;
         if !code.starts_with("2") {
             continue;
         }
@@ -446,19 +476,26 @@ fn create_method_response(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
             }
         };
         handlers.extend(header_handler);
-        let body_handler = match &res.schema {
-            Some(schema) if crate::schema_is_string(spec, schema)? => {
+        let body_handler = match fn_ret.kind {
+            Some(ResponseKind::Text) => {
                 if optional {
                     Some("Some(response.text().await?)")
                 } else {
                     Some("response.text().await?")
                 }
             }
-            Some(_) => {
+            Some(ResponseKind::Json) => {
                 if optional {
                     Some("Some(response.json().await?)")
                 } else {
                     Some("response.json().await?")
+                }
+            }
+            Some(ResponseKind::Bytes) => {
+                if optional {
+                    Some("Some(response.bytes().await?[..].to_vec())")
+                } else {
+                    Some("response.bytes().await?[..].to_vec()")
                 }
             }
             None => {
@@ -495,25 +532,48 @@ fn create_method_response(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
 struct ResponseType {
     headers: Option<String>,
     body: Option<String>,
+    kind: Option<ResponseKind>,
 }
 
 impl ResponseType {
     fn merge(self, other: Self) -> eyre::Result<Self> {
-        let mut new = Self::default();
-        match (self.headers, other.headers) {
+        let headers = match (self.headers, other.headers) {
             (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
-            (Some(a), None) => new.headers = Some(format!("Option<{a}>")),
-            (None, Some(b)) => new.headers = Some(format!("Option<{b}>")),
-            (a, b) => new.headers = a.or(b),
+            (Some(a), None) => Some(format!("Option<{a}>")),
+            (None, Some(b)) => Some(format!("Option<{b}>")),
+            (a, b) => a.or(b),
         };
-        match (self.body.as_deref(), other.body.as_deref()) {
+        let body = match (self.body.as_deref(), other.body.as_deref()) {
             (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
-            (Some(a), Some("()") | None) => new.body = Some(format!("Option<{a}>")),
-            (Some("()") | None, Some(b)) => new.body = Some(format!("Option<{b}>")),
-            (_, _) => new.body = self.body.or(other.body),
+            (Some(a), Some("()") | None) => Some(format!("Option<{a}>")),
+            (Some("()") | None, Some(b)) => Some(format!("Option<{b}>")),
+            (_, _) => self.body.or(other.body),
+        };
+        use ResponseKind::*;
+        let kind = match (self.kind, other.kind) {
+            (a, None) => a,
+            (None, b) => b,
+            (Some(Json), Some(Json)) => Some(Json),
+            (Some(Bytes), Some(Bytes)) => Some(Bytes),
+            (Some(Bytes), Some(Text)) => Some(Bytes),
+            (Some(Text), Some(Bytes)) => Some(Bytes),
+            (Some(Text), Some(Text)) => Some(Text),
+            _ => eyre::bail!("incompatible response kinds"),
+        };
+        let new = Self {
+            headers,
+            body,
+            kind,
         };
         Ok(new)
     }
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ResponseKind {
+    Json,
+    Text,
+    Bytes,
 }
 
 impl std::fmt::Display for ResponseType {

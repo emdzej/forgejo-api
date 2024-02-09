@@ -1,11 +1,9 @@
 {
   "consumes": [
-    "application/json",
-    "text/plain"
+    "application/json"
   ],
   "produces": [
-    "application/json",
-    "text/html"
+    "application/json"
   ],
   "schemes": [
     "http",
@@ -3603,7 +3601,9 @@
     "/repos/{owner}/{repo}/archive/{archive}": {
       "get": {
         "produces": [
-          "application/json"
+          "application/octet-stream",
+          "application/zip,",
+          "application/gzip"
         ],
         "tags": [
           "repository"
