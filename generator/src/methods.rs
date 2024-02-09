@@ -1,4 +1,4 @@
-use crate::openapi::*;
+use crate::{openapi::*, schema_ref_type_name};
 use eyre::{OptionExt, WrapErr};
 use heck::ToSnakeCase;
 use std::fmt::Write;
@@ -102,13 +102,22 @@ fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
         }
         for param in params {
             let param = param.deref(spec)?;
-            match param._in {
+            match &param._in {
                 ParameterIn::Path { param: _ }
-                | ParameterIn::Body { schema: _ }
                 | ParameterIn::FormData { param: _ } => {
                     write!(&mut out, "/// - `{}`", param.name)?;
                     if let Some(description) = &param.description {
                         write!(&mut out, ": {}", description)?;
+                    }
+                    writeln!(&mut out)?;
+                }
+                ParameterIn::Body { schema } => {
+                    write!(&mut out, "/// - `{}`", param.name)?;
+                    let ty = schema_ref_type_name(spec, &schema)?;
+                    if let Some(description) = &param.description {
+                        write!(&mut out, ": {}\n\n///   See [`{}`]", description, ty)?;
+                    } else {
+                        write!(&mut out, ": See [`{}`]", ty)?;
                     }
                     writeln!(&mut out)?;
                 }

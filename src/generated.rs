@@ -98,7 +98,7 @@ impl crate::Forgejo {
 
     /// Create a hook
     ///
-    /// - `body`
+    /// - `body`: See [`CreateHookOption`]
     pub async fn admin_create_hook(&self, body: CreateHookOption) -> Result<Hook, ForgejoError> {
         let request = self.post("admin/hooks").json(&body).build()?;
         let response = self.execute(request).await?;
@@ -135,7 +135,7 @@ impl crate::Forgejo {
     /// Update a hook
     ///
     /// - `id`: id of the hook to update
-    /// - `body`
+    /// - `body`: See [`EditHookOption`]
     pub async fn admin_edit_hook(
         &self,
         id: u64,
@@ -234,7 +234,7 @@ impl crate::Forgejo {
 
     /// Create a user
     ///
-    /// - `body`
+    /// - `body`: See [`CreateUserOption`]
     pub async fn admin_create_user(&self, body: CreateUserOption) -> Result<User, ForgejoError> {
         let request = self.post("admin/users").json(&body).build()?;
         let response = self.execute(request).await?;
@@ -265,7 +265,7 @@ impl crate::Forgejo {
     /// Edit an existing user
     ///
     /// - `username`: username of user to edit
-    /// - `body`
+    /// - `body`: See [`EditUserOption`]
     pub async fn admin_edit_user(
         &self,
         username: &str,
@@ -285,7 +285,7 @@ impl crate::Forgejo {
     /// Add a public key on behalf of a user
     ///
     /// - `username`: username of the user
-    /// - `key`
+    /// - `key`: See [`CreateKeyOption`]
     pub async fn admin_create_public_key(
         &self,
         username: &str,
@@ -324,7 +324,7 @@ impl crate::Forgejo {
     /// Create an organization
     ///
     /// - `username`: username of the user that will own the created organization
-    /// - `organization`
+    /// - `organization`: See [`CreateOrgOption`]
     pub async fn admin_create_org(
         &self,
         username: &str,
@@ -344,7 +344,7 @@ impl crate::Forgejo {
     /// Rename a user
     ///
     /// - `username`: existing username of user
-    /// - `body`
+    /// - `body`: See [`RenameUserOption`]
     pub async fn admin_rename_user(
         &self,
         username: &str,
@@ -364,7 +364,7 @@ impl crate::Forgejo {
     /// Create a repository on behalf of a user
     ///
     /// - `username`: username of the user. This user will own the created repository
-    /// - `repository`
+    /// - `repository`: See [`CreateRepoOption`]
     pub async fn admin_create_repo(
         &self,
         username: &str,
@@ -460,7 +460,7 @@ impl crate::Forgejo {
 
     /// Render a markdown document as HTML
     ///
-    /// - `body`
+    /// - `body`: See [`MarkdownOption`]
     pub async fn render_markdown(&self, body: MarkdownOption) -> Result<String, ForgejoError> {
         let request = self.post("markdown").json(&body).build()?;
         let response = self.execute(request).await?;
@@ -473,6 +473,8 @@ impl crate::Forgejo {
     /// Render raw markdown as HTML
     ///
     /// - `body`: Request body to render
+
+    ///   See [`String`]
     pub async fn render_markdown_raw(&self, body: String) -> Result<String, ForgejoError> {
         let request = self.post("markdown/raw").body(body).build()?;
         let response = self.execute(request).await?;
@@ -484,7 +486,7 @@ impl crate::Forgejo {
 
     /// Render a markup document as HTML
     ///
-    /// - `body`
+    /// - `body`: See [`MarkupOption`]
     pub async fn render_markup(&self, body: MarkupOption) -> Result<String, ForgejoError> {
         let request = self.post("markup").json(&body).build()?;
         let response = self.execute(request).await?;
@@ -575,7 +577,7 @@ impl crate::Forgejo {
     /// Create a repository in an organization
     ///
     /// - `org`: name of organization
-    /// - `body`
+    /// - `body`: See [`CreateRepoOption`]
     pub async fn create_org_repo_deprecated(
         &self,
         org: &str,
@@ -605,7 +607,7 @@ impl crate::Forgejo {
 
     /// Create an organization
     ///
-    /// - `organization`
+    /// - `organization`: See [`CreateOrgOption`]
     pub async fn org_create(
         &self,
         organization: CreateOrgOption,
@@ -645,7 +647,7 @@ impl crate::Forgejo {
     /// Edit an organization
     ///
     /// - `org`: name of the organization to edit
-    /// - `body`
+    /// - `body`: See [`EditOrgOption`]
     pub async fn org_edit(
         &self,
         org: &str,
@@ -681,7 +683,7 @@ impl crate::Forgejo {
     ///
     /// - `org`: name of organization
     /// - `secretname`: name of the secret
-    /// - `body`
+    /// - `body`: See [`CreateOrUpdateSecretOption`]
     pub async fn update_org_secret(
         &self,
         org: &str,
@@ -736,7 +738,7 @@ impl crate::Forgejo {
     /// Update Avatar
     ///
     /// - `org`: name of the organization
-    /// - `body`
+    /// - `body`: See [`UpdateUserAvatarOption`]
     pub async fn org_update_avatar(
         &self,
         org: &str,
@@ -797,7 +799,7 @@ impl crate::Forgejo {
     /// Create a hook
     ///
     /// - `org`: name of the organization
-    /// - `body`
+    /// - `body`: See [`CreateHookOption`]
     pub async fn org_create_hook(
         &self,
         org: &str,
@@ -844,7 +846,7 @@ impl crate::Forgejo {
     ///
     /// - `org`: name of the organization
     /// - `id`: id of the hook to update
-    /// - `body`
+    /// - `body`: See [`EditHookOption`]
     pub async fn org_edit_hook(
         &self,
         org: &str,
@@ -881,7 +883,7 @@ impl crate::Forgejo {
     /// Create a label for an organization
     ///
     /// - `org`: name of the organization
-    /// - `body`
+    /// - `body`: See [`CreateLabelOption`]
     pub async fn org_create_label(
         &self,
         org: &str,
@@ -928,7 +930,7 @@ impl crate::Forgejo {
     ///
     /// - `org`: name of the organization
     /// - `id`: id of the label to edit
-    /// - `body`
+    /// - `body`: See [`EditLabelOption`]
     pub async fn org_edit_label(
         &self,
         org: &str,
@@ -1100,7 +1102,7 @@ impl crate::Forgejo {
     /// Create a repository in an organization
     ///
     /// - `org`: name of organization
-    /// - `body`
+    /// - `body`: See [`CreateRepoOption`]
     pub async fn create_org_repo(
         &self,
         org: &str,
@@ -1136,7 +1138,7 @@ impl crate::Forgejo {
     /// Create a team
     ///
     /// - `org`: name of the organization
-    /// - `body`
+    /// - `body`: See [`CreateTeamOption`]
     pub async fn org_create_team(
         &self,
         org: &str,
@@ -1287,7 +1289,7 @@ impl crate::Forgejo {
 
     /// Migrate a remote git repository
     ///
-    /// - `body`
+    /// - `body`: See [`MigrateRepoOptions`]
     pub async fn repo_migrate(&self, body: MigrateRepoOptions) -> Result<Repository, ForgejoError> {
         let request = self.post("repos/migrate").json(&body).build()?;
         let response = self.execute(request).await?;
@@ -1339,6 +1341,8 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo to edit
     /// - `repo`: name of the repo to edit
     /// - `body`: Properties of a repo that you can edit
+
+    ///   See [`EditRepoOption`]
     pub async fn repo_edit(
         &self,
         owner: &str,
@@ -1361,7 +1365,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repository
     /// - `repo`: name of the repository
     /// - `secretname`: name of the secret
-    /// - `body`
+    /// - `body`: See [`CreateOrUpdateSecretOption`]
     pub async fn update_repo_secret(
         &self,
         owner: &str,
@@ -1470,7 +1474,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`UpdateRepoAvatarOption`]
     pub async fn repo_update_avatar(
         &self,
         owner: &str,
@@ -1526,7 +1530,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateBranchProtectionOption`]
     pub async fn repo_create_branch_protection(
         &self,
         owner: &str,
@@ -1591,7 +1595,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `name`: name of protected branch
-    /// - `body`
+    /// - `body`: See [`EditBranchProtectionOption`]
     pub async fn repo_edit_branch_protection(
         &self,
         owner: &str,
@@ -1634,7 +1638,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateBranchRepoOption`]
     pub async fn repo_create_branch(
         &self,
         owner: &str,
@@ -1742,7 +1746,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `collaborator`: username of the collaborator to add
-    /// - `body`
+    /// - `body`: See [`AddCollaboratorOption`]
     pub async fn repo_add_collaborator(
         &self,
         owner: &str,
@@ -1901,7 +1905,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`ChangeFilesOptions`]
     pub async fn repo_change_files(
         &self,
         owner: &str,
@@ -1946,7 +1950,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `filepath`: path of the file to update
-    /// - `body`
+    /// - `body`: See [`UpdateFileOptions`]
     pub async fn repo_update_file(
         &self,
         owner: &str,
@@ -1970,7 +1974,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `filepath`: path of the file to create
-    /// - `body`
+    /// - `body`: See [`CreateFileOptions`]
     pub async fn repo_create_file(
         &self,
         owner: &str,
@@ -1994,7 +1998,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `filepath`: path of the file to delete
-    /// - `body`
+    /// - `body`: See [`DeleteFileOptions`]
     pub async fn repo_delete_file(
         &self,
         owner: &str,
@@ -2017,7 +2021,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`UpdateFileOptions`]
     pub async fn repo_apply_diff_patch(
         &self,
         owner: &str,
@@ -2083,7 +2087,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo to fork
     /// - `repo`: name of the repo to fork
-    /// - `body`
+    /// - `body`: See [`CreateForkOption`]
     pub async fn create_fork(
         &self,
         owner: &str,
@@ -2298,7 +2302,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateHookOption`]
     pub async fn repo_create_hook(
         &self,
         owner: &str,
@@ -2382,7 +2386,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: id of the hook to get
-    /// - `body`
+    /// - `body`: See [`EditGitHookOption`]
     pub async fn repo_edit_git_hook(
         &self,
         owner: &str,
@@ -2448,7 +2452,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: index of the hook
-    /// - `body`
+    /// - `body`: See [`EditHookOption`]
     pub async fn repo_edit_hook(
         &self,
         owner: &str,
@@ -2570,7 +2574,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateIssueOption`]
     pub async fn issue_create_issue(
         &self,
         owner: &str,
@@ -2656,7 +2660,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: id of the comment to edit
-    /// - `body`
+    /// - `body`: See [`EditIssueCommentOption`]
     pub async fn issue_edit_comment(
         &self,
         owner: &str,
@@ -2788,7 +2792,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     /// - `id`: id of the comment
     /// - `attachment_id`: id of the attachment to edit
-    /// - `body`
+    /// - `body`: See [`EditAttachmentOptions`]
     pub async fn issue_edit_issue_comment_attachment(
         &self,
         owner: &str,
@@ -2838,7 +2842,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: id of the comment to edit
-    /// - `content`
+    /// - `content`: See [`EditReactionOption`]
     pub async fn issue_post_comment_reaction(
         &self,
         owner: &str,
@@ -2865,7 +2869,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: id of the comment to edit
-    /// - `content`
+    /// - `content`: See [`EditReactionOption`]
     pub async fn issue_delete_comment_reaction(
         &self,
         owner: &str,
@@ -2952,7 +2956,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue to edit
-    /// - `body`
+    /// - `body`: See [`EditIssueOption`]
     pub async fn issue_edit_issue(
         &self,
         owner: &str,
@@ -3083,7 +3087,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
     /// - `attachment_id`: id of the attachment to edit
-    /// - `body`
+    /// - `body`: See [`EditAttachmentOptions`]
     pub async fn issue_edit_issue_attachment(
         &self,
         owner: &str,
@@ -3134,7 +3138,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`IssueMeta`]
     pub async fn issue_create_issue_blocking(
         &self,
         owner: &str,
@@ -3158,7 +3162,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`IssueMeta`]
     pub async fn issue_remove_issue_blocking(
         &self,
         owner: &str,
@@ -3206,7 +3210,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`CreateIssueCommentOption`]
     pub async fn issue_create_comment(
         &self,
         owner: &str,
@@ -3256,7 +3260,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     /// - `index`: this parameter is ignored
     /// - `id`: id of the comment to edit
-    /// - `body`
+    /// - `body`: See [`EditIssueCommentOption`]
     pub async fn issue_edit_comment_deprecated(
         &self,
         owner: &str,
@@ -3284,7 +3288,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue to create or update a deadline on
-    /// - `body`
+    /// - `body`: See [`EditDeadlineOption`]
     pub async fn issue_edit_issue_deadline(
         &self,
         owner: &str,
@@ -3332,7 +3336,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`IssueMeta`]
     pub async fn issue_create_issue_dependencies(
         &self,
         owner: &str,
@@ -3356,7 +3360,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`IssueMeta`]
     pub async fn issue_remove_issue_dependencies(
         &self,
         owner: &str,
@@ -3401,7 +3405,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`IssueLabelsOption`]
     pub async fn issue_replace_labels(
         &self,
         owner: &str,
@@ -3425,7 +3429,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`IssueLabelsOption`]
     pub async fn issue_add_label(
         &self,
         owner: &str,
@@ -3449,7 +3453,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`DeleteLabelsOption`]
     pub async fn issue_clear_labels(
         &self,
         owner: &str,
@@ -3474,7 +3478,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
     /// - `id`: id of the label to remove
-    /// - `body`
+    /// - `body`: See [`DeleteLabelsOption`]
     pub async fn issue_remove_label(
         &self,
         owner: &str,
@@ -3585,7 +3589,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `content`
+    /// - `content`: See [`EditReactionOption`]
     pub async fn issue_post_issue_reaction(
         &self,
         owner: &str,
@@ -3610,7 +3614,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `content`
+    /// - `content`: See [`EditReactionOption`]
     pub async fn issue_delete_issue_reaction(
         &self,
         owner: &str,
@@ -3850,7 +3854,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the issue
-    /// - `body`
+    /// - `body`: See [`AddTimeOption`]
     pub async fn issue_add_time(
         &self,
         owner: &str,
@@ -3937,7 +3941,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateKeyOption`]
     pub async fn repo_create_key(
         &self,
         owner: &str,
@@ -4021,7 +4025,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateLabelOption`]
     pub async fn issue_create_label(
         &self,
         owner: &str,
@@ -4086,7 +4090,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: id of the label to edit
-    /// - `body`
+    /// - `body`: See [`EditLabelOption`]
     pub async fn issue_edit_label(
         &self,
         owner: &str,
@@ -4170,7 +4174,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateMilestoneOption`]
     pub async fn issue_create_milestone(
         &self,
         owner: &str,
@@ -4235,7 +4239,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: the milestone to edit, identified by ID and if not available by name
-    /// - `body`
+    /// - `body`: See [`EditMilestoneOption`]
     pub async fn issue_edit_milestone(
         &self,
         owner: &str,
@@ -4352,7 +4356,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreatePullRequestOption`]
     pub async fn repo_create_pull_request(
         &self,
         owner: &str,
@@ -4415,7 +4419,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the pull request to edit
-    /// - `body`
+    /// - `body`: See [`EditPullRequestOption`]
     pub async fn repo_edit_pull_request(
         &self,
         owner: &str,
@@ -4532,7 +4536,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the pull request to merge
-    /// - `body`
+    /// - `body`: See [`MergePullRequestOption`]
     pub async fn repo_merge_pull_request(
         &self,
         owner: &str,
@@ -4577,7 +4581,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the pull request
-    /// - `body`
+    /// - `body`: See [`PullReviewRequestOptions`]
     pub async fn repo_create_pull_review_requests(
         &self,
         owner: &str,
@@ -4603,7 +4607,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the pull request
-    /// - `body`
+    /// - `body`: See [`PullReviewRequestOptions`]
     pub async fn repo_delete_pull_review_requests(
         &self,
         owner: &str,
@@ -4653,7 +4657,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `index`: index of the pull request
-    /// - `body`
+    /// - `body`: See [`CreatePullReviewOptions`]
     pub async fn repo_create_pull_review(
         &self,
         owner: &str,
@@ -4701,7 +4705,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     /// - `index`: index of the pull request
     /// - `id`: id of the review
-    /// - `body`
+    /// - `body`: See [`SubmitPullReviewOptions`]
     pub async fn repo_submit_pull_review(
         &self,
         owner: &str,
@@ -4775,7 +4779,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     /// - `index`: index of the pull request
     /// - `id`: id of the review
-    /// - `body`
+    /// - `body`: See [`DismissPullReviewOptions`]
     pub async fn repo_dismiss_pull_review(
         &self,
         owner: &str,
@@ -4870,7 +4874,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreatePushMirrorOption`]
     pub async fn repo_add_push_mirror(
         &self,
         owner: &str,
@@ -4991,7 +4995,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateReleaseOption`]
     pub async fn repo_create_release(
         &self,
         owner: &str,
@@ -5117,7 +5121,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: id of the release to edit
-    /// - `body`
+    /// - `body`: See [`EditReleaseOption`]
     pub async fn repo_edit_release(
         &self,
         owner: &str,
@@ -5248,7 +5252,7 @@ impl crate::Forgejo {
     /// - `repo`: name of the repo
     /// - `id`: id of the release
     /// - `attachment_id`: id of the attachment to edit
-    /// - `body`
+    /// - `body`: See [`EditAttachmentOptions`]
     pub async fn repo_edit_release_attachment(
         &self,
         owner: &str,
@@ -5351,7 +5355,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `sha`: sha of the commit
-    /// - `body`
+    /// - `body`: See [`CreateStatusOption`]
     pub async fn repo_create_status(
         &self,
         owner: &str,
@@ -5471,7 +5475,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateTagOption`]
     pub async fn repo_create_tag(
         &self,
         owner: &str,
@@ -5676,7 +5680,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`RepoTopicOptions`]
     pub async fn repo_update_topics(
         &self,
         owner: &str,
@@ -5741,6 +5745,8 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo to transfer
     /// - `repo`: name of the repo to transfer
     /// - `body`: Transfer Options
+
+    ///   See [`TransferRepoOption`]
     pub async fn repo_transfer(
         &self,
         owner: &str,
@@ -5800,7 +5806,7 @@ impl crate::Forgejo {
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    /// - `body`
+    /// - `body`: See [`CreateWikiPageOptions`]
     pub async fn repo_create_wiki_page(
         &self,
         owner: &str,
@@ -5865,7 +5871,7 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `pageName`: name of the page
-    /// - `body`
+    /// - `body`: See [`CreateWikiPageOptions`]
     pub async fn repo_edit_wiki_page(
         &self,
         owner: &str,
@@ -5932,7 +5938,7 @@ impl crate::Forgejo {
     ///
     /// - `template_owner`: name of the template repository owner
     /// - `template_repo`: name of the template repository
-    /// - `body`
+    /// - `body`: See [`GenerateRepoOption`]
     pub async fn generate_repo(
         &self,
         template_owner: &str,
@@ -6043,7 +6049,7 @@ impl crate::Forgejo {
     /// Edit a team
     ///
     /// - `id`: id of the team to edit
-    /// - `body`
+    /// - `body`: See [`EditTeamOption`]
     pub async fn org_edit_team(&self, id: u32, body: EditTeamOption) -> Result<Team, ForgejoError> {
         let request = self.patch(&format!("teams/{id}")).json(&body).build()?;
         let response = self.execute(request).await?;
@@ -6246,7 +6252,7 @@ impl crate::Forgejo {
     /// Create or Update a secret value in a user scope
     ///
     /// - `secretname`: name of the secret
-    /// - `body`
+    /// - `body`: See [`CreateOrUpdateSecretOption`]
     pub async fn update_user_secret(
         &self,
         secretname: &str,
@@ -6296,7 +6302,7 @@ impl crate::Forgejo {
 
     /// creates a new OAuth2 application
     ///
-    /// - `body`
+    /// - `body`: See [`CreateOAuth2ApplicationOptions`]
     pub async fn user_create_oauth2_application(
         &self,
         body: CreateOAuth2ApplicationOptions,
@@ -6343,7 +6349,7 @@ impl crate::Forgejo {
     /// update an OAuth2 Application, this includes regenerating the client secret
     ///
     /// - `id`: application to be updated
-    /// - `body`
+    /// - `body`: See [`CreateOAuth2ApplicationOptions`]
     pub async fn user_update_oauth2_application(
         &self,
         id: u64,
@@ -6362,7 +6368,7 @@ impl crate::Forgejo {
 
     /// Update Avatar
     ///
-    /// - `body`
+    /// - `body`: See [`UpdateUserAvatarOption`]
     pub async fn user_update_avatar(
         &self,
         body: UpdateUserAvatarOption,
@@ -6409,7 +6415,7 @@ impl crate::Forgejo {
 
     /// Add email addresses
     ///
-    /// - `body`
+    /// - `body`: See [`CreateEmailOption`]
     pub async fn user_add_email(
         &self,
         body: CreateEmailOption,
@@ -6424,7 +6430,7 @@ impl crate::Forgejo {
 
     /// Delete email addresses
     ///
-    /// - `body`
+    /// - `body`: See [`DeleteEmailOption`]
     pub async fn user_delete_email(&self, body: DeleteEmailOption) -> Result<(), ForgejoError> {
         let request = self.delete("user/emails").json(&body).build()?;
         let response = self.execute(request).await?;
@@ -6534,7 +6540,7 @@ impl crate::Forgejo {
 
     /// Create a GPG key
     ///
-    /// - `Form`
+    /// - `Form`: See [`CreateGPGKeyOption`]
     pub async fn user_current_post_gpg_key(
         &self,
         form: CreateGPGKeyOption,
@@ -6587,7 +6593,7 @@ impl crate::Forgejo {
 
     /// Create a hook
     ///
-    /// - `body`
+    /// - `body`: See [`CreateHookOption`]
     pub async fn user_create_hook(&self, body: CreateHookOption) -> Result<Hook, ForgejoError> {
         let request = self.post("user/hooks").json(&body).build()?;
         let response = self.execute(request).await?;
@@ -6624,7 +6630,7 @@ impl crate::Forgejo {
     /// Update a hook
     ///
     /// - `id`: id of the hook to update
-    /// - `body`
+    /// - `body`: See [`EditHookOption`]
     pub async fn user_edit_hook(
         &self,
         id: u64,
@@ -6657,7 +6663,7 @@ impl crate::Forgejo {
 
     /// Create a public key
     ///
-    /// - `body`
+    /// - `body`: See [`CreateKeyOption`]
     pub async fn user_current_post_key(
         &self,
         body: CreateKeyOption,
@@ -6738,7 +6744,7 @@ impl crate::Forgejo {
 
     /// Create a repository
     ///
-    /// - `body`
+    /// - `body`: See [`CreateRepoOption`]
     pub async fn create_current_user_repo(
         &self,
         body: CreateRepoOption,
@@ -6763,7 +6769,7 @@ impl crate::Forgejo {
 
     /// Update user settings
     ///
-    /// - `body`
+    /// - `body`: See [`UserSettingsOptions`]
     pub async fn update_user_settings(
         &self,
         body: UserSettingsOptions,
@@ -7169,7 +7175,7 @@ impl crate::Forgejo {
     /// Create an access token
     ///
     /// - `username`: username of user
-    /// - `body`
+    /// - `body`: See [`CreateAccessTokenOption`]
     pub async fn user_create_token(
         &self,
         username: &str,
