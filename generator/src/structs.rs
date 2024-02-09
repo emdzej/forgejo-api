@@ -65,6 +65,15 @@ pub fn create_struct_for_definition(
             if field_ty == "Option<time::OffsetDateTime>" {
                 fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
             }
+            if let MaybeRef::Value { value } = &prop_schema {
+                if let Some(desc) = &value.description {
+                    for line in desc.lines() {
+                        fields.push_str("/// ");
+                        fields.push_str(line);
+                        fields.push_str("\n/// \n");
+                    }
+                }
+            }
             if &field_name != prop_name {
                 fields.push_str("#[serde(rename = \"");
                 fields.push_str(prop_name);
@@ -159,6 +168,13 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
         if let ParameterIn::Query { param: query_param } = &param._in {
             let ty = crate::methods::param_type(query_param, true)?;
             let field_name = crate::sanitize_ident(&param.name);
+            if let Some(desc) = &param.description {
+                for line in desc.lines() {
+                    fields.push_str("/// ");
+                    fields.push_str(line);
+                    fields.push_str("\n/// \n");
+                }
+            }
             fields.push_str("pub ");
             fields.push_str(&field_name);
             fields.push_str(": ");

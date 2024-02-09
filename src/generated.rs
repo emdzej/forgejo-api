@@ -7281,7 +7281,11 @@ pub mod structs {
     pub struct AddTimeOption {
         #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
+        /// time in seconds
+        ///
         pub time: u64,
+        /// User who spent the time (optional)
+        ///
         pub user_name: Option<String>,
     }
 
@@ -7356,6 +7360,8 @@ pub mod structs {
         pub block_on_official_review_requests: Option<bool>,
         pub block_on_outdated_branch: Option<bool>,
         pub block_on_rejected_reviews: Option<bool>,
+        /// Deprecated: true
+        ///
         pub branch_name: Option<String>,
         #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
@@ -7384,10 +7390,20 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ChangeFileOperation {
+        /// new or updated file content, must be base64 encoded
+        ///
         pub content: Option<String>,
+        /// old path of the file to move
+        ///
         pub from_path: Option<String>,
+        /// indicates what to do with the file
+        ///
         pub operation: String,
+        /// path to the existing or new file
+        ///
         pub path: String,
+        /// sha is the SHA for the file that already exists, required for update or delete
+        ///
         pub sha: Option<String>,
     }
 
@@ -7398,12 +7414,22 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ChangeFilesOptions {
         pub author: Option<Identity>,
+        /// branch (optional) to base this file from. if not given, the default branch is used
+        ///
         pub branch: Option<String>,
         pub committer: Option<Identity>,
         pub dates: Option<CommitDateOptions>,
+        /// list of file operations
+        ///
         pub files: Vec<ChangeFileOperation>,
+        /// message (optional) for the commit of this file. if not supplied, a default message will be used
+        ///
         pub message: Option<String>,
+        /// new_branch (optional) will make a new branch from `branch` before creating the file
+        ///
         pub new_branch: Option<String>,
+        /// Add a Signed-off-by trailer by the committer at the end of the commit log message.
+        ///
         pub signoff: Option<bool>,
     }
 
@@ -7554,9 +7580,13 @@ pub mod structs {
     pub struct ContentsResponse {
         #[serde(rename = "_links")]
         pub links: Option<FileLinksResponse>,
+        /// `content` is populated when `type` is `file`, otherwise null
+        ///
         pub content: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub download_url: Option<url::Url>,
+        /// `encoding` is populated when `type` is `file`, otherwise null
+        ///
         pub encoding: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub git_url: Option<url::Url>,
@@ -7568,8 +7598,14 @@ pub mod structs {
         pub sha: Option<String>,
         pub size: Option<u64>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
+        /// `submodule_git_url` is populated when `type` is `submodule`, otherwise null
+        ///
         pub submodule_git_url: Option<url::Url>,
+        /// `target` is populated when `type` is `symlink`, otherwise null
+        ///
         pub target: Option<String>,
+        /// `type` will be `file`, `dir`, `symlink`, or `submodule`
+        ///
         #[serde(rename = "type")]
         pub r#type: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -7593,6 +7629,8 @@ pub mod structs {
         pub block_on_official_review_requests: Option<bool>,
         pub block_on_outdated_branch: Option<bool>,
         pub block_on_rejected_reviews: Option<bool>,
+        /// Deprecated: true
+        ///
         pub branch_name: Option<String>,
         pub dismiss_stale_approvals: Option<bool>,
         pub enable_approvals_whitelist: Option<bool>,
@@ -7617,8 +7655,16 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateBranchRepoOption {
+        /// Name of the branch to create
+        ///
         pub new_branch_name: String,
+        /// Deprecated: true
+        ///
+        /// Name of the old branch to create from
+        ///
         pub old_branch_name: Option<String>,
+        /// Name of the old branch/tag/commit to create from
+        ///
         pub old_ref_name: Option<String>,
     }
 
@@ -7626,6 +7672,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateEmailOption {
+        /// email addresses to add
+        ///
         pub emails: Option<Vec<String>>,
     }
 
@@ -7636,12 +7684,22 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateFileOptions {
         pub author: Option<Identity>,
+        /// branch (optional) to base this file from. if not given, the default branch is used
+        ///
         pub branch: Option<String>,
         pub committer: Option<Identity>,
+        /// content must be base64 encoded
+        ///
         pub content: String,
         pub dates: Option<CommitDateOptions>,
+        /// message (optional) for the commit of this file. if not supplied, a default message will be used
+        ///
         pub message: Option<String>,
+        /// new_branch (optional) will make a new branch from `branch` before creating the file
+        ///
         pub new_branch: Option<String>,
+        /// Add a Signed-off-by trailer by the committer at the end of the commit log message.
+        ///
         pub signoff: Option<bool>,
     }
 
@@ -7649,7 +7707,11 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateForkOption {
+        /// name of the forked repository
+        ///
         pub name: Option<String>,
+        /// organization name, if forking into an organization
+        ///
         pub organization: Option<String>,
     }
 
@@ -7657,6 +7719,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateGPGKeyOption {
+        /// An armored GPG key to add
+        ///
         pub armored_public_key: String,
         pub armored_signature: Option<String>,
     }
@@ -7697,13 +7761,19 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateIssueOption {
+        /// deprecated
+        ///
         pub assignee: Option<String>,
         pub assignees: Option<Vec<String>>,
         pub body: Option<String>,
         pub closed: Option<bool>,
         #[serde(with = "time::serde::rfc3339::option")]
         pub due_date: Option<time::OffsetDateTime>,
+        /// list of label ids
+        ///
         pub labels: Option<Vec<u64>>,
+        /// milestone id
+        ///
         pub milestone: Option<u64>,
         #[serde(rename = "ref")]
         pub r#ref: Option<String>,
@@ -7714,8 +7784,14 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateKeyOption {
+        /// An armored SSH key to add
+        ///
         pub key: String,
+        /// Describe if the key has only read access or read/write
+        ///
         pub read_only: Option<bool>,
+        /// Title of the key to add
+        ///
         pub title: String,
     }
 
@@ -7754,6 +7830,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateOrUpdateSecretOption {
+        /// Data of the secret to update
+        ///
         pub data: String,
     }
 
@@ -7767,6 +7845,8 @@ pub mod structs {
         pub location: Option<String>,
         pub repo_admin_change_team_access: Option<bool>,
         pub username: String,
+        /// possible values are `public` (default), `limited` or `private`
+        ///
         pub visibility: Option<String>,
         pub website: Option<String>,
     }
@@ -7792,8 +7872,14 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreatePullReviewComment {
         pub body: Option<String>,
+        /// if comment to new file line or 0
+        ///
         pub new_position: Option<u64>,
+        /// if comment to old file line or 0
+        ///
         pub old_position: Option<u64>,
+        /// the tree path
+        ///
         pub path: Option<String>,
     }
 
@@ -7832,16 +7918,38 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateRepoOption {
+        /// Whether the repository should be auto-initialized?
+        ///
         pub auto_init: Option<bool>,
+        /// DefaultBranch of the repository (used when initializes and in template)
+        ///
         pub default_branch: Option<String>,
+        /// Description of the repository to create
+        ///
         pub description: Option<String>,
+        /// Gitignores to use
+        ///
         pub gitignores: Option<String>,
+        /// Label-Set to use
+        ///
         pub issue_labels: Option<String>,
+        /// License to use
+        ///
         pub license: Option<String>,
+        /// Name of the repository to create
+        ///
         pub name: String,
+        /// Whether the repository is private
+        ///
         pub private: Option<bool>,
+        /// Readme of the repository to create
+        ///
         pub readme: Option<String>,
+        /// Whether the repository is template
+        ///
         pub template: Option<bool>,
+        /// TrustModel of the repository
+        ///
         pub trust_model: Option<String>,
     }
 
@@ -7883,6 +7991,12 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateUserOption {
         #[serde(with = "time::serde::rfc3339::option")]
+        /// For explicitly setting the user creation timestamp. Useful when users are
+        ///
+        /// migrated from other systems. When omitted, the user's creation timestamp
+        ///
+        /// will be set to "now".
+        ///
         pub created_at: Option<time::OffsetDateTime>,
         pub email: String,
         pub full_name: Option<String>,
@@ -7900,8 +8014,14 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct CreateWikiPageOptions {
+        /// content must be base64 encoded
+        ///
         pub content_base64: Option<String>,
+        /// optional commit message summarizing the change
+        ///
         pub message: Option<String>,
+        /// page title. leave empty to keep unchanged
+        ///
         pub title: Option<String>,
     }
 
@@ -7922,6 +8042,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeleteEmailOption {
+        /// email addresses to delete
+        ///
         pub emails: Option<Vec<String>>,
     }
 
@@ -7932,12 +8054,22 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct DeleteFileOptions {
         pub author: Option<Identity>,
+        /// branch (optional) to base this file from. if not given, the default branch is used
+        ///
         pub branch: Option<String>,
         pub committer: Option<Identity>,
         pub dates: Option<CommitDateOptions>,
+        /// message (optional) for the commit of this file. if not supplied, a default message will be used
+        ///
         pub message: Option<String>,
+        /// new_branch (optional) will make a new branch from `branch` before creating the file
+        ///
         pub new_branch: Option<String>,
+        /// sha is the SHA for the file that already exists
+        ///
         pub sha: String,
+        /// Add a Signed-off-by trailer by the committer at the end of the commit log message.
+        ///
         pub signoff: Option<bool>,
     }
 
@@ -8047,6 +8179,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditIssueOption {
+        /// deprecated
+        ///
         pub assignee: Option<String>,
         pub assignees: Option<Vec<String>>,
         pub body: Option<String>,
@@ -8093,6 +8227,8 @@ pub mod structs {
         pub full_name: Option<String>,
         pub location: Option<String>,
         pub repo_admin_change_team_access: Option<bool>,
+        /// possible values are `public`, `limited` or `private`
+        ///
         pub visibility: Option<String>,
         pub website: Option<String>,
     }
@@ -8138,35 +8274,93 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct EditRepoOption {
+        /// either `true` to allow mark pr as merged manually, or `false` to prevent it.
+        ///
         pub allow_manual_merge: Option<bool>,
+        /// either `true` to allow merging pull requests with a merge commit, or `false` to prevent merging pull requests with merge commits.
+        ///
         pub allow_merge_commits: Option<bool>,
+        /// either `true` to allow rebase-merging pull requests, or `false` to prevent rebase-merging.
+        ///
         pub allow_rebase: Option<bool>,
+        /// either `true` to allow rebase with explicit merge commits (--no-ff), or `false` to prevent rebase with explicit merge commits.
+        ///
         pub allow_rebase_explicit: Option<bool>,
+        /// either `true` to allow updating pull request branch by rebase, or `false` to prevent it.
+        ///
         pub allow_rebase_update: Option<bool>,
+        /// either `true` to allow squash-merging pull requests, or `false` to prevent squash-merging.
+        ///
         pub allow_squash_merge: Option<bool>,
+        /// set to `true` to archive this repository.
+        ///
         pub archived: Option<bool>,
+        /// either `true` to enable AutodetectManualMerge, or `false` to prevent it. Note: In some special cases, misjudgments can occur.
+        ///
         pub autodetect_manual_merge: Option<bool>,
+        /// set to `true` to allow edits from maintainers by default
+        ///
         pub default_allow_maintainer_edit: Option<bool>,
+        /// sets the default branch for this repository.
+        ///
         pub default_branch: Option<String>,
+        /// set to `true` to delete pr branch after merge by default
+        ///
         pub default_delete_branch_after_merge: Option<bool>,
+        /// set to a merge style to be used by this repository: "merge", "rebase", "rebase-merge", or "squash".
+        ///
         pub default_merge_style: Option<String>,
+        /// a short description of the repository.
+        ///
         pub description: Option<String>,
+        /// enable prune - remove obsolete remote-tracking references
+        ///
         pub enable_prune: Option<bool>,
         pub external_tracker: Option<ExternalTracker>,
         pub external_wiki: Option<ExternalWiki>,
+        /// either `true` to enable actions unit, or `false` to disable them.
+        ///
         pub has_actions: Option<bool>,
+        /// either `true` to enable issues for this repository or `false` to disable them.
+        ///
         pub has_issues: Option<bool>,
+        /// either `true` to enable packages unit, or `false` to disable them.
+        ///
         pub has_packages: Option<bool>,
+        /// either `true` to enable project unit, or `false` to disable them.
+        ///
         pub has_projects: Option<bool>,
+        /// either `true` to allow pull requests, or `false` to prevent pull request.
+        ///
         pub has_pull_requests: Option<bool>,
+        /// either `true` to enable releases unit, or `false` to disable them.
+        ///
         pub has_releases: Option<bool>,
+        /// either `true` to enable the wiki for this repository or `false` to disable it.
+        ///
         pub has_wiki: Option<bool>,
+        /// either `true` to ignore whitespace for conflicts, or `false` to not ignore whitespace.
+        ///
         pub ignore_whitespace_conflicts: Option<bool>,
         pub internal_tracker: Option<InternalTracker>,
+        /// set to a string like `8h30m0s` to set the mirror interval time
+        ///
         pub mirror_interval: Option<String>,
+        /// name of the repository
+        ///
         pub name: Option<String>,
+        /// either `true` to make the repository private or `false` to make it public.
+        ///
+        /// Note: you will get a 422 error if the organization restricts changing repository visibility to organization
+        ///
+        /// owners and a non-owner tries to change the value of private.
+        ///
         pub private: Option<bool>,
+        /// either `true` to make this repository a template or `false` to make it a normal repository
+        ///
         pub template: Option<bool>,
+        /// a URL with more information about the repository.
+        ///
         pub website: Option<String>,
     }
 
@@ -8222,10 +8416,18 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ExternalTracker {
+        /// External Issue Tracker URL Format. Use the placeholders {user}, {repo} and {index} for the username, repository name and issue index.
+        ///
         pub external_tracker_format: Option<String>,
+        /// External Issue Tracker issue regular expression
+        ///
         pub external_tracker_regexp_pattern: Option<String>,
+        /// External Issue Tracker Number Format, either `numeric`, `alphanumeric`, or `regexp`
+        ///
         pub external_tracker_style: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
+        /// URL of external issue tracker.
+        ///
         pub external_tracker_url: Option<url::Url>,
     }
 
@@ -8234,6 +8436,8 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct ExternalWiki {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
+        /// URL of external wiki.
+        ///
         pub external_wiki_url: Option<url::Url>,
     }
 
@@ -8364,17 +8568,41 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct GenerateRepoOption {
+        /// include avatar of the template repo
+        ///
         pub avatar: Option<bool>,
+        /// Default branch of the new repository
+        ///
         pub default_branch: Option<String>,
+        /// Description of the repository to create
+        ///
         pub description: Option<String>,
+        /// include git content of default branch in template repo
+        ///
         pub git_content: Option<bool>,
+        /// include git hooks in template repo
+        ///
         pub git_hooks: Option<bool>,
+        /// include labels in template repo
+        ///
         pub labels: Option<bool>,
+        /// Name of the repository to create
+        ///
         pub name: String,
+        /// The organization or person who will own the new repository
+        ///
         pub owner: String,
+        /// Whether the repository is private
+        ///
         pub private: Option<bool>,
+        /// include protected branches in template repo
+        ///
         pub protected_branch: Option<bool>,
+        /// include topics in template repo
+        ///
         pub topics: Option<bool>,
+        /// include webhooks in template repo
+        ///
         pub webhooks: Option<bool>,
     }
 
@@ -8473,8 +8701,14 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct InternalTracker {
+        /// Let only contributors track time (Built-in issue tracker)
+        ///
         pub allow_only_contributors_to_track_time: Option<bool>,
+        /// Enable dependencies for issues and pull requests (Built-in issue tracker)
+        ///
         pub enable_issue_dependencies: Option<bool>,
+        /// Enable time tracking (Built-in issue tracker)
+        ///
         pub enable_time_tracker: Option<bool>,
     }
 
@@ -8562,6 +8796,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct IssueLabelsOption {
+        /// list of label IDs
+        ///
         pub labels: Option<Vec<u64>>,
         #[serde(with = "time::serde::rfc3339::option")]
         pub updated_at: Option<time::OffsetDateTime>,
@@ -8641,12 +8877,36 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct MarkdownOption {
+        /// Context to render
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Context")]
         pub context: Option<String>,
+        /// Mode to render (comment, gfm, markdown)
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Mode")]
         pub mode: Option<String>,
+        /// Text markdown to render
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Text")]
         pub text: Option<String>,
+        /// Is it a wiki page ?
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Wiki")]
         pub wiki: Option<bool>,
     }
@@ -8655,14 +8915,44 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct MarkupOption {
+        /// Context to render
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Context")]
         pub context: Option<String>,
+        /// File path for detecting extension in file mode
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "FilePath")]
         pub file_path: Option<String>,
+        /// Mode to render (comment, gfm, markdown, file)
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Mode")]
         pub mode: Option<String>,
+        /// Text markup to render
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Text")]
         pub text: Option<String>,
+        /// Is it a wiki page ?
+        ///
+        ///
+        ///
+        /// in: body
+        ///
         #[serde(rename = "Wiki")]
         pub wiki: Option<bool>,
     }
@@ -8707,8 +8997,12 @@ pub mod structs {
         pub pull_requests: Option<bool>,
         pub releases: Option<bool>,
         pub repo_name: String,
+        /// Name of User or Organisation who will own Repo after migration
+        ///
         pub repo_owner: Option<String>,
         pub service: Option<String>,
+        /// deprecated (only for backwards compatibility)
+        ///
         pub uid: Option<u64>,
         pub wiki: Option<bool>,
     }
@@ -8873,6 +9167,8 @@ pub mod structs {
         pub location: Option<String>,
         pub name: Option<String>,
         pub repo_admin_change_team_access: Option<bool>,
+        /// deprecated
+        ///
         pub username: Option<String>,
         pub visibility: Option<String>,
         pub website: Option<String>,
@@ -8940,6 +9236,8 @@ pub mod structs {
         pub added: Option<Vec<String>>,
         pub author: Option<PayloadUser>,
         pub committer: Option<PayloadUser>,
+        /// sha1 hash of the commit
+        ///
         pub id: Option<String>,
         pub message: Option<String>,
         pub modified: Option<Vec<String>>,
@@ -8967,6 +9265,8 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct PayloadUser {
         pub email: Option<String>,
+        /// Full name of the commit author
+        ///
         pub name: Option<String>,
         pub username: Option<String>,
     }
@@ -9175,6 +9475,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RenameUserOption {
+        /// New username for this user. This name cannot be in use yet by any other user.
+        ///
         pub new_username: String,
     }
 
@@ -9202,6 +9504,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct RepoTopicOptions {
+        /// list of topic names
+        ///
         pub topics: Option<Vec<String>>,
     }
 
@@ -9316,6 +9620,8 @@ pub mod structs {
     pub struct Secret {
         #[serde(with = "time::serde::rfc3339::option")]
         pub created_at: Option<time::OffsetDateTime>,
+        /// the secret's name
+        ///
         pub name: Option<String>,
     }
 
@@ -9415,8 +9721,12 @@ pub mod structs {
         pub pull_request_url: Option<url::Url>,
         pub ref_action: Option<String>,
         pub ref_comment: Option<Comment>,
+        /// commit SHA where issue/PR was referenced
+        ///
         pub ref_commit_sha: Option<String>,
         pub ref_issue: Option<Issue>,
+        /// whether the assignees were removed or added
+        ///
         pub removed_assignee: Option<bool>,
         pub resolve_doer: Option<User>,
         pub review_id: Option<u64>,
@@ -9456,8 +9766,14 @@ pub mod structs {
         pub created: Option<time::OffsetDateTime>,
         pub id: Option<u64>,
         pub issue: Option<Issue>,
+        /// deprecated (only for backwards compatibility)
+        ///
         pub issue_id: Option<u64>,
+        /// Time in seconds
+        ///
         pub time: Option<u64>,
+        /// deprecated (only for backwards compatibility)
+        ///
         pub user_id: Option<u64>,
         pub user_name: Option<String>,
     }
@@ -9467,6 +9783,8 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct TransferRepoOption {
         pub new_owner: String,
+        /// ID of the team or teams to add to the repository. Teams can only be added to organization-owned repositories.
+        ///
         pub team_ids: Option<Vec<u64>>,
     }
 
@@ -9477,14 +9795,28 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UpdateFileOptions {
         pub author: Option<Identity>,
+        /// branch (optional) to base this file from. if not given, the default branch is used
+        ///
         pub branch: Option<String>,
         pub committer: Option<Identity>,
+        /// content must be base64 encoded
+        ///
         pub content: String,
         pub dates: Option<CommitDateOptions>,
+        /// from_path (optional) is the path of the original file which will be moved/renamed to the path in the URL
+        ///
         pub from_path: Option<String>,
+        /// message (optional) for the commit of this file. if not supplied, a default message will be used
+        ///
         pub message: Option<String>,
+        /// new_branch (optional) will make a new branch from `branch` before creating the file
+        ///
         pub new_branch: Option<String>,
+        /// sha is the SHA for the file that already exists
+        ///
         pub sha: String,
+        /// Add a Signed-off-by trailer by the committer at the end of the commit log message.
+        ///
         pub signoff: Option<bool>,
     }
 
@@ -9492,6 +9824,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UpdateRepoAvatarOption {
+        /// image must be base64 encoded
+        ///
         pub image: Option<String>,
     }
 
@@ -9499,6 +9833,8 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct UpdateUserAvatarOption {
+        /// image must be base64 encoded
+        ///
         pub image: Option<String>,
     }
 
@@ -9506,28 +9842,58 @@ pub mod structs {
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct User {
+        /// Is user active
+        ///
         pub active: Option<bool>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
+        /// URL to the user's avatar
+        ///
         pub avatar_url: Option<url::Url>,
         #[serde(with = "time::serde::rfc3339::option")]
         pub created: Option<time::OffsetDateTime>,
+        /// the user's description
+        ///
         pub description: Option<String>,
         pub email: Option<String>,
+        /// user counts
+        ///
         pub followers_count: Option<u64>,
         pub following_count: Option<u64>,
+        /// the user's full name
+        ///
         pub full_name: Option<String>,
+        /// the user's id
+        ///
         pub id: Option<u64>,
+        /// Is the user an administrator
+        ///
         pub is_admin: Option<bool>,
+        /// User locale
+        ///
         pub language: Option<String>,
         #[serde(with = "time::serde::rfc3339::option")]
         pub last_login: Option<time::OffsetDateTime>,
+        /// the user's location
+        ///
         pub location: Option<String>,
+        /// the user's username
+        ///
         pub login: Option<String>,
+        /// the user's authentication sign-in name.
+        ///
         pub login_name: Option<String>,
+        /// Is user login prohibited
+        ///
         pub prohibit_login: Option<bool>,
+        /// Is user restricted
+        ///
         pub restricted: Option<bool>,
         pub starred_repos_count: Option<u64>,
+        /// User visibility level option: public, limited, private
+        ///
         pub visibility: Option<String>,
+        /// the user's website
+        ///
         pub website: Option<String>,
     }
 
@@ -9547,6 +9913,8 @@ pub mod structs {
         pub diff_view_style: Option<String>,
         pub full_name: Option<String>,
         pub hide_activity: Option<bool>,
+        /// Privacy
+        ///
         pub hide_email: Option<bool>,
         pub language: Option<String>,
         pub location: Option<String>,
@@ -9562,6 +9930,8 @@ pub mod structs {
         pub diff_view_style: Option<String>,
         pub full_name: Option<String>,
         pub hide_activity: Option<bool>,
+        /// Privacy
+        ///
         pub hide_email: Option<bool>,
         pub language: Option<String>,
         pub location: Option<String>,
@@ -9607,6 +9977,8 @@ pub mod structs {
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     pub struct WikiPage {
         pub commit_count: Option<u64>,
+        /// Page content, base64 encoded
+        ///
         pub content_base64: Option<String>,
         pub footer: Option<String>,
         #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -9866,7 +10238,11 @@ pub mod structs {
     }
 
     pub struct AdminCronListQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -9884,7 +10260,11 @@ pub mod structs {
     }
 
     pub struct AdminGetAllEmailsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -9902,8 +10282,14 @@ pub mod structs {
     }
 
     pub struct AdminSearchEmailsQuery {
+        /// keyword
+        ///
         pub q: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -9924,7 +10310,11 @@ pub mod structs {
     }
 
     pub struct AdminListHooksQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -9942,7 +10332,11 @@ pub mod structs {
     }
 
     pub struct AdminGetAllOrgsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -9960,8 +10354,14 @@ pub mod structs {
     }
 
     pub struct AdminUnadoptedListQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
+        /// pattern of repositories to search for
+        ///
         pub pattern: Option<String>,
     }
 
@@ -9982,9 +10382,17 @@ pub mod structs {
     }
 
     pub struct AdminSearchUsersQuery {
+        /// ID of the user's login source to search for
+        ///
         pub source_id: Option<u64>,
+        /// user's login name to search for
+        ///
         pub login_name: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10008,6 +10416,8 @@ pub mod structs {
     }
 
     pub struct AdminDeleteUserQuery {
+        /// purge the user from the system completely
+        ///
         pub purge: Option<bool>,
     }
 
@@ -10022,12 +10432,26 @@ pub mod structs {
     }
 
     pub struct NotifyGetListQuery {
+        /// If true, show notifications marked as read. Default value is false
+        ///
         pub all: Option<bool>,
+        /// Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread & pinned.
+        ///
         pub status_types: Option<Vec<String>>,
+        /// filter notifications by subject type
+        ///
         pub subject_type: Option<Vec<String>>,
+        /// Only show notifications updated after the given time. This is a timestamp in RFC 3339 format
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// Only show notifications updated before the given time. This is a timestamp in RFC 3339 format
+        ///
         pub before: Option<time::OffsetDateTime>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10084,9 +10508,17 @@ pub mod structs {
     }
 
     pub struct NotifyReadListQuery {
+        /// Describes the last point that notifications were checked. Anything updated since this time will not be updated.
+        ///
         pub last_read_at: Option<time::OffsetDateTime>,
+        /// If true, mark all notifications on this repo. Default value is false
+        ///
         pub all: Option<String>,
+        /// Mark notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread.
+        ///
         pub status_types: Option<Vec<String>>,
+        /// Status to mark notifications as, Defaults to read.
+        ///
         pub to_status: Option<String>,
     }
 
@@ -10122,6 +10554,8 @@ pub mod structs {
     }
 
     pub struct NotifyReadThreadQuery {
+        /// Status to mark notifications as
+        ///
         pub to_status: Option<String>,
     }
 
@@ -10136,7 +10570,11 @@ pub mod structs {
     }
 
     pub struct OrgGetAllQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10154,7 +10592,11 @@ pub mod structs {
     }
 
     pub struct OrgListActionsSecretsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10172,8 +10614,14 @@ pub mod structs {
     }
 
     pub struct OrgListActivityFeedsQuery {
+        /// the date of the activities to be found
+        ///
         pub date: Option<time::Date>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10200,7 +10648,11 @@ pub mod structs {
     }
 
     pub struct OrgListHooksQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10218,7 +10670,11 @@ pub mod structs {
     }
 
     pub struct OrgListLabelsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10236,7 +10692,11 @@ pub mod structs {
     }
 
     pub struct OrgListBlockedUsersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10254,7 +10714,11 @@ pub mod structs {
     }
 
     pub struct OrgListMembersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10272,7 +10736,11 @@ pub mod structs {
     }
 
     pub struct OrgListPublicMembersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10290,7 +10758,11 @@ pub mod structs {
     }
 
     pub struct OrgListReposQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10308,7 +10780,11 @@ pub mod structs {
     }
 
     pub struct OrgListTeamsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10326,9 +10802,17 @@ pub mod structs {
     }
 
     pub struct TeamSearchQuery {
+        /// keywords to search
+        ///
         pub q: Option<String>,
+        /// include search within team description (defaults to true)
+        ///
         pub include_desc: Option<bool>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10352,9 +10836,17 @@ pub mod structs {
     }
 
     pub struct ListPackagesQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
+        /// package type filter
+        ///
         pub r#type: Option<String>,
+        /// name filter
+        ///
         pub q: Option<String>,
     }
 
@@ -10378,22 +10870,56 @@ pub mod structs {
     }
 
     pub struct IssueSearchIssuesQuery {
+        /// whether issue is open or closed
+        ///
         pub state: Option<String>,
+        /// comma separated list of labels. Fetch only issues that have any of this labels. Non existent labels are discarded
+        ///
         pub labels: Option<String>,
+        /// comma separated list of milestone names. Fetch only issues that have any of this milestones. Non existent are discarded
+        ///
         pub milestones: Option<String>,
+        /// search string
+        ///
         pub q: Option<String>,
+        /// repository to prioritize in the results
+        ///
         pub priority_repo_id: Option<u64>,
+        /// filter by type (issues / pulls) if set
+        ///
         pub r#type: Option<String>,
+        /// Only show notifications updated after the given time. This is a timestamp in RFC 3339 format
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// Only show notifications updated before the given time. This is a timestamp in RFC 3339 format
+        ///
         pub before: Option<time::OffsetDateTime>,
+        /// filter (issues / pulls) assigned to you, default is false
+        ///
         pub assigned: Option<bool>,
+        /// filter (issues / pulls) created by you, default is false
+        ///
         pub created: Option<bool>,
+        /// filter (issues / pulls) mentioning you, default is false
+        ///
         pub mentioned: Option<bool>,
+        /// filter pulls requesting your review, default is false
+        ///
         pub review_requested: Option<bool>,
+        /// filter pulls reviewed by you, default is false
+        ///
         pub reviewed: Option<bool>,
+        /// filter by owner
+        ///
         pub owner: Option<String>,
+        /// filter by team (requires organization owner parameter to be provided)
+        ///
         pub team: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10468,22 +10994,56 @@ pub mod structs {
     }
 
     pub struct RepoSearchQuery {
+        /// keyword
+        ///
         pub q: Option<String>,
+        /// Limit search to repositories with keyword as topic
+        ///
         pub topic: Option<bool>,
+        /// include search of keyword within repository description
+        ///
         pub include_desc: Option<bool>,
+        /// search only for repos that the user with the given id owns or contributes to
+        ///
         pub uid: Option<u64>,
+        /// repo owner to prioritize in the results
+        ///
         pub priority_owner_id: Option<u64>,
+        /// search only for repos that belong to the given team id
+        ///
         pub team_id: Option<u64>,
+        /// search only for repos that the user with the given id has starred
+        ///
         pub starred_by: Option<u64>,
+        /// include private repositories this user has access to (defaults to true)
+        ///
         pub private: Option<bool>,
+        /// show only pubic, private or all repositories (defaults to all)
+        ///
         pub is_private: Option<bool>,
+        /// include template repositories this user has access to (defaults to true)
+        ///
         pub template: Option<bool>,
+        /// show only archived, non-archived or all repositories (defaults to all)
+        ///
         pub archived: Option<bool>,
+        /// type of repository to search for. Supported values are "fork", "source", "mirror" and "collaborative"
+        ///
         pub mode: Option<String>,
+        /// if `uid` is given, search only for repos that the user owns
+        ///
         pub exclusive: Option<bool>,
+        /// sort repos by attribute. Supported values are "alpha", "created", "updated", "size", and "id". Default is "alpha"
+        ///
         pub sort: Option<String>,
+        /// sort order, either "asc" (ascending) or "desc" (descending). Default is "asc", ignored if "sort" is not specified.
+        ///
         pub order: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10546,8 +11106,14 @@ pub mod structs {
     }
 
     pub struct RepoListActivityFeedsQuery {
+        /// the date of the activities to be found
+        ///
         pub date: Option<time::Date>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10574,7 +11140,11 @@ pub mod structs {
     }
 
     pub struct RepoListBranchesQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10592,7 +11162,11 @@ pub mod structs {
     }
 
     pub struct RepoListCollaboratorsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10610,13 +11184,29 @@ pub mod structs {
     }
 
     pub struct RepoGetAllCommitsQuery {
+        /// SHA or branch to start listing commits from (usually 'master')
+        ///
         pub sha: Option<String>,
+        /// filepath of a file/dir
+        ///
         pub path: Option<String>,
+        /// include diff stats for every commit (disable for speedup, default 'true')
+        ///
         pub stat: Option<bool>,
+        /// include verification for every commit (disable for speedup, default 'true')
+        ///
         pub verification: Option<bool>,
+        /// include a list of affected files for every commit (disable for speedup, default 'true')
+        ///
         pub files: Option<bool>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results (ignored if used with 'path')
+        ///
         pub limit: Option<u32>,
+        /// commits that match the given specifier will not be listed.
+        ///
         pub not: Option<String>,
     }
 
@@ -10652,7 +11242,11 @@ pub mod structs {
     }
 
     pub struct RepoGetCombinedStatusByRefQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10670,9 +11264,17 @@ pub mod structs {
     }
 
     pub struct RepoListStatusesByRefQuery {
+        /// type of sort
+        ///
         pub sort: Option<String>,
+        /// type of state
+        ///
         pub state: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10696,6 +11298,8 @@ pub mod structs {
     }
 
     pub struct RepoGetContentsListQuery {
+        /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
+        ///
         pub r#ref: Option<String>,
     }
 
@@ -10710,6 +11314,8 @@ pub mod structs {
     }
 
     pub struct RepoGetContentsQuery {
+        /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
+        ///
         pub r#ref: Option<String>,
     }
 
@@ -10724,6 +11330,8 @@ pub mod structs {
     }
 
     pub struct RepoGetEditorConfigQuery {
+        /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
+        ///
         pub r#ref: Option<String>,
     }
 
@@ -10738,7 +11346,11 @@ pub mod structs {
     }
 
     pub struct ListForksQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10756,8 +11368,14 @@ pub mod structs {
     }
 
     pub struct RepoGetSingleCommitQuery {
+        /// include diff stats for every commit (disable for speedup, default 'true')
+        ///
         pub stat: Option<bool>,
+        /// include verification for every commit (disable for speedup, default 'true')
+        ///
         pub verification: Option<bool>,
+        /// include a list of affected files for every commit (disable for speedup, default 'true')
+        ///
         pub files: Option<bool>,
     }
 
@@ -10778,7 +11396,11 @@ pub mod structs {
     }
 
     pub struct RepoGetNoteQuery {
+        /// include verification for every commit (disable for speedup, default 'true')
+        ///
         pub verification: Option<bool>,
+        /// include a list of affected files for every commit (disable for speedup, default 'true')
+        ///
         pub files: Option<bool>,
     }
 
@@ -10796,8 +11418,14 @@ pub mod structs {
     }
 
     pub struct GetTreeQuery {
+        /// show all directories and files
+        ///
         pub recursive: Option<bool>,
+        /// page number; the 'truncated' field in the response will be true if there are still more items after this page, false if the last page
+        ///
         pub page: Option<u32>,
+        /// number of items per page
+        ///
         pub per_page: Option<u32>,
     }
 
@@ -10818,7 +11446,11 @@ pub mod structs {
     }
 
     pub struct RepoListHooksQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10836,6 +11468,8 @@ pub mod structs {
     }
 
     pub struct RepoTestHookQuery {
+        /// The name of the commit/branch/tag, indicates which commit will be loaded to the webhook payload.
+        ///
         pub r#ref: Option<String>,
     }
 
@@ -10850,17 +11484,41 @@ pub mod structs {
     }
 
     pub struct IssueListIssuesQuery {
+        /// whether issue is open or closed
+        ///
         pub state: Option<String>,
+        /// comma separated list of labels. Fetch only issues that have any of this labels. Non existent labels are discarded
+        ///
         pub labels: Option<String>,
+        /// search string
+        ///
         pub q: Option<String>,
+        /// filter by type (issues / pulls) if set
+        ///
         pub r#type: Option<String>,
+        /// comma separated list of milestone names or ids. It uses names and fall back to ids. Fetch only issues that have any of this milestones. Non existent milestones are discarded
+        ///
         pub milestones: Option<String>,
+        /// Only show items updated after the given time. This is a timestamp in RFC 3339 format
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// Only show items updated before the given time. This is a timestamp in RFC 3339 format
+        ///
         pub before: Option<time::OffsetDateTime>,
+        /// Only show items which were created by the the given user
+        ///
         pub created_by: Option<String>,
+        /// Only show items for which the given user is assigned
+        ///
         pub assigned_by: Option<String>,
+        /// Only show items in which the given user was mentioned
+        ///
         pub mentioned_by: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10920,9 +11578,17 @@ pub mod structs {
     }
 
     pub struct IssueGetRepoCommentsQuery {
+        /// if provided, only comments updated since the provided time are returned.
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// if provided, only comments updated before the provided time are returned.
+        ///
         pub before: Option<time::OffsetDateTime>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -10958,7 +11624,11 @@ pub mod structs {
     }
 
     pub struct IssueCreateIssueCommentAttachmentQuery {
+        /// name of the attachment
+        ///
         pub name: Option<String>,
+        /// time of the attachment's creation. This is a timestamp in RFC 3339 format
+        ///
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -10982,7 +11652,11 @@ pub mod structs {
     }
 
     pub struct IssueCreateIssueAttachmentQuery {
+        /// name of the attachment
+        ///
         pub name: Option<String>,
+        /// time of the attachment's creation. This is a timestamp in RFC 3339 format
+        ///
         pub updated_at: Option<time::OffsetDateTime>,
     }
 
@@ -11006,7 +11680,11 @@ pub mod structs {
     }
 
     pub struct IssueListBlocksQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11024,7 +11702,11 @@ pub mod structs {
     }
 
     pub struct IssueGetCommentsQuery {
+        /// if provided, only comments updated since the specified time are returned.
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// if provided, only comments updated before the provided time are returned.
+        ///
         pub before: Option<time::OffsetDateTime>,
     }
 
@@ -11054,7 +11736,11 @@ pub mod structs {
     }
 
     pub struct IssueListIssueDependenciesQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11072,7 +11758,11 @@ pub mod structs {
     }
 
     pub struct IssueGetIssueReactionsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11090,7 +11780,11 @@ pub mod structs {
     }
 
     pub struct IssueSubscriptionsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11108,9 +11802,17 @@ pub mod structs {
     }
 
     pub struct IssueGetCommentsAndTimelineQuery {
+        /// if provided, only comments updated since the specified time are returned.
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
+        /// if provided, only comments updated before the provided time are returned.
+        ///
         pub before: Option<time::OffsetDateTime>,
     }
 
@@ -11146,10 +11848,20 @@ pub mod structs {
     }
 
     pub struct IssueTrackedTimesQuery {
+        /// optional filter by user (available for issue managers)
+        ///
         pub user: Option<String>,
+        /// Only show times updated after the given time. This is a timestamp in RFC 3339 format
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// Only show times updated before the given time. This is a timestamp in RFC 3339 format
+        ///
         pub before: Option<time::OffsetDateTime>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11188,9 +11900,17 @@ pub mod structs {
     }
 
     pub struct RepoListKeysQuery {
+        /// the key_id to search for
+        ///
         pub key_id: Option<u32>,
+        /// fingerprint of the key
+        ///
         pub fingerprint: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11214,7 +11934,11 @@ pub mod structs {
     }
 
     pub struct IssueListLabelsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11232,6 +11956,8 @@ pub mod structs {
     }
 
     pub struct RepoGetRawFileOrLfsQuery {
+        /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
+        ///
         pub r#ref: Option<String>,
     }
 
@@ -11246,9 +11972,17 @@ pub mod structs {
     }
 
     pub struct IssueGetMilestonesListQuery {
+        /// Milestone state, Recognized values are open, closed and all. Defaults to "open"
+        ///
         pub state: Option<String>,
+        /// filter by milestone name
+        ///
         pub name: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11272,12 +12006,26 @@ pub mod structs {
     }
 
     pub struct NotifyGetRepoListQuery {
+        /// If true, show notifications marked as read. Default value is false
+        ///
         pub all: Option<bool>,
+        /// Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread & pinned
+        ///
         pub status_types: Option<Vec<String>>,
+        /// filter notifications by subject type
+        ///
         pub subject_type: Option<Vec<String>>,
+        /// Only show notifications updated after the given time. This is a timestamp in RFC 3339 format
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// Only show notifications updated before the given time. This is a timestamp in RFC 3339 format
+        ///
         pub before: Option<time::OffsetDateTime>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11334,9 +12082,17 @@ pub mod structs {
     }
 
     pub struct NotifyReadRepoListQuery {
+        /// If true, mark all notifications on this repo. Default value is false
+        ///
         pub all: Option<String>,
+        /// Mark notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread.
+        ///
         pub status_types: Option<Vec<String>>,
+        /// Status to mark notifications as. Defaults to read.
+        ///
         pub to_status: Option<String>,
+        /// Describes the last point that notifications were checked. Anything updated since this time will not be updated.
+        ///
         pub last_read_at: Option<time::OffsetDateTime>,
     }
 
@@ -11372,11 +12128,23 @@ pub mod structs {
     }
 
     pub struct RepoListPullRequestsQuery {
+        /// State of pull request: open or closed (optional)
+        ///
         pub state: Option<String>,
+        /// Type of sort
+        ///
         pub sort: Option<String>,
+        /// ID of the milestone
+        ///
         pub milestone: Option<u64>,
+        /// Label IDs
+        ///
         pub labels: Option<Vec<u64>>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11412,6 +12180,8 @@ pub mod structs {
     }
 
     pub struct RepoDownloadPullDiffOrPatchQuery {
+        /// whether to include binary file changes. if true, the diff is applicable with `git apply`
+        ///
         pub binary: Option<bool>,
     }
 
@@ -11426,9 +12196,17 @@ pub mod structs {
     }
 
     pub struct RepoGetPullRequestCommitsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
+        /// include verification for every commit (disable for speedup, default 'true')
+        ///
         pub verification: Option<bool>,
+        /// include a list of affected files for every commit (disable for speedup, default 'true')
+        ///
         pub files: Option<bool>,
     }
 
@@ -11452,9 +12230,17 @@ pub mod structs {
     }
 
     pub struct RepoGetPullRequestFilesQuery {
+        /// skip to given file
+        ///
         pub skip_to: Option<String>,
+        /// whitespace behavior
+        ///
         pub whitespace: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11478,7 +12264,11 @@ pub mod structs {
     }
 
     pub struct RepoListPullReviewsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11496,6 +12286,8 @@ pub mod structs {
     }
 
     pub struct RepoUpdatePullRequestQuery {
+        /// how to update pull request
+        ///
         pub style: Option<String>,
     }
 
@@ -11510,7 +12302,11 @@ pub mod structs {
     }
 
     pub struct RepoListPushMirrorsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11528,6 +12324,8 @@ pub mod structs {
     }
 
     pub struct RepoGetRawFileQuery {
+        /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
+        ///
         pub r#ref: Option<String>,
     }
 
@@ -11542,10 +12340,20 @@ pub mod structs {
     }
 
     pub struct RepoListReleasesQuery {
+        /// filter (exclude / include) drafts, if you dont have repo write access none will show
+        ///
         pub draft: Option<bool>,
+        /// filter (exclude / include) pre-releases
+        ///
         pub pre_release: Option<bool>,
+        /// page size of results, deprecated - use limit
+        ///
         pub per_page: Option<u32>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11572,6 +12380,8 @@ pub mod structs {
     }
 
     pub struct RepoCreateReleaseAttachmentQuery {
+        /// name of the attachment
+        ///
         pub name: Option<String>,
     }
 
@@ -11586,7 +12396,11 @@ pub mod structs {
     }
 
     pub struct RepoListStargazersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11604,9 +12418,17 @@ pub mod structs {
     }
 
     pub struct RepoListStatusesQuery {
+        /// type of sort
+        ///
         pub sort: Option<String>,
+        /// type of state
+        ///
         pub state: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11630,7 +12452,11 @@ pub mod structs {
     }
 
     pub struct RepoListSubscribersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11648,7 +12474,11 @@ pub mod structs {
     }
 
     pub struct RepoListTagsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results, default maximum page size is 50
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11666,10 +12496,20 @@ pub mod structs {
     }
 
     pub struct RepoTrackedTimesQuery {
+        /// optional filter by user (available for issue managers)
+        ///
         pub user: Option<String>,
+        /// Only show times updated after the given time. This is a timestamp in RFC 3339 format
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// Only show times updated before the given time. This is a timestamp in RFC 3339 format
+        ///
         pub before: Option<time::OffsetDateTime>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11708,7 +12548,11 @@ pub mod structs {
     }
 
     pub struct RepoListTopicsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11726,7 +12570,11 @@ pub mod structs {
     }
 
     pub struct RepoGetWikiPagesQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11744,6 +12592,8 @@ pub mod structs {
     }
 
     pub struct RepoGetWikiPageRevisionsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
     }
 
@@ -11758,8 +12608,14 @@ pub mod structs {
     }
 
     pub struct OrgListTeamActivityFeedsQuery {
+        /// the date of the activities to be found
+        ///
         pub date: Option<time::Date>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11786,7 +12642,11 @@ pub mod structs {
     }
 
     pub struct OrgListTeamMembersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11804,7 +12664,11 @@ pub mod structs {
     }
 
     pub struct OrgListTeamReposQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11822,8 +12686,14 @@ pub mod structs {
     }
 
     pub struct TopicSearchQuery {
+        /// keywords to search
+        ///
         pub q: String,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11843,7 +12713,11 @@ pub mod structs {
     }
 
     pub struct UserGetOAuth2ApplicationsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11861,7 +12735,11 @@ pub mod structs {
     }
 
     pub struct UserCurrentListFollowersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11879,7 +12757,11 @@ pub mod structs {
     }
 
     pub struct UserCurrentListFollowingQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11897,7 +12779,11 @@ pub mod structs {
     }
 
     pub struct UserCurrentListGpgKeysQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11915,7 +12801,11 @@ pub mod structs {
     }
 
     pub struct UserListHooksQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11933,8 +12823,14 @@ pub mod structs {
     }
 
     pub struct UserCurrentListKeysQuery {
+        /// fingerprint of the key
+        ///
         pub fingerprint: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11955,7 +12851,11 @@ pub mod structs {
     }
 
     pub struct UserListBlockedUsersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11973,7 +12873,11 @@ pub mod structs {
     }
 
     pub struct OrgListCurrentUserOrgsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -11991,7 +12895,11 @@ pub mod structs {
     }
 
     pub struct UserCurrentListReposQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12009,7 +12917,11 @@ pub mod structs {
     }
 
     pub struct UserCurrentListStarredQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12027,7 +12939,11 @@ pub mod structs {
     }
 
     pub struct UserGetStopWatchesQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12045,7 +12961,11 @@ pub mod structs {
     }
 
     pub struct UserCurrentListSubscriptionsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12063,7 +12983,11 @@ pub mod structs {
     }
 
     pub struct UserListTeamsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12081,9 +13005,17 @@ pub mod structs {
     }
 
     pub struct UserCurrentTrackedTimesQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
+        /// Only show times updated after the given time. This is a timestamp in RFC 3339 format
+        ///
         pub since: Option<time::OffsetDateTime>,
+        /// Only show times updated before the given time. This is a timestamp in RFC 3339 format
+        ///
         pub before: Option<time::OffsetDateTime>,
     }
 
@@ -12119,9 +13051,17 @@ pub mod structs {
     }
 
     pub struct UserSearchQuery {
+        /// keyword
+        ///
         pub q: Option<String>,
+        /// ID of the user to search for
+        ///
         pub uid: Option<u64>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12145,9 +13085,17 @@ pub mod structs {
     }
 
     pub struct UserListActivityFeedsQuery {
+        /// if true, only show actions performed by the requested user
+        ///
         pub only_performed_by: Option<bool>,
+        /// the date of the activities to be found
+        ///
         pub date: Option<time::Date>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12177,7 +13125,11 @@ pub mod structs {
     }
 
     pub struct UserListFollowersQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12195,7 +13147,11 @@ pub mod structs {
     }
 
     pub struct UserListFollowingQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12213,7 +13169,11 @@ pub mod structs {
     }
 
     pub struct UserListGpgKeysQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12231,8 +13191,14 @@ pub mod structs {
     }
 
     pub struct UserListKeysQuery {
+        /// fingerprint of the key
+        ///
         pub fingerprint: Option<String>,
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12253,7 +13219,11 @@ pub mod structs {
     }
 
     pub struct OrgListUserOrgsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12271,7 +13241,11 @@ pub mod structs {
     }
 
     pub struct UserListReposQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12289,7 +13263,11 @@ pub mod structs {
     }
 
     pub struct UserListStarredQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12307,7 +13285,11 @@ pub mod structs {
     }
 
     pub struct UserListSubscriptionsQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
@@ -12325,7 +13307,11 @@ pub mod structs {
     }
 
     pub struct UserGetTokensQuery {
+        /// page number of results to return (1-based)
+        ///
         pub page: Option<u32>,
+        /// page size of results
+        ///
         pub limit: Option<u32>,
     }
 
