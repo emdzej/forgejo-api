@@ -23,13 +23,28 @@ pub enum ForgejoError {
     #[error("API key should be ascii")]
     KeyNotAscii,
     #[error("the response from forgejo was not properly structured")]
-    BadStructure(#[source] serde_json::Error, String),
+    BadStructure(#[from] StructureError),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
     #[error("{} {}{}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1.as_ref().map(|s| format!(": {s}")).unwrap_or_default())]
     ApiError(StatusCode, Option<String>),
     #[error("the provided authorization was too long to accept")]
     AuthTooLong,
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum StructureError {
+    #[error("{contents}")]
+    Serde {
+        e: serde_json::Error,
+        contents: String,
+    },
+    #[error("failed to find header `{0}`")]
+    HeaderMissing(&'static str),
+    #[error("header was not ascii")]
+    HeaderNotAscii,
+    #[error("failed to parse header")]
+    HeaderParseFailed,
 }
 
 /// Method of authentication to connect to the Forgejo host with.

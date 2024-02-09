@@ -168,6 +168,16 @@ async fn repo() {
         .await
         .is_ok();
     assert!(!is_merged, "pr should not yet be merged");
+    let pr_files_query = RepoGetPullRequestFilesQuery {
+        skip_to: None,
+        whitespace: None,
+        page: None,
+        limit: None,
+    };
+    let (_, _) = api
+        .repo_get_pull_request_files("TestingAdmin", "test", pr.number.unwrap(), pr_files_query)
+        .await
+        .unwrap();
     let merge_opt = MergePullRequestOption {
         r#do: "merge".into(),
         merge_commit_id: None,

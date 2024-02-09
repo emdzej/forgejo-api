@@ -1818,13 +1818,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoGetAllCommitsQuery,
-    ) -> Result<(reqwest::header::HeaderMap, Vec<Commit>), ForgejoError> {
+    ) -> Result<(CommitListHeaders, Vec<Commit>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/commits?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().clone(), response.json().await?)),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4471,7 +4471,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoGetPullRequestCommitsQuery,
-    ) -> Result<(reqwest::header::HeaderMap, Vec<Commit>), ForgejoError> {
+    ) -> Result<(CommitListHeaders, Vec<Commit>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/pulls/{index}/commits?{query}"
@@ -4479,7 +4479,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().clone(), response.json().await?)),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4495,13 +4495,13 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoGetPullRequestFilesQuery,
-    ) -> Result<(reqwest::header::HeaderMap, Vec<ChangedFile>), ForgejoError> {
+    ) -> Result<(ChangedFileListHeaders, Vec<ChangedFile>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/pulls/{index}/files?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().clone(), response.json().await?)),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7217,6 +7217,7 @@ impl crate::Forgejo {
 }
 use structs::*;
 pub mod structs {
+    use crate::StructureError;
     /// APIError is an api error with a message
     ///
     #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -9621,6 +9622,241 @@ pub mod structs {
         #[serde(deserialize_with = "crate::none_if_blank_url")]
         pub sub_url: Option<url::Url>,
         pub title: Option<String>,
+    }
+
+    pub struct ChangedFileListHeaders {
+        pub x_has_more: Option<bool>,
+        pub x_page: Option<u64>,
+        pub x_page_count: Option<u64>,
+        pub x_per_page: Option<u64>,
+        pub x_total: Option<u64>,
+    }
+
+    impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
+        type Error = StructureError;
+
+        fn try_from(value: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+            let x_has_more = value
+                .get("X-HasMore")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<bool>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_page = value
+                .get("X-Page")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_page_count = value
+                .get("X-PageCount")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_per_page = value
+                .get("X-PerPage")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_total = value
+                .get("X-Total")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            Ok(Self {
+                x_has_more,
+                x_page,
+                x_page_count,
+                x_per_page,
+                x_total,
+            })
+        }
+    }
+
+    pub struct CommitListHeaders {
+        pub x_has_more: Option<bool>,
+        pub x_page: Option<u64>,
+        pub x_page_count: Option<u64>,
+        pub x_per_page: Option<u64>,
+        pub x_total: Option<u64>,
+    }
+
+    impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
+        type Error = StructureError;
+
+        fn try_from(value: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+            let x_has_more = value
+                .get("X-HasMore")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<bool>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_page = value
+                .get("X-Page")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_page_count = value
+                .get("X-PageCount")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_per_page = value
+                .get("X-PerPage")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            let x_total = value
+                .get("X-Total")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    s.parse::<u64>()
+                        .map_err(|_| StructureError::HeaderParseFailed)
+                })
+                .transpose()?;
+            Ok(Self {
+                x_has_more,
+                x_page,
+                x_page_count,
+                x_per_page,
+                x_total,
+            })
+        }
+    }
+
+    pub struct ErrorHeaders {
+        pub message: Option<String>,
+        pub url: Option<String>,
+    }
+
+    impl TryFrom<&reqwest::header::HeaderMap> for ErrorHeaders {
+        type Error = StructureError;
+
+        fn try_from(value: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+            let message = value
+                .get("message")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.to_string())
+                })
+                .transpose()?;
+            let url = value
+                .get("url")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.to_string())
+                })
+                .transpose()?;
+            Ok(Self { message, url })
+        }
+    }
+
+    pub struct ForbiddenHeaders {
+        pub message: Option<String>,
+        pub url: Option<String>,
+    }
+
+    impl TryFrom<&reqwest::header::HeaderMap> for ForbiddenHeaders {
+        type Error = StructureError;
+
+        fn try_from(value: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+            let message = value
+                .get("message")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.to_string())
+                })
+                .transpose()?;
+            let url = value
+                .get("url")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.to_string())
+                })
+                .transpose()?;
+            Ok(Self { message, url })
+        }
+    }
+
+    pub struct InvalidTopicsErrorHeaders {
+        pub invalid_topics: Option<Vec<String>>,
+        pub message: Option<String>,
+    }
+
+    impl TryFrom<&reqwest::header::HeaderMap> for InvalidTopicsErrorHeaders {
+        type Error = StructureError;
+
+        fn try_from(value: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+            let invalid_topics = value
+                .get("invalidTopics")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.split(",").map(|s| s.to_string()).collect::<Vec<_>>())
+                })
+                .transpose()?;
+            let message = value
+                .get("message")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.to_string())
+                })
+                .transpose()?;
+            Ok(Self {
+                invalid_topics,
+                message,
+            })
+        }
+    }
+
+    pub struct ValidationErrorHeaders {
+        pub message: Option<String>,
+        pub url: Option<String>,
+    }
+
+    impl TryFrom<&reqwest::header::HeaderMap> for ValidationErrorHeaders {
+        type Error = StructureError;
+
+        fn try_from(value: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+            let message = value
+                .get("message")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.to_string())
+                })
+                .transpose()?;
+            let url = value
+                .get("url")
+                .map(|s| -> Result<_, _> {
+                    let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                    Ok(s.to_string())
+                })
+                .transpose()?;
+            Ok(Self { message, url })
+        }
     }
 
     pub struct AdminCronListQuery {

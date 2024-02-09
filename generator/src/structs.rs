@@ -7,10 +7,19 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     let mut s = String::new();
     s.push_str("use structs::*;\n");
     s.push_str("pub mod structs {\n");
+    s.push_str("use crate::StructureError;");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
             let strukt = create_struct_for_definition(&spec, name, schema)?;
             s.push_str(&strukt);
+        }
+    }
+    if let Some(responses) = &spec.responses {
+        for (name, response) in responses {
+            if let Some(headers) = &response.headers {
+                let strukt = create_header_struct(name, headers)?;
+                s.push_str(&strukt);
+            }
         }
     }
     for (_, item) in &spec.paths {
@@ -328,4 +337,120 @@ if !{name}.is_empty() {{
     )?;
 
     Ok(out)
+}
+
+fn create_header_struct(
+    name: &str,
+    headers: &std::collections::BTreeMap<String, Header>,
+) -> eyre::Result<String> {
+    let ty_name = format!("{name}Headers").to_pascal_case();
+    let mut fields = String::new();
+    let mut imp = String::new();
+    let mut imp_ret = String::new();
+    for (header_name, header) in headers {
+        let ty = header_type(header)?;
+        let field_name = crate::sanitize_ident(header_name);
+        fields.push_str("pub ");
+        fields.push_str(&field_name);
+        fields.push_str(": Option<");
+        fields.push_str(&ty);
+        fields.push_str(">,\n");
+
+        write!(
+            &mut imp,
+            "
+            let {field_name} = map.get(\"{header_name}\").map(|s| -> Result<_, _> {{
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+        "
+        )
+        .unwrap();
+        match &header._type {
+            ParameterType::String => imp.push_str("Ok(s.to_string())"),
+            ParameterType::Number => match header.format.as_deref() {
+                Some("float") => {
+                    imp.push_str("s.parse::<f32>().map_err(|_| StructureError::HeaderParseFailed)")
+                }
+                Some("double") | _ => {
+                    imp.push_str("s.parse::<f64>()).map_err(|_| StructureError::HeaderParseFailed)")
+                }
+            },
+            ParameterType::Integer => match header.format.as_deref() {
+                Some("int64") => {
+                    imp.push_str("s.parse::<u64>().map_err(|_| StructureError::HeaderParseFailed)")
+                }
+                Some("int32") | _ => {
+                    imp.push_str("s.parse::<u32>().map_err(|_| StructureError::HeaderParseFailed)")
+                }
+            },
+            ParameterType::Boolean => {
+                imp.push_str("s.parse::<bool>().map_err(|_| StructureError::HeaderParseFailed)")
+            }
+            ParameterType::Array => {
+                let sep = match header.collection_format {
+                    Some(CollectionFormat::Csv) | None => ",",
+                    Some(CollectionFormat::Ssv) => " ",
+                    Some(CollectionFormat::Tsv) => "\\t",
+                    Some(CollectionFormat::Pipes) => "|",
+                    Some(CollectionFormat::Multi) => {
+                        eyre::bail!("multi format not supported in headers")
+                    }
+                };
+                let items = header
+                    .items
+                    .as_ref()
+                    .ok_or_else(|| eyre::eyre!("items property must be set for arrays"))?;
+                if items._type == ParameterType::String {
+                    imp.push_str("Ok(");
+                }
+                imp.push_str("s.split(\"");
+                imp.push_str(sep);
+                imp.push_str("\").map(|s| ");
+                imp.push_str(match items._type {
+                    ParameterType::String => "s.to_string()).collect::<Vec<_>>())",
+                    ParameterType::Number => match items.format.as_deref() {
+                        Some("float") => "s.parse::<f32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        Some("double") | _ => "s.parse::<f64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                    },
+                    ParameterType::Integer => match items.format.as_deref() {
+                        Some("int64") => "s.parse::<u64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        Some("int32") | _ => "s.parse::<u32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                    },
+                    ParameterType::Boolean => "s.parse::<bool>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                    ParameterType::Array => eyre::bail!("nested arrays not supported in headers"),
+                    ParameterType::File => eyre::bail!("files not supported in headers"),
+                });
+            }
+            ParameterType::File => eyre::bail!("files not supported in headers"),
+        }
+        imp.push_str("}).transpose()?;");
+
+        imp_ret.push_str(&field_name);
+        imp_ret.push_str(", ");
+    }
+
+    Ok(format!(
+        "
+pub struct {ty_name} {{
+    {fields}
+}}
+
+impl TryFrom<&reqwest::header::HeaderMap> for {ty_name} {{
+    type Error = StructureError;
+
+    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {{
+        {imp}
+        Ok(Self {{ {imp_ret} }})
+    }}
+}}
+"
+    ))
+}
+
+pub fn header_type(header: &Header) -> eyre::Result<String> {
+    crate::methods::param_type_inner(
+        &header._type,
+        header.format.as_deref(),
+        header.items.as_ref(),
+        true,
+    )
 }

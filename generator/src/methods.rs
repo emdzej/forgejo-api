@@ -1,5 +1,5 @@
 use crate::openapi::*;
-use eyre::WrapErr;
+use eyre::{OptionExt, WrapErr};
 use heck::ToSnakeCase;
 use std::fmt::Write;
 
@@ -185,7 +185,7 @@ pub fn param_type(param: &NonBodyParameter, owned: bool) -> eyre::Result<String>
     )
 }
 
-fn param_type_inner(
+pub fn param_type_inner(
     ty: &ParameterType,
     format: Option<&str>,
     items: Option<&Items>,
@@ -270,7 +270,17 @@ fn response_ref_type_name(
     let response = schema.deref(spec)?;
     let mut ty = ResponseType::default();
     if response.headers.is_some() {
-        ty.headers = Some("reqwest::header::HeaderMap".into());
+        let parent_name = match &schema {
+            MaybeRef::Ref { _ref } => _ref
+                .rsplit_once("/")
+                .ok_or_else(|| eyre::eyre!("invalid ref"))?
+                .1
+                .to_string(),
+            MaybeRef::Value { value: _ } => {
+                eyre::bail!("could not find parent name for header type")
+            }
+        };
+        ty.headers = Some(format!("{}Headers", parent_name));
     }
     if let Some(schema) = &response.schema {
         ty.body = Some(crate::schema_ref_type_name(spec, schema)?);
@@ -422,9 +432,9 @@ fn create_method_response(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
                     .map(|s| s.starts_with("Option<"))
                     .unwrap()
                 {
-                    Some("Some(response.headers().clone())")
+                    Some("Some(response.headers().try_into()?)")
                 } else {
-                    Some("response.headers().clone()")
+                    Some("response.headers().try_into()?")
                 }
             }
             None => {
