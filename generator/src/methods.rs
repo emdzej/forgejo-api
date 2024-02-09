@@ -41,55 +41,55 @@ fn create_methods_for_path(spec: &OpenApiV2, path: &str, item: &PathItem) -> eyr
 }
 
 fn create_get_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
-    let doc = method_docs(op)?;
+    let doc = method_docs(spec, op)?;
     let sig = fn_signature_from_op(spec, op)?;
     let body = create_method_body(spec, "get", path, op)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
 fn create_put_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
-    let doc = method_docs(op)?;
+    let doc = method_docs(spec, op)?;
     let sig = fn_signature_from_op(spec, op)?;
     let body = create_method_body(spec, "put", path, op)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
 fn create_post_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
-    let doc = method_docs(op)?;
+    let doc = method_docs(spec, op)?;
     let sig = fn_signature_from_op(spec, op)?;
     let body = create_method_body(spec, "post", path, op)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
 fn create_delete_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
-    let doc = method_docs(op)?;
+    let doc = method_docs(spec, op)?;
     let sig = fn_signature_from_op(spec, op)?;
     let body = create_method_body(spec, "delete", path, op)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
 fn create_options_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
-    let doc = method_docs(op)?;
+    let doc = method_docs(spec, op)?;
     let sig = fn_signature_from_op(spec, op)?;
     let body = create_method_body(spec, "options", path, op)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
 fn create_head_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
-    let doc = method_docs(op)?;
+    let doc = method_docs(spec, op)?;
     let sig = fn_signature_from_op(spec, op)?;
     let body = create_method_body(spec, "head", path, op)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
 fn create_patch_method(spec: &OpenApiV2, path: &str, op: &Operation) -> eyre::Result<String> {
-    let doc = method_docs(op)?;
+    let doc = method_docs(spec, op)?;
     let sig = fn_signature_from_op(spec, op)?;
     let body = create_method_body(spec, "patch", path, op)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
-fn method_docs(op: &Operation) -> eyre::Result<String> {
+fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let mut out = String::new();
     let mut prev = false;
     if let Some(summary) = &op.summary {
@@ -101,10 +101,7 @@ fn method_docs(op: &Operation) -> eyre::Result<String> {
             out.push_str("///\n");
         }
         for param in params {
-            let param = match &param {
-                MaybeRef::Value { value } => value,
-                MaybeRef::Ref { _ref } => eyre::bail!("pipis"),
-            };
+            let param = param.deref(spec)?;
             match param._in {
                 ParameterIn::Path { param: _ }
                 | ParameterIn::Body { schema: _ }
