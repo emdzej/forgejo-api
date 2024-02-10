@@ -607,7 +607,11 @@ pub fn create_response_structs(spec: &OpenApiV2, item: &PathItem) -> eyre::Resul
 
 pub fn create_response_structs_for_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let mut out = String::new();
-    let op_name = op.operation_id.as_deref().ok_or_else(|| eyre::eyre!("no operation id"))?.to_pascal_case();
+    let op_name = op
+        .operation_id
+        .as_deref()
+        .ok_or_else(|| eyre::eyre!("no operation id"))?
+        .to_pascal_case();
     for (_, response) in &op.responses.http_codes {
         let response = response.deref(spec)?;
         let tys = create_response_struct(spec, &op_name, response)?;
@@ -616,7 +620,11 @@ pub fn create_response_structs_for_op(spec: &OpenApiV2, op: &Operation) -> eyre:
     Ok(out)
 }
 
-pub fn create_response_struct(spec: &OpenApiV2, name: &str, res: &Response) -> eyre::Result<String> {
+pub fn create_response_struct(
+    spec: &OpenApiV2,
+    name: &str,
+    res: &Response,
+) -> eyre::Result<String> {
     let mut types = Vec::new();
     if let Some(MaybeRef::Value { value }) = &res.schema {
         crate::schema_subtypes(spec, name, "Response", value, &mut types)?;

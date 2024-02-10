@@ -4,7 +4,7 @@ mod methods;
 mod openapi;
 mod structs;
 
-use heck::{ToSnakeCase, ToPascalCase};
+use heck::{ToPascalCase, ToSnakeCase};
 use openapi::*;
 
 fn main() -> eyre::Result<()> {
