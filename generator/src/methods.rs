@@ -345,10 +345,7 @@ fn create_method_request(
     let mut body_method = String::new();
     if let Some(params) = &op.parameters {
         for param in params {
-            let param = match &param {
-                MaybeRef::Value { value } => value,
-                MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
-            };
+            let param = param.deref(spec)?;
             let name = crate::sanitize_ident(&param.name);
             match &param._in {
                 ParameterIn::Path { param: _ } => (/* do nothing */),

@@ -23,7 +23,7 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
         }
     }
     for (_, item) in &spec.paths {
-        let strukt = create_query_structs_for_path(item)?;
+        let strukt = create_query_structs_for_path(spec, item)?;
         s.push_str(&strukt);
     }
     s.push_str("\n}");
@@ -223,28 +223,28 @@ fn create_struct_docs_str(description: Option<&str>) -> eyre::Result<String> {
     Ok(doc)
 }
 
-pub fn create_query_structs_for_path(item: &PathItem) -> eyre::Result<String> {
+pub fn create_query_structs_for_path(spec: &OpenApiV2, item: &PathItem) -> eyre::Result<String> {
     let mut s = String::new();
     if let Some(op) = &item.get {
-        s.push_str(&create_query_struct(op).wrap_err("GET")?);
+        s.push_str(&create_query_struct(spec, op).wrap_err("GET")?);
     }
     if let Some(op) = &item.put {
-        s.push_str(&create_query_struct(op).wrap_err("PUT")?);
+        s.push_str(&create_query_struct(spec, op).wrap_err("PUT")?);
     }
     if let Some(op) = &item.post {
-        s.push_str(&create_query_struct(op).wrap_err("POST")?);
+        s.push_str(&create_query_struct(spec, op).wrap_err("POST")?);
     }
     if let Some(op) = &item.delete {
-        s.push_str(&create_query_struct(op).wrap_err("DELETE")?);
+        s.push_str(&create_query_struct(spec, op).wrap_err("DELETE")?);
     }
     if let Some(op) = &item.options {
-        s.push_str(&create_query_struct(op).wrap_err("OPTIONS")?);
+        s.push_str(&create_query_struct(spec, op).wrap_err("OPTIONS")?);
     }
     if let Some(op) = &item.head {
-        s.push_str(&create_query_struct(op).wrap_err("HEAD")?);
+        s.push_str(&create_query_struct(spec, op).wrap_err("HEAD")?);
     }
     if let Some(op) = &item.patch {
-        s.push_str(&create_query_struct(op).wrap_err("PATCH")?);
+        s.push_str(&create_query_struct(spec, op).wrap_err("PATCH")?);
     }
     Ok(s)
 }
@@ -260,7 +260,7 @@ pub fn query_struct_name(op: &Operation) -> eyre::Result<String> {
     Ok(ty)
 }
 
-fn create_query_struct(op: &Operation) -> eyre::Result<String> {
+fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let params = match &op.parameters {
         Some(params) => params,
         None => return Ok(String::new()),
@@ -271,10 +271,7 @@ fn create_query_struct(op: &Operation) -> eyre::Result<String> {
     let mut fields = String::new();
     let mut imp = String::new();
     for param in params {
-        let param = match &param {
-            MaybeRef::Value { value } => value,
-            MaybeRef::Ref { _ref } => eyre::bail!("todo: add deref parameters"),
-        };
+        let param = param.deref(spec)?;
         if let ParameterIn::Query { param: query_param } = &param._in {
             let field_name = crate::sanitize_ident(&param.name);
             let ty = match &query_param {
