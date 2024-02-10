@@ -20,10 +20,16 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
                 let strukt = create_header_struct(name, headers)?;
                 s.push_str(&strukt);
             }
+
+            let tys = create_response_struct(spec, name, response)?;
+            s.push_str(&tys);
         }
     }
     for (_, item) in &spec.paths {
         let strukt = create_query_structs_for_path(spec, item)?;
+        s.push_str(&strukt);
+
+        let strukt = create_response_structs(spec, item)?;
         s.push_str(&strukt);
     }
     s.push_str("\n}");
@@ -56,57 +62,8 @@ pub fn create_struct_for_definition(
             let field_name = crate::sanitize_ident(prop_name);
             let mut field_ty = prop_ty.clone();
             if let MaybeRef::Value { value } = &prop_schema {
-                fn schema_subtypes(
-                    spec: &OpenApiV2,
-                    ty_name: &str,
-                    name: &str,
-                    schema: &Schema,
-                    subtypes: &mut Vec<String>,
-                    ty: &mut String,
-                ) -> eyre::Result<bool> {
-                    let b = match schema {
-                        Schema {
-                            _type: Some(SchemaType::One(Primitive::Object)),
-                            ..
-                        } => {
-                            let name = format!("{ty_name}{}", name.to_pascal_case());
-                            let subtype = create_struct_for_definition(spec, &name, schema)?;
-                            subtypes.push(subtype);
-                            *ty = name;
-                            true
-                        }
-                        Schema {
-                            _type: Some(SchemaType::One(Primitive::String)),
-                            _enum: Some(_enum),
-                            ..
-                        } => {
-                            let name = format!("{ty_name}{}", name.to_pascal_case());
-                            let subtype = create_enum(&name, schema.description.as_deref(), _enum)?;
-                            subtypes.push(subtype);
-                            *ty = name;
-                            true
-                        }
-                        Schema {
-                            _type: Some(SchemaType::One(Primitive::Array)),
-                            items: Some(items),
-                            ..
-                        } => {
-                            if let MaybeRef::Value { value } = &**items {
-                                if schema_subtypes(spec, ty_name, name, value, subtypes, ty)? {
-                                    *ty = format!("Vec<{ty}>");
-                                    true
-                                } else {
-                                    false
-                                }
-                            } else {
-                                false
-                            }
-                        }
-                        _ => false,
-                    };
-                    Ok(b)
-                }
-                schema_subtypes(spec, name, prop_name, value, &mut subtypes, &mut field_ty)?;
+                crate::schema_subtype_name(spec, name, prop_name, value, &mut field_ty)?;
+                crate::schema_subtypes(spec, name, prop_name, value, &mut subtypes)?;
             }
             if field_name.ends_with("url") && field_name != "ssh_url" && field_ty == "String" {
                 field_ty = "url::Url".into()
@@ -163,7 +120,7 @@ pub fn create_struct_for_definition(
     Ok(out)
 }
 
-fn create_enum(
+pub fn create_enum(
     name: &str,
     desc: Option<&str>,
     _enum: &[serde_json::Value],
@@ -620,4 +577,53 @@ pub fn header_type(header: &Header) -> eyre::Result<String> {
         header.items.as_ref(),
         true,
     )
+}
+
+pub fn create_response_structs(spec: &OpenApiV2, item: &PathItem) -> eyre::Result<String> {
+    let mut s = String::new();
+    if let Some(op) = &item.get {
+        s.push_str(&create_response_structs_for_op(spec, op).wrap_err("GET")?);
+    }
+    if let Some(op) = &item.put {
+        s.push_str(&create_response_structs_for_op(spec, op).wrap_err("PUT")?);
+    }
+    if let Some(op) = &item.post {
+        s.push_str(&create_response_structs_for_op(spec, op).wrap_err("POST")?);
+    }
+    if let Some(op) = &item.delete {
+        s.push_str(&create_response_structs_for_op(spec, op).wrap_err("DELETE")?);
+    }
+    if let Some(op) = &item.options {
+        s.push_str(&create_response_structs_for_op(spec, op).wrap_err("OPTIONS")?);
+    }
+    if let Some(op) = &item.head {
+        s.push_str(&create_response_structs_for_op(spec, op).wrap_err("HEAD")?);
+    }
+    if let Some(op) = &item.patch {
+        s.push_str(&create_response_structs_for_op(spec, op).wrap_err("PATCH")?);
+    }
+    Ok(s)
+}
+
+pub fn create_response_structs_for_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
+    let mut out = String::new();
+    let op_name = op.operation_id.as_deref().ok_or_else(|| eyre::eyre!("no operation id"))?.to_pascal_case();
+    for (_, response) in &op.responses.http_codes {
+        let response = response.deref(spec)?;
+        let tys = create_response_struct(spec, &op_name, response)?;
+        out.push_str(&tys);
+    }
+    Ok(out)
+}
+
+pub fn create_response_struct(spec: &OpenApiV2, name: &str, res: &Response) -> eyre::Result<String> {
+    let mut types = Vec::new();
+    if let Some(MaybeRef::Value { value }) = &res.schema {
+        crate::schema_subtypes(spec, name, "Response", value, &mut types)?;
+    }
+    let mut out = String::new();
+    for ty in types {
+        out.push_str(&ty);
+    }
+    Ok(out)
 }

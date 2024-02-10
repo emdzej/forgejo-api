@@ -1162,7 +1162,7 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: TeamSearchQuery,
-    ) -> Result<serde_json::Map<String, serde_json::Value>, ForgejoError> {
+    ) -> Result<TeamSearchResponse, ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/teams/search?{query}"))
             .build()?;
@@ -4117,7 +4117,7 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<serde_json::Map<String, serde_json::Value>, ForgejoError> {
+    ) -> Result<RepoGetLanguagesResponse, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/languages"))
             .build()?;
@@ -6918,7 +6918,7 @@ impl crate::Forgejo {
     pub async fn user_search(
         &self,
         query: UserSearchQuery,
-    ) -> Result<serde_json::Map<String, serde_json::Value>, ForgejoError> {
+    ) -> Result<UserSearchResponse, ForgejoError> {
         let request = self.get(&format!("users/search?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -10392,6 +10392,11 @@ pub mod structs {
             })
         }
     }
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct LanguageStatisticsResponse {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, u64>,
+    }
 
     pub struct ErrorHeaders {
         pub message: Option<String>,
@@ -11118,6 +11123,11 @@ pub mod structs {
 
             Ok(())
         }
+    }
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct TeamSearchResponse {
+        pub data: Option<Vec<Team>>,
+        pub ok: Option<bool>,
     }
 
     pub struct ListPackagesQuery {
@@ -12362,6 +12372,11 @@ pub mod structs {
 
             Ok(())
         }
+    }
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct RepoGetLanguagesResponse {
+        #[serde(flatten)]
+        pub additional: std::collections::BTreeMap<String, u64>,
     }
 
     pub struct RepoGetRawFileOrLfsQuery {
@@ -13621,6 +13636,11 @@ pub mod structs {
 
             Ok(())
         }
+    }
+    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+    pub struct UserSearchResponse {
+        pub data: Option<Vec<User>>,
+        pub ok: Option<bool>,
     }
 
     pub struct UserListActivityFeedsQuery {

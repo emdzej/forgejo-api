@@ -1,6 +1,6 @@
 use crate::{openapi::*, schema_ref_type_name};
 use eyre::{OptionExt, WrapErr};
-use heck::ToSnakeCase;
+use heck::{ToPascalCase, ToSnakeCase};
 use std::fmt::Write;
 
 pub fn create_methods(spec: &OpenApiV2) -> eyre::Result<String> {
@@ -270,13 +270,13 @@ fn fn_return_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<ResponseT
 
 fn response_ref_type_name(
     spec: &OpenApiV2,
-    schema: &MaybeRef<Response>,
+    response_ref: &MaybeRef<Response>,
     op: &Operation,
 ) -> eyre::Result<ResponseType> {
-    let response = schema.deref(spec)?;
+    let response = response_ref.deref(spec)?;
     let mut ty = ResponseType::default();
     if response.headers.is_some() {
-        let parent_name = match &schema {
+        let parent_name = match &response_ref {
             MaybeRef::Ref { _ref } => _ref
                 .rsplit_once("/")
                 .ok_or_else(|| eyre::eyre!("invalid ref"))?
@@ -303,7 +303,12 @@ fn response_ref_type_name(
         (true, false, false) => {
             if let Some(schema) = &response.schema {
                 ty.kind = Some(ResponseKind::Json);
-                ty.body = Some(crate::schema_ref_type_name(spec, schema)?);
+                let mut body = crate::schema_ref_type_name(spec, schema)?;
+                if let MaybeRef::Value { value } = schema {
+                    let op_name = op.operation_id.as_deref().ok_or_else(|| eyre::eyre!("no operation id"))?.to_pascal_case();
+                    crate::schema_subtype_name(spec, &op_name, "Response", value, &mut body)?;
+                }
+                ty.body = Some(body);
             };
         }
         (false, _, true) => {

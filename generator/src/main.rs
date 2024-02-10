@@ -4,7 +4,7 @@ mod methods;
 mod openapi;
 mod structs;
 
-use heck::ToSnakeCase;
+use heck::{ToSnakeCase, ToPascalCase};
 use openapi::*;
 
 fn main() -> eyre::Result<()> {
@@ -51,6 +51,9 @@ fn schema_ref_type_name(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Re
     } else {
         None
     };
+    if name == Some("LanguageStatistics") {
+        eprintln!("lang stats found");
+    }
     let schema = schema.deref(spec)?;
     schema_type_name(spec, name, schema)
 }
@@ -183,4 +186,86 @@ fn sanitize_ident(s: &str) -> String {
         s.insert_str(0, "r#");
     }
     s
+}
+
+fn schema_subtype_name(
+    spec: &OpenApiV2,
+    parent_name: &str,
+    name: &str,
+    schema: &Schema,
+    ty: &mut String,
+) -> eyre::Result<bool> {
+    let b = match schema {
+        Schema {
+            _type: Some(SchemaType::One(Primitive::Object)),
+            ..
+        } => {
+            *ty = format!("{parent_name}{}", name.to_pascal_case());
+            true
+        }
+        Schema {
+            _type: Some(SchemaType::One(Primitive::String)),
+            _enum: Some(_enum),
+            ..
+        } => {
+            *ty = format!("{parent_name}{}", name.to_pascal_case());
+            true
+        }
+        Schema {
+            _type: Some(SchemaType::One(Primitive::Array)),
+            items: Some(items),
+            ..
+        } => {
+            if let MaybeRef::Value { value } = &**items {
+                if schema_subtype_name(spec, parent_name, name, value, ty)? {
+                    *ty = format!("Vec<{ty}>");
+                    true
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        }
+        _ => false,
+    };
+    Ok(b)
+}
+fn schema_subtypes(
+    spec: &OpenApiV2,
+    parent_name: &str,
+    name: &str,
+    schema: &Schema,
+    subtypes: &mut Vec<String>,
+) -> eyre::Result<()> {
+    let b = match schema {
+        Schema {
+            _type: Some(SchemaType::One(Primitive::Object)),
+            ..
+        } => {
+            let name = format!("{parent_name}{}", name.to_pascal_case());
+            let subtype = structs::create_struct_for_definition(spec, &name, schema)?;
+            subtypes.push(subtype);
+        }
+        Schema {
+            _type: Some(SchemaType::One(Primitive::String)),
+            _enum: Some(_enum),
+            ..
+        } => {
+            let name = format!("{parent_name}{}", name.to_pascal_case());
+            let subtype = structs::create_enum(&name, schema.description.as_deref(), _enum)?;
+            subtypes.push(subtype);
+        }
+        Schema {
+            _type: Some(SchemaType::One(Primitive::Array)),
+            items: Some(items),
+            ..
+        } => {
+            if let MaybeRef::Value { value } = &**items {
+                schema_subtypes(spec, parent_name, name, value, subtypes)?;
+            }
+        }
+        _ => (),
+    };
+    Ok(())
 }
