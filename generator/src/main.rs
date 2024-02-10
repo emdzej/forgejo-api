@@ -238,7 +238,7 @@ fn schema_subtypes(
     schema: &Schema,
     subtypes: &mut Vec<String>,
 ) -> eyre::Result<()> {
-    let b = match schema {
+    match schema {
         Schema {
             _type: Some(SchemaType::One(Primitive::Object)),
             ..

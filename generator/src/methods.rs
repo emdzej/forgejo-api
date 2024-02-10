@@ -1,5 +1,5 @@
 use crate::{openapi::*, schema_ref_type_name};
-use eyre::{OptionExt, WrapErr};
+use eyre::WrapErr;
 use heck::{ToPascalCase, ToSnakeCase};
 use std::fmt::Write;
 
