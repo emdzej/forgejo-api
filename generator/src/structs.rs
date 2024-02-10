@@ -5,8 +5,6 @@ use std::fmt::Write;
 
 pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     let mut s = String::new();
-    s.push_str("use structs::*;\n");
-    s.push_str("pub mod structs {\n");
     s.push_str("use crate::StructureError;");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
@@ -32,7 +30,6 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
         let strukt = create_response_structs(spec, item)?;
         s.push_str(&strukt);
     }
-    s.push_str("\n}");
     Ok(s)
 }
 

@@ -1,4 +1,4 @@
-use std::ffi::{OsStr, OsString};
+use std::{ffi::OsString, path::PathBuf};
 
 mod methods;
 mod openapi;
@@ -9,10 +9,12 @@ use openapi::*;
 
 fn main() -> eyre::Result<()> {
     let spec = get_spec()?;
-    let mut s = String::new();
-    s.push_str(&methods::create_methods(&spec)?);
-    s.push_str(&structs::create_structs(&spec)?);
-    save_generated(&s)?;
+    let files = [
+        ("mod.rs".into(), "pub mod structs;\npub mod methods;".into()),
+        ("methods.rs".into(), methods::create_methods(&spec)?),
+        ("structs.rs".into(), structs::create_structs(&spec)?),
+    ];
+    save_generated(&files)?;
     Ok(())
 }
 
@@ -25,15 +27,21 @@ fn get_spec() -> eyre::Result<OpenApiV2> {
     Ok(spec)
 }
 
-fn save_generated(contents: &str) -> eyre::Result<()> {
-    let path = std::env::var_os("FORGEJO_API_GENERATED_PATH")
-        .unwrap_or_else(|| OsString::from("./src/generated.rs"));
-    std::fs::write(path.as_os_str(), contents)?;
-    run_rustfmt_on(path.as_os_str());
+fn save_generated(files: &[(String, String)]) -> eyre::Result<()> {
+    let root_path = PathBuf::from(
+        std::env::var_os("FORGEJO_API_GENERATED_PATH")
+            .unwrap_or_else(|| OsString::from("./src/generated/")),
+    );
+    for (path, file) in files {
+        let path = root_path.join(path);
+        std::fs::create_dir_all(path.parent().ok_or_else(|| eyre::eyre!("no parent dir"))?)?;
+        std::fs::write(&path, file)?;
+        run_rustfmt_on(&path);
+    }
     Ok(())
 }
 
-fn run_rustfmt_on(path: &OsStr) {
+fn run_rustfmt_on(path: &std::path::Path) {
     let mut rustfmt = std::process::Command::new("rustfmt");
 
     rustfmt.arg(path);
