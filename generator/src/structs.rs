@@ -90,6 +90,9 @@ pub fn create_struct_for_definition(
                         fields.push_str(line);
                         fields.push_str("\n/// \n");
                     }
+                    if fields.ends_with("/// \n") {
+                        fields.truncate(fields.len() - 5);
+                    }
                 }
             }
             if &field_name != prop_name {
@@ -172,6 +175,9 @@ fn create_struct_docs_str(description: Option<&str>) -> eyre::Result<String> {
                 out.push_str("/// ");
                 out.push_str(line);
                 out.push_str("\n/// \n");
+            }
+            if out.ends_with("/// \n") {
+                out.truncate(out.len() - 5);
             }
             out
         }
@@ -264,6 +270,9 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                     fields.push_str("/// ");
                     fields.push_str(line);
                     fields.push_str("\n/// \n");
+                }
+                if fields.ends_with("/// \n") {
+                    fields.truncate(fields.len() - 5);
                 }
             }
             fields.push_str("pub ");

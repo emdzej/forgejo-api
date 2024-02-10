@@ -124,6 +124,9 @@ fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
             }
         }
     }
+    if out.ends_with("/// \n") {
+        out.truncate(out.len() - 5);
+    }
     Ok(out)
 }
 
