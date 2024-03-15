@@ -168,8 +168,11 @@ pub struct ChangeFileOperation {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum ChangeFileOperationOperation {
+    #[serde(rename = "create")]
     Create,
+    #[serde(rename = "update")]
     Update,
+    #[serde(rename = "delete")]
     Delete,
 }
 /// ChangeFilesOptions options for creating, updating or deleting multiple files
@@ -464,16 +467,27 @@ pub struct CreateHookOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateHookOptionType {
+    #[serde(rename = "forgejo")]
     Forgejo,
+    #[serde(rename = "dingtalk")]
     Dingtalk,
+    #[serde(rename = "discord")]
     Discord,
+    #[serde(rename = "gitea")]
     Gitea,
+    #[serde(rename = "gogs")]
     Gogs,
+    #[serde(rename = "msteams")]
     Msteams,
+    #[serde(rename = "slack")]
     Slack,
+    #[serde(rename = "telegram")]
     Telegram,
+    #[serde(rename = "feishu")]
     Feishu,
+    #[serde(rename = "wechatwork")]
     Wechatwork,
+    #[serde(rename = "packagist")]
     Packagist,
 }
 /// CreateHookOptionConfig has all config options in it
@@ -545,7 +559,9 @@ pub struct CreateMilestoneOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateMilestoneOptionState {
+    #[serde(rename = "open")]
     Open,
+    #[serde(rename = "closed")]
     Closed,
 }
 /// CreateOAuth2ApplicationOptions holds options to create an oauth2 application
@@ -581,8 +597,11 @@ pub struct CreateOrgOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateOrgOptionVisibility {
+    #[serde(rename = "public")]
     Public,
+    #[serde(rename = "limited")]
     Limited,
+    #[serde(rename = "private")]
     Private,
 }
 /// CreatePullRequestOption options when creating a pull request
@@ -672,9 +691,13 @@ pub struct CreateRepoOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateRepoOptionTrustModel {
+    #[serde(rename = "default")]
     Default,
+    #[serde(rename = "collaborator")]
     Collaborator,
+    #[serde(rename = "committer")]
     Committer,
+    #[serde(rename = "collaboratorcommitter")]
     Collaboratorcommitter,
 }
 /// CreateStatusOption holds the information needed to create a new CommitStatus for a Commit
@@ -709,8 +732,11 @@ pub struct CreateTeamOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateTeamOptionPermission {
+    #[serde(rename = "read")]
     Read,
+    #[serde(rename = "write")]
     Write,
+    #[serde(rename = "admin")]
     Admin,
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -946,8 +972,11 @@ pub struct EditOrgOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum EditOrgOptionVisibility {
+    #[serde(rename = "public")]
     Public,
+    #[serde(rename = "limited")]
     Limited,
+    #[serde(rename = "private")]
     Private,
 }
 /// EditPullRequestOption options when modify pull request
@@ -1064,8 +1093,11 @@ pub struct EditTeamOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum EditTeamOptionPermission {
+    #[serde(rename = "read")]
     Read,
+    #[serde(rename = "write")]
     Write,
+    #[serde(rename = "admin")]
     Admin,
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1626,10 +1658,15 @@ pub struct MergePullRequestOption {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum MergePullRequestOptionDo {
+    #[serde(rename = "merge")]
     Merge,
+    #[serde(rename = "rebase")]
     Rebase,
+    #[serde(rename = "rebase-merge")]
     RebaseMerge,
+    #[serde(rename = "squash")]
     Squash,
+    #[serde(rename = "manually-merged")]
     ManuallyMerged,
 }
 /// MigrateRepoOptions options for migrating repository's
@@ -1663,13 +1700,21 @@ pub struct MigrateRepoOptions {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum MigrateRepoOptionsService {
+    #[serde(rename = "git")]
     Git,
+    #[serde(rename = "github")]
     Github,
+    #[serde(rename = "gitea")]
     Gitea,
+    #[serde(rename = "gitlab")]
     Gitlab,
+    #[serde(rename = "gogs")]
     Gogs,
+    #[serde(rename = "onedev")]
     Onedev,
+    #[serde(rename = "gitbucket")]
     Gitbucket,
+    #[serde(rename = "codebase")]
     Codebase,
 }
 /// Milestone milestone is a collection of issues on one repository
@@ -2307,10 +2352,15 @@ pub struct Team {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum TeamPermission {
+    #[serde(rename = "none")]
     None,
+    #[serde(rename = "read")]
     Read,
+    #[serde(rename = "write")]
     Write,
+    #[serde(rename = "admin")]
     Admin,
+    #[serde(rename = "owner")]
     Owner,
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -3068,9 +3118,13 @@ impl std::fmt::Display for NotifyGetListQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum NotifyGetListQuerySubjectType {
+    #[serde(rename = "issue")]
     Issue,
+    #[serde(rename = "pull")]
     Pull,
+    #[serde(rename = "commit")]
     Commit,
+    #[serde(rename = "repository")]
     Repository,
 }
 
@@ -3419,26 +3473,47 @@ impl std::fmt::Display for ListPackagesQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum ListPackagesQueryType {
+    #[serde(rename = "alpine")]
     Alpine,
+    #[serde(rename = "cargo")]
     Cargo,
+    #[serde(rename = "chef")]
     Chef,
+    #[serde(rename = "composer")]
     Composer,
+    #[serde(rename = "conan")]
     Conan,
+    #[serde(rename = "conda")]
     Conda,
+    #[serde(rename = "container")]
     Container,
+    #[serde(rename = "cran")]
     Cran,
+    #[serde(rename = "debian")]
     Debian,
+    #[serde(rename = "generic")]
     Generic,
+    #[serde(rename = "go")]
     Go,
+    #[serde(rename = "helm")]
     Helm,
+    #[serde(rename = "maven")]
     Maven,
+    #[serde(rename = "npm")]
     Npm,
+    #[serde(rename = "nuget")]
     Nuget,
+    #[serde(rename = "pub")]
     Pub,
+    #[serde(rename = "pypi")]
     Pypi,
+    #[serde(rename = "rpm")]
     Rpm,
+    #[serde(rename = "rubygems")]
     Rubygems,
+    #[serde(rename = "swift")]
     Swift,
+    #[serde(rename = "vagrant")]
     Vagrant,
 }
 
@@ -3844,10 +3919,15 @@ impl std::fmt::Display for RepoListStatusesByRefQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesByRefQuerySort {
+    #[serde(rename = "oldest")]
     Oldest,
+    #[serde(rename = "recentupdate")]
     Recentupdate,
+    #[serde(rename = "leastupdate")]
     Leastupdate,
+    #[serde(rename = "leastindex")]
     Leastindex,
+    #[serde(rename = "highestindex")]
     Highestindex,
 }
 
@@ -3865,10 +3945,15 @@ impl RepoListStatusesByRefQuerySort {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesByRefQueryState {
+    #[serde(rename = "pending")]
     Pending,
+    #[serde(rename = "success")]
     Success,
+    #[serde(rename = "error")]
     Error,
+    #[serde(rename = "failure")]
     Failure,
+    #[serde(rename = "warning")]
     Warning,
 }
 
@@ -4137,8 +4222,11 @@ impl std::fmt::Display for IssueListIssuesQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum IssueListIssuesQueryState {
+    #[serde(rename = "closed")]
     Closed,
+    #[serde(rename = "open")]
     Open,
+    #[serde(rename = "all")]
     All,
 }
 
@@ -4154,7 +4242,9 @@ impl IssueListIssuesQueryState {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum IssueListIssuesQueryType {
+    #[serde(rename = "issues")]
     Issues,
+    #[serde(rename = "pulls")]
     Pulls,
 }
 
@@ -4632,9 +4722,13 @@ impl std::fmt::Display for NotifyGetRepoListQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum NotifyGetRepoListQuerySubjectType {
+    #[serde(rename = "issue")]
     Issue,
+    #[serde(rename = "pull")]
     Pull,
+    #[serde(rename = "commit")]
     Commit,
+    #[serde(rename = "repository")]
     Repository,
 }
 
@@ -4738,8 +4832,11 @@ impl std::fmt::Display for RepoListPullRequestsQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListPullRequestsQueryState {
+    #[serde(rename = "closed")]
     Closed,
+    #[serde(rename = "open")]
     Open,
+    #[serde(rename = "all")]
     All,
 }
 
@@ -4755,11 +4852,17 @@ impl RepoListPullRequestsQueryState {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListPullRequestsQuerySort {
+    #[serde(rename = "oldest")]
     Oldest,
+    #[serde(rename = "recentupdate")]
     Recentupdate,
+    #[serde(rename = "leastupdate")]
     Leastupdate,
+    #[serde(rename = "mostcomment")]
     Mostcomment,
+    #[serde(rename = "leastcomment")]
     Leastcomment,
+    #[serde(rename = "priority")]
     Priority,
 }
 
@@ -4852,9 +4955,13 @@ impl std::fmt::Display for RepoGetPullRequestFilesQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoGetPullRequestFilesQueryWhitespace {
+    #[serde(rename = "ignore-all")]
     IgnoreAll,
+    #[serde(rename = "ignore-change")]
     IgnoreChange,
+    #[serde(rename = "ignore-eol")]
     IgnoreEol,
+    #[serde(rename = "show-all")]
     ShowAll,
 }
 
@@ -4905,7 +5012,9 @@ impl std::fmt::Display for RepoUpdatePullRequestQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoUpdatePullRequestQueryStyle {
+    #[serde(rename = "merge")]
     Merge,
+    #[serde(rename = "rebase")]
     Rebase,
 }
 
@@ -5054,10 +5163,15 @@ impl std::fmt::Display for RepoListStatusesQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesQuerySort {
+    #[serde(rename = "oldest")]
     Oldest,
+    #[serde(rename = "recentupdate")]
     Recentupdate,
+    #[serde(rename = "leastupdate")]
     Leastupdate,
+    #[serde(rename = "leastindex")]
     Leastindex,
+    #[serde(rename = "highestindex")]
     Highestindex,
 }
 
@@ -5075,10 +5189,15 @@ impl RepoListStatusesQuerySort {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesQueryState {
+    #[serde(rename = "pending")]
     Pending,
+    #[serde(rename = "success")]
     Success,
+    #[serde(rename = "error")]
     Error,
+    #[serde(rename = "failure")]
     Failure,
+    #[serde(rename = "warning")]
     Warning,
 }
 

@@ -134,6 +134,9 @@ pub fn create_enum(
         match variant {
             serde_json::Value::String(s) => {
                 let variant_name = s.to_pascal_case();
+                variants.push_str("#[serde(rename = \"");
+                variants.push_str(s);
+                variants.push_str("\")]");
                 variants.push_str(&variant_name);
                 variants.push_str(",\n");
 
