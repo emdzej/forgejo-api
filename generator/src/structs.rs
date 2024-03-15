@@ -147,7 +147,7 @@ pub fn create_enum(
     let strukt = format!(
         "
 {docs}
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum {name} {{
     {variants}
 }}"

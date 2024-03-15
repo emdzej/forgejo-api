@@ -166,7 +166,7 @@ pub struct ChangeFileOperation {
 
 /// indicates what to do with the file
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum ChangeFileOperationOperation {
     Create,
     Update,
@@ -462,7 +462,7 @@ pub struct CreateHookOption {
     pub r#type: CreateHookOptionType,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateHookOptionType {
     Forgejo,
     Dingtalk,
@@ -543,7 +543,7 @@ pub struct CreateMilestoneOption {
     pub title: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateMilestoneOptionState {
     Open,
     Closed,
@@ -579,7 +579,7 @@ pub struct CreateOrgOption {
 
 /// possible values are `public` (default), `limited` or `private`
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateOrgOptionVisibility {
     Public,
     Limited,
@@ -670,7 +670,7 @@ pub struct CreateRepoOption {
 
 /// TrustModel of the repository
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateRepoOptionTrustModel {
     Default,
     Collaborator,
@@ -707,7 +707,7 @@ pub struct CreateTeamOption {
     pub units_map: Option<CreateTeamOptionUnitsMap>,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CreateTeamOptionPermission {
     Read,
     Write,
@@ -944,7 +944,7 @@ pub struct EditOrgOption {
 
 /// possible values are `public`, `limited` or `private`
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum EditOrgOptionVisibility {
     Public,
     Limited,
@@ -1062,7 +1062,7 @@ pub struct EditTeamOption {
     pub units_map: Option<EditTeamOptionUnitsMap>,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum EditTeamOptionPermission {
     Read,
     Write,
@@ -1624,7 +1624,7 @@ pub struct MergePullRequestOption {
     pub merge_when_checks_succeed: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum MergePullRequestOptionDo {
     Merge,
     Rebase,
@@ -1661,7 +1661,7 @@ pub struct MigrateRepoOptions {
     pub wiki: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum MigrateRepoOptionsService {
     Git,
     Github,
@@ -2305,7 +2305,7 @@ pub struct Team {
     pub units_map: Option<TeamUnitsMap>,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum TeamPermission {
     None,
     Read,
@@ -3066,7 +3066,7 @@ impl std::fmt::Display for NotifyGetListQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum NotifyGetListQuerySubjectType {
     Issue,
     Pull,
@@ -3417,7 +3417,7 @@ impl std::fmt::Display for ListPackagesQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum ListPackagesQueryType {
     Alpine,
     Cargo,
@@ -3842,7 +3842,7 @@ impl std::fmt::Display for RepoListStatusesByRefQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesByRefQuerySort {
     Oldest,
     Recentupdate,
@@ -3863,7 +3863,7 @@ impl RepoListStatusesByRefQuerySort {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesByRefQueryState {
     Pending,
     Success,
@@ -4135,7 +4135,7 @@ impl std::fmt::Display for IssueListIssuesQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum IssueListIssuesQueryState {
     Closed,
     Open,
@@ -4152,7 +4152,7 @@ impl IssueListIssuesQueryState {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum IssueListIssuesQueryType {
     Issues,
     Pulls,
@@ -4630,7 +4630,7 @@ impl std::fmt::Display for NotifyGetRepoListQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum NotifyGetRepoListQuerySubjectType {
     Issue,
     Pull,
@@ -4736,7 +4736,7 @@ impl std::fmt::Display for RepoListPullRequestsQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListPullRequestsQueryState {
     Closed,
     Open,
@@ -4753,7 +4753,7 @@ impl RepoListPullRequestsQueryState {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListPullRequestsQuerySort {
     Oldest,
     Recentupdate,
@@ -4850,7 +4850,7 @@ impl std::fmt::Display for RepoGetPullRequestFilesQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoGetPullRequestFilesQueryWhitespace {
     IgnoreAll,
     IgnoreChange,
@@ -4903,7 +4903,7 @@ impl std::fmt::Display for RepoUpdatePullRequestQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoUpdatePullRequestQueryStyle {
     Merge,
     Rebase,
@@ -5052,7 +5052,7 @@ impl std::fmt::Display for RepoListStatusesQuery {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesQuerySort {
     Oldest,
     Recentupdate,
@@ -5073,7 +5073,7 @@ impl RepoListStatusesQuerySort {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListStatusesQueryState {
     Pending,
     Success,
