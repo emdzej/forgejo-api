@@ -316,7 +316,7 @@ async fn admin() {
 
     let user_opt = CreateUserOption {
         created_at: None,
-        email: "user@noreply.example.org".into(),
+        email: "pipis@noreply.example.org".into(),
         full_name: None,
         login_name: None,
         must_change_password: None,
@@ -360,7 +360,7 @@ async fn admin() {
     assert!(
         users
             .iter()
-            .find(|u| u.email.as_ref().unwrap() == "user@noreply.example.org")
+            .find(|u| u.email.as_ref().unwrap() == "pipis@noreply.example.org")
             .is_some(),
         "could not find new user"
     );
