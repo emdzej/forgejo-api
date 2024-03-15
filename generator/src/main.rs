@@ -59,9 +59,6 @@ fn schema_ref_type_name(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Re
     } else {
         None
     };
-    if name == Some("LanguageStatistics") {
-        eprintln!("lang stats found");
-    }
     let schema = schema.deref(spec)?;
     schema_type_name(spec, name, schema)
 }
