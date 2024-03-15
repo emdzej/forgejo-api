@@ -261,7 +261,7 @@ fn schema_subtypes(
             ..
         } => {
             let name = format!("{parent_name}{}", name.to_pascal_case());
-            let subtype = structs::create_enum(&name, schema.description.as_deref(), _enum)?;
+            let subtype = structs::create_enum(&name, schema.description.as_deref(), _enum, false)?;
             subtypes.push(subtype);
         }
         Schema {

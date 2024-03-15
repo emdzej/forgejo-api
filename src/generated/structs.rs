@@ -172,16 +172,6 @@ pub enum ChangeFileOperationOperation {
     Update,
     Delete,
 }
-
-impl ChangeFileOperationOperation {
-    fn as_str(&self) -> &'static str {
-        match self {
-            ChangeFileOperationOperation::Create => "create",
-            ChangeFileOperationOperation::Update => "update",
-            ChangeFileOperationOperation::Delete => "delete",
-        }
-    }
-}
 /// ChangeFilesOptions options for creating, updating or deleting multiple files
 ///
 /// Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
@@ -486,24 +476,6 @@ pub enum CreateHookOptionType {
     Wechatwork,
     Packagist,
 }
-
-impl CreateHookOptionType {
-    fn as_str(&self) -> &'static str {
-        match self {
-            CreateHookOptionType::Forgejo => "forgejo",
-            CreateHookOptionType::Dingtalk => "dingtalk",
-            CreateHookOptionType::Discord => "discord",
-            CreateHookOptionType::Gitea => "gitea",
-            CreateHookOptionType::Gogs => "gogs",
-            CreateHookOptionType::Msteams => "msteams",
-            CreateHookOptionType::Slack => "slack",
-            CreateHookOptionType::Telegram => "telegram",
-            CreateHookOptionType::Feishu => "feishu",
-            CreateHookOptionType::Wechatwork => "wechatwork",
-            CreateHookOptionType::Packagist => "packagist",
-        }
-    }
-}
 /// CreateHookOptionConfig has all config options in it
 ///
 /// required are "content_type" and "url" Required
@@ -576,15 +548,6 @@ pub enum CreateMilestoneOptionState {
     Open,
     Closed,
 }
-
-impl CreateMilestoneOptionState {
-    fn as_str(&self) -> &'static str {
-        match self {
-            CreateMilestoneOptionState::Open => "open",
-            CreateMilestoneOptionState::Closed => "closed",
-        }
-    }
-}
 /// CreateOAuth2ApplicationOptions holds options to create an oauth2 application
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateOAuth2ApplicationOptions {
@@ -621,16 +584,6 @@ pub enum CreateOrgOptionVisibility {
     Public,
     Limited,
     Private,
-}
-
-impl CreateOrgOptionVisibility {
-    fn as_str(&self) -> &'static str {
-        match self {
-            CreateOrgOptionVisibility::Public => "public",
-            CreateOrgOptionVisibility::Limited => "limited",
-            CreateOrgOptionVisibility::Private => "private",
-        }
-    }
 }
 /// CreatePullRequestOption options when creating a pull request
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -724,17 +677,6 @@ pub enum CreateRepoOptionTrustModel {
     Committer,
     Collaboratorcommitter,
 }
-
-impl CreateRepoOptionTrustModel {
-    fn as_str(&self) -> &'static str {
-        match self {
-            CreateRepoOptionTrustModel::Default => "default",
-            CreateRepoOptionTrustModel::Collaborator => "collaborator",
-            CreateRepoOptionTrustModel::Committer => "committer",
-            CreateRepoOptionTrustModel::Collaboratorcommitter => "collaboratorcommitter",
-        }
-    }
-}
 /// CreateStatusOption holds the information needed to create a new CommitStatus for a Commit
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateStatusOption {
@@ -770,16 +712,6 @@ pub enum CreateTeamOptionPermission {
     Read,
     Write,
     Admin,
-}
-
-impl CreateTeamOptionPermission {
-    fn as_str(&self) -> &'static str {
-        match self {
-            CreateTeamOptionPermission::Read => "read",
-            CreateTeamOptionPermission::Write => "write",
-            CreateTeamOptionPermission::Admin => "admin",
-        }
-    }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateTeamOptionUnitsMap {
@@ -1018,16 +950,6 @@ pub enum EditOrgOptionVisibility {
     Limited,
     Private,
 }
-
-impl EditOrgOptionVisibility {
-    fn as_str(&self) -> &'static str {
-        match self {
-            EditOrgOptionVisibility::Public => "public",
-            EditOrgOptionVisibility::Limited => "limited",
-            EditOrgOptionVisibility::Private => "private",
-        }
-    }
-}
 /// EditPullRequestOption options when modify pull request
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditPullRequestOption {
@@ -1145,16 +1067,6 @@ pub enum EditTeamOptionPermission {
     Read,
     Write,
     Admin,
-}
-
-impl EditTeamOptionPermission {
-    fn as_str(&self) -> &'static str {
-        match self {
-            EditTeamOptionPermission::Read => "read",
-            EditTeamOptionPermission::Write => "write",
-            EditTeamOptionPermission::Admin => "admin",
-        }
-    }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditTeamOptionUnitsMap {
@@ -1720,18 +1632,6 @@ pub enum MergePullRequestOptionDo {
     Squash,
     ManuallyMerged,
 }
-
-impl MergePullRequestOptionDo {
-    fn as_str(&self) -> &'static str {
-        match self {
-            MergePullRequestOptionDo::Merge => "merge",
-            MergePullRequestOptionDo::Rebase => "rebase",
-            MergePullRequestOptionDo::RebaseMerge => "rebase-merge",
-            MergePullRequestOptionDo::Squash => "squash",
-            MergePullRequestOptionDo::ManuallyMerged => "manually-merged",
-        }
-    }
-}
 /// MigrateRepoOptions options for migrating repository's
 ///
 /// this is used to interact with api v1
@@ -1771,21 +1671,6 @@ pub enum MigrateRepoOptionsService {
     Onedev,
     Gitbucket,
     Codebase,
-}
-
-impl MigrateRepoOptionsService {
-    fn as_str(&self) -> &'static str {
-        match self {
-            MigrateRepoOptionsService::Git => "git",
-            MigrateRepoOptionsService::Github => "github",
-            MigrateRepoOptionsService::Gitea => "gitea",
-            MigrateRepoOptionsService::Gitlab => "gitlab",
-            MigrateRepoOptionsService::Gogs => "gogs",
-            MigrateRepoOptionsService::Onedev => "onedev",
-            MigrateRepoOptionsService::Gitbucket => "gitbucket",
-            MigrateRepoOptionsService::Codebase => "codebase",
-        }
-    }
 }
 /// Milestone milestone is a collection of issues on one repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2427,18 +2312,6 @@ pub enum TeamPermission {
     Write,
     Admin,
     Owner,
-}
-
-impl TeamPermission {
-    fn as_str(&self) -> &'static str {
-        match self {
-            TeamPermission::None => "none",
-            TeamPermission::Read => "read",
-            TeamPermission::Write => "write",
-            TeamPermission::Admin => "admin",
-            TeamPermission::Owner => "owner",
-        }
-    }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TeamUnitsMap {

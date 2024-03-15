@@ -44,7 +44,7 @@ pub fn create_struct_for_definition(
 
     if schema._type == Some(SchemaType::One(Primitive::String)) {
         if let Some(_enum) = &schema._enum {
-            return create_enum(name, schema.description.as_deref(), _enum);
+            return create_enum(name, schema.description.as_deref(), _enum, false);
         }
     }
 
@@ -124,6 +124,7 @@ pub fn create_enum(
     name: &str,
     desc: Option<&str>,
     _enum: &[serde_json::Value],
+    imp_as_str: bool,
 ) -> eyre::Result<String> {
     let mut variants = String::new();
     let mut imp = String::new();
@@ -143,20 +144,26 @@ pub fn create_enum(
     }
     imp.push_str("}");
 
-    let out = format!(
+    let strukt = format!(
         "
 {docs}
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum {name} {{
     {variants}
-}}
-
-impl {name} {{
-    fn as_str(&self) -> &'static str {{
-        {imp}
-    }}
 }}"
     );
+    let out = if imp_as_str {
+        let imp = format!(
+            "\n\nimpl {name} {{
+                fn as_str(&self) -> &'static str {{
+                    {imp}
+                }}
+            }}"
+        );
+        format!("{strukt} {imp}")
+    } else {
+        strukt
+    };
     Ok(out)
 }
 
@@ -241,7 +248,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                     ..
                 } => {
                     let name = format!("{op_name}{}", param.name.to_pascal_case());
-                    let enum_def = create_enum(&name, None, _enum)?;
+                    let enum_def = create_enum(&name, None, _enum, true)?;
                     enums.push(enum_def);
                     name
                 }
@@ -256,7 +263,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                     ..
                 } => {
                     let name = format!("{op_name}{}", param.name.to_pascal_case());
-                    let enum_def = create_enum(&name, None, _enum)?;
+                    let enum_def = create_enum(&name, None, _enum, true)?;
                     enums.push(enum_def);
                     format!("Vec<{name}>")
                 }
