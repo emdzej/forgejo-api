@@ -4119,7 +4119,7 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<RepoGetLanguagesResponse, ForgejoError> {
+    ) -> Result<std::collections::BTreeMap<String, u64>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/languages"))
             .build()?;

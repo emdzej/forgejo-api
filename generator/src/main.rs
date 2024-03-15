@@ -203,17 +203,27 @@ fn schema_subtype_name(
     let b = match schema {
         Schema {
             _type: Some(SchemaType::One(Primitive::Object)),
+            properties: Some(_),
+            ..
+        }
+        | Schema {
+            _type: Some(SchemaType::One(Primitive::String)),
+            _enum: Some(_),
             ..
         } => {
             *ty = format!("{parent_name}{}", name.to_pascal_case());
             true
         }
         Schema {
-            _type: Some(SchemaType::One(Primitive::String)),
-            _enum: Some(_enum),
+            _type: Some(SchemaType::One(Primitive::Object)),
+            properties: None,
+            additional_properties: Some(additional),
             ..
         } => {
-            *ty = format!("{parent_name}{}", name.to_pascal_case());
+            let additional = additional.deref(spec)?;
+            let mut additional_ty = crate::schema_type_name(spec, None, additional)?;
+            schema_subtype_name(spec, parent_name, name, additional, &mut additional_ty)?;
+            *ty = format!("std::collections::BTreeMap<String, {additional_ty}>");
             true
         }
         Schema {
@@ -246,6 +256,7 @@ fn schema_subtypes(
     match schema {
         Schema {
             _type: Some(SchemaType::One(Primitive::Object)),
+            properties: Some(_),
             ..
         } => {
             let name = format!("{parent_name}{}", name.to_pascal_case());

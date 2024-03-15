@@ -727,7 +727,7 @@ pub struct CreateTeamOption {
     pub name: String,
     pub permission: Option<CreateTeamOptionPermission>,
     pub units: Option<Vec<String>>,
-    pub units_map: Option<CreateTeamOptionUnitsMap>,
+    pub units_map: Option<std::collections::BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -739,12 +739,6 @@ pub enum CreateTeamOptionPermission {
     #[serde(rename = "admin")]
     Admin,
 }
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct CreateTeamOptionUnitsMap {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, String>,
-}
-
 /// CreateUserOption create user options
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateUserOption {
@@ -898,14 +892,8 @@ pub struct EditHookOption {
     pub active: Option<bool>,
     pub authorization_header: Option<String>,
     pub branch_filter: Option<String>,
-    pub config: Option<EditHookOptionConfig>,
+    pub config: Option<std::collections::BTreeMap<String, String>>,
     pub events: Option<Vec<String>>,
-}
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct EditHookOptionConfig {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, String>,
 }
 
 /// EditIssueCommentOption options for editing a comment
@@ -1088,7 +1076,7 @@ pub struct EditTeamOption {
     pub name: String,
     pub permission: Option<EditTeamOptionPermission>,
     pub units: Option<Vec<String>>,
-    pub units_map: Option<EditTeamOptionUnitsMap>,
+    pub units_map: Option<std::collections::BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -1100,12 +1088,6 @@ pub enum EditTeamOptionPermission {
     #[serde(rename = "admin")]
     Admin,
 }
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct EditTeamOptionUnitsMap {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, String>,
-}
-
 /// EditUserOption edit user options
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditUserOption {
@@ -1369,7 +1351,7 @@ pub struct Hook {
     pub active: Option<bool>,
     pub authorization_header: Option<String>,
     pub branch_filter: Option<String>,
-    pub config: Option<HookConfig>,
+    pub config: Option<std::collections::BTreeMap<String, String>>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub events: Option<Vec<String>>,
@@ -1378,12 +1360,6 @@ pub struct Hook {
     pub r#type: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
-}
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct HookConfig {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, String>,
 }
 
 /// Identity for a person's identity like an author or committer
@@ -1471,23 +1447,11 @@ pub struct IssueDeadline {
 /// IssueFormField represents a form field
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueFormField {
-    pub attributes: Option<IssueFormFieldAttributes>,
+    pub attributes: Option<std::collections::BTreeMap<String, serde_json::Value>>,
     pub id: Option<String>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    pub validations: Option<IssueFormFieldValidations>,
-}
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct IssueFormFieldAttributes {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, serde_json::Value>,
-}
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct IssueFormFieldValidations {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, serde_json::Value>,
+    pub validations: Option<std::collections::BTreeMap<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1746,7 +1710,7 @@ pub struct NewIssuePinsAllowed {
 /// NodeInfo contains standardized way of exposing metadata about a server running one of the distributed social networks
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NodeInfo {
-    pub metadata: Option<NodeInfoMetadata>,
+    pub metadata: Option<serde_json::Map<String, serde_json::Value>>,
     #[serde(rename = "openRegistrations")]
     pub open_registrations: Option<bool>,
     pub protocols: Option<Vec<String>>,
@@ -1755,9 +1719,6 @@ pub struct NodeInfo {
     pub usage: Option<NodeInfoUsage>,
     pub version: Option<String>,
 }
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct NodeInfoMetadata {}
 
 /// NodeInfoServices contains the third party sites this server can connect to via their application API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2347,7 +2308,7 @@ pub struct Team {
     pub organization: Option<Organization>,
     pub permission: Option<TeamPermission>,
     pub units: Option<Vec<String>>,
-    pub units_map: Option<TeamUnitsMap>,
+    pub units_map: Option<std::collections::BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -2363,12 +2324,6 @@ pub enum TeamPermission {
     #[serde(rename = "owner")]
     Owner,
 }
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct TeamUnitsMap {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, String>,
-}
-
 /// TimeStamp defines a timestamp
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TimeStamp {}
@@ -2754,11 +2709,6 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
             x_total,
         })
     }
-}
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct LanguageStatisticsResponse {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, u64>,
 }
 
 pub struct ErrorHeaders {
@@ -4599,11 +4549,6 @@ impl std::fmt::Display for IssueListLabelsQuery {
 
         Ok(())
     }
-}
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct RepoGetLanguagesResponse {
-    #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, u64>,
 }
 
 pub struct RepoGetRawFileOrLfsQuery {
