@@ -104,7 +104,7 @@ async fn repo() {
         private: Some(false),
         readme: None,
         template: Some(false),
-        trust_model: Some("default".into()),
+        trust_model: Some(CreateRepoOptionTrustModel::Default),
     };
     let remote_repo = api.create_current_user_repo(repo_opt).await.unwrap();
     assert!(
@@ -179,7 +179,7 @@ async fn repo() {
         .await
         .unwrap();
     let merge_opt = MergePullRequestOption {
-        r#do: "merge".into(),
+        r#do: MergePullRequestOptionDo::Merge,
         merge_commit_id: None,
         merge_message_field: None,
         merge_title_field: None,
@@ -372,7 +372,7 @@ async fn admin() {
         location: None,
         repo_admin_change_team_access: None,
         username: "test-org".into(),
-        visibility: Some("public".into()),
+        visibility: Some(CreateOrgOptionVisibility::Public),
         website: None,
     };
     let _ = api
@@ -443,7 +443,7 @@ async fn admin() {
             .into(),
         },
         events: Some(Vec::new()),
-        r#type: "gitea".into(),
+        r#type: CreateHookOptionType::Gitea,
     };
     // yarr har har me matey this is me hook
     let hook = api
