@@ -117,7 +117,7 @@ fn schema_type_name(
             SchemaType::List(_) => todo!(),
         }
     } else {
-        Ok("()".into())
+        Ok("serde_json::Value".into())
     }
 }
 

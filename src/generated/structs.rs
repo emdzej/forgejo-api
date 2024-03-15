@@ -1149,7 +1149,7 @@ pub struct FileCommitResponse {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct FileDeleteResponse {
     pub commit: Option<FileCommitResponse>,
-    pub content: Option<()>,
+    pub content: Option<serde_json::Value>,
     pub verification: Option<PayloadCommitVerification>,
 }
 
@@ -1449,13 +1449,13 @@ pub struct IssueFormField {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueFormFieldAttributes {
     #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, ()>,
+    pub additional: std::collections::BTreeMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueFormFieldValidations {
     #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, ()>,
+    pub additional: std::collections::BTreeMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2531,7 +2531,7 @@ pub struct WatchInfo {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub ignored: Option<bool>,
-    pub reason: Option<()>,
+    pub reason: Option<serde_json::Value>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub repository_url: Option<url::Url>,
     pub subscribed: Option<bool>,
