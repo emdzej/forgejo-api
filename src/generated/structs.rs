@@ -1,4 +1,5 @@
 use crate::StructureError;
+use std::collections::BTreeMap;
 /// APIError is an api error with a message
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIError {
@@ -496,7 +497,7 @@ pub enum CreateHookOptionType {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateHookOptionConfig {
     #[serde(flatten)]
-    pub additional: std::collections::BTreeMap<String, String>,
+    pub additional: BTreeMap<String, String>,
 }
 
 /// CreateIssueCommentOption options for creating a comment on an issue
@@ -727,7 +728,7 @@ pub struct CreateTeamOption {
     pub name: String,
     pub permission: Option<CreateTeamOptionPermission>,
     pub units: Option<Vec<String>>,
-    pub units_map: Option<std::collections::BTreeMap<String, String>>,
+    pub units_map: Option<BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -892,7 +893,7 @@ pub struct EditHookOption {
     pub active: Option<bool>,
     pub authorization_header: Option<String>,
     pub branch_filter: Option<String>,
-    pub config: Option<std::collections::BTreeMap<String, String>>,
+    pub config: Option<BTreeMap<String, String>>,
     pub events: Option<Vec<String>>,
 }
 
@@ -1076,7 +1077,7 @@ pub struct EditTeamOption {
     pub name: String,
     pub permission: Option<EditTeamOptionPermission>,
     pub units: Option<Vec<String>>,
-    pub units_map: Option<std::collections::BTreeMap<String, String>>,
+    pub units_map: Option<BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -1351,7 +1352,7 @@ pub struct Hook {
     pub active: Option<bool>,
     pub authorization_header: Option<String>,
     pub branch_filter: Option<String>,
-    pub config: Option<std::collections::BTreeMap<String, String>>,
+    pub config: Option<BTreeMap<String, String>>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub events: Option<Vec<String>>,
@@ -1447,11 +1448,11 @@ pub struct IssueDeadline {
 /// IssueFormField represents a form field
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueFormField {
-    pub attributes: Option<std::collections::BTreeMap<String, serde_json::Value>>,
+    pub attributes: Option<BTreeMap<String, serde_json::Value>>,
     pub id: Option<String>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    pub validations: Option<std::collections::BTreeMap<String, serde_json::Value>>,
+    pub validations: Option<BTreeMap<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1710,7 +1711,7 @@ pub struct NewIssuePinsAllowed {
 /// NodeInfo contains standardized way of exposing metadata about a server running one of the distributed social networks
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NodeInfo {
-    pub metadata: Option<serde_json::Map<String, serde_json::Value>>,
+    pub metadata: Option<BTreeMap<String, serde_json::Value>>,
     #[serde(rename = "openRegistrations")]
     pub open_registrations: Option<bool>,
     pub protocols: Option<Vec<String>>,
@@ -2308,7 +2309,7 @@ pub struct Team {
     pub organization: Option<Organization>,
     pub permission: Option<TeamPermission>,
     pub units: Option<Vec<String>>,
-    pub units_map: Option<std::collections::BTreeMap<String, String>>,
+    pub units_map: Option<BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]

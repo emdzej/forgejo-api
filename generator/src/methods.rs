@@ -6,6 +6,7 @@ use std::fmt::Write;
 pub fn create_methods(spec: &OpenApiV2) -> eyre::Result<String> {
     let mut s = String::new();
     s.push_str("use crate::ForgejoError;\n");
+    s.push_str("use std::collections::BTreeMap;");
     s.push_str("use super::structs::*;\n");
     s.push_str("\n");
     s.push_str("impl crate::Forgejo {\n");

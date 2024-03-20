@@ -1,5 +1,6 @@
 use super::structs::*;
 use crate::ForgejoError;
+use std::collections::BTreeMap;
 
 impl crate::Forgejo {
     /// Returns the Person actor for a user
@@ -4119,7 +4120,7 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<std::collections::BTreeMap<String, u64>, ForgejoError> {
+    ) -> Result<BTreeMap<String, u64>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/languages"))
             .build()?;

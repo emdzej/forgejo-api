@@ -105,7 +105,7 @@ fn schema_type_name(
                             // Checking for a space filters that out
                             (Some(title), _) if !title.contains(' ') => title.to_string(),
                             (_, Some(definition_name)) => definition_name.to_string(),
-                            (_, None) => "serde_json::Map<String, serde_json::Value>".to_string(),
+                            (_, None) => "BTreeMap<String, serde_json::Value>".to_string(),
                         }
                     }
                 };
@@ -223,7 +223,7 @@ fn schema_subtype_name(
             let additional = additional.deref(spec)?;
             let mut additional_ty = crate::schema_type_name(spec, None, additional)?;
             schema_subtype_name(spec, parent_name, name, additional, &mut additional_ty)?;
-            *ty = format!("std::collections::BTreeMap<String, {additional_ty}>");
+            *ty = format!("BTreeMap<String, {additional_ty}>");
             true
         }
         Schema {

@@ -6,6 +6,7 @@ use std::fmt::Write;
 pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     let mut s = String::new();
     s.push_str("use crate::StructureError;");
+    s.push_str("use std::collections::BTreeMap;");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
             let strukt = create_struct_for_definition(&spec, name, schema)?;
@@ -108,7 +109,7 @@ pub fn create_struct_for_definition(
     if let Some(additonal_schema) = &schema.additional_properties {
         let prop_ty = crate::schema_ref_type_name(spec, additonal_schema)?;
         fields.push_str("#[serde(flatten)]\n");
-        fields.push_str("pub additional: std::collections::BTreeMap<String, ");
+        fields.push_str("pub additional: BTreeMap<String, ");
         fields.push_str(&prop_ty);
         fields.push_str(">,\n");
     }
