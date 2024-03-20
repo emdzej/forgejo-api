@@ -1,5 +1,4 @@
 use reqwest::{Client, Request, StatusCode};
-use serde::{de::DeserializeOwned, Serialize};
 use soft_assert::*;
 use url::Url;
 use zeroize::Zeroize;
@@ -9,23 +8,9 @@ pub struct Forgejo {
     client: Client,
 }
 
-mod admin;
-mod issue;
-mod misc;
-mod notification;
-mod organization;
-mod package;
-mod repository;
-mod user;
+mod generated;
 
-pub use admin::*;
-pub use issue::*;
-pub use misc::*;
-pub use notification::*;
-pub use organization::*;
-pub use package::*;
-pub use repository::*;
-pub use user::*;
+pub use generated::structs;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ForgejoError {
@@ -38,13 +23,28 @@ pub enum ForgejoError {
     #[error("API key should be ascii")]
     KeyNotAscii,
     #[error("the response from forgejo was not properly structured")]
-    BadStructure(#[source] serde_json::Error, String),
+    BadStructure(#[from] StructureError),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
-    #[error("{} {}: {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1)]
-    ApiError(StatusCode, String),
+    #[error("{} {}{}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1.as_ref().map(|s| format!(": {s}")).unwrap_or_default())]
+    ApiError(StatusCode, Option<String>),
     #[error("the provided authorization was too long to accept")]
     AuthTooLong,
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum StructureError {
+    #[error("{contents}")]
+    Serde {
+        e: serde_json::Error,
+        contents: String,
+    },
+    #[error("failed to find header `{0}`")]
+    HeaderMissing(&'static str),
+    #[error("header was not ascii")]
+    HeaderNotAscii,
+    #[error("failed to parse header")]
+    HeaderParseFailed,
 }
 
 /// Method of authentication to connect to the Forgejo host with.
@@ -134,218 +134,67 @@ impl Forgejo {
         Ok(Self { url, client })
     }
 
-    async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ForgejoError> {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.get(url).build()?;
-        self.execute(request).await
-    }
-
-    async fn get_opt<T: DeserializeOwned>(&self, path: &str) -> Result<Option<T>, ForgejoError> {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.get(url).build()?;
-        self.execute_opt(request).await
-    }
-
-    async fn get_str(&self, path: &str) -> Result<String, ForgejoError> {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.get(url).build()?;
-        self.execute_str(request).await
-    }
-
-    async fn get_exists(&self, path: &str) -> Result<bool, ForgejoError> {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.get(url).build()?;
-        self.execute_exists(request).await
-    }
-
-    async fn post<T: Serialize, U: DeserializeOwned>(
+    pub async fn download_release_attachment(
         &self,
-        path: &str,
-        body: &T,
-    ) -> Result<U, ForgejoError> {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.post(url).json(body).build()?;
-        self.execute(request).await
+        owner: &str,
+        repo: &str,
+        release: u64,
+        attach: u64,
+    ) -> Result<bytes::Bytes, ForgejoError> {
+        let release = self
+            .repo_get_release_attachment(owner, repo, release, attach)
+            .await?;
+        let request = self
+            .client
+            .get(format!("/attachments/{}", release.uuid.unwrap()))
+            .build()?;
+        Ok(self.execute(request).await?.bytes().await?)
     }
 
-    async fn post_multipart<T: DeserializeOwned>(
-        &self,
-        path: &str,
-        body: reqwest::multipart::Form,
-    ) -> Result<T, ForgejoError> {
+    fn get(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.post(url).multipart(body).build()?;
-        self.execute(request).await
+        self.client.get(url)
     }
 
-    async fn post_str_out<T: Serialize>(
-        &self,
-        path: &str,
-        body: &T,
-    ) -> Result<String, ForgejoError> {
+    fn put(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.post(url).json(body).build()?;
-        self.execute_str(request).await
+        self.client.put(url)
     }
 
-    async fn post_unit<T: Serialize>(&self, path: &str, body: &T) -> Result<(), ForgejoError> {
+    fn post(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.post(url).json(body).build()?;
-        self.execute_unit(request).await
+        self.client.post(url)
     }
 
-    async fn post_raw(&self, path: &str, body: String) -> Result<String, ForgejoError> {
+    fn delete(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.post(url).body(body).build()?;
-        self.execute_str(request).await
+        self.client.delete(url)
     }
 
-    async fn delete(&self, path: &str) -> Result<(), ForgejoError> {
+    fn patch(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.delete(url).build()?;
-        self.execute_unit(request).await
+        self.client.patch(url)
     }
 
-    async fn patch<T: Serialize, U: DeserializeOwned>(
-        &self,
-        path: &str,
-        body: &T,
-    ) -> Result<U, ForgejoError> {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.patch(url).json(body).build()?;
-        self.execute(request).await
-    }
-
-    async fn put<T: DeserializeOwned>(&self, path: &str) -> Result<T, ForgejoError> {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        let request = self.client.put(url).build()?;
-        self.execute(request).await
-    }
-
-    async fn execute<T: DeserializeOwned>(&self, request: Request) -> Result<T, ForgejoError> {
+    async fn execute(&self, request: Request) -> Result<reqwest::Response, ForgejoError> {
         let response = self.client.execute(request).await?;
         match response.status() {
-            status if status.is_success() => {
-                let body = response.text().await?;
-                let out =
-                    serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
-                Ok(out)
+            status if status.is_success() => Ok(response),
+            status if status.is_client_error() => {
+                Err(ForgejoError::ApiError(status, maybe_err(response).await))
             }
-            status if status.is_client_error() => Err(ForgejoError::ApiError(
-                status,
-                response
-                    .json::<ErrorMessage>()
-                    .await?
-                    .message
-                    .unwrap_or_else(|| String::from("[no message]")),
-            )),
-            status => Err(ForgejoError::UnexpectedStatusCode(status)),
-        }
-    }
-
-    /// Like `execute`, but returns a `String`.
-    async fn execute_opt_raw(
-        &self,
-        request: Request,
-    ) -> Result<Option<bytes::Bytes>, ForgejoError> {
-        let response = self.client.execute(request).await?;
-        match response.status() {
-            status if status.is_success() => Ok(Some(response.bytes().await?)),
-            StatusCode::NOT_FOUND => Ok(None),
-            status if status.is_client_error() => Err(ForgejoError::ApiError(
-                status,
-                response
-                    .json::<ErrorMessage>()
-                    .await?
-                    .message
-                    .unwrap_or_else(|| String::from("[no message]")),
-            )),
-            status => Err(ForgejoError::UnexpectedStatusCode(status)),
-        }
-    }
-
-    /// Like `execute`, but returns a `String`.
-    async fn execute_str(&self, request: Request) -> Result<String, ForgejoError> {
-        let response = self.client.execute(request).await?;
-        match response.status() {
-            status if status.is_success() => Ok(response.text().await?),
-            status if status.is_client_error() => Err(ForgejoError::ApiError(
-                status,
-                response
-                    .json::<ErrorMessage>()
-                    .await?
-                    .message
-                    .unwrap_or_else(|| String::from("[no message]")),
-            )),
-            status => Err(ForgejoError::UnexpectedStatusCode(status)),
-        }
-    }
-
-    /// Like `execute`, but returns unit.
-    async fn execute_unit(&self, request: Request) -> Result<(), ForgejoError> {
-        let response = self.client.execute(request).await?;
-        match response.status() {
-            status if status.is_success() => Ok(()),
-            status if status.is_client_error() => Err(ForgejoError::ApiError(
-                status,
-                response
-                    .json::<ErrorMessage>()
-                    .await?
-                    .message
-                    .unwrap_or_else(|| String::from("[no message]")),
-            )),
-            status => Err(ForgejoError::UnexpectedStatusCode(status)),
-        }
-    }
-
-    /// Like `execute`, but returns `Ok(None)` on 404.
-    async fn execute_opt<T: DeserializeOwned>(
-        &self,
-        request: Request,
-    ) -> Result<Option<T>, ForgejoError> {
-        let response = self.client.execute(request).await?;
-        match response.status() {
-            status if status.is_success() => {
-                let body = response.text().await?;
-                let out =
-                    serde_json::from_str(&body).map_err(|e| ForgejoError::BadStructure(e, body))?;
-                Ok(out)
-            }
-            StatusCode::NOT_FOUND => Ok(None),
-            status if status.is_client_error() => Err(ForgejoError::ApiError(
-                status,
-                response
-                    .json::<ErrorMessage>()
-                    .await?
-                    .message
-                    .unwrap_or_else(|| String::from("[no message]")),
-            )),
-            status => Err(ForgejoError::UnexpectedStatusCode(status)),
-        }
-    }
-
-    /// Like `execute`, but returns `false` on 404.
-    async fn execute_exists(&self, request: Request) -> Result<bool, ForgejoError> {
-        let response = self.client.execute(request).await?;
-        match response.status() {
-            status if status.is_success() => Ok(true),
-            StatusCode::NOT_FOUND => Ok(false),
-            status if status.is_client_error() => Err(ForgejoError::ApiError(
-                status,
-                response
-                    .json::<ErrorMessage>()
-                    .await?
-                    .message
-                    .unwrap_or_else(|| String::from("[no message]")),
-            )),
             status => Err(ForgejoError::UnexpectedStatusCode(status)),
         }
     }
 }
 
+async fn maybe_err(res: reqwest::Response) -> Option<String> {
+    res.json::<ErrorMessage>().await.ok().map(|e| e.message)
+}
+
 #[derive(serde::Deserialize)]
 struct ErrorMessage {
-    message: Option<String>,
+    message: String,
     // intentionally ignored, no need for now
     // url: Url
 }
