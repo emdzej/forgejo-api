@@ -144,10 +144,12 @@ impl Forgejo {
         let release = self
             .repo_get_release_attachment(owner, repo, release, attach)
             .await?;
-        let request = self
-            .client
-            .get(format!("/attachments/{}", release.uuid.unwrap()))
-            .build()?;
+        let mut url = self.url.clone();
+        url.path_segments_mut()
+            .unwrap()
+            .pop_if_empty()
+            .extend(["attachments", &release.uuid.unwrap().to_string()]);
+        let request = self.client.get(url).build()?;
         Ok(self.execute(request).await?.bytes().await?)
     }
 
