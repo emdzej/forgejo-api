@@ -24,20 +24,14 @@ async fn user() {
         "result of `myself` does not match result of `get_user`"
     );
 
-    let query = UserListFollowingQuery {
-        page: None,
-        limit: None,
-    };
+    let query = UserListFollowingQuery::default();
     let following = api
         .user_list_following("TestingAdmin", query)
         .await
         .unwrap();
     assert_eq!(following, Vec::new(), "following list not empty");
 
-    let query = UserListFollowersQuery {
-        page: None,
-        limit: None,
-    };
+    let query = UserListFollowersQuery::default();
     let followers = api
         .user_list_followers("TestingAdmin", query)
         .await
@@ -168,12 +162,7 @@ async fn repo() {
         .await
         .is_ok();
     assert!(!is_merged, "pr should not yet be merged");
-    let pr_files_query = RepoGetPullRequestFilesQuery {
-        skip_to: None,
-        whitespace: None,
-        page: None,
-        limit: None,
-    };
+    let pr_files_query = RepoGetPullRequestFilesQuery::default();
     let (_, _) = api
         .repo_get_pull_request_files("TestingAdmin", "test", pr.number.unwrap(), pr_files_query)
         .await
@@ -199,13 +188,7 @@ async fn repo() {
     let _ = git().args(["fetch"]).status().unwrap();
     let _ = git().args(["pull"]).status().unwrap();
 
-    let query = RepoListReleasesQuery {
-        draft: None,
-        pre_release: None,
-        per_page: None,
-        page: None,
-        limit: None,
-    };
+    let query = RepoListReleasesQuery::default();
     assert!(
         api.repo_list_releases("TestingAdmin", "test", query)
             .await
@@ -332,12 +315,7 @@ async fn admin() {
         .await
         .expect("failed to create user");
 
-    let query = AdminSearchUsersQuery {
-        source_id: None,
-        login_name: None,
-        page: None,
-        limit: None,
-    };
+    let query = AdminSearchUsersQuery::default();
     let users = api
         .admin_search_users(query)
         .await
@@ -349,10 +327,7 @@ async fn admin() {
             .is_some(),
         "could not find new user"
     );
-    let query = AdminGetAllEmailsQuery {
-        page: None,
-        limit: None,
-    };
+    let query = AdminGetAllEmailsQuery::default();
     let users = api
         .admin_get_all_emails(query)
         .await
@@ -379,10 +354,7 @@ async fn admin() {
         .admin_create_org("Pipis", org_opt)
         .await
         .expect("failed to create org");
-    let query = AdminGetAllOrgsQuery {
-        page: None,
-        limit: None,
-    };
+    let query = AdminGetAllOrgsQuery::default();
     assert!(
         !api.admin_get_all_orgs(query).await.unwrap().is_empty(),
         "org list empty"
@@ -417,10 +389,7 @@ async fn admin() {
         "deleting fake user should fail"
     );
 
-    let query = AdminCronListQuery {
-        page: None,
-        limit: None,
-    };
+    let query = AdminCronListQuery::default();
     let crons = api
         .admin_cron_list(query)
         .await
