@@ -2823,6 +2823,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for ValidationErrorHeaders {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminCronListQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -2843,6 +2844,7 @@ impl std::fmt::Display for AdminCronListQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminGetAllEmailsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -2863,6 +2865,7 @@ impl std::fmt::Display for AdminGetAllEmailsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminSearchEmailsQuery {
     /// keyword
     pub q: Option<String>,
@@ -2888,6 +2891,7 @@ impl std::fmt::Display for AdminSearchEmailsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminListHooksQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -2908,6 +2912,7 @@ impl std::fmt::Display for AdminListHooksQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminGetAllOrgsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -2928,6 +2933,7 @@ impl std::fmt::Display for AdminGetAllOrgsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminUnadoptedListQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -2953,6 +2959,7 @@ impl std::fmt::Display for AdminUnadoptedListQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminSearchUsersQuery {
     /// ID of the user's login source to search for
     pub source_id: Option<u64>,
@@ -2983,6 +2990,7 @@ impl std::fmt::Display for AdminSearchUsersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminDeleteUserQuery {
     /// purge the user from the system completely
     pub purge: Option<bool>,
@@ -2998,6 +3006,7 @@ impl std::fmt::Display for AdminDeleteUserQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct NotifyGetListQuery {
     /// If true, show notifications marked as read. Default value is false
     pub all: Option<bool>,
@@ -3089,6 +3098,7 @@ impl NotifyGetListQuerySubjectType {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct NotifyReadListQuery {
     /// Describes the last point that notifications were checked. Anything updated since this time will not be updated.
     pub last_read_at: Option<time::OffsetDateTime>,
@@ -3131,6 +3141,7 @@ impl std::fmt::Display for NotifyReadListQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct NotifyReadThreadQuery {
     /// Status to mark notifications as
     pub to_status: Option<String>,
@@ -3146,6 +3157,7 @@ impl std::fmt::Display for NotifyReadThreadQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgGetAllQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3166,6 +3178,7 @@ impl std::fmt::Display for OrgGetAllQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListActionsSecretsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3186,6 +3199,7 @@ impl std::fmt::Display for OrgListActionsSecretsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
@@ -3217,6 +3231,7 @@ impl std::fmt::Display for OrgListActivityFeedsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListHooksQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3237,6 +3252,7 @@ impl std::fmt::Display for OrgListHooksQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListLabelsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3257,6 +3273,7 @@ impl std::fmt::Display for OrgListLabelsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListBlockedUsersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3277,6 +3294,7 @@ impl std::fmt::Display for OrgListBlockedUsersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListMembersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3297,6 +3315,7 @@ impl std::fmt::Display for OrgListMembersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListPublicMembersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3317,6 +3336,7 @@ impl std::fmt::Display for OrgListPublicMembersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListReposQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3337,6 +3357,7 @@ impl std::fmt::Display for OrgListReposQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListTeamsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3357,6 +3378,7 @@ impl std::fmt::Display for OrgListTeamsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct TeamSearchQuery {
     /// keywords to search
     pub q: Option<String>,
@@ -3392,6 +3414,7 @@ pub struct TeamSearchResponse {
     pub ok: Option<bool>,
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct ListPackagesQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3495,6 +3518,7 @@ impl ListPackagesQueryType {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueSearchIssuesQuery {
     /// whether issue is open or closed
     pub state: Option<String>,
@@ -3602,6 +3626,7 @@ impl std::fmt::Display for IssueSearchIssuesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoSearchQuery {
     /// keyword
     pub q: Option<String>,
@@ -3697,6 +3722,7 @@ impl std::fmt::Display for RepoSearchQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
@@ -3728,6 +3754,7 @@ impl std::fmt::Display for RepoListActivityFeedsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListBranchesQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3748,6 +3775,7 @@ impl std::fmt::Display for RepoListBranchesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListCollaboratorsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3768,6 +3796,7 @@ impl std::fmt::Display for RepoListCollaboratorsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetAllCommitsQuery {
     /// SHA or branch to start listing commits from (usually 'master')
     pub sha: Option<String>,
@@ -3818,6 +3847,7 @@ impl std::fmt::Display for RepoGetAllCommitsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetCombinedStatusByRefQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3838,6 +3868,7 @@ impl std::fmt::Display for RepoGetCombinedStatusByRefQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListStatusesByRefQuery {
     /// type of sort
     pub sort: Option<RepoListStatusesByRefQuerySort>,
@@ -3919,6 +3950,7 @@ impl RepoListStatusesByRefQueryState {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetContentsListQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
     pub r#ref: Option<String>,
@@ -3934,6 +3966,7 @@ impl std::fmt::Display for RepoGetContentsListQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetContentsQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
     pub r#ref: Option<String>,
@@ -3949,6 +3982,7 @@ impl std::fmt::Display for RepoGetContentsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetEditorConfigQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
     pub r#ref: Option<String>,
@@ -3964,6 +3998,7 @@ impl std::fmt::Display for RepoGetEditorConfigQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct ListForksQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -3984,6 +4019,7 @@ impl std::fmt::Display for ListForksQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetSingleCommitQuery {
     /// include diff stats for every commit (disable for speedup, default 'true')
     pub stat: Option<bool>,
@@ -4009,6 +4045,7 @@ impl std::fmt::Display for RepoGetSingleCommitQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetNoteQuery {
     /// include verification for every commit (disable for speedup, default 'true')
     pub verification: Option<bool>,
@@ -4029,6 +4066,7 @@ impl std::fmt::Display for RepoGetNoteQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct GetTreeQuery {
     /// show all directories and files
     pub recursive: Option<bool>,
@@ -4054,6 +4092,7 @@ impl std::fmt::Display for GetTreeQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListHooksQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4074,6 +4113,7 @@ impl std::fmt::Display for RepoListHooksQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoTestHookQuery {
     /// The name of the commit/branch/tag, indicates which commit will be loaded to the webhook payload.
     pub r#ref: Option<String>,
@@ -4089,6 +4129,7 @@ impl std::fmt::Display for RepoTestHookQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueListIssuesQuery {
     /// whether issue is open or closed
     pub state: Option<IssueListIssuesQueryState>,
@@ -4207,6 +4248,7 @@ impl IssueListIssuesQueryType {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueGetRepoCommentsQuery {
     /// if provided, only comments updated since the provided time are returned.
     pub since: Option<time::OffsetDateTime>,
@@ -4249,6 +4291,7 @@ impl std::fmt::Display for IssueGetRepoCommentsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueCreateIssueCommentAttachmentQuery {
     /// name of the attachment
     pub name: Option<String>,
@@ -4275,6 +4318,7 @@ impl std::fmt::Display for IssueCreateIssueCommentAttachmentQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueCreateIssueAttachmentQuery {
     /// name of the attachment
     pub name: Option<String>,
@@ -4301,6 +4345,7 @@ impl std::fmt::Display for IssueCreateIssueAttachmentQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueListBlocksQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4321,6 +4366,7 @@ impl std::fmt::Display for IssueListBlocksQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueGetCommentsQuery {
     /// if provided, only comments updated since the specified time are returned.
     pub since: Option<time::OffsetDateTime>,
@@ -4353,6 +4399,7 @@ impl std::fmt::Display for IssueGetCommentsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueListIssueDependenciesQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4373,6 +4420,7 @@ impl std::fmt::Display for IssueListIssueDependenciesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueGetIssueReactionsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4393,6 +4441,7 @@ impl std::fmt::Display for IssueGetIssueReactionsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueSubscriptionsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4413,6 +4462,7 @@ impl std::fmt::Display for IssueSubscriptionsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueGetCommentsAndTimelineQuery {
     /// if provided, only comments updated since the specified time are returned.
     pub since: Option<time::OffsetDateTime>,
@@ -4455,6 +4505,7 @@ impl std::fmt::Display for IssueGetCommentsAndTimelineQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueTrackedTimesQuery {
     /// optional filter by user (available for issue managers)
     pub user: Option<String>,
@@ -4502,6 +4553,7 @@ impl std::fmt::Display for IssueTrackedTimesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListKeysQuery {
     /// the key_id to search for
     pub key_id: Option<u32>,
@@ -4532,6 +4584,7 @@ impl std::fmt::Display for RepoListKeysQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueListLabelsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4552,6 +4605,7 @@ impl std::fmt::Display for IssueListLabelsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetRawFileOrLfsQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
     pub r#ref: Option<String>,
@@ -4567,6 +4621,7 @@ impl std::fmt::Display for RepoGetRawFileOrLfsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueGetMilestonesListQuery {
     /// Milestone state, Recognized values are open, closed and all. Defaults to "open"
     pub state: Option<String>,
@@ -4597,6 +4652,7 @@ impl std::fmt::Display for IssueGetMilestonesListQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct NotifyGetRepoListQuery {
     /// If true, show notifications marked as read. Default value is false
     pub all: Option<bool>,
@@ -4688,6 +4744,7 @@ impl NotifyGetRepoListQuerySubjectType {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct NotifyReadRepoListQuery {
     /// If true, mark all notifications on this repo. Default value is false
     pub all: Option<String>,
@@ -4730,6 +4787,7 @@ impl std::fmt::Display for NotifyReadRepoListQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListPullRequestsQuery {
     /// State of pull request: open or closed (optional)
     pub state: Option<RepoListPullRequestsQueryState>,
@@ -4824,6 +4882,7 @@ impl RepoListPullRequestsQuerySort {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoDownloadPullDiffOrPatchQuery {
     /// whether to include binary file changes. if true, the diff is applicable with `git apply`
     pub binary: Option<bool>,
@@ -4839,6 +4898,7 @@ impl std::fmt::Display for RepoDownloadPullDiffOrPatchQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetPullRequestCommitsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4869,6 +4929,7 @@ impl std::fmt::Display for RepoGetPullRequestCommitsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetPullRequestFilesQuery {
     /// skip to given file
     pub skip_to: Option<String>,
@@ -4921,6 +4982,7 @@ impl RepoGetPullRequestFilesQueryWhitespace {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListPullReviewsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4941,6 +5003,7 @@ impl std::fmt::Display for RepoListPullReviewsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoUpdatePullRequestQuery {
     /// how to update pull request
     pub style: Option<RepoUpdatePullRequestQueryStyle>,
@@ -4972,6 +5035,7 @@ impl RepoUpdatePullRequestQueryStyle {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListPushMirrorsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -4992,6 +5056,7 @@ impl std::fmt::Display for RepoListPushMirrorsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetRawFileQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
     pub r#ref: Option<String>,
@@ -5007,6 +5072,7 @@ impl std::fmt::Display for RepoGetRawFileQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListReleasesQuery {
     /// filter (exclude / include) drafts, if you dont have repo write access none will show
     pub draft: Option<bool>,
@@ -5042,6 +5108,7 @@ impl std::fmt::Display for RepoListReleasesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoCreateReleaseAttachmentQuery {
     /// name of the attachment
     pub name: Option<String>,
@@ -5057,6 +5124,7 @@ impl std::fmt::Display for RepoCreateReleaseAttachmentQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListStargazersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5077,6 +5145,7 @@ impl std::fmt::Display for RepoListStargazersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListStatusesQuery {
     /// type of sort
     pub sort: Option<RepoListStatusesQuerySort>,
@@ -5158,6 +5227,7 @@ impl RepoListStatusesQueryState {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListSubscribersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5178,6 +5248,7 @@ impl std::fmt::Display for RepoListSubscribersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListTagsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5198,6 +5269,7 @@ impl std::fmt::Display for RepoListTagsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoTrackedTimesQuery {
     /// optional filter by user (available for issue managers)
     pub user: Option<String>,
@@ -5245,6 +5317,7 @@ impl std::fmt::Display for RepoTrackedTimesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListTopicsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5265,6 +5338,7 @@ impl std::fmt::Display for RepoListTopicsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetWikiPagesQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5285,6 +5359,7 @@ impl std::fmt::Display for RepoGetWikiPagesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetWikiPageRevisionsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5300,6 +5375,7 @@ impl std::fmt::Display for RepoGetWikiPageRevisionsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListTeamActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
@@ -5331,6 +5407,7 @@ impl std::fmt::Display for OrgListTeamActivityFeedsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListTeamMembersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5351,6 +5428,7 @@ impl std::fmt::Display for OrgListTeamMembersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListTeamReposQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5371,6 +5449,7 @@ impl std::fmt::Display for OrgListTeamReposQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct TopicSearchQuery {
     /// keywords to search
     pub q: String,
@@ -5395,6 +5474,7 @@ impl std::fmt::Display for TopicSearchQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserGetOAuth2ApplicationsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5415,6 +5495,7 @@ impl std::fmt::Display for UserGetOAuth2ApplicationsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListFollowersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5435,6 +5516,7 @@ impl std::fmt::Display for UserCurrentListFollowersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListFollowingQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5455,6 +5537,7 @@ impl std::fmt::Display for UserCurrentListFollowingQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListGpgKeysQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5475,6 +5558,7 @@ impl std::fmt::Display for UserCurrentListGpgKeysQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListHooksQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5495,6 +5579,7 @@ impl std::fmt::Display for UserListHooksQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListKeysQuery {
     /// fingerprint of the key
     pub fingerprint: Option<String>,
@@ -5520,6 +5605,7 @@ impl std::fmt::Display for UserCurrentListKeysQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListBlockedUsersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5540,6 +5626,7 @@ impl std::fmt::Display for UserListBlockedUsersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListCurrentUserOrgsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5560,6 +5647,7 @@ impl std::fmt::Display for OrgListCurrentUserOrgsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListReposQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5580,6 +5668,7 @@ impl std::fmt::Display for UserCurrentListReposQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListStarredQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5600,6 +5689,7 @@ impl std::fmt::Display for UserCurrentListStarredQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserGetStopWatchesQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5620,6 +5710,7 @@ impl std::fmt::Display for UserGetStopWatchesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListSubscriptionsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5640,6 +5731,7 @@ impl std::fmt::Display for UserCurrentListSubscriptionsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListTeamsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5660,6 +5752,7 @@ impl std::fmt::Display for UserListTeamsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentTrackedTimesQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5702,6 +5795,7 @@ impl std::fmt::Display for UserCurrentTrackedTimesQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserSearchQuery {
     /// keyword
     pub q: Option<String>,
@@ -5737,6 +5831,7 @@ pub struct UserSearchResponse {
     pub ok: Option<bool>,
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListActivityFeedsQuery {
     /// if true, only show actions performed by the requested user
     pub only_performed_by: Option<bool>,
@@ -5773,6 +5868,7 @@ impl std::fmt::Display for UserListActivityFeedsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListFollowersQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5793,6 +5889,7 @@ impl std::fmt::Display for UserListFollowersQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListFollowingQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5813,6 +5910,7 @@ impl std::fmt::Display for UserListFollowingQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListGpgKeysQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5833,6 +5931,7 @@ impl std::fmt::Display for UserListGpgKeysQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListKeysQuery {
     /// fingerprint of the key
     pub fingerprint: Option<String>,
@@ -5858,6 +5957,7 @@ impl std::fmt::Display for UserListKeysQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListUserOrgsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5878,6 +5978,7 @@ impl std::fmt::Display for OrgListUserOrgsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListReposQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5898,6 +5999,7 @@ impl std::fmt::Display for UserListReposQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListStarredQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5918,6 +6020,7 @@ impl std::fmt::Display for UserListStarredQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListSubscriptionsQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
@@ -5938,6 +6041,7 @@ impl std::fmt::Display for UserListSubscriptionsQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserGetTokensQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
