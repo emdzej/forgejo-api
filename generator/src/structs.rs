@@ -241,6 +241,8 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
     let mut enums = Vec::new();
     let mut fields = String::new();
     let mut imp = String::new();
+    // only derive default if every field is optional
+    let mut can_derive_default = true;
     for param in params {
         let param = param.deref(spec)?;
         if let ParameterIn::Query { param: query_param } = &param._in {
@@ -287,6 +289,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
             fields.push_str(&field_name);
             fields.push_str(": ");
             if query_param.required {
+                can_derive_default = false;
                 fields.push_str(&ty);
             } else {
                 fields.push_str("Option<");
@@ -425,11 +428,18 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
         }
     }
 
+    let derives = if can_derive_default {
+        "Debug, Clone, PartialEq, Default"
+    } else {
+        "Debug, Clone, PartialEq"
+    };
+
     let result = if fields.is_empty() {
         String::new()
     } else {
         let mut out = format!(
             "
+#[derive({derives})]
 pub struct {op_name} {{
     {fields}
 }}
