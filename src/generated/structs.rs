@@ -120,6 +120,7 @@ pub struct Branch {
 /// BranchProtection represents a branch protection for a repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct BranchProtection {
+    pub apply_to_admins: Option<bool>,
     pub approvals_whitelist_teams: Option<Vec<String>>,
     pub approvals_whitelist_username: Option<Vec<String>>,
     pub block_on_official_review_requests: Option<bool>,
@@ -135,6 +136,7 @@ pub struct BranchProtection {
     pub enable_push: Option<bool>,
     pub enable_push_whitelist: Option<bool>,
     pub enable_status_check: Option<bool>,
+    pub ignore_stale_approvals: Option<bool>,
     pub merge_whitelist_teams: Option<Vec<String>>,
     pub merge_whitelist_usernames: Option<Vec<String>>,
     pub protected_file_patterns: Option<String>,
@@ -371,6 +373,7 @@ pub struct CreateAccessTokenOption {
 /// CreateBranchProtectionOption options for creating a branch protection
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateBranchProtectionOption {
+    pub apply_to_admins: Option<bool>,
     pub approvals_whitelist_teams: Option<Vec<String>>,
     pub approvals_whitelist_username: Option<Vec<String>>,
     pub block_on_official_review_requests: Option<bool>,
@@ -384,6 +387,7 @@ pub struct CreateBranchProtectionOption {
     pub enable_push: Option<bool>,
     pub enable_push_whitelist: Option<bool>,
     pub enable_status_check: Option<bool>,
+    pub ignore_stale_approvals: Option<bool>,
     pub merge_whitelist_teams: Option<Vec<String>>,
     pub merge_whitelist_usernames: Option<Vec<String>>,
     pub protected_file_patterns: Option<String>,
@@ -632,6 +636,10 @@ pub struct CreatePullReviewComment {
     pub path: Option<String>,
 }
 
+/// CreatePullReviewCommentOptions are options to create a pull review comment
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct CreatePullReviewCommentOptions {}
+
 /// CreatePullReviewOptions are options to create a pull review
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreatePullReviewOptions {
@@ -678,6 +686,8 @@ pub struct CreateRepoOption {
     pub license: Option<String>,
     /// Name of the repository to create
     pub name: String,
+    /// ObjectFormatName of the underlying git repository
+    pub object_format_name: Option<CreateRepoOptionObjectFormatName>,
     /// Whether the repository is private
     pub private: Option<bool>,
     /// Readme of the repository to create
@@ -688,6 +698,15 @@ pub struct CreateRepoOption {
     pub trust_model: Option<CreateRepoOptionTrustModel>,
 }
 
+/// ObjectFormatName of the underlying git repository
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum CreateRepoOptionObjectFormatName {
+    #[serde(rename = "sha1")]
+    Sha1,
+    #[serde(rename = "sha256")]
+    Sha256,
+}
 /// TrustModel of the repository
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -851,6 +870,7 @@ pub struct EditAttachmentOptions {
 /// EditBranchProtectionOption options for editing a branch protection
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditBranchProtectionOption {
+    pub apply_to_admins: Option<bool>,
     pub approvals_whitelist_teams: Option<Vec<String>>,
     pub approvals_whitelist_username: Option<Vec<String>>,
     pub block_on_official_review_requests: Option<bool>,
@@ -862,6 +882,7 @@ pub struct EditBranchProtectionOption {
     pub enable_push: Option<bool>,
     pub enable_push_whitelist: Option<bool>,
     pub enable_status_check: Option<bool>,
+    pub ignore_stale_approvals: Option<bool>,
     pub merge_whitelist_teams: Option<Vec<String>>,
     pub merge_whitelist_usernames: Option<Vec<String>>,
     pub protected_file_patterns: Option<String>,
@@ -1005,6 +1026,8 @@ pub struct EditReleaseOption {
 /// EditRepoOption options when editing a repository's properties
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditRepoOption {
+    /// either `true` to allow fast-forward-only merging pull requests, or `false` to prevent fast-forward-only merging.
+    pub allow_fast_forward_only_merge: Option<bool>,
     /// either `true` to allow mark pr as merged manually, or `false` to prevent it.
     pub allow_manual_merge: Option<bool>,
     /// either `true` to allow merging pull requests with a merge commit, or `false` to prevent merging pull requests with merge commits.
@@ -1027,7 +1050,7 @@ pub struct EditRepoOption {
     pub default_branch: Option<String>,
     /// set to `true` to delete pr branch after merge by default
     pub default_delete_branch_after_merge: Option<bool>,
-    /// set to a merge style to be used by this repository: "merge", "rebase", "rebase-merge", or "squash".
+    /// set to a merge style to be used by this repository: "merge", "rebase", "rebase-merge", "squash", or "fast-forward-only".
     pub default_merge_style: Option<String>,
     /// a short description of the repository.
     pub description: Option<String>,
@@ -1066,6 +1089,8 @@ pub struct EditRepoOption {
     pub template: Option<bool>,
     /// a URL with more information about the repository.
     pub website: Option<String>,
+    /// sets the branch used for this repository's wiki.
+    pub wiki_branch: Option<String>,
 }
 
 /// EditTeamOption options for editing a team
@@ -1106,6 +1131,7 @@ pub struct EditUserOption {
     pub must_change_password: Option<bool>,
     pub password: Option<String>,
     pub prohibit_login: Option<bool>,
+    pub pronouns: Option<String>,
     pub restricted: Option<bool>,
     pub source_id: u64,
     pub visibility: Option<String>,
@@ -1241,6 +1267,7 @@ pub struct GeneralAttachmentSettings {
 /// GeneralRepoSettings contains global repository settings exposed by API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GeneralRepoSettings {
+    pub forks_disabled: Option<bool>,
     pub http_git_disabled: Option<bool>,
     pub lfs_disabled: Option<bool>,
     pub migrations_disabled: Option<bool>,
@@ -1352,15 +1379,20 @@ pub struct Hook {
     pub active: Option<bool>,
     pub authorization_header: Option<String>,
     pub branch_filter: Option<String>,
+    /// Deprecated: use Metadata instead
     pub config: Option<BTreeMap<String, String>>,
+    pub content_type: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub events: Option<Vec<String>>,
     pub id: Option<u64>,
+    pub metadata: Option<serde_json::Value>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub url: Option<url::Url>,
 }
 
 /// Identity for a person's identity like an author or committer
@@ -1453,10 +1485,15 @@ pub struct IssueFormField {
     #[serde(rename = "type")]
     pub r#type: Option<String>,
     pub validations: Option<BTreeMap<String, serde_json::Value>>,
+    pub visible: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueFormFieldType {}
+
+/// IssueFormFieldVisible defines issue form field visible
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct IssueFormFieldVisible {}
 
 /// IssueLabelsOption a collection of labels
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1631,6 +1668,8 @@ pub enum MergePullRequestOptionDo {
     RebaseMerge,
     #[serde(rename = "squash")]
     Squash,
+    #[serde(rename = "fast-forward-only")]
+    FastForwardOnly,
     #[serde(rename = "manually-merged")]
     ManuallyMerged,
 }
@@ -1995,6 +2034,7 @@ pub struct PullRequest {
 /// PullRequestMeta PR info if an issue is a PR
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullRequestMeta {
+    pub draft: Option<bool>,
     pub merged: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub merged_at: Option<time::OffsetDateTime>,
@@ -2057,10 +2097,12 @@ pub struct PullReviewRequestOptions {
 /// PushMirror represents information of a push mirror
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PushMirror {
-    pub created: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub created: Option<time::OffsetDateTime>,
     pub interval: Option<String>,
     pub last_error: Option<String>,
-    pub last_update: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub last_update: Option<time::OffsetDateTime>,
     pub remote_address: Option<String>,
     pub remote_name: Option<String>,
     pub repo_name: Option<String>,
@@ -2120,6 +2162,12 @@ pub struct RenameUserOption {
     pub new_username: String,
 }
 
+/// ReplaceFlagsOption options when replacing the flags of a repository
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ReplaceFlagsOption {
+    pub flags: Option<Vec<String>>,
+}
+
 /// RepoCollaboratorPermission to get repository permission for a collaborator
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RepoCollaboratorPermission {
@@ -2157,6 +2205,7 @@ pub struct RepoTransfer {
 /// Repository represents a repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Repository {
+    pub allow_fast_forward_only_merge: Option<bool>,
     pub allow_merge_commits: Option<bool>,
     pub allow_rebase: Option<bool>,
     pub allow_rebase_explicit: Option<bool>,
@@ -2204,6 +2253,8 @@ pub struct Repository {
     #[serde(with = "time::serde::rfc3339::option")]
     pub mirror_updated: Option<time::OffsetDateTime>,
     pub name: Option<String>,
+    /// ObjectFormatName of the underlying git repository
+    pub object_format_name: Option<RepositoryObjectFormatName>,
     pub open_issues_count: Option<u64>,
     pub open_pr_counter: Option<u64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -2224,8 +2275,18 @@ pub struct Repository {
     pub url: Option<url::Url>,
     pub watchers_count: Option<u64>,
     pub website: Option<String>,
+    pub wiki_branch: Option<String>,
 }
 
+/// ObjectFormatName of the underlying git repository
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum RepositoryObjectFormatName {
+    #[serde(rename = "sha1")]
+    Sha1,
+    #[serde(rename = "sha256")]
+    Sha256,
+}
 /// RepositoryMeta basic repository information
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RepositoryMeta {
@@ -2485,6 +2546,8 @@ pub struct User {
     pub login_name: Option<String>,
     /// Is user login prohibited
     pub prohibit_login: Option<bool>,
+    /// the user's pronouns
+    pub pronouns: Option<String>,
     /// Is user restricted
     pub restricted: Option<bool>,
     pub starred_repos_count: Option<u64>,
@@ -2506,12 +2569,14 @@ pub struct UserHeatmapData {
 pub struct UserSettings {
     pub description: Option<String>,
     pub diff_view_style: Option<String>,
+    pub enable_repo_unit_hints: Option<bool>,
     pub full_name: Option<String>,
     pub hide_activity: Option<bool>,
     /// Privacy
     pub hide_email: Option<bool>,
     pub language: Option<String>,
     pub location: Option<String>,
+    pub pronouns: Option<String>,
     pub theme: Option<String>,
     pub website: Option<String>,
 }
@@ -2521,12 +2586,14 @@ pub struct UserSettings {
 pub struct UserSettingsOptions {
     pub description: Option<String>,
     pub diff_view_style: Option<String>,
+    pub enable_repo_unit_hints: Option<bool>,
     pub full_name: Option<String>,
     pub hide_activity: Option<bool>,
     /// Privacy
     pub hide_email: Option<bool>,
     pub language: Option<String>,
     pub location: Option<String>,
+    pub pronouns: Option<String>,
     pub theme: Option<String>,
     pub website: Option<String>,
 }
@@ -2593,7 +2660,7 @@ pub struct ChangedFileListHeaders {
     pub x_page: Option<u64>,
     pub x_page_count: Option<u64>,
     pub x_per_page: Option<u64>,
-    pub x_total: Option<u64>,
+    pub x_total_count: Option<u64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
@@ -2632,8 +2699,8 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_total = map
-            .get("X-Total")
+        let x_total_count = map
+            .get("X-Total-Count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<u64>()
@@ -2645,7 +2712,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             x_page,
             x_page_count,
             x_per_page,
-            x_total,
+            x_total_count,
         })
     }
 }
@@ -2709,6 +2776,25 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
             x_per_page,
             x_total,
         })
+    }
+}
+
+pub struct RegistrationTokenHeaders {
+    pub token: Option<String>,
+}
+
+impl TryFrom<&reqwest::header::HeaderMap> for RegistrationTokenHeaders {
+    type Error = StructureError;
+
+    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+        let token = map
+            .get("token")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                Ok(s.to_string())
+            })
+            .transpose()?;
+        Ok(Self { token })
     }
 }
 
@@ -2793,6 +2879,33 @@ impl TryFrom<&reqwest::header::HeaderMap> for InvalidTopicsErrorHeaders {
             invalid_topics,
             message,
         })
+    }
+}
+
+pub struct RepoArchivedErrorHeaders {
+    pub message: Option<String>,
+    pub url: Option<String>,
+}
+
+impl TryFrom<&reqwest::header::HeaderMap> for RepoArchivedErrorHeaders {
+    type Error = StructureError;
+
+    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+        let message = map
+            .get("message")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                Ok(s.to_string())
+            })
+            .transpose()?;
+        let url = map
+            .get("url")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                Ok(s.to_string())
+            })
+            .transpose()?;
+        Ok(Self { message, url })
     }
 }
 
@@ -4145,7 +4258,7 @@ pub struct IssueListIssuesQuery {
     pub since: Option<time::OffsetDateTime>,
     /// Only show items updated before the given time. This is a timestamp in RFC 3339 format
     pub before: Option<time::OffsetDateTime>,
-    /// Only show items which were created by the the given user
+    /// Only show items which were created by the given user
     pub created_by: Option<String>,
     /// Only show items for which the given user is assigned
     pub assigned_by: Option<String>,
@@ -5078,8 +5191,6 @@ pub struct RepoListReleasesQuery {
     pub draft: Option<bool>,
     /// filter (exclude / include) pre-releases
     pub pre_release: Option<bool>,
-    /// page size of results, deprecated - use limit
-    pub per_page: Option<u32>,
     /// page number of results to return (1-based)
     pub page: Option<u32>,
     /// page size of results
@@ -5093,9 +5204,6 @@ impl std::fmt::Display for RepoListReleasesQuery {
         }
         if let Some(pre_release) = &self.pre_release {
             write!(f, "pre-release={pre_release}&")?;
-        }
-        if let Some(per_page) = &self.per_page {
-            write!(f, "per_page={per_page}&")?;
         }
         if let Some(page) = &self.page {
             write!(f, "page={page}&")?;

@@ -169,6 +169,18 @@ impl crate::Forgejo {
         }
     }
 
+    /// Get an global actions runner registration token
+    pub async fn admin_get_runner_registration_token(
+        &self,
+    ) -> Result<RegistrationTokenHeaders, ForgejoError> {
+        let request = self.get("admin/runners/registration-token").build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.headers().try_into()?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// List unadopted repositories
     ///
     pub async fn admin_unadopted_list(
@@ -660,6 +672,23 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get an organization's actions runner registration token
+    ///
+    /// - `org`: name of the organization
+    pub async fn org_get_runner_registration_token(
+        &self,
+        org: &str,
+    ) -> Result<RegistrationTokenHeaders, ForgejoError> {
+        let request = self
+            .get(&format!("orgs/{org}/actions/runners/registration-token"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.headers().try_into()?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1884,6 +1913,27 @@ impl crate::Forgejo {
         }
     }
 
+    /// Get the pull request of the commit
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `sha`: SHA of the commit to get
+    pub async fn repo_get_commit_pull_request(
+        &self,
+        owner: &str,
+        repo: &str,
+        sha: &str,
+    ) -> Result<PullRequest, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/commits/{sha}/pull"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// Gets the metadata of all the entries of the root dir
     ///
     /// - `owner`: owner of the repo
@@ -2062,6 +2112,123 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List a repository's flags
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub async fn repo_list_flags(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> Result<Vec<String>, ForgejoError> {
+        let request = self.get(&format!("repos/{owner}/{repo}/flags")).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Replace all flags of a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `body`: See [`ReplaceFlagsOption`]
+    pub async fn repo_replace_all_flags(
+        &self,
+        owner: &str,
+        repo: &str,
+        body: ReplaceFlagsOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .put(&format!("repos/{owner}/{repo}/flags"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Remove all flags from a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub async fn repo_delete_all_flags(&self, owner: &str, repo: &str) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("repos/{owner}/{repo}/flags"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Check if a repository has a given flag
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `flag`: name of the flag
+    pub async fn repo_check_flag(
+        &self,
+        owner: &str,
+        repo: &str,
+        flag: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/flags/{flag}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Add a flag to a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `flag`: name of the flag
+    pub async fn repo_add_flag(
+        &self,
+        owner: &str,
+        repo: &str,
+        flag: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .put(&format!("repos/{owner}/{repo}/flags/{flag}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Remove a flag from a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `flag`: name of the flag
+    pub async fn repo_delete_flag(
+        &self,
+        owner: &str,
+        repo: &str,
+        flag: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("repos/{owner}/{repo}/flags/{flag}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4396,6 +4563,29 @@ impl crate::Forgejo {
         }
     }
 
+    /// Get a pull request by base and head
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `base`: base of the pull request to get
+    /// - `head`: head of the pull request to get
+    pub async fn repo_get_pull_request_by_base_head(
+        &self,
+        owner: &str,
+        repo: &str,
+        base: &str,
+        head: &str,
+    ) -> Result<PullRequest, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/pulls/{base}/{head}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// Get a pull request
     ///
     /// - `owner`: owner of the repo
@@ -4772,6 +4962,88 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Add a new comment to a pull request review
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `index`: index of the pull request
+    /// - `id`: id of the review
+    /// - `body`: See [`serde_json::Value`]
+    pub async fn repo_create_pull_review_comment(
+        &self,
+        owner: &str,
+        repo: &str,
+        index: u64,
+        id: u64,
+        body: serde_json::Value,
+    ) -> Result<PullReviewComment, ForgejoError> {
+        let request = self
+            .post(&format!(
+                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
+            ))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get a pull review comment
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `index`: index of the pull request
+    /// - `id`: id of the review
+    /// - `comment`: id of the comment
+    pub async fn repo_get_pull_review_comment(
+        &self,
+        owner: &str,
+        repo: &str,
+        index: u64,
+        id: u64,
+        comment: u64,
+    ) -> Result<PullReviewComment, ForgejoError> {
+        let request = self
+            .get(&format!(
+                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments/{comment}"
+            ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Delete a pull review comment
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `index`: index of the pull request
+    /// - `id`: id of the review
+    /// - `comment`: id of the comment
+    pub async fn repo_delete_pull_review_comment(
+        &self,
+        owner: &str,
+        repo: &str,
+        index: u64,
+        id: u64,
+        comment: u64,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!(
+                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments/{comment}"
+            ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5292,6 +5564,25 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get a repository's actions runner registration token
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub async fn repo_get_runner_registration_token(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> Result<RegistrationTokenHeaders, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/runners/registration-token"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.headers().try_into()?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6248,6 +6539,20 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get an user's actions runner registration token
+    pub async fn user_get_runner_registration_token(
+        &self,
+    ) -> Result<RegistrationTokenHeaders, ForgejoError> {
+        let request = self
+            .get("user/actions/runners/registration-token")
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.headers().try_into()?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
