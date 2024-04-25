@@ -17348,7 +17348,7 @@
     "CreateRepoOption": {
       "description": "CreateRepoOption options when creating repository",
       "type": "object",
-      "required": ["name", "object_format_name"],
+      "required": ["name"],
       "properties": {
         "auto_init": {
           "description": "Whether the repository should be auto-initialized?",
@@ -17385,12 +17385,6 @@
           "type": "string",
           "uniqueItems": true,
           "x-go-name": "Name"
-        },
-        "object_format_name": {
-          "description": "ObjectFormatName of the underlying git repository",
-          "type": "string",
-          "enum": ["sha1", "sha256"],
-          "x-go-name": "ObjectFormatName"
         },
         "private": {
           "description": "Whether the repository is private",
@@ -21262,12 +21256,6 @@
         "name": {
           "type": "string",
           "x-go-name": "Name"
-        },
-        "object_format_name": {
-          "description": "ObjectFormatName of the underlying git repository",
-          "type": "string",
-          "enum": ["sha1", "sha256"],
-          "x-go-name": "ObjectFormatName"
         },
         "open_issues_count": {
           "type": "integer",
