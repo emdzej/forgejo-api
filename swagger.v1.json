@@ -1,14 +1,7 @@
 {
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
-  "schemes": [
-    "http",
-    "https"
-  ],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "schemes": ["http", "https"],
   "swagger": "2.0",
   "info": {
     "description": "This documentation describes the Forgejo API.",
@@ -23,12 +16,8 @@
   "paths": {
     "/activitypub/user-id/{user-id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "activitypub"
-        ],
+        "produces": ["application/json"],
+        "tags": ["activitypub"],
         "summary": "Returns the Person actor for a user",
         "operationId": "activitypubPerson",
         "parameters": [
@@ -49,12 +38,8 @@
     },
     "/activitypub/user-id/{user-id}/inbox": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "activitypub"
-        ],
+        "produces": ["application/json"],
+        "tags": ["activitypub"],
         "summary": "Send to the inbox",
         "operationId": "activitypubPersonInbox",
         "parameters": [
@@ -75,12 +60,8 @@
     },
     "/admin/cron": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "List cron tasks",
         "operationId": "adminCronList",
         "parameters": [
@@ -109,12 +90,8 @@
     },
     "/admin/cron/{task}": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Run cron task",
         "operationId": "adminCronRun",
         "parameters": [
@@ -138,12 +115,8 @@
     },
     "/admin/emails": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "List all emails",
         "operationId": "adminGetAllEmails",
         "parameters": [
@@ -172,12 +145,8 @@
     },
     "/admin/emails/search": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Search all emails",
         "operationId": "adminSearchEmails",
         "parameters": [
@@ -212,12 +181,8 @@
     },
     "/admin/hooks": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "List system's webhooks",
         "operationId": "adminListHooks",
         "parameters": [
@@ -241,15 +206,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Create a hook",
         "operationId": "adminCreateHook",
         "parameters": [
@@ -271,12 +230,8 @@
     },
     "/admin/hooks/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Get a hook",
         "operationId": "adminGetHook",
         "parameters": [
@@ -296,12 +251,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Delete a hook",
         "operationId": "adminDeleteHook",
         "parameters": [
@@ -321,15 +272,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Update a hook",
         "operationId": "adminEditHook",
         "parameters": [
@@ -358,12 +303,8 @@
     },
     "/admin/orgs": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "List all organizations",
         "operationId": "adminGetAllOrgs",
         "parameters": [
@@ -392,12 +333,8 @@
     },
     "/admin/unadopted": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "List unadopted repositories",
         "operationId": "adminUnadoptedList",
         "parameters": [
@@ -432,12 +369,8 @@
     },
     "/admin/unadopted/{owner}/{repo}": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Adopt unadopted files as a repository",
         "operationId": "adminAdoptRepository",
         "parameters": [
@@ -469,12 +402,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Delete unadopted files",
         "operationId": "adminDeleteUnadoptedRepository",
         "parameters": [
@@ -505,12 +434,8 @@
     },
     "/admin/users": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Search users according filter conditions",
         "operationId": "adminSearchUsers",
         "parameters": [
@@ -550,15 +475,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Create a user",
         "operationId": "adminCreateUser",
         "parameters": [
@@ -588,12 +507,8 @@
     },
     "/admin/users/{username}": {
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Delete a user",
         "operationId": "adminDeleteUser",
         "parameters": [
@@ -627,15 +542,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Edit an existing user",
         "operationId": "adminEditUser",
         "parameters": [
@@ -669,15 +578,9 @@
     },
     "/admin/users/{username}/keys": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Add a public key on behalf of a user",
         "operationId": "adminCreatePublicKey",
         "parameters": [
@@ -711,12 +614,8 @@
     },
     "/admin/users/{username}/keys/{id}": {
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Delete a user's public key",
         "operationId": "adminDeleteUserPublicKey",
         "parameters": [
@@ -751,15 +650,9 @@
     },
     "/admin/users/{username}/orgs": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Create an organization",
         "operationId": "adminCreateOrg",
         "parameters": [
@@ -794,12 +687,8 @@
     },
     "/admin/users/{username}/rename": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Rename a user",
         "operationId": "adminRenameUser",
         "parameters": [
@@ -834,15 +723,9 @@
     },
     "/admin/users/{username}/repos": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
         "summary": "Create a repository on behalf of a user",
         "operationId": "adminCreateRepo",
         "parameters": [
@@ -886,12 +769,8 @@
     },
     "/gitignore/templates": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns a list of all gitignore templates",
         "operationId": "listGitignoresTemplates",
         "responses": {
@@ -903,12 +782,8 @@
     },
     "/gitignore/templates/{name}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns information about a gitignore template",
         "operationId": "getGitignoreTemplateInfo",
         "parameters": [
@@ -932,12 +807,8 @@
     },
     "/label/templates": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns a list of all label templates",
         "operationId": "listLabelTemplates",
         "responses": {
@@ -949,12 +820,8 @@
     },
     "/label/templates/{name}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns all labels in a template",
         "operationId": "getLabelTemplateInfo",
         "parameters": [
@@ -978,12 +845,8 @@
     },
     "/licenses": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns a list of all license templates",
         "operationId": "listLicenseTemplates",
         "responses": {
@@ -995,12 +858,8 @@
     },
     "/licenses/{name}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns information about a license template",
         "operationId": "getLicenseTemplateInfo",
         "parameters": [
@@ -1024,15 +883,9 @@
     },
     "/markdown": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["text/html"],
+        "tags": ["miscellaneous"],
         "summary": "Render a markdown document as HTML",
         "operationId": "renderMarkdown",
         "parameters": [
@@ -1056,15 +909,9 @@
     },
     "/markdown/raw": {
       "post": {
-        "consumes": [
-          "text/plain"
-        ],
-        "produces": [
-          "text/html"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "consumes": ["text/plain"],
+        "produces": ["text/html"],
+        "tags": ["miscellaneous"],
         "summary": "Render raw markdown as HTML",
         "operationId": "renderMarkdownRaw",
         "parameters": [
@@ -1090,15 +937,9 @@
     },
     "/markup": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["text/html"],
+        "tags": ["miscellaneous"],
         "summary": "Render a markup document as HTML",
         "operationId": "renderMarkup",
         "parameters": [
@@ -1122,12 +963,8 @@
     },
     "/nodeinfo": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns the nodeinfo of the Gitea application",
         "operationId": "getNodeInfo",
         "responses": {
@@ -1139,15 +976,9 @@
     },
     "/notifications": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "notification"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["notification"],
         "summary": "List users's notification threads",
         "operationId": "notifyGetList",
         "parameters": [
@@ -1170,12 +1001,7 @@
           {
             "type": "array",
             "items": {
-              "enum": [
-                "issue",
-                "pull",
-                "commit",
-                "repository"
-              ],
+              "enum": ["issue", "pull", "commit", "repository"],
               "type": "string"
             },
             "collectionFormat": "multi",
@@ -1217,15 +1043,9 @@
         }
       },
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "notification"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["notification"],
         "summary": "Mark notification threads as read, pinned or unread",
         "operationId": "notifyReadList",
         "parameters": [
@@ -1268,9 +1088,7 @@
     },
     "/notifications/new": {
       "get": {
-        "tags": [
-          "notification"
-        ],
+        "tags": ["notification"],
         "summary": "Check if unread notifications exist",
         "operationId": "notifyNewAvailable",
         "responses": {
@@ -1282,15 +1100,9 @@
     },
     "/notifications/threads/{id}": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "notification"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["notification"],
         "summary": "Get notification thread by ID",
         "operationId": "notifyGetThread",
         "parameters": [
@@ -1315,15 +1127,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "notification"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["notification"],
         "summary": "Mark notification thread as read by ID",
         "operationId": "notifyReadThread",
         "parameters": [
@@ -1357,15 +1163,9 @@
     },
     "/org/{org}/repos": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Create a repository in an organization",
         "operationId": "createOrgRepoDeprecated",
         "deprecated": true,
@@ -1403,12 +1203,8 @@
     },
     "/orgs": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Get list of organizations",
         "operationId": "orgGetAll",
         "parameters": [
@@ -1432,15 +1228,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Create an organization",
         "operationId": "orgCreate",
         "parameters": [
@@ -1468,12 +1258,8 @@
     },
     "/orgs/{org}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Get an organization",
         "operationId": "orgGet",
         "parameters": [
@@ -1495,12 +1281,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Delete an organization",
         "operationId": "orgDelete",
         "parameters": [
@@ -1522,15 +1304,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Edit an organization",
         "operationId": "orgEdit",
         "parameters": [
@@ -1562,12 +1338,8 @@
     },
     "/orgs/{org}/actions/secrets": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's actions secrets",
         "operationId": "orgListActionsSecrets",
         "parameters": [
@@ -1603,15 +1375,9 @@
     },
     "/orgs/{org}/actions/secrets/{secretname}": {
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Create or Update a secret value in an organization",
         "operationId": "updateOrgSecret",
         "parameters": [
@@ -1653,15 +1419,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Delete a secret in an organization",
         "operationId": "deleteOrgSecret",
         "parameters": [
@@ -1695,12 +1455,8 @@
     },
     "/orgs/{org}/activities/feeds": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's activity feeds",
         "operationId": "orgListActivityFeeds",
         "parameters": [
@@ -1743,12 +1499,8 @@
     },
     "/orgs/{org}/avatar": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Update Avatar",
         "operationId": "orgUpdateAvatar",
         "parameters": [
@@ -1777,12 +1529,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Delete Avatar",
         "operationId": "orgDeleteAvatar",
         "parameters": [
@@ -1806,12 +1554,8 @@
     },
     "/orgs/{org}/block/{username}": {
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Blocks a user from the organization",
         "operationId": "orgBlockUser",
         "parameters": [
@@ -1845,12 +1589,8 @@
     },
     "/orgs/{org}/hooks": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's webhooks",
         "operationId": "orgListHooks",
         "parameters": [
@@ -1884,15 +1624,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Create a hook",
         "operationId": "orgCreateHook",
         "parameters": [
@@ -1924,12 +1658,8 @@
     },
     "/orgs/{org}/hooks/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Get a hook",
         "operationId": "orgGetHook",
         "parameters": [
@@ -1959,12 +1689,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Delete a hook",
         "operationId": "orgDeleteHook",
         "parameters": [
@@ -1994,15 +1720,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Update a hook",
         "operationId": "orgEditHook",
         "parameters": [
@@ -2041,12 +1761,8 @@
     },
     "/orgs/{org}/labels": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's labels",
         "operationId": "orgListLabels",
         "parameters": [
@@ -2080,15 +1796,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Create a label for an organization",
         "operationId": "orgCreateLabel",
         "parameters": [
@@ -2122,12 +1832,8 @@
     },
     "/orgs/{org}/labels/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Get a single label",
         "operationId": "orgGetLabel",
         "parameters": [
@@ -2157,9 +1863,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "summary": "Delete a label",
         "operationId": "orgDeleteLabel",
         "parameters": [
@@ -2189,15 +1893,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Update a label",
         "operationId": "orgEditLabel",
         "parameters": [
@@ -2239,12 +1937,8 @@
     },
     "/orgs/{org}/list_blocked": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List the organization's blocked users",
         "operationId": "orgListBlockedUsers",
         "parameters": [
@@ -2277,12 +1971,8 @@
     },
     "/orgs/{org}/members": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's members",
         "operationId": "orgListMembers",
         "parameters": [
@@ -2318,9 +2008,7 @@
     },
     "/orgs/{org}/members/{username}": {
       "get": {
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "summary": "Check if a user is a member of an organization",
         "operationId": "orgIsMember",
         "parameters": [
@@ -2352,12 +2040,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Remove a member from an organization",
         "operationId": "orgDeleteMember",
         "parameters": [
@@ -2388,12 +2072,8 @@
     },
     "/orgs/{org}/public_members": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's public members",
         "operationId": "orgListPublicMembers",
         "parameters": [
@@ -2429,9 +2109,7 @@
     },
     "/orgs/{org}/public_members/{username}": {
       "get": {
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "summary": "Check if a user is a public member of an organization",
         "operationId": "orgIsPublicMember",
         "parameters": [
@@ -2460,12 +2138,8 @@
         }
       },
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Publicize a user's membership",
         "operationId": "orgPublicizeMember",
         "parameters": [
@@ -2497,12 +2171,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Conceal a user's membership",
         "operationId": "orgConcealMember",
         "parameters": [
@@ -2536,12 +2206,8 @@
     },
     "/orgs/{org}/repos": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's repos",
         "operationId": "orgListRepos",
         "parameters": [
@@ -2575,15 +2241,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Create a repository in an organization",
         "operationId": "createOrgRepo",
         "parameters": [
@@ -2620,12 +2280,8 @@
     },
     "/orgs/{org}/teams": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List an organization's teams",
         "operationId": "orgListTeams",
         "parameters": [
@@ -2659,15 +2315,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Create a team",
         "operationId": "orgCreateTeam",
         "parameters": [
@@ -2701,12 +2351,8 @@
     },
     "/orgs/{org}/teams/search": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Search for teams within an organization",
         "operationId": "teamSearch",
         "parameters": [
@@ -2768,12 +2414,8 @@
     },
     "/orgs/{org}/unblock/{username}": {
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Unblock a user from the organization",
         "operationId": "orgUnblockUser",
         "parameters": [
@@ -2807,12 +2449,8 @@
     },
     "/packages/{owner}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "package"
-        ],
+        "produces": ["application/json"],
+        "tags": ["package"],
         "summary": "Gets all packages of an owner",
         "operationId": "listPackages",
         "parameters": [
@@ -2883,12 +2521,8 @@
     },
     "/packages/{owner}/{type}/{name}/{version}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "package"
-        ],
+        "produces": ["application/json"],
+        "tags": ["package"],
         "summary": "Gets a package",
         "operationId": "getPackage",
         "parameters": [
@@ -2931,9 +2565,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "package"
-        ],
+        "tags": ["package"],
         "summary": "Delete a package",
         "operationId": "deletePackage",
         "parameters": [
@@ -2978,12 +2610,8 @@
     },
     "/packages/{owner}/{type}/{name}/{version}/files": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "package"
-        ],
+        "produces": ["application/json"],
+        "tags": ["package"],
         "summary": "Gets all files of a package",
         "operationId": "listPackageFiles",
         "parameters": [
@@ -3028,12 +2656,8 @@
     },
     "/repos/issues/search": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Search for issues across the repositories that the user has access to",
         "operationId": "issueSearchIssues",
         "parameters": [
@@ -3152,15 +2776,9 @@
     },
     "/repos/migrate": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Migrate a remote git repository",
         "operationId": "repoMigrate",
         "parameters": [
@@ -3190,12 +2808,8 @@
     },
     "/repos/search": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Search for repositories",
         "operationId": "repoSearch",
         "parameters": [
@@ -3318,12 +2932,8 @@
     },
     "/repos/{owner}/{repo}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a repository",
         "operationId": "repoGet",
         "parameters": [
@@ -3352,12 +2962,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a repository",
         "operationId": "repoDelete",
         "parameters": [
@@ -3389,12 +2995,8 @@
         }
       },
       "patch": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Edit a repository's properties. Only fields that are set will be changed.",
         "operationId": "repoEdit",
         "parameters": [
@@ -3439,15 +3041,9 @@
     },
     "/repos/{owner}/{repo}/actions/secrets/{secretname}": {
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create or Update a secret value in a repository",
         "operationId": "updateRepoSecret",
         "parameters": [
@@ -3496,15 +3092,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a secret in a repository",
         "operationId": "deleteRepoSecret",
         "parameters": [
@@ -3545,12 +3135,8 @@
     },
     "/repos/{owner}/{repo}/activities/feeds": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repository's activity feeds",
         "operationId": "repoListActivityFeeds",
         "parameters": [
@@ -3605,9 +3191,7 @@
           "application/zip,",
           "application/gzip"
         ],
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Get an archive of a repository",
         "operationId": "repoGetArchive",
         "parameters": [
@@ -3645,12 +3229,8 @@
     },
     "/repos/{owner}/{repo}/assignees": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Return all users that have write access and can be assigned to issues",
         "operationId": "repoGetAssignees",
         "parameters": [
@@ -3681,12 +3261,8 @@
     },
     "/repos/{owner}/{repo}/avatar": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Update avatar",
         "operationId": "repoUpdateAvatar",
         "parameters": [
@@ -3722,12 +3298,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete avatar",
         "operationId": "repoDeleteAvatar",
         "parameters": [
@@ -3758,12 +3330,8 @@
     },
     "/repos/{owner}/{repo}/branch_protections": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List branch protections for a repository",
         "operationId": "repoListBranchProtection",
         "parameters": [
@@ -3789,15 +3357,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a branch protections for a repository",
         "operationId": "repoCreateBranchProtection",
         "parameters": [
@@ -3841,12 +3403,8 @@
     },
     "/repos/{owner}/{repo}/branch_protections/{name}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a specific branch protection for the repository",
         "operationId": "repoGetBranchProtection",
         "parameters": [
@@ -3882,12 +3440,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a specific branch protection for the repository",
         "operationId": "repoDeleteBranchProtection",
         "parameters": [
@@ -3923,15 +3477,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Edit a branch protections for a repository. Only fields that are set will be changed",
         "operationId": "repoEditBranchProtection",
         "parameters": [
@@ -3979,12 +3527,8 @@
     },
     "/repos/{owner}/{repo}/branches": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repository's branches",
         "operationId": "repoListBranches",
         "parameters": [
@@ -4022,15 +3566,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a branch",
         "operationId": "repoCreateBranch",
         "parameters": [
@@ -4074,12 +3612,8 @@
     },
     "/repos/{owner}/{repo}/branches/{branch}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Retrieve a specific branch from a repository, including its effective branch protection",
         "operationId": "repoGetBranch",
         "parameters": [
@@ -4115,12 +3649,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a specific branch from a repository",
         "operationId": "repoDeleteBranch",
         "parameters": [
@@ -4161,12 +3691,8 @@
     },
     "/repos/{owner}/{repo}/collaborators": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repository's collaborators",
         "operationId": "repoListCollaborators",
         "parameters": [
@@ -4209,12 +3735,8 @@
     },
     "/repos/{owner}/{repo}/collaborators/{collaborator}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Check if a user is a collaborator of a repository",
         "operationId": "repoCheckCollaborator",
         "parameters": [
@@ -4253,12 +3775,8 @@
         }
       },
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Add a collaborator to a repository",
         "operationId": "repoAddCollaborator",
         "parameters": [
@@ -4307,12 +3825,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a collaborator from a repository",
         "operationId": "repoDeleteCollaborator",
         "parameters": [
@@ -4353,12 +3867,8 @@
     },
     "/repos/{owner}/{repo}/collaborators/{collaborator}/permission": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get repository permissions for a user",
         "operationId": "repoGetRepoPermissions",
         "parameters": [
@@ -4399,12 +3909,8 @@
     },
     "/repos/{owner}/{repo}/commits": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a list of all commits from a repository",
         "operationId": "repoGetAllCommits",
         "parameters": [
@@ -4486,12 +3992,8 @@
     },
     "/repos/{owner}/{repo}/commits/{ref}/status": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a commit's combined status, by branch/tag/commit reference",
         "operationId": "repoGetCombinedStatusByRef",
         "parameters": [
@@ -4544,12 +4046,8 @@
     },
     "/repos/{owner}/{repo}/commits/{ref}/statuses": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a commit's statuses, by branch/tag/commit reference",
         "operationId": "repoListStatusesByRef",
         "parameters": [
@@ -4588,13 +4086,7 @@
             "in": "query"
           },
           {
-            "enum": [
-              "pending",
-              "success",
-              "error",
-              "failure",
-              "warning"
-            ],
+            "enum": ["pending", "success", "error", "failure", "warning"],
             "type": "string",
             "description": "type of state",
             "name": "state",
@@ -4628,12 +4120,8 @@
     },
     "/repos/{owner}/{repo}/contents": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Gets the metadata of all the entries of the root dir",
         "operationId": "repoGetContentsList",
         "parameters": [
@@ -4668,15 +4156,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Modify multiple files in a repository",
         "operationId": "repoChangeFiles",
         "parameters": [
@@ -4721,12 +4203,8 @@
     },
     "/repos/{owner}/{repo}/contents/{filepath}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Gets the metadata and contents (if a file) of an entry in a repository, or a list of entries if a dir",
         "operationId": "repoGetContents",
         "parameters": [
@@ -4768,15 +4246,9 @@
         }
       },
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Update a file in a repository",
         "operationId": "repoUpdateFile",
         "parameters": [
@@ -4826,15 +4298,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a file in a repository",
         "operationId": "repoCreateFile",
         "parameters": [
@@ -4884,15 +4350,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a file in a repository",
         "operationId": "repoDeleteFile",
         "parameters": [
@@ -4944,15 +4404,9 @@
     },
     "/repos/{owner}/{repo}/diffpatch": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Apply diff patch to repository",
         "operationId": "repoApplyDiffPatch",
         "parameters": [
@@ -4991,12 +4445,8 @@
     },
     "/repos/{owner}/{repo}/editorconfig/{filepath}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get the EditorConfig definitions of a file in a repository",
         "operationId": "repoGetEditorConfig",
         "parameters": [
@@ -5040,12 +4490,8 @@
     },
     "/repos/{owner}/{repo}/forks": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repository's forks",
         "operationId": "listForks",
         "parameters": [
@@ -5086,12 +4532,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Fork a repository",
         "operationId": "createFork",
         "parameters": [
@@ -5138,12 +4580,8 @@
     },
     "/repos/{owner}/{repo}/git/blobs/{sha}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Gets the blob of a repository.",
         "operationId": "GetBlob",
         "parameters": [
@@ -5184,12 +4622,8 @@
     },
     "/repos/{owner}/{repo}/git/commits/{sha}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a single commit from a repository",
         "operationId": "repoGetSingleCommit",
         "parameters": [
@@ -5248,12 +4682,8 @@
     },
     "/repos/{owner}/{repo}/git/commits/{sha}.{diffType}": {
       "get": {
-        "produces": [
-          "text/plain"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["text/plain"],
+        "tags": ["repository"],
         "summary": "Get a commit's diff or patch",
         "operationId": "repoDownloadCommitDiffOrPatch",
         "parameters": [
@@ -5279,10 +4709,7 @@
             "required": true
           },
           {
-            "enum": [
-              "diff",
-              "patch"
-            ],
+            "enum": ["diff", "patch"],
             "type": "string",
             "description": "whether the output is diff or patch",
             "name": "diffType",
@@ -5302,12 +4729,8 @@
     },
     "/repos/{owner}/{repo}/git/notes/{sha}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a note corresponding to a single commit from a repository",
         "operationId": "repoGetNote",
         "parameters": [
@@ -5360,12 +4783,8 @@
     },
     "/repos/{owner}/{repo}/git/refs": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get specified ref or filtered repository's refs",
         "operationId": "repoListAllGitRefs",
         "parameters": [
@@ -5396,12 +4815,8 @@
     },
     "/repos/{owner}/{repo}/git/refs/{ref}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get specified ref or filtered repository's refs",
         "operationId": "repoListGitRefs",
         "parameters": [
@@ -5439,12 +4854,8 @@
     },
     "/repos/{owner}/{repo}/git/tags/{sha}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Gets the tag object of an annotated tag (not lightweight tags)",
         "operationId": "GetAnnotatedTag",
         "parameters": [
@@ -5485,12 +4896,8 @@
     },
     "/repos/{owner}/{repo}/git/trees/{sha}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Gets the tree of a repository.",
         "operationId": "GetTree",
         "parameters": [
@@ -5549,12 +4956,8 @@
     },
     "/repos/{owner}/{repo}/hooks": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List the hooks in a repository",
         "operationId": "repoListHooks",
         "parameters": [
@@ -5595,15 +4998,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a hook",
         "operationId": "repoCreateHook",
         "parameters": [
@@ -5641,12 +5038,8 @@
     },
     "/repos/{owner}/{repo}/hooks/git": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List the Git hooks in a repository",
         "operationId": "repoListGitHooks",
         "parameters": [
@@ -5677,12 +5070,8 @@
     },
     "/repos/{owner}/{repo}/hooks/git/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a Git hook",
         "operationId": "repoGetGitHook",
         "parameters": [
@@ -5718,12 +5107,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a Git hook in a repository",
         "operationId": "repoDeleteGitHook",
         "parameters": [
@@ -5759,12 +5144,8 @@
         }
       },
       "patch": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Edit a Git hook in a repository",
         "operationId": "repoEditGitHook",
         "parameters": [
@@ -5809,12 +5190,8 @@
     },
     "/repos/{owner}/{repo}/hooks/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a hook",
         "operationId": "repoGetHook",
         "parameters": [
@@ -5851,12 +5228,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a hook in a repository",
         "operationId": "repoDeleteHook",
         "parameters": [
@@ -5893,12 +5266,8 @@
         }
       },
       "patch": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Edit a hook in a repository",
         "operationId": "repoEditHook",
         "parameters": [
@@ -5944,12 +5313,8 @@
     },
     "/repos/{owner}/{repo}/hooks/{id}/tests": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Test a push webhook",
         "operationId": "repoTestHook",
         "parameters": [
@@ -5994,12 +5359,8 @@
     },
     "/repos/{owner}/{repo}/issue_config": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Returns the issue config for a repo",
         "operationId": "repoGetIssueConfig",
         "parameters": [
@@ -6030,12 +5391,8 @@
     },
     "/repos/{owner}/{repo}/issue_config/validate": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Returns the validation information for a issue config",
         "operationId": "repoValidateIssueConfig",
         "parameters": [
@@ -6066,12 +5423,8 @@
     },
     "/repos/{owner}/{repo}/issue_templates": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get available issue templates for a repository",
         "operationId": "repoGetIssueTemplates",
         "parameters": [
@@ -6102,12 +5455,8 @@
     },
     "/repos/{owner}/{repo}/issues": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List a repository's issues",
         "operationId": "issueListIssues",
         "parameters": [
@@ -6126,11 +5475,7 @@
             "required": true
           },
           {
-            "enum": [
-              "closed",
-              "open",
-              "all"
-            ],
+            "enum": ["closed", "open", "all"],
             "type": "string",
             "description": "whether issue is open or closed",
             "name": "state",
@@ -6149,10 +5494,7 @@
             "in": "query"
           },
           {
-            "enum": [
-              "issues",
-              "pulls"
-            ],
+            "enum": ["issues", "pulls"],
             "type": "string",
             "description": "filter by type (issues / pulls) if set",
             "name": "type",
@@ -6219,15 +5561,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Create an issue. If using deadline only the date will be taken into account, and time of day ignored.",
         "operationId": "issueCreateIssue",
         "parameters": [
@@ -6274,12 +5610,8 @@
     },
     "/repos/{owner}/{repo}/issues/comments": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List all comments in a repository",
         "operationId": "issueGetRepoComments",
         "parameters": [
@@ -6336,15 +5668,9 @@
     },
     "/repos/{owner}/{repo}/issues/comments/{id}": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get a comment",
         "operationId": "issueGetComment",
         "parameters": [
@@ -6387,9 +5713,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Delete a comment",
         "operationId": "issueDeleteComment",
         "parameters": [
@@ -6429,15 +5753,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Edit a comment",
         "operationId": "issueEditComment",
         "parameters": [
@@ -6489,12 +5807,8 @@
     },
     "/repos/{owner}/{repo}/issues/comments/{id}/assets": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List comment's attachments",
         "operationId": "issueListIssueCommentAttachments",
         "parameters": [
@@ -6531,15 +5845,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Create a comment attachment",
         "operationId": "issueCreateIssueCommentAttachment",
         "parameters": [
@@ -6601,12 +5909,8 @@
     },
     "/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get a comment attachment",
         "operationId": "issueGetIssueCommentAttachment",
         "parameters": [
@@ -6651,12 +5955,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Delete a comment attachment",
         "operationId": "issueDeleteIssueCommentAttachment",
         "parameters": [
@@ -6701,15 +6001,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Edit a comment attachment",
         "operationId": "issueEditIssueCommentAttachment",
         "parameters": [
@@ -6763,15 +6057,9 @@
     },
     "/repos/{owner}/{repo}/issues/comments/{id}/reactions": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get a list of reactions from a comment of an issue",
         "operationId": "issueGetCommentReactions",
         "parameters": [
@@ -6811,15 +6099,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Add a reaction to a comment of an issue",
         "operationId": "issuePostCommentReaction",
         "parameters": [
@@ -6869,15 +6151,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Remove a reaction from a comment of an issue",
         "operationId": "issueDeleteCommentReaction",
         "parameters": [
@@ -6926,12 +6202,8 @@
     },
     "/repos/{owner}/{repo}/issues/pinned": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repo's pinned issues",
         "operationId": "repoListPinnedIssues",
         "parameters": [
@@ -6962,12 +6234,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get an issue",
         "operationId": "issueGetIssue",
         "parameters": [
@@ -7004,9 +6272,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Delete an issue",
         "operationId": "issueDelete",
         "parameters": [
@@ -7046,15 +6312,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Edit an issue. If using deadline only the date will be taken into account, and time of day ignored.",
         "operationId": "issueEditIssue",
         "parameters": [
@@ -7106,12 +6366,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/assets": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List issue's attachments",
         "operationId": "issueListIssueAttachments",
         "parameters": [
@@ -7148,15 +6404,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Create an issue attachment",
         "operationId": "issueCreateIssueAttachment",
         "parameters": [
@@ -7218,12 +6468,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get an issue attachment",
         "operationId": "issueGetIssueAttachment",
         "parameters": [
@@ -7268,12 +6514,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Delete an issue attachment",
         "operationId": "issueDeleteIssueAttachment",
         "parameters": [
@@ -7318,15 +6560,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Edit an issue attachment",
         "operationId": "issueEditIssueAttachment",
         "parameters": [
@@ -7380,12 +6616,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/blocks": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List issues that are blocked by this issue",
         "operationId": "issueListBlocks",
         "parameters": [
@@ -7433,12 +6665,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Block the issue given in the body by the issue in path",
         "operationId": "issueCreateIssueBlocking",
         "parameters": [
@@ -7481,12 +6709,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Unblock the issue given in the body by the issue in path",
         "operationId": "issueRemoveIssueBlocking",
         "parameters": [
@@ -7531,12 +6755,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/comments": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List all comments on an issue",
         "operationId": "issueGetComments",
         "parameters": [
@@ -7587,15 +6807,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Add a comment to an issue",
         "operationId": "issueCreateComment",
         "parameters": [
@@ -7644,9 +6858,7 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/comments/{id}": {
       "delete": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Delete a comment",
         "operationId": "issueDeleteCommentDeprecated",
         "deprecated": true,
@@ -7694,15 +6906,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Edit a comment",
         "operationId": "issueEditCommentDeprecated",
         "deprecated": true,
@@ -7762,15 +6968,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/deadline": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Set an issue deadline. If set to null, the deadline is deleted. If using deadline only the date will be taken into account, and time of day ignored.",
         "operationId": "issueEditIssueDeadline",
         "parameters": [
@@ -7819,12 +7019,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/dependencies": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List an issue's dependencies, i.e all issues that block this issue.",
         "operationId": "issueListIssueDependencies",
         "parameters": [
@@ -7872,12 +7068,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Make the issue in the url depend on the issue in the form.",
         "operationId": "issueCreateIssueDependencies",
         "parameters": [
@@ -7920,12 +7112,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Remove an issue dependency",
         "operationId": "issueRemoveIssueDependencies",
         "parameters": [
@@ -7970,12 +7158,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/labels": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get an issue's labels",
         "operationId": "issueGetLabels",
         "parameters": [
@@ -8012,15 +7196,9 @@
         }
       },
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Replace an issue's labels",
         "operationId": "issueReplaceLabels",
         "parameters": [
@@ -8067,15 +7245,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Add a label to an issue",
         "operationId": "issueAddLabel",
         "parameters": [
@@ -8122,12 +7294,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Remove all labels from an issue",
         "operationId": "issueClearLabels",
         "parameters": [
@@ -8176,12 +7344,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/labels/{id}": {
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Remove a label from an issue",
         "operationId": "issueRemoveLabel",
         "parameters": [
@@ -8241,9 +7405,7 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/pin": {
       "post": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Pin an Issue",
         "operationId": "pinIssue",
         "parameters": [
@@ -8283,9 +7445,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Unpin an Issue",
         "operationId": "unpinIssue",
         "parameters": [
@@ -8327,9 +7487,7 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/pin/{position}": {
       "patch": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Moves the Pin to the given Position",
         "operationId": "moveIssuePin",
         "parameters": [
@@ -8379,15 +7537,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/reactions": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get a list reactions of an issue",
         "operationId": "issueGetIssueReactions",
         "parameters": [
@@ -8439,15 +7591,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Add a reaction to an issue",
         "operationId": "issuePostIssueReaction",
         "parameters": [
@@ -8497,15 +7643,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Remove a reaction from an issue",
         "operationId": "issueDeleteIssueReaction",
         "parameters": [
@@ -8554,15 +7694,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/stopwatch/delete": {
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Delete an issue's existing stopwatch.",
         "operationId": "issueDeleteStopWatch",
         "parameters": [
@@ -8607,15 +7741,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/stopwatch/start": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Start stopwatch on an issue.",
         "operationId": "issueStartStopWatch",
         "parameters": [
@@ -8660,15 +7788,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/stopwatch/stop": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Stop an issue's existing stopwatch.",
         "operationId": "issueStopStopWatch",
         "parameters": [
@@ -8713,15 +7835,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/subscriptions": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get users who subscribed on an issue.",
         "operationId": "issueSubscriptions",
         "parameters": [
@@ -8772,15 +7888,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/subscriptions/check": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Check if user is subscribed to an issue",
         "operationId": "issueCheckSubscription",
         "parameters": [
@@ -8819,15 +7929,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/subscriptions/{user}": {
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Subscribe user to issue",
         "operationId": "issueAddSubscription",
         "parameters": [
@@ -8877,15 +7981,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Unsubscribe user from issue",
         "operationId": "issueDeleteSubscription",
         "parameters": [
@@ -8937,12 +8035,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/timeline": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List all comments and events on an issue",
         "operationId": "issueGetCommentsAndTimeline",
         "parameters": [
@@ -9007,12 +8101,8 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/times": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "List an issue's tracked times",
         "operationId": "issueTrackedTimes",
         "parameters": [
@@ -9081,15 +8171,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Add tracked time to a issue",
         "operationId": "issueAddTime",
         "parameters": [
@@ -9139,15 +8223,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Reset a tracked time of an issue",
         "operationId": "issueResetTime",
         "parameters": [
@@ -9192,15 +8270,9 @@
     },
     "/repos/{owner}/{repo}/issues/{index}/times/{id}": {
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Delete specific tracked time",
         "operationId": "issueDeleteTime",
         "parameters": [
@@ -9253,12 +8325,8 @@
     },
     "/repos/{owner}/{repo}/keys": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repository's keys",
         "operationId": "repoListKeys",
         "parameters": [
@@ -9311,15 +8379,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Add a key to a repository",
         "operationId": "repoCreateKey",
         "parameters": [
@@ -9360,12 +8422,8 @@
     },
     "/repos/{owner}/{repo}/keys/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a repository's key by id",
         "operationId": "repoGetKey",
         "parameters": [
@@ -9402,9 +8460,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Delete a key from a repository",
         "operationId": "repoDeleteKey",
         "parameters": [
@@ -9446,12 +8502,8 @@
     },
     "/repos/{owner}/{repo}/labels": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get all of a repository's labels",
         "operationId": "issueListLabels",
         "parameters": [
@@ -9492,15 +8544,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Create a label",
         "operationId": "issueCreateLabel",
         "parameters": [
@@ -9541,12 +8587,8 @@
     },
     "/repos/{owner}/{repo}/labels/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get a single label",
         "operationId": "issueGetLabel",
         "parameters": [
@@ -9583,9 +8625,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Delete a label",
         "operationId": "issueDeleteLabel",
         "parameters": [
@@ -9622,15 +8662,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Update a label",
         "operationId": "issueEditLabel",
         "parameters": [
@@ -9679,12 +8713,8 @@
     },
     "/repos/{owner}/{repo}/languages": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get languages and number of bytes of code written",
         "operationId": "repoGetLanguages",
         "parameters": [
@@ -9715,9 +8745,7 @@
     },
     "/repos/{owner}/{repo}/media/{filepath}": {
       "get": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Get a file or it's LFS object from a repository",
         "operationId": "repoGetRawFileOrLFS",
         "parameters": [
@@ -9761,12 +8789,8 @@
     },
     "/repos/{owner}/{repo}/milestones": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get all of a repository's opened milestones",
         "operationId": "issueGetMilestonesList",
         "parameters": [
@@ -9819,15 +8843,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Create a milestone",
         "operationId": "issueCreateMilestone",
         "parameters": [
@@ -9865,12 +8883,8 @@
     },
     "/repos/{owner}/{repo}/milestones/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Get a milestone",
         "operationId": "issueGetMilestone",
         "parameters": [
@@ -9906,9 +8920,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "issue"
-        ],
+        "tags": ["issue"],
         "summary": "Delete a milestone",
         "operationId": "issueDeleteMilestone",
         "parameters": [
@@ -9944,15 +8956,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "issue"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["issue"],
         "summary": "Update a milestone",
         "operationId": "issueEditMilestone",
         "parameters": [
@@ -9997,12 +9003,8 @@
     },
     "/repos/{owner}/{repo}/mirror-sync": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Sync a mirrored repository",
         "operationId": "repoMirrorSync",
         "parameters": [
@@ -10036,12 +9038,8 @@
     },
     "/repos/{owner}/{repo}/new_pin_allowed": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Returns if new Issue Pins are allowed",
         "operationId": "repoNewPinAllowed",
         "parameters": [
@@ -10072,15 +9070,9 @@
     },
     "/repos/{owner}/{repo}/notifications": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "notification"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["notification"],
         "summary": "List users's notification threads on a specific repo",
         "operationId": "notifyGetRepoList",
         "parameters": [
@@ -10117,12 +9109,7 @@
           {
             "type": "array",
             "items": {
-              "enum": [
-                "issue",
-                "pull",
-                "commit",
-                "repository"
-              ],
+              "enum": ["issue", "pull", "commit", "repository"],
               "type": "string"
             },
             "collectionFormat": "multi",
@@ -10164,15 +9151,9 @@
         }
       },
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "notification"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["notification"],
         "summary": "Mark notification threads as read, pinned or unread on a specific repo",
         "operationId": "notifyReadRepoList",
         "parameters": [
@@ -10229,12 +9210,8 @@
     },
     "/repos/{owner}/{repo}/pulls": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repo's pull requests",
         "operationId": "repoListPullRequests",
         "parameters": [
@@ -10253,11 +9230,7 @@
             "required": true
           },
           {
-            "enum": [
-              "closed",
-              "open",
-              "all"
-            ],
+            "enum": ["closed", "open", "all"],
             "type": "string",
             "description": "State of pull request: open or closed (optional)",
             "name": "state",
@@ -10318,15 +9291,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a pull request",
         "operationId": "repoCreatePullRequest",
         "parameters": [
@@ -10370,12 +9337,8 @@
     },
     "/repos/{owner}/{repo}/pulls/pinned": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repo's pinned pull requests",
         "operationId": "repoListPinnedPullRequests",
         "parameters": [
@@ -10406,12 +9369,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a pull request",
         "operationId": "repoGetPullRequest",
         "parameters": [
@@ -10448,15 +9407,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Update a pull request. If using deadline only the date will be taken into account, and time of day ignored.",
         "operationId": "repoEditPullRequest",
         "parameters": [
@@ -10514,12 +9467,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}.{diffType}": {
       "get": {
-        "produces": [
-          "text/plain"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["text/plain"],
+        "tags": ["repository"],
         "summary": "Get a pull request diff or patch",
         "operationId": "repoDownloadPullDiffOrPatch",
         "parameters": [
@@ -10546,10 +9495,7 @@
             "required": true
           },
           {
-            "enum": [
-              "diff",
-              "patch"
-            ],
+            "enum": ["diff", "patch"],
             "type": "string",
             "description": "whether the output is diff or patch",
             "name": "diffType",
@@ -10575,12 +9521,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/commits": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get commits for a pull request",
         "operationId": "repoGetPullRequestCommits",
         "parameters": [
@@ -10643,12 +9585,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/files": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get changed files for a pull request",
         "operationId": "repoGetPullRequestFiles",
         "parameters": [
@@ -10681,12 +9619,7 @@
             "in": "query"
           },
           {
-            "enum": [
-              "ignore-all",
-              "ignore-change",
-              "ignore-eol",
-              "show-all"
-            ],
+            "enum": ["ignore-all", "ignore-change", "ignore-eol", "show-all"],
             "type": "string",
             "description": "whitespace behavior",
             "name": "whitespace",
@@ -10717,12 +9650,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/merge": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Check if a pull request has been merged",
         "operationId": "repoPullRequestIsMerged",
         "parameters": [
@@ -10759,12 +9688,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Merge a pull request",
         "operationId": "repoMergePullRequest",
         "parameters": [
@@ -10814,12 +9739,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Cancel the scheduled auto merge for the given pull request",
         "operationId": "repoCancelScheduledAutoMerge",
         "parameters": [
@@ -10861,12 +9782,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/requested_reviewers": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "create review requests for a pull request",
         "operationId": "repoCreatePullReviewRequests",
         "parameters": [
@@ -10914,12 +9831,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "cancel review requests for a pull request",
         "operationId": "repoDeletePullReviewRequests",
         "parameters": [
@@ -10969,12 +9882,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/reviews": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List all reviews for a pull request",
         "operationId": "repoListPullReviews",
         "parameters": [
@@ -11023,12 +9932,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a review to an pull request",
         "operationId": "repoCreatePullReview",
         "parameters": [
@@ -11078,12 +9983,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a specific review for a pull request",
         "operationId": "repoGetPullReview",
         "parameters": [
@@ -11128,12 +10029,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Submit a pending review to an pull request",
         "operationId": "repoSubmitPullReview",
         "parameters": [
@@ -11189,12 +10086,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a specific review from a pull request",
         "operationId": "repoDeletePullReview",
         "parameters": [
@@ -11244,12 +10137,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a specific review for a pull request",
         "operationId": "repoGetPullReviewComments",
         "parameters": [
@@ -11296,12 +10185,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/dismissals": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Dismiss a review for a pull request",
         "operationId": "repoDismissPullReview",
         "parameters": [
@@ -11362,12 +10247,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/undismissals": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Cancel to dismiss a review for a pull request",
         "operationId": "repoUnDismissPullReview",
         "parameters": [
@@ -11420,12 +10301,8 @@
     },
     "/repos/{owner}/{repo}/pulls/{index}/update": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Merge PR's baseBranch into headBranch",
         "operationId": "repoUpdatePullRequest",
         "parameters": [
@@ -11452,10 +10329,7 @@
             "required": true
           },
           {
-            "enum": [
-              "merge",
-              "rebase"
-            ],
+            "enum": ["merge", "rebase"],
             "type": "string",
             "description": "how to update pull request",
             "name": "style",
@@ -11483,12 +10357,8 @@
     },
     "/repos/{owner}/{repo}/push_mirrors": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get all push mirrors of the repository",
         "operationId": "repoListPushMirrors",
         "parameters": [
@@ -11535,15 +10405,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "add a push mirror to the repository",
         "operationId": "repoAddPushMirror",
         "parameters": [
@@ -11587,12 +10451,8 @@
     },
     "/repos/{owner}/{repo}/push_mirrors-sync": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Sync all push mirrored repository",
         "operationId": "repoPushMirrorSync",
         "parameters": [
@@ -11629,12 +10489,8 @@
     },
     "/repos/{owner}/{repo}/push_mirrors/{name}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get push mirror of the repository by remoteName",
         "operationId": "repoGetPushMirrorByRemoteName",
         "parameters": [
@@ -11676,12 +10532,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "deletes a push mirror from a repository by remoteName",
         "operationId": "repoDeletePushMirror",
         "parameters": [
@@ -11722,12 +10574,8 @@
     },
     "/repos/{owner}/{repo}/raw/{filepath}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a file from a repository",
         "operationId": "repoGetRawFile",
         "parameters": [
@@ -11771,12 +10619,8 @@
     },
     "/repos/{owner}/{repo}/releases": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repo's releases",
         "operationId": "repoListReleases",
         "parameters": [
@@ -11835,15 +10679,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a release",
         "operationId": "repoCreateRelease",
         "parameters": [
@@ -11884,12 +10722,8 @@
     },
     "/repos/{owner}/{repo}/releases/latest": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Gets the most recent non-prerelease, non-draft release of a repository, sorted by created_at",
         "operationId": "repoGetLatestRelease",
         "parameters": [
@@ -11920,12 +10754,8 @@
     },
     "/repos/{owner}/{repo}/releases/tags/{tag}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a release by tag name",
         "operationId": "repoGetReleaseByTag",
         "parameters": [
@@ -11961,9 +10791,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Delete a release by tag name",
         "operationId": "repoDeleteReleaseByTag",
         "parameters": [
@@ -12004,12 +10832,8 @@
     },
     "/repos/{owner}/{repo}/releases/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a release",
         "operationId": "repoGetRelease",
         "parameters": [
@@ -12046,9 +10870,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Delete a release",
         "operationId": "repoDeleteRelease",
         "parameters": [
@@ -12088,15 +10910,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Update a release",
         "operationId": "repoEditRelease",
         "parameters": [
@@ -12142,12 +10958,8 @@
     },
     "/repos/{owner}/{repo}/releases/{id}/assets": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List release's attachments",
         "operationId": "repoListReleaseAttachments",
         "parameters": [
@@ -12184,15 +10996,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a release attachment",
         "operationId": "repoCreateReleaseAttachment",
         "parameters": [
@@ -12247,12 +11053,8 @@
     },
     "/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a release attachment",
         "operationId": "repoGetReleaseAttachment",
         "parameters": [
@@ -12297,12 +11099,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a release attachment",
         "operationId": "repoDeleteReleaseAttachment",
         "parameters": [
@@ -12347,15 +11145,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Edit a release attachment",
         "operationId": "repoEditReleaseAttachment",
         "parameters": [
@@ -12409,12 +11201,8 @@
     },
     "/repos/{owner}/{repo}/reviewers": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Return all users that can be requested to review in this repo",
         "operationId": "repoGetReviewers",
         "parameters": [
@@ -12445,12 +11233,8 @@
     },
     "/repos/{owner}/{repo}/signing-key.gpg": {
       "get": {
-        "produces": [
-          "text/plain"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["text/plain"],
+        "tags": ["repository"],
         "summary": "Get signing-key.gpg for given repository",
         "operationId": "repoSigningKey",
         "parameters": [
@@ -12481,12 +11265,8 @@
     },
     "/repos/{owner}/{repo}/stargazers": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repo's stargazers",
         "operationId": "repoListStargazers",
         "parameters": [
@@ -12529,12 +11309,8 @@
     },
     "/repos/{owner}/{repo}/statuses/{sha}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a commit's statuses",
         "operationId": "repoListStatuses",
         "parameters": [
@@ -12573,13 +11349,7 @@
             "in": "query"
           },
           {
-            "enum": [
-              "pending",
-              "success",
-              "error",
-              "failure",
-              "warning"
-            ],
+            "enum": ["pending", "success", "error", "failure", "warning"],
             "type": "string",
             "description": "type of state",
             "name": "state",
@@ -12611,12 +11381,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a commit status",
         "operationId": "repoCreateStatus",
         "parameters": [
@@ -12664,12 +11430,8 @@
     },
     "/repos/{owner}/{repo}/subscribers": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repo's watchers",
         "operationId": "repoListSubscribers",
         "parameters": [
@@ -12712,9 +11474,7 @@
     },
     "/repos/{owner}/{repo}/subscription": {
       "get": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Check if the current user is watching a repo",
         "operationId": "userCurrentCheckSubscription",
         "parameters": [
@@ -12743,9 +11503,7 @@
         }
       },
       "put": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Watch a repo",
         "operationId": "userCurrentPutSubscription",
         "parameters": [
@@ -12774,9 +11532,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Unwatch a repo",
         "operationId": "userCurrentDeleteSubscription",
         "parameters": [
@@ -12807,12 +11563,8 @@
     },
     "/repos/{owner}/{repo}/tags": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repository's tags",
         "operationId": "repoListTags",
         "parameters": [
@@ -12853,12 +11605,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a new git tag in a repository",
         "operationId": "repoCreateTag",
         "parameters": [
@@ -12902,12 +11650,8 @@
     },
     "/repos/{owner}/{repo}/tags/{tag}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get the tag of a repository by tag name",
         "operationId": "repoGetTag",
         "parameters": [
@@ -12943,12 +11687,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a repository's tag by name",
         "operationId": "repoDeleteTag",
         "parameters": [
@@ -12992,12 +11732,8 @@
     },
     "/repos/{owner}/{repo}/teams": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repository's teams",
         "operationId": "repoListTeams",
         "parameters": [
@@ -13028,12 +11764,8 @@
     },
     "/repos/{owner}/{repo}/teams/{team}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Check if a team is assigned to a repository",
         "operationId": "repoCheckTeam",
         "parameters": [
@@ -13072,12 +11804,8 @@
         }
       },
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Add a team to a repository",
         "operationId": "repoAddTeam",
         "parameters": [
@@ -13119,12 +11847,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a team from a repository",
         "operationId": "repoDeleteTeam",
         "parameters": [
@@ -13168,12 +11892,8 @@
     },
     "/repos/{owner}/{repo}/times": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a repo's tracked times",
         "operationId": "repoTrackedTimes",
         "parameters": [
@@ -13242,12 +11962,8 @@
     },
     "/repos/{owner}/{repo}/times/{user}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "List a user's tracked times in a repo",
         "operationId": "userTrackedTimes",
         "deprecated": true,
@@ -13292,12 +12008,8 @@
     },
     "/repos/{owner}/{repo}/topics": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get list of topics that a repository has",
         "operationId": "repoListTopics",
         "parameters": [
@@ -13338,12 +12050,8 @@
         }
       },
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Replace list of topics for a repository",
         "operationId": "repoUpdateTopics",
         "parameters": [
@@ -13384,12 +12092,8 @@
     },
     "/repos/{owner}/{repo}/topics/{topic}": {
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Add a topic to a repository",
         "operationId": "repoAddTopic",
         "parameters": [
@@ -13428,12 +12132,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Delete a topic from a repository",
         "operationId": "repoDeleteTopic",
         "parameters": [
@@ -13474,12 +12174,8 @@
     },
     "/repos/{owner}/{repo}/transfer": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Transfer a repo ownership",
         "operationId": "repoTransfer",
         "parameters": [
@@ -13525,12 +12221,8 @@
     },
     "/repos/{owner}/{repo}/transfer/accept": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Accept a repo transfer",
         "operationId": "acceptRepoTransfer",
         "parameters": [
@@ -13564,12 +12256,8 @@
     },
     "/repos/{owner}/{repo}/transfer/reject": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Reject a repo transfer",
         "operationId": "rejectRepoTransfer",
         "parameters": [
@@ -13603,12 +12291,8 @@
     },
     "/repos/{owner}/{repo}/wiki/new": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a wiki page",
         "operationId": "repoCreateWikiPage",
         "parameters": [
@@ -13652,12 +12336,8 @@
     },
     "/repos/{owner}/{repo}/wiki/page/{pageName}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a wiki page",
         "operationId": "repoGetWikiPage",
         "parameters": [
@@ -13693,9 +12373,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "repository"
-        ],
+        "tags": ["repository"],
         "summary": "Delete a wiki page",
         "operationId": "repoDeleteWikiPage",
         "parameters": [
@@ -13734,12 +12412,8 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "tags": ["repository"],
         "summary": "Edit a wiki page",
         "operationId": "repoEditWikiPage",
         "parameters": [
@@ -13790,12 +12464,8 @@
     },
     "/repos/{owner}/{repo}/wiki/pages": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get all wiki pages",
         "operationId": "repoGetWikiPages",
         "parameters": [
@@ -13838,12 +12508,8 @@
     },
     "/repos/{owner}/{repo}/wiki/revisions/{pageName}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get revisions of a wiki page",
         "operationId": "repoGetWikiPageRevisions",
         "parameters": [
@@ -13887,15 +12553,9 @@
     },
     "/repos/{template_owner}/{template_repo}/generate": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Create a repository using a template",
         "operationId": "generateRepo",
         "parameters": [
@@ -13942,12 +12602,8 @@
     },
     "/repositories/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "Get a repository by id",
         "operationId": "repoGetByID",
         "parameters": [
@@ -13972,12 +12628,8 @@
     },
     "/settings/api": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "settings"
-        ],
+        "produces": ["application/json"],
+        "tags": ["settings"],
         "summary": "Get instance's global settings for api",
         "operationId": "getGeneralAPISettings",
         "responses": {
@@ -13989,12 +12641,8 @@
     },
     "/settings/attachment": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "settings"
-        ],
+        "produces": ["application/json"],
+        "tags": ["settings"],
         "summary": "Get instance's global settings for Attachment",
         "operationId": "getGeneralAttachmentSettings",
         "responses": {
@@ -14006,12 +12654,8 @@
     },
     "/settings/repository": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "settings"
-        ],
+        "produces": ["application/json"],
+        "tags": ["settings"],
         "summary": "Get instance's global settings for repositories",
         "operationId": "getGeneralRepositorySettings",
         "responses": {
@@ -14023,12 +12667,8 @@
     },
     "/settings/ui": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "settings"
-        ],
+        "produces": ["application/json"],
+        "tags": ["settings"],
         "summary": "Get instance's global settings for ui",
         "operationId": "getGeneralUISettings",
         "responses": {
@@ -14040,12 +12680,8 @@
     },
     "/signing-key.gpg": {
       "get": {
-        "produces": [
-          "text/plain"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["text/plain"],
+        "tags": ["miscellaneous"],
         "summary": "Get default signing-key.gpg",
         "operationId": "getSigningKey",
         "responses": {
@@ -14060,12 +12696,8 @@
     },
     "/teams/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Get a team",
         "operationId": "orgGetTeam",
         "parameters": [
@@ -14088,9 +12720,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "organization"
-        ],
+        "tags": ["organization"],
         "summary": "Delete a team",
         "operationId": "orgDeleteTeam",
         "parameters": [
@@ -14113,15 +12743,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Edit a team",
         "operationId": "orgEditTeam",
         "parameters": [
@@ -14152,12 +12776,8 @@
     },
     "/teams/{id}/activities/feeds": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List a team's activity feeds",
         "operationId": "orgListTeamActivityFeeds",
         "parameters": [
@@ -14201,12 +12821,8 @@
     },
     "/teams/{id}/members": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List a team's members",
         "operationId": "orgListTeamMembers",
         "parameters": [
@@ -14243,12 +12859,8 @@
     },
     "/teams/{id}/members/{username}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List a particular member of team",
         "operationId": "orgListTeamMember",
         "parameters": [
@@ -14278,12 +12890,8 @@
         }
       },
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Add a team member",
         "operationId": "orgAddTeamMember",
         "parameters": [
@@ -14313,12 +12921,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Remove a team member",
         "operationId": "orgRemoveTeamMember",
         "parameters": [
@@ -14350,12 +12954,8 @@
     },
     "/teams/{id}/repos": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List a team's repos",
         "operationId": "orgListTeamRepos",
         "parameters": [
@@ -14392,12 +12992,8 @@
     },
     "/teams/{id}/repos/{org}/{repo}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List a particular repo of team",
         "operationId": "orgListTeamRepo",
         "parameters": [
@@ -14434,12 +13030,8 @@
         }
       },
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Add a repository to a team",
         "operationId": "orgAddTeamRepository",
         "parameters": [
@@ -14480,12 +13072,8 @@
       },
       "delete": {
         "description": "This does not delete the repository, it only removes the repository from the team.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Remove a repository from a team",
         "operationId": "orgRemoveTeamRepository",
         "parameters": [
@@ -14527,12 +13115,8 @@
     },
     "/topics/search": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository"
-        ],
+        "produces": ["application/json"],
+        "tags": ["repository"],
         "summary": "search topics via keyword",
         "operationId": "topicSearch",
         "parameters": [
@@ -14571,12 +13155,8 @@
     },
     "/user": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get the authenticated user",
         "operationId": "userGetCurrent",
         "responses": {
@@ -14588,15 +13168,9 @@
     },
     "/user/actions/secrets/{secretname}": {
       "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Create or Update a secret value in a user scope",
         "operationId": "updateUserSecret",
         "parameters": [
@@ -14631,15 +13205,9 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Delete a secret in a user scope",
         "operationId": "deleteUserSecret",
         "parameters": [
@@ -14666,12 +13234,8 @@
     },
     "/user/applications/oauth2": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's oauth2 applications",
         "operationId": "userGetOAuth2Applications",
         "parameters": [
@@ -14695,12 +13259,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "creates a new OAuth2 application",
         "operationId": "userCreateOAuth2Application",
         "parameters": [
@@ -14725,12 +13285,8 @@
     },
     "/user/applications/oauth2/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "get an OAuth2 Application",
         "operationId": "userGetOAuth2Application",
         "parameters": [
@@ -14753,12 +13309,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "delete an OAuth2 Application",
         "operationId": "userDeleteOAuth2Application",
         "parameters": [
@@ -14781,12 +13333,8 @@
         }
       },
       "patch": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "update an OAuth2 Application, this includes regenerating the client secret",
         "operationId": "userUpdateOAuth2Application",
         "parameters": [
@@ -14819,12 +13367,8 @@
     },
     "/user/avatar": {
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Update Avatar",
         "operationId": "userUpdateAvatar",
         "parameters": [
@@ -14843,12 +13387,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Delete Avatar",
         "operationId": "userDeleteAvatar",
         "responses": {
@@ -14860,12 +13400,8 @@
     },
     "/user/block/{username}": {
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Blocks a user from the doer.",
         "operationId": "userBlockUser",
         "parameters": [
@@ -14892,12 +13428,8 @@
     },
     "/user/emails": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's email addresses",
         "operationId": "userListEmails",
         "responses": {
@@ -14907,12 +13439,8 @@
         }
       },
       "post": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Add email addresses",
         "operationId": "userAddEmail",
         "parameters": [
@@ -14934,12 +13462,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Delete email addresses",
         "operationId": "userDeleteEmail",
         "parameters": [
@@ -14963,12 +13487,8 @@
     },
     "/user/followers": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's followers",
         "operationId": "userCurrentListFollowers",
         "parameters": [
@@ -14994,12 +13514,8 @@
     },
     "/user/following": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the users that the authenticated user is following",
         "operationId": "userCurrentListFollowing",
         "parameters": [
@@ -15025,9 +13541,7 @@
     },
     "/user/following/{username}": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Check whether a user is followed by the authenticated user",
         "operationId": "userCurrentCheckFollowing",
         "parameters": [
@@ -15049,9 +13563,7 @@
         }
       },
       "put": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Follow a user",
         "operationId": "userCurrentPutFollow",
         "parameters": [
@@ -15076,9 +13588,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Unfollow a user",
         "operationId": "userCurrentDeleteFollow",
         "parameters": [
@@ -15102,12 +13612,8 @@
     },
     "/user/gpg_key_token": {
       "get": {
-        "produces": [
-          "text/plain"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["text/plain"],
+        "tags": ["user"],
         "summary": "Get a Token to verify",
         "operationId": "getVerificationToken",
         "responses": {
@@ -15122,15 +13628,9 @@
     },
     "/user/gpg_key_verify": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Verify a GPG key",
         "operationId": "userVerifyGPGKey",
         "responses": {
@@ -15148,12 +13648,8 @@
     },
     "/user/gpg_keys": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's GPG keys",
         "operationId": "userCurrentListGPGKeys",
         "parameters": [
@@ -15177,15 +13673,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Create a GPG key",
         "operationId": "userCurrentPostGPGKey",
         "parameters": [
@@ -15212,12 +13702,8 @@
     },
     "/user/gpg_keys/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get a GPG key",
         "operationId": "userCurrentGetGPGKey",
         "parameters": [
@@ -15240,12 +13726,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Remove a GPG key",
         "operationId": "userCurrentDeleteGPGKey",
         "parameters": [
@@ -15273,12 +13755,8 @@
     },
     "/user/hooks": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's webhooks",
         "operationId": "userListHooks",
         "parameters": [
@@ -15302,15 +13780,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Create a hook",
         "operationId": "userCreateHook",
         "parameters": [
@@ -15332,12 +13804,8 @@
     },
     "/user/hooks/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get a hook",
         "operationId": "userGetHook",
         "parameters": [
@@ -15357,12 +13825,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Delete a hook",
         "operationId": "userDeleteHook",
         "parameters": [
@@ -15382,15 +13846,9 @@
         }
       },
       "patch": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Update a hook",
         "operationId": "userEditHook",
         "parameters": [
@@ -15419,12 +13877,8 @@
     },
     "/user/keys": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's public keys",
         "operationId": "userCurrentListKeys",
         "parameters": [
@@ -15454,15 +13908,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Create a public key",
         "operationId": "userCurrentPostKey",
         "parameters": [
@@ -15486,12 +13934,8 @@
     },
     "/user/keys/{id}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get a public key",
         "operationId": "userCurrentGetKey",
         "parameters": [
@@ -15514,12 +13958,8 @@
         }
       },
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Delete a public key",
         "operationId": "userCurrentDeleteKey",
         "parameters": [
@@ -15547,12 +13987,8 @@
     },
     "/user/list_blocked": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's blocked users",
         "operationId": "userListBlockedUsers",
         "parameters": [
@@ -15578,12 +14014,8 @@
     },
     "/user/orgs": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List the current user's organizations",
         "operationId": "orgListCurrentUserOrgs",
         "parameters": [
@@ -15612,12 +14044,8 @@
     },
     "/user/repos": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the repos that the authenticated user owns",
         "operationId": "userCurrentListRepos",
         "parameters": [
@@ -15641,16 +14069,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "repository",
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository", "user"],
         "summary": "Create a repository",
         "operationId": "createCurrentUserRepo",
         "parameters": [
@@ -15680,12 +14101,8 @@
     },
     "/user/settings": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get user settings",
         "operationId": "getUserSettings",
         "responses": {
@@ -15695,12 +14112,8 @@
         }
       },
       "patch": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Update user settings",
         "operationId": "updateUserSettings",
         "parameters": [
@@ -15721,12 +14134,8 @@
     },
     "/user/starred": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "The repos that the authenticated user has starred",
         "operationId": "userCurrentListStarred",
         "parameters": [
@@ -15752,9 +14161,7 @@
     },
     "/user/starred/{owner}/{repo}": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Whether the authenticated is starring the repo",
         "operationId": "userCurrentCheckStarring",
         "parameters": [
@@ -15783,9 +14190,7 @@
         }
       },
       "put": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Star the given repo",
         "operationId": "userCurrentPutStar",
         "parameters": [
@@ -15814,9 +14219,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Unstar the given repo",
         "operationId": "userCurrentDeleteStar",
         "parameters": [
@@ -15847,15 +14250,9 @@
     },
     "/user/stopwatches": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get list of all existing stopwatches",
         "operationId": "userGetStopWatches",
         "parameters": [
@@ -15881,12 +14278,8 @@
     },
     "/user/subscriptions": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List repositories watched by the authenticated user",
         "operationId": "userCurrentListSubscriptions",
         "parameters": [
@@ -15912,12 +14305,8 @@
     },
     "/user/teams": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List all the teams a user belongs to",
         "operationId": "userListTeams",
         "parameters": [
@@ -15943,12 +14332,8 @@
     },
     "/user/times": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the current user's tracked times",
         "operationId": "userCurrentTrackedTimes",
         "parameters": [
@@ -15988,12 +14373,8 @@
     },
     "/user/unblock/{username}": {
       "put": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Unblocks a user from the doer.",
         "operationId": "userUnblockUser",
         "parameters": [
@@ -16020,12 +14401,8 @@
     },
     "/users/search": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Search for users",
         "operationId": "userSearch",
         "parameters": [
@@ -16078,12 +14455,8 @@
     },
     "/users/{username}": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get a user",
         "operationId": "userGet",
         "parameters": [
@@ -16107,12 +14480,8 @@
     },
     "/users/{username}/activities/feeds": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List a user's activity feeds",
         "operationId": "userListActivityFeeds",
         "parameters": [
@@ -16161,12 +14530,8 @@
     },
     "/users/{username}/followers": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the given user's followers",
         "operationId": "userListFollowers",
         "parameters": [
@@ -16202,12 +14567,8 @@
     },
     "/users/{username}/following": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the users that the given user is following",
         "operationId": "userListFollowing",
         "parameters": [
@@ -16243,9 +14604,7 @@
     },
     "/users/{username}/following/{target}": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Check if one user is following another user",
         "operationId": "userCheckFollowing",
         "parameters": [
@@ -16276,12 +14635,8 @@
     },
     "/users/{username}/gpg_keys": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the given user's GPG keys",
         "operationId": "userListGPGKeys",
         "parameters": [
@@ -16317,12 +14672,8 @@
     },
     "/users/{username}/heatmap": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Get a user's heatmap",
         "operationId": "userGetHeatmapData",
         "parameters": [
@@ -16346,12 +14697,8 @@
     },
     "/users/{username}/keys": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the given user's public keys",
         "operationId": "userListKeys",
         "parameters": [
@@ -16393,12 +14740,8 @@
     },
     "/users/{username}/orgs": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "List a user's organizations",
         "operationId": "orgListUserOrgs",
         "parameters": [
@@ -16434,12 +14777,8 @@
     },
     "/users/{username}/orgs/{org}/permissions": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "organization"
-        ],
+        "produces": ["application/json"],
+        "tags": ["organization"],
         "summary": "Get user permissions in organization",
         "operationId": "orgGetUserPermissions",
         "parameters": [
@@ -16473,12 +14812,8 @@
     },
     "/users/{username}/repos": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the repos owned by the given user",
         "operationId": "userListRepos",
         "parameters": [
@@ -16514,12 +14849,8 @@
     },
     "/users/{username}/starred": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "The repos that the given user has starred",
         "operationId": "userListStarred",
         "parameters": [
@@ -16555,12 +14886,8 @@
     },
     "/users/{username}/subscriptions": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the repositories watched by a user",
         "operationId": "userListSubscriptions",
         "parameters": [
@@ -16596,12 +14923,8 @@
     },
     "/users/{username}/tokens": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "List the authenticated user's access tokens",
         "operationId": "userGetTokens",
         "parameters": [
@@ -16635,15 +14958,9 @@
         }
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "Create an access token",
         "operationId": "userCreateToken",
         "parameters": [
@@ -16677,12 +14994,8 @@
     },
     "/users/{username}/tokens/{token}": {
       "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "user"
-        ],
+        "produces": ["application/json"],
+        "tags": ["user"],
         "summary": "delete an access token",
         "operationId": "userDeleteAccessToken",
         "parameters": [
@@ -16719,12 +15032,8 @@
     },
     "/version": {
       "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "miscellaneous"
-        ],
+        "produces": ["application/json"],
+        "tags": ["miscellaneous"],
         "summary": "Returns the version of the Gitea application",
         "operationId": "getVersion",
         "responses": {
@@ -16868,9 +15177,7 @@
     "AddTimeOption": {
       "description": "AddTimeOption options for adding time to an issue",
       "type": "object",
-      "required": [
-        "time"
-      ],
+      "required": ["time"],
       "properties": {
         "created": {
           "type": "string",
@@ -17179,10 +15486,7 @@
     "ChangeFileOperation": {
       "description": "ChangeFileOperation for creating, updating or deleting a file",
       "type": "object",
-      "required": [
-        "operation",
-        "path"
-      ],
+      "required": ["operation", "path"],
       "properties": {
         "content": {
           "description": "new or updated file content, must be base64 encoded",
@@ -17197,11 +15501,7 @@
         "operation": {
           "description": "indicates what to do with the file",
           "type": "string",
-          "enum": [
-            "create",
-            "update",
-            "delete"
-          ],
+          "enum": ["create", "update", "delete"],
           "x-go-name": "Operation"
         },
         "path": {
@@ -17220,9 +15520,7 @@
     "ChangeFilesOptions": {
       "description": "ChangeFilesOptions options for creating, updating or deleting multiple files\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
       "type": "object",
-      "required": [
-        "files"
-      ],
+      "required": ["files"],
       "properties": {
         "author": {
           "$ref": "#/definitions/Identity"
@@ -17672,9 +15970,7 @@
     "CreateAccessTokenOption": {
       "description": "CreateAccessTokenOption options when create access token",
       "type": "object",
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "properties": {
         "name": {
           "type": "string",
@@ -17815,9 +16111,7 @@
     "CreateBranchRepoOption": {
       "description": "CreateBranchRepoOption options when creating a branch in a repository",
       "type": "object",
-      "required": [
-        "new_branch_name"
-      ],
+      "required": ["new_branch_name"],
       "properties": {
         "new_branch_name": {
           "description": "Name of the branch to create",
@@ -17858,9 +16152,7 @@
     "CreateFileOptions": {
       "description": "CreateFileOptions options for creating files\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
       "type": "object",
-      "required": [
-        "content"
-      ],
+      "required": ["content"],
       "properties": {
         "author": {
           "$ref": "#/definitions/Identity"
@@ -17919,9 +16211,7 @@
     "CreateGPGKeyOption": {
       "description": "CreateGPGKeyOption options create user GPG key",
       "type": "object",
-      "required": [
-        "armored_public_key"
-      ],
+      "required": ["armored_public_key"],
       "properties": {
         "armored_public_key": {
           "description": "An armored GPG key to add",
@@ -17939,10 +16229,7 @@
     "CreateHookOption": {
       "description": "CreateHookOption options when create a hook",
       "type": "object",
-      "required": [
-        "type",
-        "config"
-      ],
+      "required": ["type", "config"],
       "properties": {
         "active": {
           "type": "boolean",
@@ -17998,9 +16285,7 @@
     "CreateIssueCommentOption": {
       "description": "CreateIssueCommentOption options for creating a comment on an issue",
       "type": "object",
-      "required": [
-        "body"
-      ],
+      "required": ["body"],
       "properties": {
         "body": {
           "type": "string",
@@ -18017,9 +16302,7 @@
     "CreateIssueOption": {
       "description": "CreateIssueOption options to create one issue",
       "type": "object",
-      "required": [
-        "title"
-      ],
+      "required": ["title"],
       "properties": {
         "assignee": {
           "description": "deprecated",
@@ -18075,10 +16358,7 @@
     "CreateKeyOption": {
       "description": "CreateKeyOption options when creating a key",
       "type": "object",
-      "required": [
-        "title",
-        "key"
-      ],
+      "required": ["title", "key"],
       "properties": {
         "key": {
           "description": "An armored SSH key to add",
@@ -18103,10 +16383,7 @@
     "CreateLabelOption": {
       "description": "CreateLabelOption options for creating a label",
       "type": "object",
-      "required": [
-        "name",
-        "color"
-      ],
+      "required": ["name", "color"],
       "properties": {
         "color": {
           "type": "string",
@@ -18149,10 +16426,7 @@
         },
         "state": {
           "type": "string",
-          "enum": [
-            "open",
-            "closed"
-          ],
+          "enum": ["open", "closed"],
           "x-go-name": "State"
         },
         "title": {
@@ -18187,9 +16461,7 @@
     "CreateOrUpdateSecretOption": {
       "description": "CreateOrUpdateSecretOption options when creating or updating secret",
       "type": "object",
-      "required": [
-        "data"
-      ],
+      "required": ["data"],
       "properties": {
         "data": {
           "description": "Data of the secret to update",
@@ -18202,9 +16474,7 @@
     "CreateOrgOption": {
       "description": "CreateOrgOption options for creating an organization",
       "type": "object",
-      "required": [
-        "username"
-      ],
+      "required": ["username"],
       "properties": {
         "description": {
           "type": "string",
@@ -18233,11 +16503,7 @@
         "visibility": {
           "description": "possible values are `public` (default), `limited` or `private`",
           "type": "string",
-          "enum": [
-            "public",
-            "limited",
-            "private"
-          ],
+          "enum": ["public", "limited", "private"],
           "x-go-name": "Visibility"
         },
         "website": {
@@ -18382,9 +16648,7 @@
     "CreateReleaseOption": {
       "description": "CreateReleaseOption options when creating a release",
       "type": "object",
-      "required": [
-        "tag_name"
-      ],
+      "required": ["tag_name"],
       "properties": {
         "body": {
           "type": "string",
@@ -18416,9 +16680,7 @@
     "CreateRepoOption": {
       "description": "CreateRepoOption options when creating repository",
       "type": "object",
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "properties": {
         "auto_init": {
           "description": "Whether the repository should be auto-initialized?",
@@ -18510,9 +16772,7 @@
     "CreateTagOption": {
       "description": "CreateTagOption options when creating a tag",
       "type": "object",
-      "required": [
-        "tag_name"
-      ],
+      "required": ["tag_name"],
       "properties": {
         "message": {
           "type": "string",
@@ -18532,9 +16792,7 @@
     "CreateTeamOption": {
       "description": "CreateTeamOption options for creating a team",
       "type": "object",
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "properties": {
         "can_create_org_repo": {
           "type": "boolean",
@@ -18554,11 +16812,7 @@
         },
         "permission": {
           "type": "string",
-          "enum": [
-            "read",
-            "write",
-            "admin"
-          ],
+          "enum": ["read", "write", "admin"],
           "x-go-name": "Permission"
         },
         "units": {
@@ -18594,10 +16848,7 @@
     "CreateUserOption": {
       "description": "CreateUserOption create user options",
       "type": "object",
-      "required": [
-        "username",
-        "email"
-      ],
+      "required": ["username", "email"],
       "properties": {
         "created_at": {
           "description": "For explicitly setting the user creation timestamp. Useful when users are\nmigrated from other systems. When omitted, the user's creation timestamp\nwill be set to \"now\".",
@@ -18720,9 +16971,7 @@
     "DeleteFileOptions": {
       "description": "DeleteFileOptions options for deleting files (used for other File structs below)\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
       "type": "object",
-      "required": [
-        "sha"
-      ],
+      "required": ["sha"],
       "properties": {
         "author": {
           "$ref": "#/definitions/Identity"
@@ -18960,9 +17209,7 @@
     "EditDeadlineOption": {
       "description": "EditDeadlineOption options for creating a deadline",
       "type": "object",
-      "required": [
-        "due_date"
-      ],
+      "required": ["due_date"],
       "properties": {
         "due_date": {
           "type": "string",
@@ -19019,9 +17266,7 @@
     "EditIssueCommentOption": {
       "description": "EditIssueCommentOption options for editing a comment",
       "type": "object",
-      "required": [
-        "body"
-      ],
+      "required": ["body"],
       "properties": {
         "body": {
           "type": "string",
@@ -19170,11 +17415,7 @@
         "visibility": {
           "description": "possible values are `public`, `limited` or `private`",
           "type": "string",
-          "enum": [
-            "public",
-            "limited",
-            "private"
-          ],
+          "enum": ["public", "limited", "private"],
           "x-go-name": "Visibility"
         },
         "website": {
@@ -19441,9 +17682,7 @@
     "EditTeamOption": {
       "description": "EditTeamOption options for editing a team",
       "type": "object",
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "properties": {
         "can_create_org_repo": {
           "type": "boolean",
@@ -19463,11 +17702,7 @@
         },
         "permission": {
           "type": "string",
-          "enum": [
-            "read",
-            "write",
-            "admin"
-          ],
+          "enum": ["read", "write", "admin"],
           "x-go-name": "Permission"
         },
         "units": {
@@ -19510,10 +17745,7 @@
     "EditUserOption": {
       "description": "EditUserOption edit user options",
       "type": "object",
-      "required": [
-        "source_id",
-        "login_name"
-      ],
+      "required": ["source_id", "login_name"],
       "properties": {
         "active": {
           "type": "boolean",
@@ -19970,10 +18202,7 @@
     "GenerateRepoOption": {
       "description": "GenerateRepoOption options when creating repository using a template",
       "type": "object",
-      "required": [
-        "owner",
-        "name"
-      ],
+      "required": ["owner", "name"],
       "properties": {
         "avatar": {
           "description": "include avatar of the template repo",
@@ -20739,9 +18968,7 @@
     "MergePullRequestOption": {
       "description": "MergePullRequestForm form for merging Pull Request",
       "type": "object",
-      "required": [
-        "Do"
-      ],
+      "required": ["Do"],
       "properties": {
         "Do": {
           "type": "string",
@@ -20785,10 +19012,7 @@
     "MigrateRepoOptions": {
       "description": "MigrateRepoOptions options for migrating repository's\nthis is used to interact with api v1",
       "type": "object",
-      "required": [
-        "clone_addr",
-        "repo_name"
-      ],
+      "required": ["clone_addr", "repo_name"],
       "properties": {
         "auth_password": {
           "type": "string",
@@ -22033,9 +20257,7 @@
     "RenameUserOption": {
       "description": "RenameUserOption options when renaming a user",
       "type": "object",
-      "required": [
-        "new_username"
-      ],
+      "required": ["new_username"],
       "properties": {
         "new_username": {
           "description": "New username for this user. This name cannot be in use yet by any other user.",
@@ -22558,13 +20780,7 @@
         },
         "permission": {
           "type": "string",
-          "enum": [
-            "none",
-            "read",
-            "write",
-            "admin",
-            "owner"
-          ],
+          "enum": ["none", "read", "write", "admin", "owner"],
           "x-go-name": "Permission"
         },
         "units": {
@@ -22820,9 +21036,7 @@
     "TransferRepoOption": {
       "description": "TransferRepoOption options when transfer a repository's ownership",
       "type": "object",
-      "required": [
-        "new_owner"
-      ],
+      "required": ["new_owner"],
       "properties": {
         "new_owner": {
           "type": "string",
@@ -22843,10 +21057,7 @@
     "UpdateFileOptions": {
       "description": "UpdateFileOptions options for updating files\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
       "type": "object",
-      "required": [
-        "sha",
-        "content"
-      ],
+      "required": ["sha", "content"],
       "properties": {
         "author": {
           "$ref": "#/definitions/Identity"
