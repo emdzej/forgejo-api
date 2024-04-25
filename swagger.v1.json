@@ -17348,7 +17348,7 @@
     "CreateRepoOption": {
       "description": "CreateRepoOption options when creating repository",
       "type": "object",
-      "required": ["name"],
+      "required": ["name", "object_format_name"],
       "properties": {
         "auto_init": {
           "description": "Whether the repository should be auto-initialized?",

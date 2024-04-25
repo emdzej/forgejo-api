@@ -687,7 +687,7 @@ pub struct CreateRepoOption {
     /// Name of the repository to create
     pub name: String,
     /// ObjectFormatName of the underlying git repository
-    pub object_format_name: Option<CreateRepoOptionObjectFormatName>,
+    pub object_format_name: CreateRepoOptionObjectFormatName,
     /// Whether the repository is private
     pub private: Option<bool>,
     /// Readme of the repository to create
