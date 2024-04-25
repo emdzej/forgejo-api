@@ -11,4 +11,4 @@ steps:
 
 services:
   forgejo-testing:
-    image: code.cartoon-aa.xyz/cyborus/ci-forgejo:1.21.2-0
+    image: code.cartoon-aa.xyz/cyborus/ci-forgejo:7.0.0
