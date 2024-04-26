@@ -16942,8 +16942,17 @@
     "CreateHookOptionConfig": {
       "description": "CreateHookOptionConfig has all config options in it\nrequired are \"content_type\" and \"url\" Required",
       "type": "object",
+      "required": ["content_type", "url"],
       "additionalProperties": {
         "type": "string"
+      },
+      "properties": {
+        "content_type": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
