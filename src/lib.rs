@@ -253,3 +253,19 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
 
     deserializer.deserialize_str(EmptyUrlVisitor)
 }
+
+impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {
+    fn from(value: structs::DefaultMergeStyle) -> Self {
+        match value {
+            structs::DefaultMergeStyle::Merge => structs::MergePullRequestOptionDo::Merge,
+            structs::DefaultMergeStyle::Rebase => structs::MergePullRequestOptionDo::Rebase,
+            structs::DefaultMergeStyle::RebaseMerge => {
+                structs::MergePullRequestOptionDo::RebaseMerge
+            }
+            structs::DefaultMergeStyle::Squash => structs::MergePullRequestOptionDo::Squash,
+            structs::DefaultMergeStyle::FastForwardOnly => {
+                structs::MergePullRequestOptionDo::FastForwardOnly
+            }
+        }
+    }
+}
