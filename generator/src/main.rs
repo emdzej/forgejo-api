@@ -72,12 +72,21 @@ fn schema_type_name(
         match ty {
             SchemaType::One(prim) => {
                 let name = match prim {
-                    Primitive::String => match schema.format.as_deref() {
+                    Primitive::String if schema._enum.is_none() => match schema.format.as_deref() {
                         Some("date") => "time::Date",
                         Some("date-time") => "time::OffsetDateTime",
                         _ => "String",
                     }
                     .to_string(),
+                    Primitive::String => {
+                        match (&schema.title, definition_name) {
+                            // Some of the titles are actually descriptions; not sure why
+                            // Checking for a space filters that out
+                            (Some(title), _) if !title.contains(' ') => title.to_string(),
+                            (_, Some(definition_name)) => definition_name.to_string(),
+                            (_, None) => "String".to_string(),
+                        }
+                    }
                     Primitive::Number => match schema.format.as_deref() {
                         Some("float") => "f32",
                         Some("double") => "f64",
