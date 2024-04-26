@@ -500,6 +500,8 @@ pub enum CreateHookOptionType {
 /// required are "content_type" and "url" Required
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateHookOptionConfig {
+    pub content_type: String,
+    pub url: url::Url,
     #[serde(flatten)]
     pub additional: BTreeMap<String, String>,
 }
