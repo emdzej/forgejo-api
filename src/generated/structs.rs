@@ -793,6 +793,19 @@ pub struct Cron {
     pub schedule: Option<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum DefaultMergeStyle {
+    #[serde(rename = "merge")]
+    Merge,
+    #[serde(rename = "rebase")]
+    Rebase,
+    #[serde(rename = "rebase-merge")]
+    RebaseMerge,
+    #[serde(rename = "squash")]
+    Squash,
+    #[serde(rename = "fast-forward-only")]
+    FastForwardOnly,
+}
 /// DeleteEmailOption options when deleting email addresses
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct DeleteEmailOption {
@@ -1039,8 +1052,7 @@ pub struct EditRepoOption {
     pub default_branch: Option<String>,
     /// set to `true` to delete pr branch after merge by default
     pub default_delete_branch_after_merge: Option<bool>,
-    /// set to a merge style to be used by this repository: "merge", "rebase", "rebase-merge", "squash", or "fast-forward-only".
-    pub default_merge_style: Option<String>,
+    pub default_merge_style: Option<DefaultMergeStyle>,
     /// a short description of the repository.
     pub description: Option<String>,
     /// enable prune - remove obsolete remote-tracking references
@@ -2212,7 +2224,7 @@ pub struct Repository {
     pub default_allow_maintainer_edit: Option<bool>,
     pub default_branch: Option<String>,
     pub default_delete_branch_after_merge: Option<bool>,
-    pub default_merge_style: Option<String>,
+    pub default_merge_style: Option<DefaultMergeStyle>,
     pub description: Option<String>,
     pub empty: Option<bool>,
     pub external_tracker: Option<ExternalTracker>,
