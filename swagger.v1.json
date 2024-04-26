@@ -17624,13 +17624,7 @@
     },
     "DefaultMergeStyle": {
       "type": "string",
-      "enum": [
-        "merge",
-        "rebase",
-        "rebase-merge",
-        "squash",
-        "fast-forward-only"
-      ]
+      "enum": ["merge", "rebase", "rebase-merge", "squash", "fast-forward-only"]
     },
     "DeleteEmailOption": {
       "description": "DeleteEmailOption options when deleting email addresses",
