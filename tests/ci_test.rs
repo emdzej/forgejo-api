@@ -403,13 +403,9 @@ async fn admin() {
         authorization_header: None,
         branch_filter: None,
         config: CreateHookOptionConfig {
-            // content_type: "json".into(),
-            // url: url::Url::parse("http://test.local/").unwrap(),
-            additional: [
-                ("content_type".into(), "json".into()),
-                ("url".into(), "http://test.local/".into()),
-            ]
-            .into(),
+            content_type: "json".into(),
+            url: url::Url::parse("http://test.local/").unwrap(),
+            additional: Default::default(),
         },
         events: Some(Vec::new()),
         r#type: CreateHookOptionType::Gitea,
