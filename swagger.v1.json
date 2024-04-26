@@ -9112,6 +9112,7 @@
     },
     "/repos/{owner}/{repo}/media/{filepath}": {
       "get": {
+        "produces": ["*/*"],
         "tags": ["repository"],
         "summary": "Get a file or it's LFS object from a repository",
         "operationId": "repoGetRawFileOrLFS",
@@ -11172,7 +11173,7 @@
     },
     "/repos/{owner}/{repo}/raw/{filepath}": {
       "get": {
-        "produces": ["application/json"],
+        "produces": ["*/*"],
         "tags": ["repository"],
         "summary": "Get a file from a repository",
         "operationId": "repoGetRawFile",

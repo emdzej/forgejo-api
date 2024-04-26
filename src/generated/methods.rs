@@ -4309,13 +4309,13 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         query: RepoGetRawFileOrLfsQuery,
-    ) -> Result<(), ForgejoError> {
+    ) -> Result<Vec<u8>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/media/{filepath}?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(()),
+            200 => Ok(response.bytes().await?[..].to_vec()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5235,13 +5235,13 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         query: RepoGetRawFileQuery,
-    ) -> Result<(), ForgejoError> {
+    ) -> Result<Vec<u8>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/raw/{filepath}?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(()),
+            200 => Ok(response.bytes().await?[..].to_vec()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
