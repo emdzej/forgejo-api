@@ -688,6 +688,7 @@ pub struct CreateRepoOption {
     pub license: Option<String>,
     /// Name of the repository to create
     pub name: String,
+    pub object_format_name: Option<ObjectFormatName>,
     /// Whether the repository is private
     pub private: Option<bool>,
     /// Readme of the repository to create
@@ -1859,6 +1860,15 @@ pub struct OAuth2Application {
     pub redirect_uris: Option<Vec<String>>,
 }
 
+/// ObjectFormatName of the underlying git repository
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ObjectFormatName {
+    #[serde(rename = "sha1")]
+    Sha1,
+    #[serde(rename = "sha256")]
+    Sha256,
+}
 /// Organization represents an organization
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Organization {
@@ -2256,6 +2266,7 @@ pub struct Repository {
     #[serde(with = "time::serde::rfc3339::option")]
     pub mirror_updated: Option<time::OffsetDateTime>,
     pub name: Option<String>,
+    pub object_format_name: Option<ObjectFormatName>,
     pub open_issues_count: Option<u64>,
     pub open_pr_counter: Option<u64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
