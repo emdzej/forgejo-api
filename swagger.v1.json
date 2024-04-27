@@ -10,7 +10,7 @@
       "name": "MIT",
       "url": "http://opensource.org/licenses/MIT"
     },
-    "version": "7.0.0+gitea-1.22.0"
+    "version": "7.0.1+gitea-1.22.0"
   },
   "basePath": "/api/v1",
   "paths": {
@@ -17396,6 +17396,9 @@
           "uniqueItems": true,
           "x-go-name": "Name"
         },
+        "object_format_name": {
+          "$ref": "#/definitions/ObjectFormatName"
+        },
         "private": {
           "description": "Whether the repository is private",
           "type": "boolean",
@@ -20169,6 +20172,11 @@
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
+    "ObjectFormatName": {
+      "description": "ObjectFormatName of the underlying git repository",
+      "type": "string",
+      "enum": ["sha1", "sha256"]
+    },
     "Organization": {
       "description": "Organization represents an organization",
       "type": "object",
@@ -21267,6 +21275,9 @@
         "name": {
           "type": "string",
           "x-go-name": "Name"
+        },
+        "object_format_name": {
+          "$ref": "#/definitions/ObjectFormatName"
         },
         "open_issues_count": {
           "type": "integer",
