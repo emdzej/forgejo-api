@@ -95,6 +95,7 @@ async fn repo() {
         issue_labels: Some("".into()),
         license: Some("".into()),
         name: "test".into(),
+        object_format_name: None,
         private: Some(false),
         readme: None,
         template: Some(false),
