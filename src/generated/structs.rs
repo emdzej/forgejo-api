@@ -2278,7 +2278,8 @@ pub struct Repository {
     pub release_counter: Option<u64>,
     pub repo_transfer: Option<RepoTransfer>,
     pub size: Option<u64>,
-    pub ssh_url: Option<String>,
+    #[serde(deserialize_with = "crate::deserialize_optional_ssh_url")]
+    pub ssh_url: Option<url::Url>,
     pub stars_count: Option<u64>,
     pub template: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]

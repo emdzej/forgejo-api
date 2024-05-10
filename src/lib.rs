@@ -1,4 +1,5 @@
 use reqwest::{Client, Request, StatusCode};
+use serde::{Deserialize, Deserializer};
 use soft_assert::*;
 use url::Url;
 use zeroize::Zeroize;
@@ -252,6 +253,31 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
     }
 
     deserializer.deserialize_str(EmptyUrlVisitor)
+}
+
+#[allow(dead_code)] // not used yet, but it might appear in the future
+fn deserialize_ssh_url<'de, D, DE>(deserializer: D) -> Result<Url, DE>
+where
+    D: Deserializer<'de>,
+    DE: serde::de::Error,
+{
+    let raw_url: String = String::deserialize(deserializer).map_err(DE::custom)?;
+    let url = format!("ssh://{url}", url = raw_url.replace(":", "/"));
+    Url::parse(url.as_str()).map_err(DE::custom)
+}
+
+fn deserialize_optional_ssh_url<'de, D, DE>(deserializer: D) -> Result<Option<Url>, DE>
+where
+    D: Deserializer<'de>,
+    DE: serde::de::Error,
+{
+    let raw_url: Option<String> = Option::deserialize(deserializer).map_err(DE::custom)?;
+    raw_url
+        .map(|raw_url| {
+            let url = format!("ssh://{url}", url = raw_url.replace(":", "/"));
+            Url::parse(url.as_str()).map_err(DE::custom).map(Some)
+        })
+        .unwrap_or(Ok(None))
 }
 
 impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {
