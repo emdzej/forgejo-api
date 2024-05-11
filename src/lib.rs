@@ -274,8 +274,9 @@ where
     raw_url
         .as_ref()
         .map(parse_ssh_url)
-        .map(|res| res.map_err(DE::custom).map(Some))
-        .unwrap_or(Ok(None))
+        .map(|res| res.map_err(DE::custom))
+        .transpose()
+        .or(Ok(None))
 }
 
 fn parse_ssh_url(raw_url: &String) -> Result<Url, url::ParseError> {
