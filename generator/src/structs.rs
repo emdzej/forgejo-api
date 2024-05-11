@@ -63,7 +63,7 @@ pub fn create_struct_for_definition(
                 crate::schema_subtype_name(spec, name, prop_name, value, &mut field_ty)?;
                 crate::schema_subtypes(spec, name, prop_name, value, &mut subtypes)?;
             }
-            if field_name.ends_with("url") && field_name != "ssh_url" && field_ty == "String" {
+            if field_name.ends_with("url") && field_ty == "String" {
                 field_ty = "url::Url".into()
             }
             if field_ty == name {
@@ -73,7 +73,16 @@ pub fn create_struct_for_definition(
                 field_ty = format!("Option<{field_ty}>")
             }
             if field_ty == "Option<url::Url>" {
-                fields.push_str("#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n");
+                if field_name == "ssh_url" {
+                    fields.push_str(
+                        "#[serde(deserialize_with = \"crate::deserialize_optional_ssh_url\")]\n",
+                    );
+                } else {
+                    fields.push_str("#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n");
+                }
+            }
+            if field_ty == "url::Url" && field_name == "ssh_url" {
+                fields.push_str("#[serde(deserialize_with = \"crate::deserialize_ssh_url\")]\n");
             }
             if field_ty == "time::OffsetDateTime" {
                 fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
@@ -106,8 +115,8 @@ pub fn create_struct_for_definition(
         }
     }
 
-    if let Some(additonal_schema) = &schema.additional_properties {
-        let prop_ty = crate::schema_ref_type_name(spec, additonal_schema)?;
+    if let Some(additional_schema) = &schema.additional_properties {
+        let prop_ty = crate::schema_ref_type_name(spec, additional_schema)?;
         fields.push_str("#[serde(flatten)]\n");
         fields.push_str("pub additional: BTreeMap<String, ");
         fields.push_str(&prop_ty);

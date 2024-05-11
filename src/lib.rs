@@ -1,4 +1,5 @@
 use reqwest::{Client, Request, StatusCode};
+use serde::{Deserialize, Deserializer};
 use soft_assert::*;
 use url::Url;
 use zeroize::Zeroize;
@@ -252,6 +253,41 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
     }
 
     deserializer.deserialize_str(EmptyUrlVisitor)
+}
+
+#[allow(dead_code)] // not used yet, but it might appear in the future
+fn deserialize_ssh_url<'de, D, DE>(deserializer: D) -> Result<Url, DE>
+where
+    D: Deserializer<'de>,
+    DE: serde::de::Error,
+{
+    let raw_url: String = String::deserialize(deserializer).map_err(DE::custom)?;
+    parse_ssh_url(&raw_url).map_err(DE::custom)
+}
+
+fn deserialize_optional_ssh_url<'de, D, DE>(deserializer: D) -> Result<Option<Url>, DE>
+where
+    D: Deserializer<'de>,
+    DE: serde::de::Error,
+{
+    let raw_url: Option<String> = Option::deserialize(deserializer).map_err(DE::custom)?;
+    raw_url
+        .as_ref()
+        .map(parse_ssh_url)
+        .map(|res| res.map_err(DE::custom))
+        .transpose()
+        .or(Ok(None))
+}
+
+fn parse_ssh_url(raw_url: &String) -> Result<Url, url::ParseError> {
+    // in case of a non-standard ssh-port (not 22), the ssh url coming from the forgejo API
+    // is actually parseable by the url crate, so try to do that first
+    Url::parse(raw_url).or_else(|_| {
+        // otherwise the ssh url is not parseable by the url crate and we try again after some
+        // pre-processing
+        let url = format!("ssh://{url}", url = raw_url.replace(":", "/"));
+        Url::parse(url.as_str())
+    })
 }
 
 impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {

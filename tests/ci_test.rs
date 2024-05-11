@@ -430,3 +430,9 @@ async fn admin() {
         .await
         .expect("failed to delete hook");
 }
+
+#[test]
+fn ssh_url_deserialization() {
+    let data = include_str!("./repo_data.json");
+    assert!(serde_json::from_str::<Repository>(data).is_ok());
+}
