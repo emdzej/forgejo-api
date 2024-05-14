@@ -3,8 +3,8 @@ use forgejo_api::structs::*;
 mod common;
 
 #[tokio::test]
-async fn admin() {
-    let api = common::get_api();
+async fn user() {
+    let api = common::login();
 
     let user_opt = CreateUserOption {
         created_at: None,
@@ -48,6 +48,29 @@ async fn admin() {
             .is_some(),
         "could not find new user"
     );
+}
+
+#[tokio::test]
+async fn org() {
+    let api = common::login();
+
+    let user_opt = CreateUserOption {
+        created_at: None,
+        email: "org-owner@noreply.example.org".into(),
+        full_name: None,
+        login_name: None,
+        must_change_password: None,
+        password: Some("userpass".into()),
+        restricted: Some(false),
+        send_notify: Some(true),
+        source_id: None,
+        username: "OrgOwner".into(),
+        visibility: Some("public".into()),
+    };
+    let _ = api
+        .admin_create_user(user_opt)
+        .await
+        .expect("failed to create user");
 
     let org_opt = CreateOrgOption {
         description: None,
@@ -60,7 +83,7 @@ async fn admin() {
         website: None,
     };
     let _ = api
-        .admin_create_org("Pipis", org_opt)
+        .admin_create_org("OrgOwner", org_opt)
         .await
         .expect("failed to create org");
     let query = AdminGetAllOrgsQuery::default();
@@ -68,20 +91,6 @@ async fn admin() {
         !api.admin_get_all_orgs(query).await.unwrap().is_empty(),
         "org list empty"
     );
-
-    let key_opt = CreateKeyOption {
-        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN68ehQAsbGEwlXPa2AxbAh1QxFQrtRel2jeC0hRlPc1 user@noreply.example.org".into(),
-        read_only: None,
-        title: "Example Key".into(),
-    };
-    let key = api
-        .admin_create_public_key("Pipis", key_opt)
-        .await
-        .expect("failed to create key");
-    api.admin_delete_user_public_key("Pipis", key.id.unwrap())
-        .await
-        .expect("failed to delete key");
-
     let rename_opt = RenameUserOption {
         new_username: "Bepis".into(),
     };
@@ -97,6 +106,47 @@ async fn admin() {
         api.admin_delete_user("Ghost", query).await.is_err(),
         "deleting fake user should fail"
     );
+}
+
+#[tokio::test]
+async fn key() {
+    let api = common::login();
+
+    let user_opt = CreateUserOption {
+        created_at: None,
+        email: "key-holder@noreply.example.org".into(),
+        full_name: None,
+        login_name: None,
+        must_change_password: None,
+        password: Some("userpass".into()),
+        restricted: Some(false),
+        send_notify: Some(true),
+        source_id: None,
+        username: "KeyHolder".into(),
+        visibility: Some("public".into()),
+    };
+    let _ = api
+        .admin_create_user(user_opt)
+        .await
+        .expect("failed to create user");
+
+    let key_opt = CreateKeyOption {
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN68ehQAsbGEwlXPa2AxbAh1QxFQrtRel2jeC0hRlPc1 user@noreply.example.org".into(),
+        read_only: None,
+        title: "Example Key".into(),
+    };
+    let key = api
+        .admin_create_public_key("KeyHolder", key_opt)
+        .await
+        .expect("failed to create key");
+    api.admin_delete_user_public_key("KeyHolder", key.id.unwrap())
+        .await
+        .expect("failed to delete key");
+}
+
+#[tokio::test]
+async fn cron() {
+    let api = common::login();
 
     let query = AdminCronListQuery::default();
     let crons = api
@@ -106,7 +156,11 @@ async fn admin() {
     api.admin_cron_run(&crons.get(0).expect("no crons").name.as_ref().unwrap())
         .await
         .expect("failed to run cron");
+}
 
+#[tokio::test]
+async fn hook() {
+    let api = common::login();
     let hook_opt = CreateHookOption {
         active: None,
         authorization_header: None,

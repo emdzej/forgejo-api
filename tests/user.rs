@@ -1,10 +1,10 @@
-use forgejo_api::{structs::*, Forgejo};
+use forgejo_api::structs::*;
 
 mod common;
 
 #[tokio::test]
-async fn user() {
-    let api = common::get_api();
+async fn myself() {
+    let api = common::login();
 
     let myself = api.user_get_current().await.unwrap();
     assert!(myself.is_admin.unwrap(), "user should be admin");
@@ -19,31 +19,67 @@ async fn user() {
         myself, myself_indirect,
         "result of `myself` does not match result of `get_user`"
     );
+}
+
+#[tokio::test]
+async fn follow() {
+    let api = common::login();
 
     let query = UserListFollowingQuery::default();
     let following = api
         .user_list_following("TestingAdmin", query)
         .await
         .unwrap();
-    assert_eq!(following, Vec::new(), "following list not empty");
+    assert!(following.is_empty(), "following list not empty");
 
     let query = UserListFollowersQuery::default();
     let followers = api
         .user_list_followers("TestingAdmin", query)
         .await
         .unwrap();
-    assert_eq!(followers, Vec::new(), "follower list not empty");
+    assert!(followers.is_empty(), "follower list not empty");
 
-    let url = url::Url::parse(&std::env::var("FORGEJO_API_CI_INSTANCE_URL").unwrap()).unwrap();
-    let password_api = Forgejo::new(
-        forgejo_api::Auth::Password {
-            username: "TestingAdmin",
-            password: "password",
-            mfa: None,
-        },
-        url,
-    )
-    .expect("failed to log in using username and password");
+    let option = CreateUserOption {
+        created_at: None,
+        email: "follower@testing".into(),
+        full_name: None,
+        login_name: None,
+        must_change_password: Some(false),
+        password: Some("password".into()),
+        restricted: None,
+        send_notify: None,
+        source_id: None,
+        username: "Follower".into(),
+        visibility: None,
+    };
+    let _ = api.admin_create_user(option).await.unwrap();
+    let new_user = common::login_pass("Follower", "password");
+
+    new_user
+        .user_current_put_follow("TestingAdmin")
+        .await
+        .unwrap();
+    api.user_current_put_follow("Follower").await.unwrap();
+
+    let query = UserListFollowingQuery::default();
+    let following = api
+        .user_list_following("TestingAdmin", query)
+        .await
+        .unwrap();
+    assert!(!following.is_empty(), "following list empty");
+
+    let query = UserListFollowersQuery::default();
+    let followers = api
+        .user_list_followers("TestingAdmin", query)
+        .await
+        .unwrap();
+    assert!(!followers.is_empty(), "follower list empty");
+}
+
+#[tokio::test]
+async fn password_login() {
+    let api = common::login();
+    let password_api = common::login_pass("TestingAdmin", "password");
 
     assert!(
         api.user_get_current().await.unwrap() == password_api.user_get_current().await.unwrap(),
@@ -53,7 +89,7 @@ async fn user() {
 
 #[tokio::test]
 async fn oauth2_login() {
-    let api = common::get_api();
+    let api = common::login();
     let opt = forgejo_api::structs::CreateOAuth2ApplicationOptions {
         confidential_client: Some(true),
         name: Some("Test Application".into()),
@@ -129,7 +165,7 @@ async fn oauth2_login() {
 
     // Redeem the code and check it works
     let url = url::Url::parse(&base_url).unwrap();
-    let api = Forgejo::new(forgejo_api::Auth::None, url.clone()).unwrap();
+    let api = forgejo_api::Forgejo::new(forgejo_api::Auth::None, url.clone()).unwrap();
 
     let request = forgejo_api::structs::OAuthTokenRequest::Confidential {
         client_id: &client_id,
@@ -139,7 +175,8 @@ async fn oauth2_login() {
     };
     let token = api.oauth_get_access_token(request).await.unwrap();
     let token_api =
-        Forgejo::new(forgejo_api::Auth::OAuth2(&token.access_token), url.clone()).unwrap();
+        forgejo_api::Forgejo::new(forgejo_api::Auth::OAuth2(&token.access_token), url.clone())
+            .unwrap();
     let myself = token_api.user_get_current().await.unwrap();
     assert_eq!(myself.login.as_deref(), Some("TestingAdmin"));
 
@@ -149,7 +186,8 @@ async fn oauth2_login() {
         client_secret: &client_secret,
     };
     let token = token_api.oauth_get_access_token(request).await.unwrap();
-    let token_api = Forgejo::new(forgejo_api::Auth::OAuth2(&token.access_token), url).unwrap();
+    let token_api =
+        forgejo_api::Forgejo::new(forgejo_api::Auth::OAuth2(&token.access_token), url).unwrap();
     let myself = token_api.user_get_current().await.unwrap();
     assert_eq!(myself.login.as_deref(), Some("TestingAdmin"));
 }
