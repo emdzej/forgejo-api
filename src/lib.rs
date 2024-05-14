@@ -290,6 +290,45 @@ fn parse_ssh_url(raw_url: &String) -> Result<Url, url::ParseError> {
     })
 }
 
+#[test]
+fn ssh_url_deserialization() {
+    #[derive(serde::Deserialize)]
+    struct SshUrl {
+        #[serde(deserialize_with = "deserialize_ssh_url")]
+        url: url::Url,
+    }
+    let full_url = r#"{ "url": "ssh://git@codeberg.org/Cyborus/forgejo-api" }"#;
+    let ssh_url = r#"{ "url": "git@codeberg.org:Cyborus/forgejo-api" }"#;
+
+    let full_url_de =
+        serde_json::from_str::<SshUrl>(full_url).expect("failed to deserialize full url");
+    let ssh_url_de =
+        serde_json::from_str::<SshUrl>(ssh_url).expect("failed to deserialize ssh url");
+
+    let expected = "ssh://git@codeberg.org/Cyborus/forgejo-api";
+    assert_eq!(full_url_de.url.as_str(), expected);
+    assert_eq!(ssh_url_de.url.as_str(), expected);
+
+    #[derive(serde::Deserialize)]
+    struct OptSshUrl {
+        #[serde(deserialize_with = "deserialize_optional_ssh_url")]
+        url: Option<url::Url>,
+    }
+    let null_url = r#"{ "url": null }"#;
+
+    let full_url_de = serde_json::from_str::<OptSshUrl>(full_url)
+        .expect("failed to deserialize optional full url");
+    let ssh_url_de =
+        serde_json::from_str::<OptSshUrl>(ssh_url).expect("failed to deserialize optional ssh url");
+    let null_url_de =
+        serde_json::from_str::<OptSshUrl>(null_url).expect("failed to deserialize null url");
+
+    let expected = Some("ssh://git@codeberg.org/Cyborus/forgejo-api");
+    assert_eq!(full_url_de.url.as_ref().map(|u| u.as_ref()), expected);
+    assert_eq!(ssh_url_de.url.as_ref().map(|u| u.as_ref()), expected);
+    assert!(null_url_de.url.is_none());
+}
+
 impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {
     fn from(value: structs::DefaultMergeStyle) -> Self {
         match value {
