@@ -21435,6 +21435,10 @@
     "StateType": {
       "description": "StateType issue state type",
       "type": "string",
+      "enum": [
+          "open",
+          "closed"
+      ],
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
     "StopWatch": {

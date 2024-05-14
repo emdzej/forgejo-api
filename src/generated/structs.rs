@@ -1445,7 +1445,7 @@ pub struct Issue {
     #[serde(rename = "ref")]
     pub r#ref: Option<String>,
     pub repository: Option<RepositoryMeta>,
-    pub state: Option<String>,
+    pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
@@ -1738,7 +1738,7 @@ pub struct Milestone {
     pub due_on: Option<time::OffsetDateTime>,
     pub id: Option<u64>,
     pub open_issues: Option<u64>,
-    pub state: Option<String>,
+    pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
@@ -1822,7 +1822,7 @@ pub struct NotificationSubject {
     pub latest_comment_html_url: Option<url::Url>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub latest_comment_url: Option<url::Url>,
-    pub state: Option<String>,
+    pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
@@ -2035,7 +2035,7 @@ pub struct PullRequest {
     pub patch_url: Option<url::Url>,
     pub pin_order: Option<u64>,
     pub requested_reviewers: Option<Vec<User>>,
-    pub state: Option<String>,
+    pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
@@ -2327,9 +2327,14 @@ pub struct ServerVersion {
 }
 
 /// StateType issue state type
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct StateType {}
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum StateType {
+    #[serde(rename = "open")]
+    Open,
+    #[serde(rename = "closed")]
+    Closed,
+}
 /// StopWatch represent a running stopwatch
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct StopWatch {
