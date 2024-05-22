@@ -57,6 +57,12 @@ pub enum Auth<'a> {
     /// To learn about token scope, see
     /// [the official Forgejo docs](https://forgejo.org/docs/latest/user/token-scope/).
     Token(&'a str),
+    /// OAuth2 Token. Grants full access to the user's account, except for
+    /// creating application access tokens.
+    ///
+    /// To learn how to create an OAuth2 token, see
+    /// [the official Forgejo docs on the subject](https://forgejo.org/docs/latest/user/oauth2-provider).
+    OAuth2(&'a str),
     /// Username, password, and 2-factor auth code (if enabled). Grants full
     /// access to the user's account.
     Password {
@@ -123,6 +129,13 @@ impl Forgejo {
                     key_header.set_sensitive(true);
                     headers.insert("X-FORGEJO-OTP", key_header);
                 }
+            }
+            Auth::OAuth2(token) => {
+                let mut header: reqwest::header::HeaderValue = format!("Bearer {token}")
+                    .try_into()
+                    .map_err(|_| ForgejoError::KeyNotAscii)?;
+                header.set_sensitive(true);
+                headers.insert("Authorization", header);
             }
             Auth::None => (),
         }
