@@ -11,8 +11,6 @@ pub struct Forgejo {
 
 mod generated;
 
-pub use generated::structs;
-
 #[derive(thiserror::Error, Debug)]
 pub enum ForgejoError {
     #[error("url must have a host")]
@@ -154,6 +152,22 @@ impl Forgejo {
         Ok(self.execute(request).await?.bytes().await?)
     }
 
+    /// Requests a new OAuth2 access token
+    ///
+    /// More info at [Forgejo's docs](https://forgejo.org/docs/latest/user/oauth2-provider).
+    pub async fn oauth_get_access_token(
+        &self,
+        body: structs::OAuthTokenRequest<'_>,
+    ) -> Result<structs::OAuthToken, ForgejoError> {
+        let url = self.url.join("login/oauth/access_token").unwrap();
+        let request = self.client.post(url).json(&body).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     fn get(&self, path: &str) -> reqwest::RequestBuilder {
         let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
         self.client.get(url)
@@ -200,6 +214,56 @@ struct ErrorMessage {
     message: String,
     // intentionally ignored, no need for now
     // url: Url
+}
+
+pub mod structs {
+    pub use crate::generated::structs::*;
+
+    /// A Request for a new OAuth2 access token
+    ///
+    /// More info at [Forgejo's docs](https://forgejo.org/docs/latest/user/oauth2-provider).
+    #[derive(serde::Serialize)]
+    #[serde(tag = "grant_type")]
+    pub enum OAuthTokenRequest<'a> {
+        /// Request for getting an access code for a confidential app
+        ///
+        /// The `code` field must have come from sending the user to
+        /// `/login/oauth/authorize` in their browser
+        #[serde(rename = "authorization_code")]
+        Confidential {
+            client_id: &'a str,
+            client_secret: &'a str,
+            code: &'a str,
+            redirect_uri: url::Url,
+        },
+        /// Request for getting an access code for a public app
+        ///
+        /// The `code` field must have come from sending the user to
+        /// `/login/oauth/authorize` in their browser
+        #[serde(rename = "authorization_code")]
+        Public {
+            client_id: &'a str,
+            code_verifier: &'a str,
+            code: &'a str,
+            redirect_uri: url::Url,
+        },
+        /// Request for refreshing an access code
+        #[serde(rename = "refresh_token")]
+        Refresh {
+            refresh_token: &'a str,
+            client_id: &'a str,
+            client_secret: &'a str,
+        },
+    }
+
+    #[derive(serde::Deserialize)]
+    pub struct OAuthToken {
+        pub access_token: String,
+        pub refresh_token: String,
+        pub token_type: String,
+        /// Number of seconds until the access token expires.
+        pub expires_in: u32,
+    }
 }
 
 // Forgejo can return blank strings for URLs. This handles that by deserializing
