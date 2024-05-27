@@ -97,6 +97,9 @@ async fn pull_request() {
         milestone: None,
         title: Some("test pr".into()),
     };
+
+    // Wait for... something to happen, or else creating a PR will return 404
+    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
     let pr = api
         .repo_create_pull_request("TestingAdmin", "pr-test", pr_opt)
         .await
@@ -146,6 +149,10 @@ async fn release() {
 
     let git = Git::new("./test_repos/release");
     let _ = basic_repo(&api, &git, "release-test").await;
+
+    // Wait for the repo to be finished being populated, or else creating a
+    // release will return "422 repo is empty"
+    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
 
     let query = RepoListReleasesQuery::default();
     assert!(
