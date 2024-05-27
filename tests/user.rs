@@ -41,7 +41,7 @@ async fn follow() {
 
     let option = CreateUserOption {
         created_at: None,
-        email: "follower@testing".into(),
+        email: "follower@no-reply.example.org".into(),
         full_name: None,
         login_name: None,
         must_change_password: Some(false),
