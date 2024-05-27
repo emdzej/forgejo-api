@@ -99,11 +99,13 @@ impl Forgejo {
                 password,
                 mfa,
             } => {
-                let len = (((username.len() + password.len() + 1)
+                let unencoded_len = username.len() + password.len() + 1;
+                let unpadded_len = unencoded_len
                     .checked_mul(4)
-                    .ok_or(ForgejoError::AuthTooLong)?)
-                    / 3)
-                    + 1;
+                    .ok_or(ForgejoError::AuthTooLong)?
+                    .div_ceil(3);
+                // round up to next multiple of 4, to account for padding
+                let len = unpadded_len.div_ceil(4) * 4;
                 let mut bytes = vec![0; len];
 
                 // panic safety: len cannot be zero
