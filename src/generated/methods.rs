@@ -7066,7 +7066,7 @@ impl crate::Forgejo {
     }
 
     /// Get user settings
-    pub async fn get_user_settings(&self) -> Result<Vec<UserSettings>, ForgejoError> {
+    pub async fn get_user_settings(&self) -> Result<UserSettings, ForgejoError> {
         let request = self.get("user/settings").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -7081,7 +7081,7 @@ impl crate::Forgejo {
     pub async fn update_user_settings(
         &self,
         body: UserSettingsOptions,
-    ) -> Result<Vec<UserSettings>, ForgejoError> {
+    ) -> Result<UserSettings, ForgejoError> {
         let request = self.patch("user/settings").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
