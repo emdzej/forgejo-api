@@ -555,14 +555,18 @@ impl ResponseType {
     fn merge(self, other: Self) -> eyre::Result<Self> {
         let headers = match (self.headers, other.headers) {
             (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
-            (Some(a), None) => Some(format!("Option<{a}>")),
-            (None, Some(b)) => Some(format!("Option<{b}>")),
+            (Some(a), None) if !a.starts_with("Option<") => Some(format!("Option<{a}>")),
+            (None, Some(b)) if !b.starts_with("Option<") => Some(format!("Option<{b}>")),
             (a, b) => a.or(b),
         };
         let body = match (self.body.as_deref(), other.body.as_deref()) {
             (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
-            (Some(a), Some("()") | None) => Some(format!("Option<{a}>")),
-            (Some("()") | None, Some(b)) => Some(format!("Option<{b}>")),
+            (Some(a), Some("()") | None) if !a.starts_with("Option<") => {
+                Some(format!("Option<{a}>"))
+            }
+            (Some("()") | None, Some(b)) if !b.starts_with("Option<") => {
+                Some(format!("Option<{b}>"))
+            }
             (_, _) => self.body.or(other.body),
         };
         use ResponseKind::*;
