@@ -547,11 +547,17 @@ fn create_header_struct(
                 }
             },
             ParameterType::Integer => match header.format.as_deref() {
-                Some("int64") => {
+                Some("uint64") => {
                     imp.push_str("s.parse::<u64>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
-                Some("int32") | _ => {
+                Some("uint32") => {
                     imp.push_str("s.parse::<u32>().map_err(|_| StructureError::HeaderParseFailed)")
+                }
+                Some("int64") => {
+                    imp.push_str("s.parse::<i64>().map_err(|_| StructureError::HeaderParseFailed)")
+                }
+                Some("int32") | _ => {
+                    imp.push_str("s.parse::<i32>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
             },
             ParameterType::Boolean => {
@@ -584,8 +590,10 @@ fn create_header_struct(
                         Some("double") | _ => "s.parse::<f64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                     },
                     ParameterType::Integer => match items.format.as_deref() {
-                        Some("int64") => "s.parse::<u64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
-                        Some("int32") | _ => "s.parse::<u32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        Some("uint64") => "s.parse::<u64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        Some("uint32") => "s.parse::<u32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        Some("int64") => "s.parse::<i64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        Some("int32") | _ => "s.parse::<i32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                     },
                     ParameterType::Boolean => "s.parse::<bool>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                     ParameterType::Array => eyre::bail!("nested arrays not supported in headers"),
