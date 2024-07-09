@@ -20667,7 +20667,10 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "code.gitea.io/gitea/modules/structs",
+      "x-parse-with": {
+        "requested_reviewers": "requested_reviewers_ignore_null"
+      }
     },
     "PullRequestMeta": {
       "description": "PullRequestMeta PR info if an issue is a PR",

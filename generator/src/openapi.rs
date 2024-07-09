@@ -1079,6 +1079,9 @@ pub struct Schema {
     pub xml: Option<Xml>,
     pub external_docs: Option<ExternalDocs>,
     pub example: Option<serde_json::Value>,
+
+    #[serde(flatten)]
+    pub extensions: BTreeMap<String, serde_json::Value>,
 }
 
 impl JsonDeref for Schema {

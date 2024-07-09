@@ -20,7 +20,7 @@ impl Git {
     }
 }
 
-async fn basic_repo(api: &forgejo_api::Forgejo, git: &Git, name: &str) -> Repository {
+async fn setup_local_repo(git: &Git) {
     git.run(&["config", "--global", "init.defaultBranch", "main"]);
     git.run(&["init"]);
     git.run(&["config", "user.name", "TestingAdmin"]);
@@ -30,7 +30,10 @@ async fn basic_repo(api: &forgejo_api::Forgejo, git: &Git, name: &str) -> Reposi
         .unwrap();
     git.run(&["add", "."]);
     git.run(&["commit", "-m", "initial commit"]);
+}
 
+async fn basic_repo(api: &forgejo_api::Forgejo, git: &Git, name: &str) -> Repository {
+    setup_local_repo(git).await;
     let repo_opt = CreateRepoOption {
         auto_init: Some(false),
         default_branch: Some("main".into()),
@@ -52,6 +55,51 @@ async fn basic_repo(api: &forgejo_api::Forgejo, git: &Git, name: &str) -> Reposi
     );
     assert!(
         remote_repo.owner.as_ref().unwrap().login.as_ref().unwrap() == "TestingAdmin",
+        "repo owner is not \"TestingAdmin\""
+    );
+    assert!(
+        remote_repo.name.as_ref().unwrap() == name,
+        "repo name is not \"{name}\""
+    );
+
+    let mut remote_url = remote_repo.clone_url.clone().unwrap();
+    remote_url.set_username("TestingAdmin").unwrap();
+    remote_url.set_password(Some("password")).unwrap();
+    git.run(&["remote", "add", "origin", remote_url.as_str()]);
+    git.run(&["push", "-u", "origin", "main"]);
+
+    remote_repo
+}
+
+async fn basic_org_repo(
+    api: &forgejo_api::Forgejo,
+    git: &Git,
+    org: &str,
+    name: &str,
+) -> Repository {
+    setup_local_repo(git).await;
+
+    let repo_opt = CreateRepoOption {
+        auto_init: Some(false),
+        default_branch: Some("main".into()),
+        description: Some("Test Repo".into()),
+        gitignores: Some("".into()),
+        issue_labels: Some("".into()),
+        license: Some("".into()),
+        name: name.into(),
+        object_format_name: None,
+        private: Some(false),
+        readme: None,
+        template: Some(false),
+        trust_model: Some(CreateRepoOptionTrustModel::Default),
+    };
+    let remote_repo = api.create_org_repo(org, repo_opt).await.unwrap();
+    assert!(
+        remote_repo.has_pull_requests.unwrap(),
+        "repo does not accept pull requests"
+    );
+    assert!(
+        remote_repo.owner.as_ref().unwrap().login.as_ref().unwrap() == org,
         "repo owner is not \"TestingAdmin\""
     );
     assert!(
@@ -273,4 +321,67 @@ async fn delete_repo() {
     api.repo_delete("TestingAdmin", "delete-test")
         .await
         .expect("failed to delete repo");
+}
+
+#[tokio::test]
+async fn team_pr_review_request() {
+    let api = common::login();
+
+    let org_opt = CreateOrgOption {
+        description: Some("Testing team review requests".into()),
+        email: None,
+        full_name: None,
+        location: None,
+        repo_admin_change_team_access: None,
+        username: "team-review-org".into(),
+        visibility: None,
+        website: None,
+    };
+    api.org_create(org_opt).await.unwrap();
+
+    let git = Git::new("./test_repos/team-pr-review");
+    let _ = basic_org_repo(&api, &git, "team-review-org", "team-pr-review").await;
+
+    git.run(&["switch", "-c", "test"]);
+    tokio::fs::write(
+        "./test_repos/team-pr-review/example.rs",
+        "fn add_one(x: u32) -> u32 { x + 1 }",
+    )
+    .await
+    .unwrap();
+    git.run(&["add", "."]);
+    git.run(&["commit", "-m", "egg"]);
+    git.run(&["push", "-u", "origin", "test"]);
+
+    let pr_opt = CreatePullRequestOption {
+        assignee: None,
+        assignees: Some(vec!["TestingAdmin".into()]),
+        base: Some("main".into()),
+        body: Some("This is a test PR".into()),
+        due_date: None,
+        head: Some("test".into()),
+        labels: None,
+        milestone: None,
+        title: Some("test pr".into()),
+    };
+
+    // Wait for... something to happen, or else creating a PR will return 404
+    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+    api.repo_create_pull_request("team-review-org", "team-pr-review", pr_opt)
+        .await
+        .expect("couldn't create pr");
+
+    let review_opt = PullReviewRequestOptions {
+        reviewers: None,
+        team_reviewers: Some(vec!["Owners".into()]),
+    };
+    api.repo_create_pull_review_requests("team-review-org", "team-pr-review", 1, review_opt)
+        .await
+        .expect("couldn't request review");
+
+    let pr = api
+        .repo_get_pull_request("team-review-org", "team-pr-review", 1)
+        .await
+        .expect("couldn't get pr");
+    assert_eq!(pr.requested_reviewers, Some(Vec::new()));
 }

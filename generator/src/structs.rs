@@ -1,7 +1,7 @@
 use crate::openapi::*;
 use eyre::WrapErr;
 use heck::ToPascalCase;
-use std::fmt::Write;
+use std::{collections::BTreeMap, fmt::Write};
 
 pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     let mut s = String::new();
@@ -51,6 +51,13 @@ pub fn create_struct_for_definition(
 
     let mut subtypes = Vec::new();
 
+    let parse_with = schema
+        .extensions
+        .get("x-parse-with")
+        .map(|ex| serde_json::from_value::<BTreeMap<String, String>>(ex.clone()))
+        .transpose()?
+        .unwrap_or_default();
+
     let docs = create_struct_docs(schema)?;
     let mut fields = String::new();
     let required = schema.required.as_deref().unwrap_or_default();
@@ -89,6 +96,11 @@ pub fn create_struct_for_definition(
             }
             if field_ty == "Option<time::OffsetDateTime>" {
                 fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
+            }
+            if let Some(parse_method) = parse_with.get(prop_name) {
+                fields.push_str("#[serde(deserialize_with = \"crate::");
+                fields.push_str(parse_method);
+                fields.push_str("\")]\n");
             }
             if let MaybeRef::Value { value } = &prop_schema {
                 if let Some(desc) = &value.description {
