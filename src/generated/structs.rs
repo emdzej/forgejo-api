@@ -10,7 +10,7 @@ pub struct APIError {
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub name: Option<String>,
     pub scopes: Option<Vec<String>>,
     pub sha1: Option<String>,
@@ -20,19 +20,19 @@ pub struct AccessToken {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Activity {
     pub act_user: Option<User>,
-    pub act_user_id: Option<u64>,
+    pub act_user_id: Option<i64>,
     pub comment: Option<Comment>,
-    pub comment_id: Option<u64>,
+    pub comment_id: Option<i64>,
     pub content: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created: Option<time::OffsetDateTime>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub is_private: Option<bool>,
     pub op_type: Option<String>,
     pub ref_name: Option<String>,
     pub repo: Option<Repository>,
-    pub repo_id: Option<u64>,
-    pub user_id: Option<u64>,
+    pub repo_id: Option<i64>,
+    pub user_id: Option<i64>,
 }
 
 /// ActivityPub type
@@ -54,7 +54,7 @@ pub struct AddTimeOption {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created: Option<time::OffsetDateTime>,
     /// time in seconds
-    pub time: u64,
+    pub time: i64,
     /// User who spent the time (optional)
     pub user_name: Option<String>,
 }
@@ -89,16 +89,16 @@ pub struct Attachment {
     pub browser_download_url: Option<url::Url>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
-    pub download_count: Option<u64>,
-    pub id: Option<u64>,
+    pub download_count: Option<i64>,
+    pub id: Option<i64>,
     pub name: Option<String>,
-    pub size: Option<u64>,
+    pub size: Option<i64>,
     pub uuid: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct BlockedUser {
-    pub block_id: Option<u64>,
+    pub block_id: Option<i64>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
 }
@@ -111,7 +111,7 @@ pub struct Branch {
     pub enable_status_check: Option<bool>,
     pub name: Option<String>,
     pub protected: Option<bool>,
-    pub required_approvals: Option<u64>,
+    pub required_approvals: Option<i64>,
     pub status_check_contexts: Option<Vec<String>>,
     pub user_can_merge: Option<bool>,
     pub user_can_push: Option<bool>,
@@ -144,7 +144,7 @@ pub struct BranchProtection {
     pub push_whitelist_teams: Option<Vec<String>>,
     pub push_whitelist_usernames: Option<Vec<String>>,
     pub require_signed_commits: Option<bool>,
-    pub required_approvals: Option<u64>,
+    pub required_approvals: Option<i64>,
     pub rule_name: Option<String>,
     pub status_check_contexts: Option<Vec<String>>,
     pub unprotected_file_patterns: Option<String>,
@@ -201,11 +201,11 @@ pub struct ChangeFilesOptions {
 /// ChangedFile store information about files affected by the pull request
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ChangedFile {
-    pub additions: Option<u64>,
-    pub changes: Option<u64>,
+    pub additions: Option<i64>,
+    pub changes: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub contents_url: Option<url::Url>,
-    pub deletions: Option<u64>,
+    pub deletions: Option<i64>,
     pub filename: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
@@ -224,7 +224,7 @@ pub struct CombinedStatus {
     pub sha: Option<String>,
     pub state: Option<String>,
     pub statuses: Option<Vec<CommitStatus>>,
-    pub total_count: Option<u64>,
+    pub total_count: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
 }
@@ -238,11 +238,11 @@ pub struct Comment {
     pub created_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub issue_url: Option<url::Url>,
     pub original_author: Option<String>,
-    pub original_author_id: Option<u64>,
+    pub original_author_id: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub pull_request_url: Option<url::Url>,
     #[serde(with = "time::serde::rfc3339::option")]
@@ -295,9 +295,9 @@ pub struct CommitMeta {
 /// CommitStats is statistics for a RepoCommit
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitStats {
-    pub additions: Option<u64>,
-    pub deletions: Option<u64>,
-    pub total: Option<u64>,
+    pub additions: Option<i64>,
+    pub deletions: Option<i64>,
+    pub total: Option<i64>,
 }
 
 /// CommitStatus holds a single status of a single Commit
@@ -308,7 +308,7 @@ pub struct CommitStatus {
     pub created_at: Option<time::OffsetDateTime>,
     pub creator: Option<User>,
     pub description: Option<String>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub status: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub target_url: Option<url::Url>,
@@ -350,7 +350,7 @@ pub struct ContentsResponse {
     pub name: Option<String>,
     pub path: Option<String>,
     pub sha: Option<String>,
-    pub size: Option<u64>,
+    pub size: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     /// `submodule_git_url` is populated when `type` is `submodule`, otherwise null
     pub submodule_git_url: Option<url::Url>,
@@ -395,7 +395,7 @@ pub struct CreateBranchProtectionOption {
     pub push_whitelist_teams: Option<Vec<String>>,
     pub push_whitelist_usernames: Option<Vec<String>>,
     pub require_signed_commits: Option<bool>,
-    pub required_approvals: Option<u64>,
+    pub required_approvals: Option<i64>,
     pub rule_name: Option<String>,
     pub status_check_contexts: Option<Vec<String>>,
     pub unprotected_file_patterns: Option<String>,
@@ -525,9 +525,9 @@ pub struct CreateIssueOption {
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
     /// list of label ids
-    pub labels: Option<Vec<u64>>,
+    pub labels: Option<Vec<i64>>,
     /// milestone id
-    pub milestone: Option<u64>,
+    pub milestone: Option<i64>,
     #[serde(rename = "ref")]
     pub r#ref: Option<String>,
     pub title: String,
@@ -621,8 +621,8 @@ pub struct CreatePullRequestOption {
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
     pub head: Option<String>,
-    pub labels: Option<Vec<u64>>,
-    pub milestone: Option<u64>,
+    pub labels: Option<Vec<i64>>,
+    pub milestone: Option<i64>,
     pub title: Option<String>,
 }
 
@@ -631,9 +631,9 @@ pub struct CreatePullRequestOption {
 pub struct CreatePullReviewComment {
     pub body: Option<String>,
     /// if comment to new file line or 0
-    pub new_position: Option<u64>,
+    pub new_position: Option<i64>,
     /// if comment to old file line or 0
-    pub old_position: Option<u64>,
+    pub old_position: Option<i64>,
     /// the tree path
     pub path: Option<String>,
 }
@@ -768,7 +768,7 @@ pub struct CreateUserOption {
     pub password: Option<String>,
     pub restricted: Option<bool>,
     pub send_notify: Option<bool>,
-    pub source_id: Option<u64>,
+    pub source_id: Option<i64>,
     pub username: String,
     pub visibility: Option<String>,
 }
@@ -787,7 +787,7 @@ pub struct CreateWikiPageOptions {
 /// Cron represents a Cron task
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Cron {
-    pub exec_times: Option<u64>,
+    pub exec_times: Option<i64>,
     pub name: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub next: Option<time::OffsetDateTime>,
@@ -849,9 +849,9 @@ pub struct DeployKey {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub fingerprint: Option<String>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub key: Option<String>,
-    pub key_id: Option<u64>,
+    pub key_id: Option<i64>,
     pub read_only: Option<bool>,
     pub repository: Option<Repository>,
     pub title: Option<String>,
@@ -895,7 +895,7 @@ pub struct EditBranchProtectionOption {
     pub push_whitelist_teams: Option<Vec<String>>,
     pub push_whitelist_usernames: Option<Vec<String>>,
     pub require_signed_commits: Option<bool>,
-    pub required_approvals: Option<u64>,
+    pub required_approvals: Option<i64>,
     pub status_check_contexts: Option<Vec<String>>,
     pub unprotected_file_patterns: Option<String>,
 }
@@ -940,7 +940,7 @@ pub struct EditIssueOption {
     pub body: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
-    pub milestone: Option<u64>,
+    pub milestone: Option<i64>,
     #[serde(rename = "ref")]
     pub r#ref: Option<String>,
     pub state: Option<String>,
@@ -1004,8 +1004,8 @@ pub struct EditPullRequestOption {
     pub body: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
-    pub labels: Option<Vec<u64>>,
-    pub milestone: Option<u64>,
+    pub labels: Option<Vec<i64>>,
+    pub milestone: Option<i64>,
     pub state: Option<String>,
     pub title: Option<String>,
     pub unset_due_date: Option<bool>,
@@ -1131,13 +1131,13 @@ pub struct EditUserOption {
     pub full_name: Option<String>,
     pub location: Option<String>,
     pub login_name: String,
-    pub max_repo_creation: Option<u64>,
+    pub max_repo_creation: Option<i64>,
     pub must_change_password: Option<bool>,
     pub password: Option<String>,
     pub prohibit_login: Option<bool>,
     pub pronouns: Option<String>,
     pub restricted: Option<bool>,
-    pub source_id: u64,
+    pub source_id: i64,
     pub visibility: Option<String>,
     pub website: Option<String>,
 }
@@ -1147,7 +1147,7 @@ pub struct EditUserOption {
 pub struct Email {
     pub email: Option<String>,
     pub primary: Option<bool>,
-    pub user_id: Option<u64>,
+    pub user_id: Option<i64>,
     pub username: Option<String>,
     pub verified: Option<bool>,
 }
@@ -1235,7 +1235,7 @@ pub struct GPGKey {
     pub emails: Option<Vec<GPGKeyEmail>>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub expires_at: Option<time::OffsetDateTime>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub key_id: Option<String>,
     pub primary_key_id: Option<String>,
     pub public_key: Option<String>,
@@ -1253,10 +1253,10 @@ pub struct GPGKeyEmail {
 /// GeneralAPISettings contains global api settings exposed by it
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GeneralAPISettings {
-    pub default_git_trees_per_page: Option<u64>,
-    pub default_max_blob_size: Option<u64>,
-    pub default_paging_num: Option<u64>,
-    pub max_response_items: Option<u64>,
+    pub default_git_trees_per_page: Option<i64>,
+    pub default_max_blob_size: Option<i64>,
+    pub default_paging_num: Option<i64>,
+    pub max_response_items: Option<i64>,
 }
 
 /// GeneralAttachmentSettings contains global Attachment settings exposed by API
@@ -1264,8 +1264,8 @@ pub struct GeneralAPISettings {
 pub struct GeneralAttachmentSettings {
     pub allowed_types: Option<String>,
     pub enabled: Option<bool>,
-    pub max_files: Option<u64>,
-    pub max_size: Option<u64>,
+    pub max_files: Option<i64>,
+    pub max_size: Option<i64>,
 }
 
 /// GeneralRepoSettings contains global repository settings exposed by API
@@ -1323,7 +1323,7 @@ pub struct GitBlobResponse {
     pub content: Option<String>,
     pub encoding: Option<String>,
     pub sha: Option<String>,
-    pub size: Option<u64>,
+    pub size: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
 }
@@ -1334,7 +1334,7 @@ pub struct GitEntry {
     pub mode: Option<String>,
     pub path: Option<String>,
     pub sha: Option<String>,
-    pub size: Option<u64>,
+    pub size: Option<i64>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -1361,9 +1361,9 @@ pub struct GitObject {
 /// GitTreeResponse returns a git tree
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GitTreeResponse {
-    pub page: Option<u64>,
+    pub page: Option<i64>,
     pub sha: Option<String>,
-    pub total_count: Option<u64>,
+    pub total_count: Option<i64>,
     pub tree: Option<Vec<GitEntry>>,
     pub truncated: Option<bool>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -1389,7 +1389,7 @@ pub struct Hook {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub events: Option<Vec<String>>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub metadata: Option<serde_json::Value>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
@@ -1426,21 +1426,21 @@ pub struct Issue {
     pub body: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub closed_at: Option<time::OffsetDateTime>,
-    pub comments: Option<u64>,
+    pub comments: Option<i64>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub is_locked: Option<bool>,
     pub labels: Option<Vec<Label>>,
     pub milestone: Option<Milestone>,
-    pub number: Option<u64>,
+    pub number: Option<i64>,
     pub original_author: Option<String>,
-    pub original_author_id: Option<u64>,
-    pub pin_order: Option<u64>,
+    pub original_author_id: Option<i64>,
+    pub pin_order: Option<i64>,
     pub pull_request: Option<PullRequestMeta>,
     #[serde(rename = "ref")]
     pub r#ref: Option<String>,
@@ -1503,7 +1503,7 @@ pub struct IssueFormFieldVisible {}
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueLabelsOption {
     /// list of label IDs
-    pub labels: Option<Vec<u64>>,
+    pub labels: Option<Vec<i64>>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
 }
@@ -1511,7 +1511,7 @@ pub struct IssueLabelsOption {
 /// IssueMeta basic issue information
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueMeta {
-    pub index: Option<u64>,
+    pub index: Option<i64>,
     pub owner: Option<String>,
     pub repo: Option<String>,
 }
@@ -1536,7 +1536,7 @@ pub struct Label {
     pub color: Option<String>,
     pub description: Option<String>,
     pub exclusive: Option<bool>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub is_archived: Option<bool>,
     pub name: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -1702,7 +1702,7 @@ pub struct MigrateRepoOptions {
     pub repo_owner: Option<String>,
     pub service: Option<MigrateRepoOptionsService>,
     /// deprecated (only for backwards compatibility)
-    pub uid: Option<u64>,
+    pub uid: Option<i64>,
     pub wiki: Option<bool>,
 }
 
@@ -1730,14 +1730,14 @@ pub enum MigrateRepoOptionsService {
 pub struct Milestone {
     #[serde(with = "time::serde::rfc3339::option")]
     pub closed_at: Option<time::OffsetDateTime>,
-    pub closed_issues: Option<u64>,
+    pub closed_issues: Option<i64>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub description: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_on: Option<time::OffsetDateTime>,
-    pub id: Option<u64>,
-    pub open_issues: Option<u64>,
+    pub id: Option<i64>,
+    pub open_issues: Option<i64>,
     pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
@@ -1784,9 +1784,9 @@ pub struct NodeInfoSoftware {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NodeInfoUsage {
     #[serde(rename = "localComments")]
-    pub local_comments: Option<u64>,
+    pub local_comments: Option<i64>,
     #[serde(rename = "localPosts")]
-    pub local_posts: Option<u64>,
+    pub local_posts: Option<i64>,
     pub users: Option<NodeInfoUsageUsers>,
 }
 
@@ -1794,10 +1794,10 @@ pub struct NodeInfoUsage {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NodeInfoUsageUsers {
     #[serde(rename = "activeHalfyear")]
-    pub active_halfyear: Option<u64>,
+    pub active_halfyear: Option<i64>,
     #[serde(rename = "activeMonth")]
-    pub active_month: Option<u64>,
-    pub total: Option<u64>,
+    pub active_month: Option<i64>,
+    pub total: Option<i64>,
 }
 
 /// Note contains information related to a git note
@@ -1810,7 +1810,7 @@ pub struct Note {
 /// NotificationCount number of unread notifications
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NotificationCount {
-    pub new: Option<u64>,
+    pub new: Option<i64>,
 }
 
 /// NotificationSubject contains the notification subject (Issue/Pull/Commit)
@@ -1833,7 +1833,7 @@ pub struct NotificationSubject {
 /// NotificationThread expose Notification on API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NotificationThread {
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub pinned: Option<bool>,
     pub repository: Option<Repository>,
     pub subject: Option<NotificationSubject>,
@@ -1855,7 +1855,7 @@ pub struct OAuth2Application {
     pub confidential_client: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created: Option<time::OffsetDateTime>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub name: Option<String>,
     pub redirect_uris: Option<Vec<String>>,
 }
@@ -1877,7 +1877,7 @@ pub struct Organization {
     pub description: Option<String>,
     pub email: Option<String>,
     pub full_name: Option<String>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub location: Option<String>,
     pub name: Option<String>,
     pub repo_admin_change_team_access: Option<bool>,
@@ -1904,7 +1904,7 @@ pub struct PRBranchInfo {
     #[serde(rename = "ref")]
     pub r#ref: Option<String>,
     pub repo: Option<Repository>,
-    pub repo_id: Option<u64>,
+    pub repo_id: Option<i64>,
     pub sha: Option<String>,
 }
 
@@ -1916,7 +1916,7 @@ pub struct Package {
     pub creator: Option<User>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub name: Option<String>,
     pub owner: Option<User>,
     pub repository: Option<Repository>,
@@ -1929,8 +1929,8 @@ pub struct Package {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PackageFile {
     #[serde(rename = "Size")]
-    pub size: Option<u64>,
-    pub id: Option<u64>,
+    pub size: Option<i64>,
+    pub id: Option<i64>,
     pub md5: Option<String>,
     pub name: Option<String>,
     pub sha1: Option<String>,
@@ -1989,7 +1989,7 @@ pub struct PublicKey {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub fingerprint: Option<String>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub key: Option<String>,
     pub key_type: Option<String>,
     pub read_only: Option<bool>,
@@ -2009,7 +2009,7 @@ pub struct PullRequest {
     pub body: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub closed_at: Option<time::OffsetDateTime>,
-    pub comments: Option<u64>,
+    pub comments: Option<i64>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -2019,7 +2019,7 @@ pub struct PullRequest {
     pub head: Option<PRBranchInfo>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub is_locked: Option<bool>,
     pub labels: Option<Vec<Label>>,
     pub merge_base: Option<String>,
@@ -2030,10 +2030,10 @@ pub struct PullRequest {
     pub merged_at: Option<time::OffsetDateTime>,
     pub merged_by: Option<User>,
     pub milestone: Option<Milestone>,
-    pub number: Option<u64>,
+    pub number: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub patch_url: Option<url::Url>,
-    pub pin_order: Option<u64>,
+    pub pin_order: Option<i64>,
     #[serde(deserialize_with = "crate::requested_reviewers_ignore_null")]
     pub requested_reviewers: Option<Vec<User>>,
     pub state: Option<StateType>,
@@ -2058,12 +2058,12 @@ pub struct PullRequestMeta {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullReview {
     pub body: Option<String>,
-    pub comments_count: Option<u64>,
+    pub comments_count: Option<i64>,
     pub commit_id: Option<String>,
     pub dismissed: Option<bool>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub official: Option<bool>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub pull_request_url: Option<url::Url>,
@@ -2087,12 +2087,12 @@ pub struct PullReviewComment {
     pub diff_hunk: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub original_commit_id: Option<String>,
-    pub original_position: Option<u32>,
+    pub original_position: Option<u64>,
     pub path: Option<String>,
-    pub position: Option<u32>,
-    pub pull_request_review_id: Option<u64>,
+    pub position: Option<u64>,
+    pub pull_request_review_id: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub pull_request_url: Option<url::Url>,
     pub resolver: Option<User>,
@@ -2152,7 +2152,7 @@ pub struct Release {
     pub draft: Option<bool>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub name: Option<String>,
     pub prerelease: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]
@@ -2243,7 +2243,7 @@ pub struct Repository {
     pub external_tracker: Option<ExternalTracker>,
     pub external_wiki: Option<ExternalWiki>,
     pub fork: Option<bool>,
-    pub forks_count: Option<u64>,
+    pub forks_count: Option<i64>,
     pub full_name: Option<String>,
     pub has_actions: Option<bool>,
     pub has_issues: Option<bool>,
@@ -2254,7 +2254,7 @@ pub struct Repository {
     pub has_wiki: Option<bool>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub ignore_whitespace_conflicts: Option<bool>,
     pub internal: Option<bool>,
     pub internal_tracker: Option<InternalTracker>,
@@ -2268,26 +2268,26 @@ pub struct Repository {
     pub mirror_updated: Option<time::OffsetDateTime>,
     pub name: Option<String>,
     pub object_format_name: Option<ObjectFormatName>,
-    pub open_issues_count: Option<u64>,
-    pub open_pr_counter: Option<u64>,
+    pub open_issues_count: Option<i64>,
+    pub open_pr_counter: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub original_url: Option<url::Url>,
     pub owner: Option<User>,
     pub parent: Option<Box<Repository>>,
     pub permissions: Option<Permission>,
     pub private: Option<bool>,
-    pub release_counter: Option<u64>,
+    pub release_counter: Option<i64>,
     pub repo_transfer: Option<RepoTransfer>,
-    pub size: Option<u64>,
+    pub size: Option<i64>,
     #[serde(deserialize_with = "crate::deserialize_optional_ssh_url")]
     pub ssh_url: Option<url::Url>,
-    pub stars_count: Option<u64>,
+    pub stars_count: Option<i64>,
     pub template: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
-    pub watchers_count: Option<u64>,
+    pub watchers_count: Option<i64>,
     pub website: Option<String>,
     pub wiki_branch: Option<String>,
 }
@@ -2296,7 +2296,7 @@ pub struct Repository {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RepositoryMeta {
     pub full_name: Option<String>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub name: Option<String>,
     pub owner: Option<String>,
 }
@@ -2342,11 +2342,11 @@ pub struct StopWatch {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created: Option<time::OffsetDateTime>,
     pub duration: Option<String>,
-    pub issue_index: Option<u64>,
+    pub issue_index: Option<i64>,
     pub issue_title: Option<String>,
     pub repo_name: Option<String>,
     pub repo_owner_name: Option<String>,
-    pub seconds: Option<u64>,
+    pub seconds: Option<i64>,
 }
 
 /// SubmitPullReviewOptions are options to submit a pending pull review
@@ -2374,7 +2374,7 @@ pub struct Tag {
 pub struct Team {
     pub can_create_org_repo: Option<bool>,
     pub description: Option<String>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub includes_all_repositories: Option<bool>,
     pub name: Option<String>,
     pub organization: Option<Organization>,
@@ -2411,7 +2411,7 @@ pub struct TimelineComment {
     pub dependent_issue: Option<Issue>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub issue_url: Option<url::Url>,
     pub label: Option<Label>,
@@ -2419,10 +2419,10 @@ pub struct TimelineComment {
     pub new_ref: Option<String>,
     pub new_title: Option<String>,
     pub old_milestone: Option<Milestone>,
-    pub old_project_id: Option<u64>,
+    pub old_project_id: Option<i64>,
     pub old_ref: Option<String>,
     pub old_title: Option<String>,
-    pub project_id: Option<u64>,
+    pub project_id: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub pull_request_url: Option<url::Url>,
     pub ref_action: Option<String>,
@@ -2433,7 +2433,7 @@ pub struct TimelineComment {
     /// whether the assignees were removed or added
     pub removed_assignee: Option<bool>,
     pub resolve_doer: Option<User>,
-    pub review_id: Option<u64>,
+    pub review_id: Option<i64>,
     pub tracked_time: Option<TrackedTime>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
@@ -2453,8 +2453,8 @@ pub struct TopicName {
 pub struct TopicResponse {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created: Option<time::OffsetDateTime>,
-    pub id: Option<u64>,
-    pub repo_count: Option<u64>,
+    pub id: Option<i64>,
+    pub repo_count: Option<i64>,
     pub topic_name: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated: Option<time::OffsetDateTime>,
@@ -2465,14 +2465,14 @@ pub struct TopicResponse {
 pub struct TrackedTime {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created: Option<time::OffsetDateTime>,
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     pub issue: Option<Issue>,
     /// deprecated (only for backwards compatibility)
-    pub issue_id: Option<u64>,
+    pub issue_id: Option<i64>,
     /// Time in seconds
-    pub time: Option<u64>,
+    pub time: Option<i64>,
     /// deprecated (only for backwards compatibility)
-    pub user_id: Option<u64>,
+    pub user_id: Option<i64>,
     pub user_name: Option<String>,
 }
 
@@ -2481,7 +2481,7 @@ pub struct TrackedTime {
 pub struct TransferRepoOption {
     pub new_owner: String,
     /// ID of the team or teams to add to the repository. Teams can only be added to organization-owned repositories.
-    pub team_ids: Option<Vec<u64>>,
+    pub team_ids: Option<Vec<i64>>,
 }
 
 /// UpdateFileOptions options for updating files
@@ -2536,12 +2536,12 @@ pub struct User {
     pub description: Option<String>,
     pub email: Option<String>,
     /// user counts
-    pub followers_count: Option<u64>,
-    pub following_count: Option<u64>,
+    pub followers_count: Option<i64>,
+    pub following_count: Option<i64>,
     /// the user's full name
     pub full_name: Option<String>,
     /// the user's id
-    pub id: Option<u64>,
+    pub id: Option<i64>,
     /// Is the user an administrator
     pub is_admin: Option<bool>,
     /// User locale
@@ -2560,7 +2560,7 @@ pub struct User {
     pub pronouns: Option<String>,
     /// Is user restricted
     pub restricted: Option<bool>,
-    pub starred_repos_count: Option<u64>,
+    pub starred_repos_count: Option<i64>,
     /// User visibility level option: public, limited, private
     pub visibility: Option<String>,
     /// the user's website
@@ -2570,8 +2570,8 @@ pub struct User {
 /// UserHeatmapData represents the data needed to create a heatmap
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct UserHeatmapData {
-    pub contributions: Option<u64>,
-    pub timestamp: Option<u64>,
+    pub contributions: Option<i64>,
+    pub timestamp: Option<i64>,
 }
 
 /// UserSettings represents user settings
@@ -2635,13 +2635,13 @@ pub struct WikiCommit {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WikiCommitList {
     pub commits: Option<Vec<WikiCommit>>,
-    pub count: Option<u64>,
+    pub count: Option<i64>,
 }
 
 /// WikiPage a wiki page
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WikiPage {
-    pub commit_count: Option<u64>,
+    pub commit_count: Option<i64>,
     /// Page content, base64 encoded
     pub content_base64: Option<String>,
     pub footer: Option<String>,
@@ -2667,10 +2667,10 @@ pub struct WikiPageMetaData {
 
 pub struct ChangedFileListHeaders {
     pub x_has_more: Option<bool>,
-    pub x_page: Option<u64>,
-    pub x_page_count: Option<u64>,
-    pub x_per_page: Option<u64>,
-    pub x_total_count: Option<u64>,
+    pub x_page: Option<i64>,
+    pub x_page_count: Option<i64>,
+    pub x_per_page: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
@@ -2689,7 +2689,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             .get("X-Page")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -2697,7 +2697,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             .get("X-PageCount")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -2705,7 +2705,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             .get("X-PerPage")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -2713,7 +2713,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             .get("X-Total-Count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -2729,10 +2729,10 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
 
 pub struct CommitListHeaders {
     pub x_has_more: Option<bool>,
-    pub x_page: Option<u64>,
-    pub x_page_count: Option<u64>,
-    pub x_per_page: Option<u64>,
-    pub x_total: Option<u64>,
+    pub x_page: Option<i64>,
+    pub x_page_count: Option<i64>,
+    pub x_per_page: Option<i64>,
+    pub x_total: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
@@ -2751,7 +2751,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
             .get("X-Page")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -2759,7 +2759,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
             .get("X-PageCount")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -2767,7 +2767,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
             .get("X-PerPage")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -2775,7 +2775,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
             .get("X-Total")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<u64>()
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;

@@ -222,8 +222,10 @@ pub fn param_type_inner(
         }
         .into(),
         ParameterType::Integer => match format.as_deref() {
-            Some("int32") => "u32",
-            Some("int64") => "u64",
+            Some("uint32") => "u32",
+            Some("uint64") => "u64",
+            Some("int32") => "i32",
+            Some("int64") => "i64",
             _ => "u32",
         }
         .into(),

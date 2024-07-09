@@ -4287,7 +4287,7 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<BTreeMap<String, u64>, ForgejoError> {
+    ) -> Result<BTreeMap<String, i64>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/languages"))
             .build()?;

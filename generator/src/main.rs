@@ -94,8 +94,10 @@ fn schema_type_name(
                     }
                     .to_string(),
                     Primitive::Integer => match schema.format.as_deref() {
-                        Some("int32") => "u32",
-                        Some("int64") => "u64",
+                        Some("uint32") => "u32",
+                        Some("uint64") => "u64",
+                        Some("int32") => "i32",
+                        Some("int64") => "i64",
                         _ => "u32",
                     }
                     .to_string(),

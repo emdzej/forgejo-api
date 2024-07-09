@@ -67,12 +67,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -122,12 +124,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -158,12 +162,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -188,12 +194,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -237,7 +245,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -258,7 +266,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -280,7 +288,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to update",
             "name": "id",
             "in": "path",
@@ -310,12 +318,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -353,12 +363,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -454,7 +466,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "ID of the user's login source to search for",
             "name": "source_id",
             "in": "query"
@@ -467,12 +479,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -644,7 +658,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the key to delete",
             "name": "id",
             "in": "path",
@@ -1041,12 +1055,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1226,12 +1242,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1390,12 +1408,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1514,12 +1534,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1641,12 +1663,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1710,7 +1734,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -1741,7 +1765,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -1773,7 +1797,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to update",
             "name": "id",
             "in": "path",
@@ -1813,12 +1837,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1884,7 +1910,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the label to get",
             "name": "id",
             "in": "path",
@@ -1914,7 +1940,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the label to delete",
             "name": "id",
             "in": "path",
@@ -1946,7 +1972,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the label to edit",
             "name": "id",
             "in": "path",
@@ -1989,12 +2015,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2023,12 +2051,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2124,12 +2154,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2258,12 +2290,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2332,12 +2366,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2415,12 +2451,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2501,12 +2539,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2725,7 +2765,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "repository to prioritize in the results",
             "name": "priority_repo_id",
             "in": "query"
@@ -2794,12 +2834,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2871,28 +2913,28 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "search only for repos that the user with the given id owns or contributes to",
             "name": "uid",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "repo owner to prioritize in the results",
             "name": "priority_owner_id",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "search only for repos that belong to the given team id",
             "name": "team_id",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "search only for repos that the user with the given id has starred",
             "name": "starredBy",
             "in": "query"
@@ -2947,12 +2989,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3201,12 +3245,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3592,12 +3638,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3762,12 +3810,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -4010,12 +4060,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results (ignored if used with 'path')",
             "name": "limit",
             "in": "query"
@@ -4070,12 +4122,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -4144,12 +4198,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -4845,12 +4901,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -5264,12 +5322,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number; the 'truncated' field in the response will be true if there are still more items after this page, false if the last page",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "number of items per page",
             "name": "per_page",
             "in": "query"
@@ -5311,12 +5371,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -5545,7 +5607,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -5583,7 +5645,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -5621,7 +5683,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the hook",
             "name": "id",
             "in": "path",
@@ -5668,7 +5730,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to test",
             "name": "id",
             "in": "path",
@@ -5874,12 +5936,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -5982,12 +6046,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -6027,7 +6093,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -6070,7 +6136,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of comment to delete",
             "name": "id",
             "in": "path",
@@ -6112,7 +6178,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -6168,7 +6234,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -6207,7 +6273,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -6273,7 +6339,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -6281,7 +6347,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to get",
             "name": "attachment_id",
             "in": "path",
@@ -6319,7 +6385,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -6327,7 +6393,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to delete",
             "name": "attachment_id",
             "in": "path",
@@ -6369,7 +6435,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -6377,7 +6443,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to edit",
             "name": "attachment_id",
             "in": "path",
@@ -6428,7 +6494,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -6470,7 +6536,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -6522,7 +6588,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -6604,7 +6670,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue to get",
             "name": "index",
             "in": "path",
@@ -6641,7 +6707,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of issue to delete",
             "name": "index",
             "in": "path",
@@ -6683,7 +6749,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue to edit",
             "name": "index",
             "in": "path",
@@ -6736,7 +6802,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -6775,7 +6841,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -6841,7 +6907,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -6849,7 +6915,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to get",
             "name": "attachment_id",
             "in": "path",
@@ -6887,7 +6953,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -6895,7 +6961,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to delete",
             "name": "attachment_id",
             "in": "path",
@@ -6937,7 +7003,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -6945,7 +7011,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to edit",
             "name": "attachment_id",
             "in": "path",
@@ -7002,12 +7068,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -7134,7 +7202,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7187,7 +7255,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7247,7 +7315,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of comment to delete",
             "name": "id",
             "in": "path",
@@ -7297,7 +7365,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -7351,7 +7419,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue to create or update a deadline on",
             "name": "index",
             "in": "path",
@@ -7408,12 +7476,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -7546,7 +7616,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7585,7 +7655,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7634,7 +7704,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7682,7 +7752,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7732,7 +7802,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7740,7 +7810,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the label to remove",
             "name": "id",
             "in": "path",
@@ -7792,7 +7862,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of issue to pin",
             "name": "index",
             "in": "path",
@@ -7832,7 +7902,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of issue to unpin",
             "name": "index",
             "in": "path",
@@ -7874,7 +7944,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of issue",
             "name": "index",
             "in": "path",
@@ -7882,7 +7952,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "the new position",
             "name": "position",
             "in": "path",
@@ -7926,7 +7996,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -7934,12 +8004,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -7980,7 +8052,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8032,7 +8104,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8083,7 +8155,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue to stop the stopwatch on",
             "name": "index",
             "in": "path",
@@ -8130,7 +8202,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue to create the stopwatch on",
             "name": "index",
             "in": "path",
@@ -8177,7 +8249,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue to stop the stopwatch on",
             "name": "index",
             "in": "path",
@@ -8224,7 +8296,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8232,12 +8304,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -8277,7 +8351,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8318,7 +8392,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8370,7 +8444,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8423,7 +8497,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8438,12 +8512,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -8489,7 +8565,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8517,12 +8593,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -8560,7 +8638,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8612,7 +8690,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue to add tracked time to",
             "name": "index",
             "in": "path",
@@ -8659,7 +8737,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8667,7 +8745,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of time to delete",
             "name": "id",
             "in": "path",
@@ -8725,12 +8803,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -8810,7 +8890,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the key to get",
             "name": "id",
             "in": "path",
@@ -8847,7 +8927,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the key to delete",
             "name": "id",
             "in": "path",
@@ -8890,12 +8970,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -8975,7 +9057,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the label to get",
             "name": "id",
             "in": "path",
@@ -9012,7 +9094,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the label to delete",
             "name": "id",
             "in": "path",
@@ -9051,7 +9133,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the label to edit",
             "name": "id",
             "in": "path",
@@ -9190,12 +9272,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -9501,12 +9585,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -9620,7 +9706,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "ID of the milestone",
             "name": "milestone",
             "in": "query"
@@ -9629,7 +9715,7 @@
             "type": "array",
             "items": {
               "type": "integer",
-              "format": "int64"
+              "format": "uint64"
             },
             "collectionFormat": "multi",
             "description": "Label IDs",
@@ -9638,12 +9724,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -9807,7 +9895,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -9846,7 +9934,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to edit",
             "name": "index",
             "in": "path",
@@ -9905,7 +9993,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -9959,7 +10047,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -9967,12 +10055,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10023,7 +10113,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -10044,12 +10134,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10088,7 +10180,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10126,7 +10218,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to merge",
             "name": "index",
             "in": "path",
@@ -10180,7 +10272,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to merge",
             "name": "index",
             "in": "path",
@@ -10226,7 +10318,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10275,7 +10367,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10329,7 +10421,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10337,12 +10429,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10379,7 +10473,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10430,7 +10524,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10438,7 +10532,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10476,7 +10570,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10484,7 +10578,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10533,7 +10627,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10541,7 +10635,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10584,7 +10678,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10592,7 +10686,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10630,7 +10724,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10638,7 +10732,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10689,7 +10783,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10697,7 +10791,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10705,7 +10799,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "comment",
             "in": "path",
@@ -10746,7 +10840,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10754,7 +10848,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10762,7 +10856,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the comment",
             "name": "comment",
             "in": "path",
@@ -10805,7 +10899,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10813,7 +10907,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10867,7 +10961,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -10875,7 +10969,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -10921,7 +11015,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -10977,12 +11071,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -11251,12 +11347,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -11446,7 +11544,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release to get",
             "name": "id",
             "in": "path",
@@ -11483,7 +11581,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release to delete",
             "name": "id",
             "in": "path",
@@ -11525,7 +11623,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release to edit",
             "name": "id",
             "in": "path",
@@ -11572,7 +11670,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -11611,7 +11709,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -11666,7 +11764,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -11674,7 +11772,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to get",
             "name": "attachment_id",
             "in": "path",
@@ -11712,7 +11810,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -11720,7 +11818,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to delete",
             "name": "attachment_id",
             "in": "path",
@@ -11759,7 +11857,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -11767,7 +11865,7 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the attachment to edit",
             "name": "attachment_id",
             "in": "path",
@@ -11907,12 +12005,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -11978,12 +12078,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -12072,12 +12174,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -12205,12 +12309,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results, default maximum page size is 50",
             "name": "limit",
             "in": "query"
@@ -12560,12 +12666,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -12656,12 +12764,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13121,12 +13231,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13172,6 +13284,7 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
@@ -13245,7 +13358,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the repo to get",
             "name": "id",
             "in": "path",
@@ -13339,7 +13452,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team to get",
             "name": "id",
             "in": "path",
@@ -13362,7 +13475,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team to delete",
             "name": "id",
             "in": "path",
@@ -13419,7 +13532,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13434,12 +13547,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13464,7 +13579,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13472,12 +13587,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13502,7 +13619,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13533,7 +13650,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13564,7 +13681,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13597,7 +13714,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13605,12 +13722,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13635,7 +13754,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13673,7 +13792,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13715,7 +13834,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -13765,12 +13884,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13890,12 +14011,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13941,7 +14064,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "Application ID to be found",
             "name": "id",
             "in": "path",
@@ -13965,7 +14088,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "token to be deleted",
             "name": "id",
             "in": "path",
@@ -13989,7 +14112,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "application to be updated",
             "name": "id",
             "in": "path",
@@ -14143,12 +14266,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14170,12 +14295,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14304,12 +14431,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14358,7 +14487,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of key to get",
             "name": "id",
             "in": "path",
@@ -14382,7 +14511,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of key to delete",
             "name": "id",
             "in": "path",
@@ -14411,12 +14540,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14460,7 +14591,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -14481,7 +14612,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -14503,7 +14634,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of the hook to update",
             "name": "id",
             "in": "path",
@@ -14539,12 +14670,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14590,7 +14723,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of key to get",
             "name": "id",
             "in": "path",
@@ -14614,7 +14747,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "id of key to delete",
             "name": "id",
             "in": "path",
@@ -14643,12 +14776,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14670,12 +14805,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14700,12 +14837,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14790,12 +14929,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14907,12 +15048,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14934,12 +15077,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14961,12 +15106,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14988,12 +15135,14 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15063,19 +15212,21 @@
           },
           {
             "type": "integer",
-            "format": "int64",
+            "format": "uint64",
             "description": "ID of the user to search for",
             "name": "uid",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15156,12 +15307,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15193,12 +15346,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15230,12 +15385,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15298,12 +15455,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15366,12 +15525,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15403,12 +15564,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15475,12 +15638,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15512,12 +15677,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15549,12 +15716,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15586,12 +15755,14 @@
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
+            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"

@@ -154,7 +154,7 @@ async fn pull_request() {
         .expect("couldn't create pr");
 
     let is_merged = api
-        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap())
+        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap() as u64)
         .await
         .is_ok();
     assert!(!is_merged, "pr should not yet be merged");
@@ -164,7 +164,7 @@ async fn pull_request() {
         .repo_get_pull_request_files(
             "TestingAdmin",
             "pr-test",
-            pr.number.unwrap(),
+            pr.number.unwrap() as u64,
             pr_files_query,
         )
         .await
@@ -181,11 +181,16 @@ async fn pull_request() {
         merge_when_checks_succeed: None,
     };
 
-    api.repo_merge_pull_request("TestingAdmin", "pr-test", pr.number.unwrap(), merge_opt)
-        .await
-        .expect("couldn't merge pr");
+    api.repo_merge_pull_request(
+        "TestingAdmin",
+        "pr-test",
+        pr.number.unwrap() as u64,
+        merge_opt,
+    )
+    .await
+    .expect("couldn't merge pr");
     let is_merged = api
-        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap())
+        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap() as u64)
         .await
         .is_ok();
     assert!(is_merged, "pr should be merged");
@@ -243,7 +248,7 @@ async fn release() {
     api.repo_edit_release(
         "TestingAdmin",
         "release-test",
-        release.id.unwrap(),
+        release.id.unwrap() as u64,
         edit_release,
     )
     .await
@@ -263,7 +268,7 @@ async fn release() {
         .repo_create_release_attachment(
             "TestingAdmin",
             "release-test",
-            release.id.unwrap(),
+            release.id.unwrap() as u64,
             b"This is a file!".to_vec(),
             RepoCreateReleaseAttachmentQuery {
                 name: Some("test.txt".into()),
@@ -276,8 +281,8 @@ async fn release() {
             .download_release_attachment(
                 "TestingAdmin",
                 "release-test",
-                release.id.unwrap(),
-                attachment.id.unwrap()
+                release.id.unwrap() as u64,
+                attachment.id.unwrap() as u64
             )
             .await
             .unwrap()
@@ -297,13 +302,13 @@ async fn release() {
     api.repo_delete_release_attachment(
         "TestingAdmin",
         "release-test",
-        release.id.unwrap(),
-        attachment.id.unwrap(),
+        release.id.unwrap() as u64,
+        attachment.id.unwrap() as u64,
     )
     .await
     .expect("failed to deleted attachment");
 
-    api.repo_delete_release("TestingAdmin", "release-test", release.id.unwrap())
+    api.repo_delete_release("TestingAdmin", "release-test", release.id.unwrap() as u64)
         .await
         .expect("failed to delete release");
 
