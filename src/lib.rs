@@ -358,6 +358,18 @@ where
         .or(Ok(None))
 }
 
+fn requested_reviewers_ignore_null<'de, D, DE>(
+    deserializer: D,
+) -> Result<Option<Vec<structs::User>>, DE>
+where
+    D: Deserializer<'de>,
+    DE: serde::de::Error,
+{
+    let list: Option<Vec<Option<structs::User>>> =
+        Option::deserialize(deserializer).map_err(DE::custom)?;
+    Ok(list.map(|list| list.into_iter().filter_map(|x| x).collect::<Vec<_>>()))
+}
+
 fn parse_ssh_url(raw_url: &String) -> Result<Url, url::ParseError> {
     // in case of a non-standard ssh-port (not 22), the ssh url coming from the forgejo API
     // is actually parseable by the url crate, so try to do that first

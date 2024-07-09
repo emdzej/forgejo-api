@@ -2034,6 +2034,7 @@ pub struct PullRequest {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub patch_url: Option<url::Url>,
     pub pin_order: Option<u64>,
+    #[serde(deserialize_with = "crate::requested_reviewers_ignore_null")]
     pub requested_reviewers: Option<Vec<User>>,
     pub state: Option<StateType>,
     pub title: Option<String>,
