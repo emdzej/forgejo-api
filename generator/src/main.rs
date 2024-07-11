@@ -75,6 +75,7 @@ fn schema_type_name(
                     Primitive::String if schema._enum.is_none() => match schema.format.as_deref() {
                         Some("date") => "time::Date",
                         Some("date-time") => "time::OffsetDateTime",
+                        Some("url" | "ssh-url") => "url::Url",
                         _ => "String",
                     }
                     .to_string(),

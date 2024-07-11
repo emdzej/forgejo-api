@@ -16930,6 +16930,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -17242,6 +17243,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "verification": {
@@ -17264,6 +17266,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -17275,6 +17278,7 @@
       "properties": {
         "browser_download_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "DownloadURL"
         },
         "created_at": {
@@ -17606,6 +17610,7 @@
         },
         "contents_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "ContentsURL"
         },
         "deletions": {
@@ -17619,6 +17624,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "previous_filename": {
@@ -17627,6 +17633,7 @@
         },
         "raw_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "RawURL"
         },
         "status": {
@@ -17642,6 +17649,7 @@
       "properties": {
         "commit_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "CommitURL"
         },
         "repository": {
@@ -17668,6 +17676,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -17695,6 +17704,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -17704,6 +17714,7 @@
         },
         "issue_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "IssueURL"
         },
         "original_author": {
@@ -17717,6 +17728,7 @@
         },
         "pull_request_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "PRURL"
         },
         "updated_at": {
@@ -17757,6 +17769,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "parents": {
@@ -17775,6 +17788,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -17827,6 +17841,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -17893,6 +17908,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -17956,6 +17972,7 @@
         },
         "download_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "DownloadURL"
         },
         "encoding": {
@@ -17965,10 +17982,12 @@
         },
         "git_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "GitURL"
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "last_commit_sha": {
@@ -17995,6 +18014,7 @@
         "submodule_git_url": {
           "description": "`submodule_git_url` is populated when `type` is `submodule`, otherwise null",
           "type": "string",
+          "format": "url",
           "x-go-name": "SubmoduleGitURL"
         },
         "target": {
@@ -18009,6 +18029,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -18341,7 +18362,8 @@
           "type": "string"
         },
         "url": {
-          "type": "string"
+          "type": "string",
+          "format": "url"
         }
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
@@ -18839,6 +18861,7 @@
         },
         "target_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "TargetURL"
         }
       },
@@ -19179,6 +19202,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -20067,6 +20091,7 @@
         "external_tracker_url": {
           "description": "URL of external issue tracker.",
           "type": "string",
+          "format": "url",
           "x-go-name": "ExternalTrackerURL"
         }
       },
@@ -20079,6 +20104,7 @@
         "external_wiki_url": {
           "description": "URL of external wiki.",
           "type": "string",
+          "format": "url",
           "x-go-name": "ExternalWikiURL"
         }
       },
@@ -20101,6 +20127,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "message": {
@@ -20123,6 +20150,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -20491,6 +20519,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -20523,6 +20552,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -20561,6 +20591,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -20597,6 +20628,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -20676,6 +20708,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -20766,6 +20799,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -20830,6 +20864,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "user": {
@@ -20868,6 +20903,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -21060,6 +21096,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -21112,6 +21149,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -21131,6 +21169,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -21553,14 +21592,17 @@
       "properties": {
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "latest_comment_html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "LatestCommentHTMLURL"
         },
         "latest_comment_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "LatestCommentURL"
         },
         "state": {
@@ -21575,6 +21617,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -21610,6 +21653,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -21671,6 +21715,7 @@
       "properties": {
         "avatar_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "AvatarURL"
         },
         "description": {
@@ -21786,6 +21831,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -21897,6 +21943,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "verification": {
@@ -22007,6 +22054,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "user": {
@@ -22072,6 +22120,7 @@
         },
         "diff_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "DiffURL"
         },
         "draft": {
@@ -22087,6 +22136,7 @@
           "$ref": "#/definitions/PRBranchInfo"
         },
         "html_url": {
+          "format": "url",
           "type": "string",
           "x-go-name": "HTMLURL"
         },
@@ -22140,6 +22190,7 @@
         },
         "patch_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "PatchURL"
         },
         "pin_order": {
@@ -22174,6 +22225,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "user": {
@@ -22232,6 +22284,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -22245,6 +22298,7 @@
         },
         "pull_request_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLPullURL"
         },
         "stale": {
@@ -22296,6 +22350,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -22328,6 +22383,7 @@
         },
         "pull_request_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLPullURL"
         },
         "resolver": {
@@ -22438,6 +22494,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -22479,6 +22536,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -22505,6 +22563,7 @@
         },
         "tarball_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "TarURL"
         },
         "target_commitish": {
@@ -22513,13 +22572,16 @@
         },
         "upload_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "UploadURL"
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "zipball_url": {
+          "format": "url",
           "type": "string",
           "x-go-name": "ZipURL"
         }
@@ -22591,6 +22653,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "verification": {
@@ -22673,10 +22736,12 @@
         },
         "avatar_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "AvatarURL"
         },
         "clone_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "CloneURL"
         },
         "created_at": {
@@ -22760,6 +22825,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -22784,6 +22850,7 @@
         },
         "languages_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "LanguagesURL"
         },
         "link": {
@@ -22822,6 +22889,7 @@
         },
         "original_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "OriginalURL"
         },
         "owner": {
@@ -22852,6 +22920,7 @@
         },
         "ssh_url": {
           "type": "string",
+          "format": "ssh-url",
           "x-go-name": "SSHURL"
         },
         "stars_count": {
@@ -22877,6 +22946,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "watchers_count": {
@@ -23055,10 +23125,12 @@
         },
         "tarball_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "TarballURL"
         },
         "zipball_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "ZipballURL"
         }
       },
@@ -23221,6 +23293,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -23230,6 +23303,7 @@
         },
         "issue_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "IssueURL"
         },
         "label": {
@@ -23269,6 +23343,7 @@
         },
         "pull_request_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "PRURL"
         },
         "ref_action": {
@@ -23531,6 +23606,7 @@
         "avatar_url": {
           "description": "URL to the user's avatar",
           "type": "string",
+          "format": "url",
           "x-go-name": "AvatarURL"
         },
         "created": {
@@ -23782,6 +23858,7 @@
         },
         "repository_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "RepositoryURL"
         },
         "subscribed": {
@@ -23790,6 +23867,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         }
       },
@@ -23855,6 +23933,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "last_commit": {
@@ -23866,6 +23945,7 @@
         },
         "sub_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "SubURL"
         },
         "title": {
@@ -23881,6 +23961,7 @@
       "properties": {
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "last_commit": {
@@ -23888,6 +23969,7 @@
         },
         "sub_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "SubURL"
         },
         "title": {
@@ -24876,7 +24958,8 @@
           "type": "string"
         },
         "url": {
-          "type": "string"
+          "type": "string",
+          "format": "url"
         }
       }
     },
@@ -24887,7 +24970,8 @@
           "type": "string"
         },
         "url": {
-          "type": "string"
+          "type": "string",
+          "format": "url"
         }
       }
     },
@@ -24924,7 +25008,8 @@
           "type": "string"
         },
         "url": {
-          "type": "string"
+          "type": "string",
+          "format": "url"
         }
       }
     },
@@ -24941,7 +25026,8 @@
           "type": "string"
         },
         "url": {
-          "type": "string"
+          "type": "string",
+          "format": "url"
         }
       }
     }
