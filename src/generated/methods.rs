@@ -3,6 +3,43 @@ use crate::ForgejoError;
 use std::collections::BTreeMap;
 
 impl crate::Forgejo {
+    /// Returns the Repository actor for a repo
+    ///
+    /// - `repository-id`: repository ID of the repo
+    pub async fn activitypub_repository(
+        &self,
+        repository_id: u32,
+    ) -> Result<ActivityPub, ForgejoError> {
+        let request = self
+            .get(&format!("activitypub/repository-id/{repository_id}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Send to the inbox
+    ///
+    /// - `repository-id`: repository ID of the repo
+    /// - `body`: See [`ForgeLike`]
+    pub async fn activitypub_repository_inbox(
+        &self,
+        repository_id: u32,
+        body: ForgeLike,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .post(&format!("activitypub/repository-id/{repository_id}/inbox"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// Returns the Person actor for a user
     ///
     /// - `user-id`: user ID of the user
@@ -749,6 +786,110 @@ impl crate::Forgejo {
         }
     }
 
+    /// Get an org-level variables list
+    ///
+    /// - `org`: name of the organization
+    pub async fn get_org_variables_list(
+        &self,
+        org: &str,
+        query: GetOrgVariablesListQuery,
+    ) -> Result<Vec<ActionVariable>, ForgejoError> {
+        let request = self
+            .get(&format!("orgs/{org}/actions/variables?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get an org-level variable
+    ///
+    /// - `org`: name of the organization
+    /// - `variablename`: name of the variable
+    pub async fn get_org_variable(
+        &self,
+        org: &str,
+        variablename: &str,
+    ) -> Result<ActionVariable, ForgejoError> {
+        let request = self
+            .get(&format!("orgs/{org}/actions/variables/{variablename}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Update an org-level variable
+    ///
+    /// - `org`: name of the organization
+    /// - `variablename`: name of the variable
+    /// - `body`: See [`UpdateVariableOption`]
+    pub async fn update_org_variable(
+        &self,
+        org: &str,
+        variablename: &str,
+        body: UpdateVariableOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .put(&format!("orgs/{org}/actions/variables/{variablename}"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Create an org-level variable
+    ///
+    /// - `org`: name of the organization
+    /// - `variablename`: name of the variable
+    /// - `body`: See [`CreateVariableOption`]
+    pub async fn create_org_variable(
+        &self,
+        org: &str,
+        variablename: &str,
+        body: CreateVariableOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .post(&format!("orgs/{org}/actions/variables/{variablename}"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Delete an org-level variable
+    ///
+    /// - `org`: name of the organization
+    /// - `variablename`: name of the variable
+    pub async fn delete_org_variable(
+        &self,
+        org: &str,
+        variablename: &str,
+    ) -> Result<Option<ActionVariable>, ForgejoError> {
+        let request = self
+            .delete(&format!("orgs/{org}/actions/variables/{variablename}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(Some(response.json().await?)),
+            201 => Ok(None),
+            204 => Ok(None),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// List an organization's activity feeds
     ///
     /// - `org`: name of the org
@@ -1392,6 +1533,26 @@ impl crate::Forgejo {
         }
     }
 
+    /// List an repo's actions secrets
+    ///
+    /// - `owner`: owner of the repository
+    /// - `repo`: name of the repository
+    pub async fn repo_list_actions_secrets(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: RepoListActionsSecretsQuery,
+    ) -> Result<Vec<Secret>, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/actions/secrets?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// Create or Update a secret value in a repository
     ///
     /// - `owner`: owner of the repository
@@ -1434,6 +1595,174 @@ impl crate::Forgejo {
             .delete(&format!(
                 "repos/{owner}/{repo}/actions/secrets/{secretname}"
             ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List a repository's action tasks
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub async fn list_action_tasks(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: ListActionTasksQuery,
+    ) -> Result<ActionTaskResponse, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/actions/tasks?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get repo-level variables list
+    ///
+    /// - `owner`: name of the owner
+    /// - `repo`: name of the repository
+    pub async fn get_repo_variables_list(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: GetRepoVariablesListQuery,
+    ) -> Result<Vec<ActionVariable>, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/actions/variables?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get a repo-level variable
+    ///
+    /// - `owner`: name of the owner
+    /// - `repo`: name of the repository
+    /// - `variablename`: name of the variable
+    pub async fn get_repo_variable(
+        &self,
+        owner: &str,
+        repo: &str,
+        variablename: &str,
+    ) -> Result<ActionVariable, ForgejoError> {
+        let request = self
+            .get(&format!(
+                "repos/{owner}/{repo}/actions/variables/{variablename}"
+            ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Update a repo-level variable
+    ///
+    /// - `owner`: name of the owner
+    /// - `repo`: name of the repository
+    /// - `variablename`: name of the variable
+    /// - `body`: See [`UpdateVariableOption`]
+    pub async fn update_repo_variable(
+        &self,
+        owner: &str,
+        repo: &str,
+        variablename: &str,
+        body: UpdateVariableOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .put(&format!(
+                "repos/{owner}/{repo}/actions/variables/{variablename}"
+            ))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Create a repo-level variable
+    ///
+    /// - `owner`: name of the owner
+    /// - `repo`: name of the repository
+    /// - `variablename`: name of the variable
+    /// - `body`: See [`CreateVariableOption`]
+    pub async fn create_repo_variable(
+        &self,
+        owner: &str,
+        repo: &str,
+        variablename: &str,
+        body: CreateVariableOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .post(&format!(
+                "repos/{owner}/{repo}/actions/variables/{variablename}"
+            ))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Delete a repo-level variable
+    ///
+    /// - `owner`: name of the owner
+    /// - `repo`: name of the repository
+    /// - `variablename`: name of the variable
+    pub async fn delete_repo_variable(
+        &self,
+        owner: &str,
+        repo: &str,
+        variablename: &str,
+    ) -> Result<Option<ActionVariable>, ForgejoError> {
+        let request = self
+            .delete(&format!(
+                "repos/{owner}/{repo}/actions/variables/{variablename}"
+            ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(Some(response.json().await?)),
+            201 => Ok(None),
+            204 => Ok(None),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Dispatches a workflow
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `workflowname`: name of the workflow
+    /// - `body`: See [`DispatchWorkflowOption`]
+    pub async fn dispatch_workflow(
+        &self,
+        owner: &str,
+        repo: &str,
+        workflowname: &str,
+        body: DispatchWorkflowOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .post(&format!(
+                "repos/{owner}/{repo}/actions/workflows/{workflowname}/dispatches"
+            ))
+            .json(&body)
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -1926,6 +2255,27 @@ impl crate::Forgejo {
     ) -> Result<PullRequest, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/commits/{sha}/pull"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get commit comparison information
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `basehead`: compare two branches or commits
+    pub async fn repo_compare_diff(
+        &self,
+        owner: &str,
+        repo: &str,
+        basehead: &str,
+    ) -> Result<Compare, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/compare/{basehead}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
@@ -5745,6 +6095,113 @@ impl crate::Forgejo {
         }
     }
 
+    /// List tag protections for a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub async fn repo_list_tag_protection(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> Result<Vec<TagProtection>, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/tag_protections"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Create a tag protections for a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `body`: See [`CreateTagProtectionOption`]
+    pub async fn repo_create_tag_protection(
+        &self,
+        owner: &str,
+        repo: &str,
+        body: CreateTagProtectionOption,
+    ) -> Result<TagProtection, ForgejoError> {
+        let request = self
+            .post(&format!("repos/{owner}/{repo}/tag_protections"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get a specific tag protection for the repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `id`: id of the tag protect to get
+    pub async fn repo_get_tag_protection(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u32,
+    ) -> Result<TagProtection, ForgejoError> {
+        let request = self
+            .get(&format!("repos/{owner}/{repo}/tag_protections/{id}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Delete a specific tag protection for the repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `id`: id of protected tag
+    pub async fn repo_delete_tag_protection(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u32,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("repos/{owner}/{repo}/tag_protections/{id}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Edit a tag protections for a repository. Only fields that are set will be changed
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `id`: id of protected tag
+    /// - `body`: See [`EditTagProtectionOption`]
+    pub async fn repo_edit_tag_protection(
+        &self,
+        owner: &str,
+        repo: &str,
+        id: u32,
+        body: EditTagProtectionOption,
+    ) -> Result<TagProtection, ForgejoError> {
+        let request = self
+            .patch(&format!("repos/{owner}/{repo}/tag_protections/{id}"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// List a repository's tags
     ///
     /// - `owner`: owner of the repo
@@ -6587,6 +7044,96 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get the user-level list of variables which is created by current doer
+    ///
+    pub async fn get_user_variables_list(
+        &self,
+        query: GetUserVariablesListQuery,
+    ) -> Result<Vec<ActionVariable>, ForgejoError> {
+        let request = self
+            .get(&format!("user/actions/variables?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get a user-level variable which is created by current doer
+    ///
+    /// - `variablename`: name of the variable
+    pub async fn get_user_variable(
+        &self,
+        variablename: &str,
+    ) -> Result<ActionVariable, ForgejoError> {
+        let request = self
+            .get(&format!("user/actions/variables/{variablename}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Update a user-level variable which is created by current doer
+    ///
+    /// - `variablename`: name of the variable
+    /// - `body`: See [`UpdateVariableOption`]
+    pub async fn update_user_variable(
+        &self,
+        variablename: &str,
+        body: UpdateVariableOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .put(&format!("user/actions/variables/{variablename}"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Create a user-level variable
+    ///
+    /// - `variablename`: name of the variable
+    /// - `body`: See [`CreateVariableOption`]
+    pub async fn create_user_variable(
+        &self,
+        variablename: &str,
+        body: CreateVariableOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .post(&format!("user/actions/variables/{variablename}"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Delete a user-level variable which is created by current doer
+    ///
+    /// - `variablename`: name of the variable
+    pub async fn delete_user_variable(&self, variablename: &str) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("user/actions/variables/{variablename}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
             204 => Ok(()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }

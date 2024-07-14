@@ -17,6 +17,48 @@ pub struct AccessToken {
     pub token_last_eight: Option<String>,
 }
 
+/// ActionTask represents a ActionTask
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionTask {
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub created_at: Option<time::OffsetDateTime>,
+    pub display_title: Option<String>,
+    pub event: Option<String>,
+    pub head_branch: Option<String>,
+    pub head_sha: Option<String>,
+    pub id: Option<i64>,
+    pub name: Option<String>,
+    pub run_number: Option<i64>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub run_started_at: Option<time::OffsetDateTime>,
+    pub status: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub updated_at: Option<time::OffsetDateTime>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub url: Option<url::Url>,
+    pub workflow_id: Option<String>,
+}
+
+/// ActionTaskResponse returns a ActionTask
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionTaskResponse {
+    pub total_count: Option<i64>,
+    pub workflow_runs: Option<Vec<ActionTask>>,
+}
+
+/// ActionVariable return value of the query API
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionVariable {
+    /// the value of the variable
+    pub data: Option<String>,
+    /// the name of the variable
+    pub name: Option<String>,
+    /// the owner to which the variable belongs
+    pub owner_id: Option<i64>,
+    /// the repository to which the variable belongs
+    pub repo_id: Option<i64>,
+}
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Activity {
     pub act_user: Option<User>,
@@ -28,13 +70,73 @@ pub struct Activity {
     pub created: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub is_private: Option<bool>,
-    pub op_type: Option<String>,
+    /// the type of action
+    pub op_type: Option<ActivityOpType>,
     pub ref_name: Option<String>,
     pub repo: Option<Repository>,
     pub repo_id: Option<i64>,
     pub user_id: Option<i64>,
 }
 
+/// the type of action
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ActivityOpType {
+    #[serde(rename = "create_repo")]
+    CreateRepo,
+    #[serde(rename = "rename_repo")]
+    RenameRepo,
+    #[serde(rename = "star_repo")]
+    StarRepo,
+    #[serde(rename = "watch_repo")]
+    WatchRepo,
+    #[serde(rename = "commit_repo")]
+    CommitRepo,
+    #[serde(rename = "create_issue")]
+    CreateIssue,
+    #[serde(rename = "create_pull_request")]
+    CreatePullRequest,
+    #[serde(rename = "transfer_repo")]
+    TransferRepo,
+    #[serde(rename = "push_tag")]
+    PushTag,
+    #[serde(rename = "comment_issue")]
+    CommentIssue,
+    #[serde(rename = "merge_pull_request")]
+    MergePullRequest,
+    #[serde(rename = "close_issue")]
+    CloseIssue,
+    #[serde(rename = "reopen_issue")]
+    ReopenIssue,
+    #[serde(rename = "close_pull_request")]
+    ClosePullRequest,
+    #[serde(rename = "reopen_pull_request")]
+    ReopenPullRequest,
+    #[serde(rename = "delete_tag")]
+    DeleteTag,
+    #[serde(rename = "delete_branch")]
+    DeleteBranch,
+    #[serde(rename = "mirror_sync_push")]
+    MirrorSyncPush,
+    #[serde(rename = "mirror_sync_create")]
+    MirrorSyncCreate,
+    #[serde(rename = "mirror_sync_delete")]
+    MirrorSyncDelete,
+    #[serde(rename = "approve_pull_request")]
+    ApprovePullRequest,
+    #[serde(rename = "reject_pull_request")]
+    RejectPullRequest,
+    #[serde(rename = "comment_pull")]
+    CommentPull,
+    #[serde(rename = "publish_release")]
+    PublishRelease,
+    #[serde(rename = "pull_review_dismissed")]
+    PullReviewDismissed,
+    #[serde(rename = "pull_request_ready_for_review")]
+    PullRequestReadyForReview,
+    #[serde(rename = "auto_merge_pull_request")]
+    AutoMergePullRequest,
+}
 /// ActivityPub type
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ActivityPub {
@@ -62,6 +164,7 @@ pub struct AddTimeOption {
 /// AnnotatedTag represents an annotated tag
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AnnotatedTag {
+    pub archive_download_count: Option<TagArchiveDownloadCount>,
     pub message: Option<String>,
     pub object: Option<AnnotatedTagObject>,
     pub sha: Option<String>,
@@ -329,6 +432,12 @@ pub struct CommitUser {
     pub date: Option<String>,
     pub email: Option<String>,
     pub name: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct Compare {
+    pub commits: Option<Vec<Commit>>,
+    pub total_commits: Option<i64>,
 }
 
 /// ContentsResponse contains information about a repo's entry's (dir, file, symlink, submodule) metadata and content
@@ -665,6 +774,7 @@ pub struct CreatePushMirrorOption {
 pub struct CreateReleaseOption {
     pub body: Option<String>,
     pub draft: Option<bool>,
+    pub hide_archive_links: Option<bool>,
     pub name: Option<String>,
     pub prerelease: Option<bool>,
     pub tag_name: String,
@@ -730,6 +840,14 @@ pub struct CreateTagOption {
     pub target: Option<String>,
 }
 
+/// CreateTagProtectionOption options for creating a tag protection
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct CreateTagProtectionOption {
+    pub name_pattern: Option<String>,
+    pub whitelist_teams: Option<Vec<String>>,
+    pub whitelist_usernames: Option<Vec<String>>,
+}
+
 /// CreateTeamOption options for creating a team
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateTeamOption {
@@ -771,6 +889,13 @@ pub struct CreateUserOption {
     pub source_id: Option<i64>,
     pub username: String,
     pub visibility: Option<String>,
+}
+
+/// CreateVariableOption the option when creating variable
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct CreateVariableOption {
+    /// Value of the variable to create
+    pub value: String,
 }
 
 /// CreateWikiPageOptions form for creating wiki
@@ -864,6 +989,16 @@ pub struct DeployKey {
 pub struct DismissPullReviewOptions {
     pub message: Option<String>,
     pub priors: Option<bool>,
+}
+
+/// DispatchWorkflowOption options when dispatching a workflow
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct DispatchWorkflowOption {
+    /// Input keys and values configured in the workflow file.
+    pub inputs: Option<BTreeMap<String, String>>,
+    /// Git reference for the workflow
+    #[serde(rename = "ref")]
+    pub r#ref: String,
 }
 
 /// EditAttachmentOptions options for editing attachments
@@ -1022,6 +1157,7 @@ pub struct EditReactionOption {
 pub struct EditReleaseOption {
     pub body: Option<String>,
     pub draft: Option<bool>,
+    pub hide_archive_links: Option<bool>,
     pub name: Option<String>,
     pub prerelease: Option<bool>,
     pub tag_name: Option<String>,
@@ -1058,10 +1194,12 @@ pub struct EditRepoOption {
     pub default_merge_style: Option<DefaultMergeStyle>,
     /// a short description of the repository.
     pub description: Option<String>,
-    /// enable prune - remove obsolete remote-tracking references
+    /// enable prune - remove obsolete remote-tracking references when mirroring
     pub enable_prune: Option<bool>,
     pub external_tracker: Option<ExternalTracker>,
     pub external_wiki: Option<ExternalWiki>,
+    /// set the globally editable state of the wiki
+    pub globally_editable_wiki: Option<bool>,
     /// either `true` to enable actions unit, or `false` to disable them.
     pub has_actions: Option<bool>,
     /// either `true` to enable issues for this repository or `false` to disable them.
@@ -1097,6 +1235,14 @@ pub struct EditRepoOption {
     pub wiki_branch: Option<String>,
 }
 
+/// EditTagProtectionOption options for editing a tag protection
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct EditTagProtectionOption {
+    pub name_pattern: Option<String>,
+    pub whitelist_teams: Option<Vec<String>>,
+    pub whitelist_usernames: Option<Vec<String>>,
+}
+
 /// EditTeamOption options for editing a team
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditTeamOption {
@@ -1130,14 +1276,14 @@ pub struct EditUserOption {
     pub email: Option<String>,
     pub full_name: Option<String>,
     pub location: Option<String>,
-    pub login_name: String,
+    pub login_name: Option<String>,
     pub max_repo_creation: Option<i64>,
     pub must_change_password: Option<bool>,
     pub password: Option<String>,
     pub prohibit_login: Option<bool>,
     pub pronouns: Option<String>,
     pub restricted: Option<bool>,
-    pub source_id: i64,
+    pub source_id: Option<i64>,
     pub visibility: Option<String>,
     pub website: Option<String>,
 }
@@ -1222,6 +1368,10 @@ pub struct FilesResponse {
     pub files: Option<Vec<ContentsResponse>>,
     pub verification: Option<PayloadCommitVerification>,
 }
+
+/// ForgeLike activity data type
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ForgeLike {}
 
 /// GPGKey a user GPG key to sign commit and tag in repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1502,8 +1652,10 @@ pub struct IssueFormFieldVisible {}
 /// IssueLabelsOption a collection of labels
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueLabelsOption {
-    /// list of label IDs
-    pub labels: Option<Vec<i64>>,
+    /// Labels can be a list of integers representing label IDs
+    ///
+    /// or a list of strings representing label names
+    pub labels: Option<Vec<serde_json::Value>>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
 }
@@ -2002,18 +2154,22 @@ pub struct PublicKey {
 /// PullRequest represents a pull request
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullRequest {
+    pub additions: Option<i64>,
     pub allow_maintainer_edit: Option<bool>,
     pub assignee: Option<User>,
     pub assignees: Option<Vec<User>>,
     pub base: Option<PRBranchInfo>,
     pub body: Option<String>,
+    pub changed_files: Option<i64>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub closed_at: Option<time::OffsetDateTime>,
     pub comments: Option<i64>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
+    pub deletions: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub diff_url: Option<url::Url>,
+    pub draft: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
     pub head: Option<PRBranchInfo>,
@@ -2036,6 +2192,8 @@ pub struct PullRequest {
     pub pin_order: Option<i64>,
     #[serde(deserialize_with = "crate::requested_reviewers_ignore_null")]
     pub requested_reviewers: Option<Vec<User>>,
+    /// number of review comments made on the diff of a PR review (not including comments on commits or issues in a PR)
+    pub review_comments: Option<i64>,
     pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
@@ -2049,6 +2207,8 @@ pub struct PullRequest {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullRequestMeta {
     pub draft: Option<bool>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub html_url: Option<url::Url>,
     pub merged: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub merged_at: Option<time::OffsetDateTime>,
@@ -2144,12 +2304,14 @@ pub struct Reference {
 /// Release represents a repository release
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Release {
+    pub archive_download_count: Option<TagArchiveDownloadCount>,
     pub assets: Option<Vec<Attachment>>,
     pub author: Option<User>,
     pub body: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub draft: Option<bool>,
+    pub hide_archive_links: Option<bool>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
@@ -2245,6 +2407,7 @@ pub struct Repository {
     pub fork: Option<bool>,
     pub forks_count: Option<i64>,
     pub full_name: Option<String>,
+    pub globally_editable_wiki: Option<bool>,
     pub has_actions: Option<bool>,
     pub has_issues: Option<bool>,
     pub has_packages: Option<bool>,
@@ -2283,6 +2446,7 @@ pub struct Repository {
     pub ssh_url: Option<url::Url>,
     pub stars_count: Option<i64>,
     pub template: Option<bool>,
+    pub topics: Option<Vec<String>>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -2359,6 +2523,7 @@ pub struct SubmitPullReviewOptions {
 /// Tag represents a repository tag
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Tag {
+    pub archive_download_count: Option<TagArchiveDownloadCount>,
     pub commit: Option<CommitMeta>,
     pub id: Option<String>,
     pub message: Option<String>,
@@ -2367,6 +2532,26 @@ pub struct Tag {
     pub tarball_url: Option<url::Url>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub zipball_url: Option<url::Url>,
+}
+
+/// TagArchiveDownloadCount counts how many times a archive was downloaded
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct TagArchiveDownloadCount {
+    pub tar_gz: Option<i64>,
+    pub zip: Option<i64>,
+}
+
+/// TagProtection represents a tag protection
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct TagProtection {
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub created_at: Option<time::OffsetDateTime>,
+    pub id: Option<i64>,
+    pub name_pattern: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub updated_at: Option<time::OffsetDateTime>,
+    pub whitelist_teams: Option<Vec<String>>,
+    pub whitelist_usernames: Option<Vec<String>>,
 }
 
 /// Team represents a team in an organization
@@ -2522,6 +2707,15 @@ pub struct UpdateUserAvatarOption {
     pub image: Option<String>,
 }
 
+/// UpdateVariableOption the option when updating variable
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct UpdateVariableOption {
+    /// New name for the variable. If the field is empty, the variable name won't be updated.
+    pub name: Option<String>,
+    /// Value of the variable to update
+    pub value: String,
+}
+
 /// User represents a user
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct User {
@@ -2540,6 +2734,9 @@ pub struct User {
     pub following_count: Option<i64>,
     /// the user's full name
     pub full_name: Option<String>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    /// URL to the user's gitea page
+    pub html_url: Option<url::Url>,
     /// the user's id
     pub id: Option<i64>,
     /// Is the user an administrator
@@ -2560,6 +2757,8 @@ pub struct User {
     pub pronouns: Option<String>,
     /// Is user restricted
     pub restricted: Option<bool>,
+    /// The ID of the user's Authentication Source
+    pub source_id: Option<i64>,
     pub starred_repos_count: Option<i64>,
     /// User visibility level option: public, limited, private
     pub visibility: Option<String>,
@@ -3323,6 +3522,27 @@ impl std::fmt::Display for OrgListActionsSecretsQuery {
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+pub struct GetOrgVariablesListQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for GetOrgVariablesListQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
@@ -3777,7 +3997,7 @@ pub struct RepoSearchQuery {
     pub mode: Option<String>,
     /// if `uid` is given, search only for repos that the user owns
     pub exclusive: Option<bool>,
-    /// sort repos by attribute. Supported values are "alpha", "created", "updated", "size", and "id". Default is "alpha"
+    /// sort repos by attribute. Supported values are "alpha", "created", "updated", "size", "git_size", "lfs_size", "stars", "forks" and "id". Default is "alpha"
     pub sort: Option<String>,
     /// sort order, either "asc" (ascending) or "desc" (descending). Default is "asc", ignored if "sort" is not specified.
     pub order: Option<String>,
@@ -3834,6 +4054,69 @@ impl std::fmt::Display for RepoSearchQuery {
         if let Some(order) = &self.order {
             write!(f, "order={order}&")?;
         }
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RepoListActionsSecretsQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for RepoListActionsSecretsQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ListActionTasksQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results, default maximum page size is 50
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for ListActionTasksQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct GetRepoVariablesListQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for GetRepoVariablesListQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(page) = &self.page {
             write!(f, "page={page}&")?;
         }
@@ -5581,6 +5864,27 @@ impl std::fmt::Display for TopicSearchQuery {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let q = &self.q;
         write!(f, "q={q}&")?;
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct GetUserVariablesListQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for GetUserVariablesListQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(page) = &self.page {
             write!(f, "page={page}&")?;
         }
