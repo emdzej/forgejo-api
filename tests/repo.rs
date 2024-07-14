@@ -232,6 +232,7 @@ async fn release() {
         prerelease: Some(false),
         tag_name: "v1.0".into(),
         target_commitish: None,
+        hide_archive_links: None,
     };
     let release = api
         .repo_create_release("TestingAdmin", "release-test", release_opt)
@@ -244,6 +245,7 @@ async fn release() {
         prerelease: None,
         tag_name: None,
         target_commitish: None,
+        hide_archive_links: None,
     };
     api.repo_edit_release(
         "TestingAdmin",
