@@ -2799,7 +2799,7 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(Some(response.json().await?)),
-            204 => Ok(Some(response.json().await?)),
+            204 => Ok(None),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2845,7 +2845,7 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(Some(response.json().await?)),
-            204 => Ok(Some(response.json().await?)),
+            204 => Ok(None),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3448,7 +3448,7 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(Some(response.json().await?)),
-            204 => Ok(Some(response.json().await?)),
+            204 => Ok(None),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }

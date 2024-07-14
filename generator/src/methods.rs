@@ -462,6 +462,7 @@ fn create_method_response(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
     out.push_str("let response = self.execute(request).await?;\n");
     out.push_str("match response.status().as_u16() {\n");
     for (code, res) in &op.responses.http_codes {
+        let branch_ret = response_ref_type_name(spec, res, op)?;
         let res = res.deref(spec)?;
         if !code.starts_with("2") {
             continue;
@@ -491,7 +492,7 @@ fn create_method_response(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
             }
         };
         handlers.extend(header_handler);
-        let body_handler = match fn_ret.kind {
+        let body_handler = match branch_ret.kind {
             Some(ResponseKind::Text) => {
                 if optional {
                     Some("Some(response.text().await?)")
