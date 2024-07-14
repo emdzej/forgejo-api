@@ -446,3 +446,50 @@ async fn tag_protection() {
         .await
         .expect("failed to delete tag protection");
 }
+
+#[tokio::test]
+async fn repo_vars() {
+    let api = common::login();
+    let git = Git::new("./test_repos/repo-vars");
+    let _ = basic_repo(&api, &git, "repo-vars").await;
+
+    let query = GetRepoVariablesListQuery::default();
+    let var_list = api
+        .get_repo_variables_list("TestingAdmin", "repo-vars", query)
+        .await
+        .expect("failed to list repo vars");
+    assert!(var_list.is_empty());
+
+    let opt = CreateVariableOption {
+        value: "false".into(),
+    };
+    api.create_repo_variable("TestingAdmin", "repo-vars", "very_cool", opt)
+        .await
+        .expect("failed to create repo var");
+
+    let new_var = api
+        .get_repo_variable("TestingAdmin", "repo-vars", "very_cool")
+        .await
+        .expect("failed to get repo var");
+    assert_eq!(new_var.data.as_deref(), Some("false"));
+
+    // wait, that's not right. you ARE very cool!
+    // gotta fix that
+    let opt = UpdateVariableOption {
+        name: Some("extremely_cool".into()),
+        value: "true".into(),
+    };
+    api.update_repo_variable("TestingAdmin", "repo-vars", "very_cool", opt)
+        .await
+        .expect("failed to update repo variable");
+
+    let new_var = api
+        .get_repo_variable("TestingAdmin", "repo-vars", "extremely_cool")
+        .await
+        .expect("failed to get repo var");
+    assert_eq!(new_var.data.as_deref(), Some("true"));
+
+    api.delete_repo_variable("TestingAdmin", "repo-vars", "extremely_cool")
+        .await
+        .expect("failed to delete repo var");
+}
