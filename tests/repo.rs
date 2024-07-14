@@ -392,3 +392,57 @@ async fn team_pr_review_request() {
         .expect("couldn't get pr");
     assert_eq!(pr.requested_reviewers, Some(Vec::new()));
 }
+
+#[tokio::test]
+async fn tag_protection() {
+    let api = common::login();
+    let git = Git::new("./test_repos/tag-protect");
+    let _ = basic_repo(&api, &git, "tag-protect").await;
+
+    let tag_protections = api
+        .repo_list_tag_protection("TestingAdmin", "tag-protect")
+        .await
+        .expect("failed to list tag protections");
+    assert!(tag_protections.is_empty());
+
+    let protection_opt = CreateTagProtectionOption {
+        name_pattern: Some("v*".into()),
+        whitelist_teams: None,
+        whitelist_usernames: Some(vec!["TestingAdmin".into()]),
+    };
+    let new_protection = api
+        .repo_create_tag_protection("TestingAdmin", "tag-protect", protection_opt)
+        .await
+        .expect("failed to create tag protection");
+    let pattern = new_protection
+        .name_pattern
+        .as_deref()
+        .expect("protection does not have pattern");
+    assert_eq!(pattern, "v*");
+    let id = new_protection.id.expect("protection does not have id") as u32;
+
+    let protection_get = api
+        .repo_get_tag_protection("TestingAdmin", "tag-protect", id)
+        .await
+        .expect("failed to get tag protection");
+    assert_eq!(new_protection, protection_get);
+
+    let edit_opt = EditTagProtectionOption {
+        name_pattern: Some("v*.*.*".into()),
+        whitelist_teams: None,
+        whitelist_usernames: Some(vec![]),
+    };
+    let edited = api
+        .repo_edit_tag_protection("TestingAdmin", "tag-protect", id, edit_opt)
+        .await
+        .expect("failed to edit tag protection");
+    let pattern = edited
+        .name_pattern
+        .as_deref()
+        .expect("protection does not have pattern");
+    assert_eq!(pattern, "v*.*.*");
+
+    api.repo_delete_tag_protection("TestingAdmin", "tag-protect", id)
+        .await
+        .expect("failed to delete tag protection");
+}
