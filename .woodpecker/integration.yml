@@ -11,4 +11,5 @@ steps:
 
 services:
   forgejo-testing:
+    pull: true
     image: code.cartoon-aa.xyz/cyborus/ci-forgejo:8.0.0
