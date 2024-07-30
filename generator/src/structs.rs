@@ -104,6 +104,7 @@ pub fn create_struct_for_definition(
             }
             if let MaybeRef::Value { value } = &prop_schema {
                 if let Some(desc) = &value.description {
+                    let desc = desc.replace("gitea", "Forgejo").replace("Gitea", "Forgejo");
                     for line in desc.lines() {
                         fields.push_str("/// ");
                         fields.push_str(line);
@@ -199,6 +200,7 @@ fn create_struct_docs(schema: &Schema) -> eyre::Result<String> {
 fn create_struct_docs_str(description: Option<&str>) -> eyre::Result<String> {
     let doc = match description {
         Some(desc) => {
+            let desc = desc.replace("gitea", "Forgejo").replace("Gitea", "Forgejo");
             let mut out = String::new();
             for line in desc.lines() {
                 out.push_str("/// ");

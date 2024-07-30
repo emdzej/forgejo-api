@@ -96,6 +96,9 @@ fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let mut out = String::new();
     let mut prev = false;
     if let Some(summary) = &op.summary {
+        let summary = summary
+            .replace("gitea", "Forgejo")
+            .replace("Gitea", "Forgejo");
         write!(&mut out, "/// {summary}\n")?;
         prev = true;
     }

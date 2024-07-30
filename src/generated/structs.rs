@@ -2735,7 +2735,7 @@ pub struct User {
     /// the user's full name
     pub full_name: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
-    /// URL to the user's gitea page
+    /// URL to the user's Forgejo page
     pub html_url: Option<url::Url>,
     /// the user's id
     pub id: Option<i64>,
