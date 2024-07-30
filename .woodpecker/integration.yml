@@ -5,10 +5,11 @@ steps:
     image: rust
     environment:
       - "FORGEJO_API_CI_INSTANCE_URL=http://forgejo-testing:3000/"
-      - FORGEJO_API_CI_TOKEN=3906093e3d85cf0402623eb4a5287bc0f828e820
+      - FORGEJO_API_CI_TOKEN=e4f301dffd4993a3389f601761c0103291e58d85
     commands:
       - cargo test
 
 services:
   forgejo-testing:
-    image: code.cartoon-aa.xyz/cyborus/ci-forgejo:7.0.1
+    pull: true
+    image: code.cartoon-aa.xyz/cyborus/ci-forgejo:8.0.0

@@ -191,3 +191,47 @@ async fn oauth2_login() {
     let myself = token_api.user_get_current().await.unwrap();
     assert_eq!(myself.login.as_deref(), Some("TestingAdmin"));
 }
+
+#[tokio::test]
+async fn user_vars() {
+    let api = common::login();
+
+    let query = GetUserVariablesListQuery::default();
+    let var_list = api
+        .get_user_variables_list(query)
+        .await
+        .expect("failed to list user vars");
+    assert!(var_list.is_empty());
+
+    let opt = CreateVariableOption {
+        value: "false".into(),
+    };
+    api.create_user_variable("likes_dogs", opt)
+        .await
+        .expect("failed to create user var");
+
+    let new_var = api
+        .get_user_variable("likes_dogs")
+        .await
+        .expect("failed to get user var");
+    assert_eq!(new_var.data.as_deref(), Some("false"));
+
+    // what??? totally wrong. I love dogs!
+    let opt = UpdateVariableOption {
+        name: Some("loves_dogs".into()),
+        value: "true".into(),
+    };
+    api.update_user_variable("likes_dogs", opt)
+        .await
+        .expect("failed to update user variable");
+
+    let new_var = api
+        .get_user_variable("loves_dogs")
+        .await
+        .expect("failed to get user var");
+    assert_eq!(new_var.data.as_deref(), Some("true"));
+
+    api.delete_user_variable("loves_dogs")
+        .await
+        .expect("failed to delete user var");
+}
