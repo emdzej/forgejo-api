@@ -548,7 +548,7 @@ impl crate::Forgejo {
         }
     }
 
-    /// Returns the nodeinfo of the Gitea application
+    /// Returns the nodeinfo of the Forgejo application
     pub async fn get_node_info(&self) -> Result<NodeInfo, ForgejoError> {
         let request = self.get("nodeinfo").build()?;
         let response = self.execute(request).await?;
@@ -8066,7 +8066,7 @@ impl crate::Forgejo {
         }
     }
 
-    /// Returns the version of the Gitea application
+    /// Returns the version of the Forgejo application
     pub async fn get_version(&self) -> Result<ServerVersion, ForgejoError> {
         let request = self.get("version").build()?;
         let response = self.execute(request).await?;
