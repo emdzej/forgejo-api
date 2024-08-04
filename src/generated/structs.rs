@@ -413,7 +413,8 @@ pub struct CommitStatus {
     pub description: Option<String>,
     pub id: Option<i64>,
     pub status: Option<String>,
-    pub target_url: Option<String>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub target_url: Option<url::Url>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -2847,8 +2848,7 @@ pub struct WikiPage {
     pub html_url: Option<url::Url>,
     pub last_commit: Option<WikiCommit>,
     pub sidebar: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub sub_url: Option<url::Url>,
+    pub sub_url: Option<String>,
     pub title: Option<String>,
 }
 
@@ -2858,8 +2858,7 @@ pub struct WikiPageMetaData {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
     pub last_commit: Option<WikiCommit>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub sub_url: Option<url::Url>,
+    pub sub_url: Option<String>,
     pub title: Option<String>,
 }
 
