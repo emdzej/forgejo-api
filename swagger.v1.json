@@ -17022,6 +17022,7 @@
         },
         "url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "URL"
         },
         "workflow_id": {
@@ -17899,6 +17900,7 @@
         },
         "target_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "TargetURL"
         },
         "updated_at": {
@@ -22247,6 +22249,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "merged": {
@@ -23643,6 +23646,7 @@
         "html_url": {
           "description": "URL to the user's gitea page",
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
