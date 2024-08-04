@@ -23945,7 +23945,6 @@
         },
         "sub_url": {
           "type": "string",
-          "format": "url",
           "x-go-name": "SubURL"
         },
         "title": {
@@ -23969,7 +23968,6 @@
         },
         "sub_url": {
           "type": "string",
-          "format": "url",
           "x-go-name": "SubURL"
         },
         "title": {
