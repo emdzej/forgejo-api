@@ -70,32 +70,49 @@ pub fn create_struct_for_definition(
                 crate::schema_subtype_name(spec, name, prop_name, value, &mut field_ty)?;
                 crate::schema_subtypes(spec, name, prop_name, value, &mut subtypes)?;
             }
-            if field_name.ends_with("url") && field_ty == "String" {
-                field_ty = "url::Url".into()
+            let is_required = required.contains(prop_name);
+            if let Some(format) = &prop_schema.deref(spec)?.format {
+                match &**format {
+                    "url" => {
+                        if !is_required {
+                            fields.push_str(
+                                "#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n",
+                            );
+                        }
+                    }
+                    "ssh-url" => {
+                        if is_required {
+                            fields.push_str(
+                                "#[serde(deserialize_with = \"crate::deserialize_ssh_url\")]\n",
+                            );
+                        } else {
+                            fields.push_str(
+                                "#[serde(deserialize_with = \"crate::deserialize_optional_ssh_url\")]\n",
+                            );
+                        }
+                    }
+                    "date-time" => {
+                        if is_required {
+                            fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
+                        } else {
+                            fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
+                        }
+                    }
+                    "date" => {
+                        if is_required {
+                            fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
+                        } else {
+                            fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
+                        }
+                    }
+                    _ => (),
+                }
             }
             if field_ty == name {
                 field_ty = format!("Box<{field_ty}>")
             }
-            if !required.contains(prop_name) {
+            if !is_required {
                 field_ty = format!("Option<{field_ty}>")
-            }
-            if field_ty == "Option<url::Url>" {
-                if field_name == "ssh_url" {
-                    fields.push_str(
-                        "#[serde(deserialize_with = \"crate::deserialize_optional_ssh_url\")]\n",
-                    );
-                } else {
-                    fields.push_str("#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n");
-                }
-            }
-            if field_ty == "url::Url" && field_name == "ssh_url" {
-                fields.push_str("#[serde(deserialize_with = \"crate::deserialize_ssh_url\")]\n");
-            }
-            if field_ty == "time::OffsetDateTime" {
-                fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
-            }
-            if field_ty == "Option<time::OffsetDateTime>" {
-                fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
             }
             if let Some(parse_method) = parse_with.get(prop_name) {
                 fields.push_str("#[serde(deserialize_with = \"crate::");
@@ -539,7 +556,12 @@ fn create_header_struct(
         )
         .unwrap();
         match &header._type {
-            ParameterType::String => imp.push_str("Ok(s.to_string())"),
+            ParameterType::String => match header.format.as_deref() {
+                Some("url" | "ssh-url") => imp.push_str(
+                    "s.parse::<url::Url>().map_err(|_| StructureError::HeaderParseFailed)",
+                ),
+                _ => imp.push_str("Ok(s.to_string())"),
+            },
             ParameterType::Number => match header.format.as_deref() {
                 Some("float") => {
                     imp.push_str("s.parse::<f32>().map_err(|_| StructureError::HeaderParseFailed)")

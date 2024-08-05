@@ -209,6 +209,7 @@ pub fn param_type_inner(
         ParameterType::String => match format.as_deref() {
             Some("date") => "time::Date",
             Some("date-time") => "time::OffsetDateTime",
+            Some("url" | "ssh-url") => "url::Url",
             _ => {
                 if owned {
                     "String"

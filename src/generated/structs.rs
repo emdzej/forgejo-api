@@ -2848,8 +2848,7 @@ pub struct WikiPage {
     pub html_url: Option<url::Url>,
     pub last_commit: Option<WikiCommit>,
     pub sidebar: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub sub_url: Option<url::Url>,
+    pub sub_url: Option<String>,
     pub title: Option<String>,
 }
 
@@ -2859,8 +2858,7 @@ pub struct WikiPageMetaData {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
     pub last_commit: Option<WikiCommit>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub sub_url: Option<url::Url>,
+    pub sub_url: Option<String>,
     pub title: Option<String>,
 }
 
@@ -3009,7 +3007,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for RegistrationTokenHeaders {
 
 pub struct ErrorHeaders {
     pub message: Option<String>,
-    pub url: Option<String>,
+    pub url: Option<url::Url>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ErrorHeaders {
@@ -3027,7 +3025,8 @@ impl TryFrom<&reqwest::header::HeaderMap> for ErrorHeaders {
             .get("url")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
+                s.parse::<url::Url>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
         Ok(Self { message, url })
@@ -3036,7 +3035,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for ErrorHeaders {
 
 pub struct ForbiddenHeaders {
     pub message: Option<String>,
-    pub url: Option<String>,
+    pub url: Option<url::Url>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ForbiddenHeaders {
@@ -3054,7 +3053,8 @@ impl TryFrom<&reqwest::header::HeaderMap> for ForbiddenHeaders {
             .get("url")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
+                s.parse::<url::Url>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
         Ok(Self { message, url })
@@ -3093,7 +3093,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for InvalidTopicsErrorHeaders {
 
 pub struct RepoArchivedErrorHeaders {
     pub message: Option<String>,
-    pub url: Option<String>,
+    pub url: Option<url::Url>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for RepoArchivedErrorHeaders {
@@ -3111,7 +3111,8 @@ impl TryFrom<&reqwest::header::HeaderMap> for RepoArchivedErrorHeaders {
             .get("url")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
+                s.parse::<url::Url>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
         Ok(Self { message, url })
@@ -3120,7 +3121,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for RepoArchivedErrorHeaders {
 
 pub struct ValidationErrorHeaders {
     pub message: Option<String>,
-    pub url: Option<String>,
+    pub url: Option<url::Url>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ValidationErrorHeaders {
@@ -3138,7 +3139,8 @@ impl TryFrom<&reqwest::header::HeaderMap> for ValidationErrorHeaders {
             .get("url")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
+                s.parse::<url::Url>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
         Ok(Self { message, url })
