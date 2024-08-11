@@ -30,10 +30,7 @@ async fn user() {
         .await
         .expect("failed to search users");
     assert!(
-        users
-            .iter()
-            .find(|u| u.login.as_ref().unwrap() == "Pipis")
-            .is_some(),
+        users.iter().any(|u| u.login.as_ref().unwrap() == "Pipis"),
         "could not find new user"
     );
     let query = AdminGetAllEmailsQuery::default();
@@ -44,8 +41,7 @@ async fn user() {
     assert!(
         users
             .iter()
-            .find(|u| u.email.as_ref().unwrap() == "pipis@noreply.example.org")
-            .is_some(),
+            .any(|u| u.email.as_ref().unwrap() == "pipis@noreply.example.org"),
         "could not find new user"
     );
 }
@@ -153,7 +149,7 @@ async fn cron() {
         .admin_cron_list(query)
         .await
         .expect("failed to get crons list");
-    api.admin_cron_run(&crons.get(0).expect("no crons").name.as_ref().unwrap())
+    api.admin_cron_run(crons.first().expect("no crons").name.as_ref().unwrap())
         .await
         .expect("failed to run cron");
 }

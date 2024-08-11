@@ -367,7 +367,7 @@ where
 {
     let list: Option<Vec<Option<structs::User>>> =
         Option::deserialize(deserializer).map_err(DE::custom)?;
-    Ok(list.map(|list| list.into_iter().filter_map(|x| x).collect::<Vec<_>>()))
+    Ok(list.map(|list| list.into_iter().flatten().collect::<Vec<_>>()))
 }
 
 fn parse_ssh_url(raw_url: &String) -> Result<Url, url::ParseError> {
