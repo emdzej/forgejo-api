@@ -164,7 +164,7 @@ async fn oauth2_login() {
     let code = code.unwrap();
 
     // Redeem the code and check it works
-    let url = url::Url::parse(&base_url).unwrap();
+    let url = url::Url::parse(base_url).unwrap();
     let api = forgejo_api::Forgejo::new(forgejo_api::Auth::None, url.clone()).unwrap();
 
     let request = forgejo_api::structs::OAuthTokenRequest::Confidential {
