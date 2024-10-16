@@ -379,10 +379,7 @@ fn create_method_request(
                     }
                 }
                 ParameterIn::FormData { param: _ } => {
-                    if !body_method.is_empty() {
-                        eyre::bail!("cannot have more than one body parameter");
-                    }
-                    body_method = format!(".multipart(reqwest::multipart::Form::new().part(\"attachment\", reqwest::multipart::Part::bytes({name}).file_name(\"file\").mime_str(\"*/*\").unwrap()))");
+                    body_method += &format!(".multipart(reqwest::multipart::Form::new().part(\"attachment\", reqwest::multipart::Part::bytes({name}).file_name(\"file\").mime_str(\"*/*\").unwrap()))");
                 }
             }
         }

@@ -147,9 +147,18 @@ pub struct ActivityPub {
 /// AddCollaboratorOption options when adding a user as a collaborator of a repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AddCollaboratorOption {
-    pub permission: Option<String>,
+    pub permission: Option<AddCollaboratorOptionPermission>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum AddCollaboratorOptionPermission {
+    #[serde(rename = "read")]
+    Read,
+    #[serde(rename = "write")]
+    Write,
+    #[serde(rename = "admin")]
+    Admin,
+}
 /// AddTimeOption options for adding time to an issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AddTimeOption {
@@ -196,9 +205,18 @@ pub struct Attachment {
     pub id: Option<i64>,
     pub name: Option<String>,
     pub size: Option<i64>,
+    #[serde(rename = "type")]
+    pub r#type: Option<AttachmentType>,
     pub uuid: Option<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum AttachmentType {
+    #[serde(rename = "attachment")]
+    Attachment,
+    #[serde(rename = "external")]
+    External,
+}
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct BlockedUser {
     pub block_id: Option<i64>,
@@ -767,6 +785,29 @@ pub struct CreatePushMirrorOption {
     pub remote_password: Option<String>,
     pub remote_username: Option<String>,
     pub sync_on_commit: Option<bool>,
+    pub use_ssh: Option<bool>,
+}
+
+/// CreateQutaGroupOptions represents the options for creating a quota group
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct CreateQuotaGroupOptions {
+    /// Name of the quota group to create
+    pub name: Option<String>,
+    /// Rules to add to the newly created group.
+    ///
+    /// If a rule does not exist, it will be created.
+    pub rules: Option<Vec<CreateQuotaRuleOptions>>,
+}
+
+/// CreateQuotaRuleOptions represents the options for creating a quota rule
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct CreateQuotaRuleOptions {
+    /// The limit set by the rule
+    pub limit: Option<i64>,
+    /// Name of the rule to create
+    pub name: Option<String>,
+    /// The subjects affected by the rule
+    pub subjects: Option<Vec<String>>,
 }
 
 /// CreateReleaseOption options when creating a release
@@ -1004,6 +1045,8 @@ pub struct DispatchWorkflowOption {
 /// EditAttachmentOptions options for editing attachments
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditAttachmentOptions {
+    /// (Can only be set if existing attachment is of external type)
+    pub browser_download_url: Option<String>,
     pub name: Option<String>,
 }
 
@@ -1144,6 +1187,15 @@ pub struct EditPullRequestOption {
     pub state: Option<String>,
     pub title: Option<String>,
     pub unset_due_date: Option<bool>,
+}
+
+/// EditQuotaRuleOptions represents the options for editing a quota rule
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct EditQuotaRuleOptions {
+    /// The limit set by the rule
+    pub limit: Option<i64>,
+    /// The subjects affected by the rule
+    pub subjects: Option<Vec<String>>,
 }
 
 /// EditReactionOption contain the reaction type
@@ -2192,6 +2244,7 @@ pub struct PullRequest {
     pub pin_order: Option<i64>,
     #[serde(deserialize_with = "crate::requested_reviewers_ignore_null")]
     pub requested_reviewers: Option<Vec<User>>,
+    pub requested_reviewers_teams: Option<Vec<Team>>,
     /// number of review comments made on the diff of a PR review (not including comments on commits or issues in a PR)
     pub review_comments: Option<i64>,
     pub state: Option<StateType>,
@@ -2245,16 +2298,14 @@ pub struct PullReviewComment {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub diff_hunk: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub html_url: Option<url::Url>,
+    pub html_url: Option<String>,
     pub id: Option<i64>,
     pub original_commit_id: Option<String>,
     pub original_position: Option<u64>,
     pub path: Option<String>,
     pub position: Option<u64>,
     pub pull_request_review_id: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub pull_request_url: Option<url::Url>,
+    pub pull_request_url: Option<String>,
     pub resolver: Option<User>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
@@ -2277,10 +2328,143 @@ pub struct PushMirror {
     pub last_error: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub last_update: Option<time::OffsetDateTime>,
+    pub public_key: Option<String>,
     pub remote_address: Option<String>,
     pub remote_name: Option<String>,
     pub repo_name: Option<String>,
     pub sync_on_commit: Option<bool>,
+}
+
+/// QuotaGroup represents a quota group
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaGroup {
+    /// Name of the group
+    pub name: Option<String>,
+    /// Rules associated with the group
+    pub rules: Option<Vec<QuotaRuleInfo>>,
+}
+
+/// QuotaInfo represents information about a user's quota
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaInfo {
+    pub groups: Option<Vec<QuotaGroup>>,
+    pub used: Option<QuotaUsed>,
+}
+
+/// QuotaRuleInfo contains information about a quota rule
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaRuleInfo {
+    /// The limit set by the rule
+    pub limit: Option<i64>,
+    /// Name of the rule (only shown to admins)
+    pub name: Option<String>,
+    /// Subjects the rule affects
+    pub subjects: Option<Vec<String>>,
+}
+
+/// QuotaUsed represents the quota usage of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsed {
+    pub size: Option<QuotaUsedSize>,
+}
+
+/// QuotaUsedArtifact represents an artifact counting towards a user's quota
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedArtifact {
+    /// HTML URL to the action run containing the artifact
+    pub html_url: Option<String>,
+    /// Name of the artifact
+    pub name: Option<String>,
+    /// Size of the artifact (compressed)
+    pub size: Option<i64>,
+}
+
+/// QuotaUsedAttachment represents an attachment counting towards a user's quota
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedAttachment {
+    /// API URL for the attachment
+    pub api_url: Option<String>,
+    /// Context for the attachment: URLs to the containing object
+    pub contained_in: Option<QuotaUsedAttachmentContainedIn>,
+    /// Filename of the attachment
+    pub name: Option<String>,
+    /// Size of the attachment (in bytes)
+    pub size: Option<i64>,
+}
+
+/// Context for the attachment: URLs to the containing object
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedAttachmentContainedIn {
+    /// API URL for the object that contains this attachment
+    pub api_url: Option<String>,
+    /// HTML URL for the object that contains this attachment
+    pub html_url: Option<String>,
+}
+
+/// QuotaUsedPackage represents a package counting towards a user's quota
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedPackage {
+    /// HTML URL to the package version
+    pub html_url: Option<String>,
+    /// Name of the package
+    pub name: Option<String>,
+    /// Size of the package version
+    pub size: Option<i64>,
+    /// Type of the package
+    #[serde(rename = "type")]
+    pub r#type: Option<String>,
+    /// Version of the package
+    pub version: Option<String>,
+}
+
+/// QuotaUsedSize represents the size-based quota usage of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedSize {
+    pub assets: Option<QuotaUsedSizeAssets>,
+    pub git: Option<QuotaUsedSizeGit>,
+    pub repos: Option<QuotaUsedSizeRepos>,
+}
+
+/// QuotaUsedSizeAssets represents the size-based asset usage of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedSizeAssets {
+    /// Storage size used for the user's artifacts
+    pub artifacts: Option<i64>,
+    pub attachments: Option<QuotaUsedSizeAssetsAttachments>,
+    pub packages: Option<QuotaUsedSizeAssetsPackages>,
+}
+
+/// QuotaUsedSizeAssetsAttachments represents the size-based attachment quota usage of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedSizeAssetsAttachments {
+    /// Storage size used for the user's issue & comment attachments
+    pub issues: Option<i64>,
+    /// Storage size used for the user's release attachments
+    pub releases: Option<i64>,
+}
+
+/// QuotaUsedSizeAssetsPackages represents the size-based package quota usage of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedSizeAssetsPackages {
+    /// Storage suze used for the user's packages
+    pub all: Option<i64>,
+}
+
+/// QuotaUsedSizeGit represents the size-based git (lfs) quota usage of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedSizeGit {
+    /// Storage size of the user's Git LFS objects
+    #[serde(rename = "LFS")]
+    pub lfs: Option<i64>,
+}
+
+/// QuotaUsedSizeRepos represents the size-based repository quota usage of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct QuotaUsedSizeRepos {
+    /// Storage size of the user's private repositories
+    pub private: Option<i64>,
+    /// Storage size of the user's public repositories
+    pub public: Option<i64>,
 }
 
 /// Reaction contain one reaction
@@ -2489,6 +2673,13 @@ pub struct Secret {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ServerVersion {
     pub version: Option<String>,
+}
+
+/// SetUserQuotaGroupsOptions represents the quota groups of a user
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct SetUserQuotaGroupsOptions {
+    /// Quota groups the user shall have
+    pub groups: Vec<String>,
 }
 
 /// StateType issue state type
@@ -3091,6 +3282,46 @@ impl TryFrom<&reqwest::header::HeaderMap> for InvalidTopicsErrorHeaders {
     }
 }
 
+pub struct QuotaExceededHeaders {
+    pub message: Option<String>,
+    pub user_id: Option<i64>,
+    pub username: Option<String>,
+}
+
+impl TryFrom<&reqwest::header::HeaderMap> for QuotaExceededHeaders {
+    type Error = StructureError;
+
+    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+        let message = map
+            .get("message")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                Ok(s.to_string())
+            })
+            .transpose()?;
+        let user_id = map
+            .get("user_id")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                s.parse::<i64>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
+            })
+            .transpose()?;
+        let username = map
+            .get("username")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                Ok(s.to_string())
+            })
+            .transpose()?;
+        Ok(Self {
+            message,
+            user_id,
+            username,
+        })
+    }
+}
+
 pub struct RepoArchivedErrorHeaders {
     pub message: Option<String>,
     pub url: Option<url::Url>,
@@ -3669,6 +3900,69 @@ pub struct OrgListPublicMembersQuery {
 }
 
 impl std::fmt::Display for OrgListPublicMembersQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct OrgListQuotaArtifactsQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for OrgListQuotaArtifactsQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct OrgListQuotaAttachmentsQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for OrgListQuotaAttachmentsQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct OrgListQuotaPackagesQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for OrgListQuotaPackagesQuery {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(page) = &self.page {
             write!(f, "page={page}&")?;
@@ -6072,11 +6366,76 @@ impl std::fmt::Display for OrgListCurrentUserOrgsQuery {
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+pub struct UserListQuotaArtifactsQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for UserListQuotaArtifactsQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct UserListQuotaAttachmentsQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for UserListQuotaAttachmentsQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct UserListQuotaPackagesQuery {
+    /// page number of results to return (1-based)
+    pub page: Option<u32>,
+    /// page size of results
+    pub limit: Option<u32>,
+}
+
+impl std::fmt::Display for UserListQuotaPackagesQuery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(page) = &self.page {
+            write!(f, "page={page}&")?;
+        }
+        if let Some(limit) = &self.limit {
+            write!(f, "limit={limit}&")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListReposQuery {
     /// page number of results to return (1-based)
     pub page: Option<u32>,
     /// page size of results
     pub limit: Option<u32>,
+    /// order the repositories by name (default), id, or size
+    pub order_by: Option<String>,
 }
 
 impl std::fmt::Display for UserCurrentListReposQuery {
@@ -6086,6 +6445,9 @@ impl std::fmt::Display for UserCurrentListReposQuery {
         }
         if let Some(limit) = &self.limit {
             write!(f, "limit={limit}&")?;
+        }
+        if let Some(order_by) = &self.order_by {
+            write!(f, "order_by={order_by}&")?;
         }
 
         Ok(())

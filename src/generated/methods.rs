@@ -3,6 +3,26 @@ use crate::ForgejoError;
 use std::collections::BTreeMap;
 
 impl crate::Forgejo {
+    /// Returns the instance's Actor
+    pub async fn activitypub_instance_actor(&self) -> Result<ActivityPub, ForgejoError> {
+        let request = self.get("activitypub/actor").build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Send to the inbox
+    pub async fn activitypub_instance_actor_inbox(&self) -> Result<(), ForgejoError> {
+        let request = self.post("activitypub/actor/inbox").build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// Returns the Repository actor for a repo
     ///
     /// - `repository-id`: repository ID of the repo
@@ -206,6 +226,239 @@ impl crate::Forgejo {
         }
     }
 
+    /// List the available quota groups
+    pub async fn admin_list_quota_groups(&self) -> Result<Vec<QuotaGroup>, ForgejoError> {
+        let request = self.get("admin/quota/groups").build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Create a new quota group
+    ///
+    /// - `group`: Definition of the quota group
+
+    ///   See [`CreateQuotaGroupOptions`]
+    pub async fn admin_create_quota_group(
+        &self,
+        group: CreateQuotaGroupOptions,
+    ) -> Result<QuotaGroup, ForgejoError> {
+        let request = self.post("admin/quota/groups").json(&group).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get information about the quota group
+    ///
+    /// - `quotagroup`: quota group to query
+    pub async fn admin_get_quota_group(
+        &self,
+        quotagroup: &str,
+    ) -> Result<QuotaGroup, ForgejoError> {
+        let request = self
+            .get(&format!("admin/quota/groups/{quotagroup}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Delete a quota group
+    ///
+    /// - `quotagroup`: quota group to delete
+    pub async fn admin_delete_quota_group(&self, quotagroup: &str) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("admin/quota/groups/{quotagroup}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Adds a rule to a quota group
+    ///
+    /// - `quotagroup`: quota group to add a rule to
+    /// - `quotarule`: the name of the quota rule to add to the group
+    pub async fn admin_add_rule_to_quota_group(
+        &self,
+        quotagroup: &str,
+        quotarule: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .put(&format!(
+                "admin/quota/groups/{quotagroup}/rules/{quotarule}"
+            ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Removes a rule from a quota group
+    ///
+    /// - `quotagroup`: quota group to remove a rule from
+    /// - `quotarule`: the name of the quota rule to remove from the group
+    pub async fn admin_remove_rule_from_quota_group(
+        &self,
+        quotagroup: &str,
+        quotarule: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!(
+                "admin/quota/groups/{quotagroup}/rules/{quotarule}"
+            ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List users in a quota group
+    ///
+    /// - `quotagroup`: quota group to list members of
+    pub async fn admin_list_users_in_quota_group(
+        &self,
+        quotagroup: &str,
+    ) -> Result<Vec<User>, ForgejoError> {
+        let request = self
+            .get(&format!("admin/quota/groups/{quotagroup}/users"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Add a user to a quota group
+    ///
+    /// - `quotagroup`: quota group to add the user to
+    /// - `username`: username of the user to add to the quota group
+    pub async fn admin_add_user_to_quota_group(
+        &self,
+        quotagroup: &str,
+        username: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .put(&format!("admin/quota/groups/{quotagroup}/users/{username}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Remove a user from a quota group
+    ///
+    /// - `quotagroup`: quota group to remove a user from
+    /// - `username`: username of the user to remove from the quota group
+    pub async fn admin_remove_user_from_quota_group(
+        &self,
+        quotagroup: &str,
+        username: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("admin/quota/groups/{quotagroup}/users/{username}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List the available quota rules
+    pub async fn admin_list_quota_rules(&self) -> Result<Vec<QuotaRuleInfo>, ForgejoError> {
+        let request = self.get("admin/quota/rules").build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Create a new quota rule
+    ///
+    /// - `rule`: Definition of the quota rule
+
+    ///   See [`CreateQuotaRuleOptions`]
+    pub async fn admin_create_quota_rule(
+        &self,
+        rule: CreateQuotaRuleOptions,
+    ) -> Result<QuotaRuleInfo, ForgejoError> {
+        let request = self.post("admin/quota/rules").json(&rule).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            201 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get information about a quota rule
+    ///
+    /// - `quotarule`: quota rule to query
+    pub async fn admin_get_quota_rule(
+        &self,
+        quotarule: &str,
+    ) -> Result<QuotaRuleInfo, ForgejoError> {
+        let request = self
+            .get(&format!("admin/quota/rules/{quotarule}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Deletes a quota rule
+    ///
+    /// - `quotarule`: quota rule to delete
+    pub async fn admin_d_elete_quota_rule(&self, quotarule: &str) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("admin/quota/rules/{quotarule}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Change an existing quota rule
+    ///
+    /// - `quotarule`: Quota rule to change
+    /// - `rule`: See [`EditQuotaRuleOptions`]
+    pub async fn admin_edit_quota_rule(
+        &self,
+        quotarule: &str,
+        rule: EditQuotaRuleOptions,
+    ) -> Result<QuotaRuleInfo, ForgejoError> {
+        let request = self
+            .patch(&format!("admin/quota/rules/{quotarule}"))
+            .json(&rule)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// Get an global actions runner registration token
     pub async fn admin_get_runner_registration_token(
         &self,
@@ -389,6 +642,40 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get the user's quota info
+    ///
+    /// - `username`: username of user to query
+    pub async fn admin_get_user_quota(&self, username: &str) -> Result<QuotaInfo, ForgejoError> {
+        let request = self.get(&format!("admin/users/{username}/quota")).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Set the user's quota groups to a given list.
+    ///
+    /// - `username`: username of the user to modify the quota groups from
+    /// - `groups`: list of groups that the user should be a member of
+
+    ///   See [`SetUserQuotaGroupsOptions`]
+    pub async fn admin_set_user_quota_groups(
+        &self,
+        username: &str,
+        groups: SetUserQuotaGroupsOptions,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .post(&format!("admin/users/{username}/quota/groups"))
+            .json(&groups)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1256,6 +1543,84 @@ impl crate::Forgejo {
         }
     }
 
+    /// Get quota information for an organization
+    ///
+    /// - `org`: name of the organization
+    pub async fn org_get_quota(&self, org: &str) -> Result<QuotaInfo, ForgejoError> {
+        let request = self.get(&format!("orgs/{org}/quota")).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List the artifacts affecting the organization's quota
+    ///
+    /// - `org`: name of the organization
+    pub async fn org_list_quota_artifacts(
+        &self,
+        org: &str,
+        query: OrgListQuotaArtifactsQuery,
+    ) -> Result<Vec<QuotaUsedArtifact>, ForgejoError> {
+        let request = self
+            .get(&format!("orgs/{org}/quota/artifacts?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List the attachments affecting the organization's quota
+    ///
+    /// - `org`: name of the organization
+    pub async fn org_list_quota_attachments(
+        &self,
+        org: &str,
+        query: OrgListQuotaAttachmentsQuery,
+    ) -> Result<Vec<QuotaUsedAttachment>, ForgejoError> {
+        let request = self
+            .get(&format!("orgs/{org}/quota/attachments?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Check if the organization is over quota for a given subject
+    ///
+    /// - `org`: name of the organization
+    pub async fn org_check_quota(&self, org: &str) -> Result<(), ForgejoError> {
+        let request = self.get(&format!("orgs/{org}/quota/check")).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List the packages affecting the organization's quota
+    ///
+    /// - `org`: name of the organization
+    pub async fn org_list_quota_packages(
+        &self,
+        org: &str,
+        query: OrgListQuotaPackagesQuery,
+    ) -> Result<Vec<QuotaUsedPackage>, ForgejoError> {
+        let request = self
+            .get(&format!("orgs/{org}/quota/packages?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// List an organization's repos
     ///
     /// - `org`: name of the organization
@@ -1529,6 +1894,27 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get a repository's actions runner registration token
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub async fn repo_get_runner_registration_token(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> Result<RegistrationTokenHeaders, ForgejoError> {
+        let request = self
+            .get(&format!(
+                "repos/{owner}/{repo}/actions/runners/registration-token"
+            ))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.headers().try_into()?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5791,13 +6177,15 @@ impl crate::Forgejo {
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
     /// - `id`: id of the release
-    /// - `attachment`: attachment to upload
+    /// - `attachment`: attachment to upload (this parameter is incompatible with `external_url`)
+    /// - `external_url`: url to external asset (this parameter is incompatible with `attachment`)
     pub async fn repo_create_release_attachment(
         &self,
         owner: &str,
         repo: &str,
         id: u64,
         attachment: Vec<u8>,
+        external_url: Vec<u8>,
         query: RepoCreateReleaseAttachmentQuery,
     ) -> Result<Attachment, ForgejoError> {
         let request = self
@@ -5808,6 +6196,15 @@ impl crate::Forgejo {
                 reqwest::multipart::Form::new().part(
                     "attachment",
                     reqwest::multipart::Part::bytes(attachment)
+                        .file_name("file")
+                        .mime_str("*/*")
+                        .unwrap(),
+                ),
+            )
+            .multipart(
+                reqwest::multipart::Form::new().part(
+                    "attachment",
+                    reqwest::multipart::Part::bytes(external_url)
                         .file_name("file")
                         .mime_str("*/*")
                         .unwrap(),
@@ -5914,25 +6311,6 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
-            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
-        }
-    }
-
-    /// Get a repository's actions runner registration token
-    ///
-    /// - `owner`: owner of the repo
-    /// - `repo`: name of the repo
-    pub async fn repo_get_runner_registration_token(
-        &self,
-        owner: &str,
-        repo: &str,
-    ) -> Result<RegistrationTokenHeaders, ForgejoError> {
-        let request = self
-            .get(&format!("repos/{owner}/{repo}/runners/registration-token"))
-            .build()?;
-        let response = self.execute(request).await?;
-        match response.status().as_u16() {
-            200 => Ok(response.headers().try_into()?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7576,6 +7954,70 @@ impl crate::Forgejo {
         query: OrgListCurrentUserOrgsQuery,
     ) -> Result<Vec<Organization>, ForgejoError> {
         let request = self.get(&format!("user/orgs?{query}")).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Get quota information for the authenticated user
+    pub async fn user_get_quota(&self) -> Result<QuotaInfo, ForgejoError> {
+        let request = self.get("user/quota").build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List the artifacts affecting the authenticated user's quota
+    ///
+    pub async fn user_list_quota_artifacts(
+        &self,
+        query: UserListQuotaArtifactsQuery,
+    ) -> Result<Vec<QuotaUsedArtifact>, ForgejoError> {
+        let request = self.get(&format!("user/quota/artifacts?{query}")).build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List the attachments affecting the authenticated user's quota
+    ///
+    pub async fn user_list_quota_attachments(
+        &self,
+        query: UserListQuotaAttachmentsQuery,
+    ) -> Result<Vec<QuotaUsedAttachment>, ForgejoError> {
+        let request = self
+            .get(&format!("user/quota/attachments?{query}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Check if the authenticated user is over quota for a given subject
+    pub async fn user_check_quota(&self) -> Result<(), ForgejoError> {
+        let request = self.get("user/quota/check").build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// List the packages affecting the authenticated user's quota
+    ///
+    pub async fn user_list_quota_packages(
+        &self,
+        query: UserListQuotaPackagesQuery,
+    ) -> Result<Vec<QuotaUsedPackage>, ForgejoError> {
+        let request = self.get(&format!("user/quota/packages?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
