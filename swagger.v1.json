@@ -20285,6 +20285,7 @@
         "browser_download_url": {
           "description": "(Can only be set if existing attachment is of external type)",
           "type": "string",
+          "format": "url",
           "x-go-name": "DownloadURL"
         },
         "name": {
@@ -23418,6 +23419,7 @@
         },
         "html_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
@@ -23450,6 +23452,7 @@
         },
         "pull_request_url": {
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLPullURL"
         },
         "resolver": {
@@ -23616,6 +23619,7 @@
         "html_url": {
           "description": "HTML URL to the action run containing the artifact",
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "name": {
@@ -23647,6 +23651,7 @@
         "api_url": {
           "description": "API URL for the attachment",
           "type": "string",
+          "format": "url",
           "x-go-name": "APIURL"
         },
         "contained_in": {
@@ -23656,11 +23661,13 @@
             "api_url": {
               "description": "API URL for the object that contains this attachment",
               "type": "string",
+              "format": "url",
               "x-go-name": "APIURL"
             },
             "html_url": {
               "description": "HTML URL for the object that contains this attachment",
               "type": "string",
+              "format": "url",
               "x-go-name": "HTMLURL"
             }
           },
@@ -23695,6 +23702,7 @@
         "html_url": {
           "description": "HTML URL to the package version",
           "type": "string",
+          "format": "url",
           "x-go-name": "HTMLURL"
         },
         "name": {

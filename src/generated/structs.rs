@@ -1045,8 +1045,9 @@ pub struct DispatchWorkflowOption {
 /// EditAttachmentOptions options for editing attachments
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditAttachmentOptions {
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
     /// (Can only be set if existing attachment is of external type)
-    pub browser_download_url: Option<String>,
+    pub browser_download_url: Option<url::Url>,
     pub name: Option<String>,
 }
 
@@ -2298,14 +2299,16 @@ pub struct PullReviewComment {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub diff_hunk: Option<String>,
-    pub html_url: Option<String>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub original_commit_id: Option<String>,
     pub original_position: Option<u64>,
     pub path: Option<String>,
     pub position: Option<u64>,
     pub pull_request_review_id: Option<i64>,
-    pub pull_request_url: Option<String>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    pub pull_request_url: Option<url::Url>,
     pub resolver: Option<User>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
@@ -2371,8 +2374,9 @@ pub struct QuotaUsed {
 /// QuotaUsedArtifact represents an artifact counting towards a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedArtifact {
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
     /// HTML URL to the action run containing the artifact
-    pub html_url: Option<String>,
+    pub html_url: Option<url::Url>,
     /// Name of the artifact
     pub name: Option<String>,
     /// Size of the artifact (compressed)
@@ -2382,8 +2386,9 @@ pub struct QuotaUsedArtifact {
 /// QuotaUsedAttachment represents an attachment counting towards a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedAttachment {
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
     /// API URL for the attachment
-    pub api_url: Option<String>,
+    pub api_url: Option<url::Url>,
     /// Context for the attachment: URLs to the containing object
     pub contained_in: Option<QuotaUsedAttachmentContainedIn>,
     /// Filename of the attachment
@@ -2395,17 +2400,20 @@ pub struct QuotaUsedAttachment {
 /// Context for the attachment: URLs to the containing object
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedAttachmentContainedIn {
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
     /// API URL for the object that contains this attachment
-    pub api_url: Option<String>,
+    pub api_url: Option<url::Url>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
     /// HTML URL for the object that contains this attachment
-    pub html_url: Option<String>,
+    pub html_url: Option<url::Url>,
 }
 
 /// QuotaUsedPackage represents a package counting towards a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedPackage {
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
     /// HTML URL to the package version
-    pub html_url: Option<String>,
+    pub html_url: Option<url::Url>,
     /// Name of the package
     pub name: Option<String>,
     /// Size of the package version
