@@ -19762,7 +19762,23 @@
           "description": "The subjects affected by the rule",
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+                "none",
+                "size:all",
+                "size:repos:all",
+                "size:repos:public",
+                "size:repos:private",
+                "size:git:all",
+                "size:git:lfs",
+                "size:assets:all",
+                "size:assets:attachments:all",
+                "size:assets:attachments:issues",
+                "size:assets:attachments:releases",
+                "size:assets:artifacts",
+                "size:assets:packages:all",
+                "size:assets:wiki"
+            ]
           },
           "x-go-name": "Subjects"
         }

@@ -807,9 +807,40 @@ pub struct CreateQuotaRuleOptions {
     /// Name of the rule to create
     pub name: Option<String>,
     /// The subjects affected by the rule
-    pub subjects: Option<Vec<String>>,
+    pub subjects: Option<Vec<CreateQuotaRuleOptionsSubjects>>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum CreateQuotaRuleOptionsSubjects {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "size:all")]
+    SizeAll,
+    #[serde(rename = "size:repos:all")]
+    SizeReposAll,
+    #[serde(rename = "size:repos:public")]
+    SizeReposPublic,
+    #[serde(rename = "size:repos:private")]
+    SizeReposPrivate,
+    #[serde(rename = "size:git:all")]
+    SizeGitAll,
+    #[serde(rename = "size:git:lfs")]
+    SizeGitLfs,
+    #[serde(rename = "size:assets:all")]
+    SizeAssetsAll,
+    #[serde(rename = "size:assets:attachments:all")]
+    SizeAssetsAttachmentsAll,
+    #[serde(rename = "size:assets:attachments:issues")]
+    SizeAssetsAttachmentsIssues,
+    #[serde(rename = "size:assets:attachments:releases")]
+    SizeAssetsAttachmentsReleases,
+    #[serde(rename = "size:assets:artifacts")]
+    SizeAssetsArtifacts,
+    #[serde(rename = "size:assets:packages:all")]
+    SizeAssetsPackagesAll,
+    #[serde(rename = "size:assets:wiki")]
+    SizeAssetsWiki,
+}
 /// CreateReleaseOption options when creating a release
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateReleaseOption {
