@@ -271,7 +271,8 @@ async fn release() {
             "TestingAdmin",
             "release-test",
             release.id.unwrap() as u64,
-            b"This is a file!".to_vec(),
+            Some(b"This is a file!".to_vec()),
+            None,
             RepoCreateReleaseAttachmentQuery {
                 name: Some("test.txt".into()),
             },
@@ -390,7 +391,7 @@ async fn team_pr_review_request() {
         .repo_get_pull_request("team-review-org", "team-pr-review", 1)
         .await
         .expect("couldn't get pr");
-    assert_eq!(pr.requested_reviewers, Some(Vec::new()));
+    assert_eq!(pr.requested_reviewers, None);
 }
 
 #[tokio::test]
