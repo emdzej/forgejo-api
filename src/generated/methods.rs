@@ -321,7 +321,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            201 => Ok(()),
+            204 => Ok(()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }

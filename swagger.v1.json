@@ -593,7 +593,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "204": {
             "$ref": "#/responses/empty"
           },
           "400": {
