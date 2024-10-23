@@ -174,10 +174,14 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                     args.push_str(": ");
                     args.push_str(&ty);
                 }
-                ParameterIn::FormData { param: _ } => {
+                ParameterIn::FormData { param } => {
                     args.push_str(", ");
                     args.push_str(&crate::sanitize_ident(&full_param.name));
-                    args.push_str(": Vec<u8>");
+                    if param.required {
+                        args.push_str(": Vec<u8>");
+                    } else {
+                        args.push_str(": Option<Vec<u8>>");
+                    }
                 }
             }
         }
@@ -360,6 +364,7 @@ fn create_method_request(
     let mut has_query = false;
     // let mut has_headers = false;
     let mut body_method = String::new();
+    let mut form_methods = String::new();
     if let Some(params) = &op.parameters {
         for param in params {
             let param = param.deref(spec)?;
@@ -378,8 +383,15 @@ fn create_method_request(
                         body_method = format!(".json(&{name})");
                     }
                 }
-                ParameterIn::FormData { param: _ } => {
-                    body_method += &format!(".multipart(reqwest::multipart::Form::new().part(\"attachment\", reqwest::multipart::Part::bytes({name}).file_name(\"file\").mime_str(\"*/*\").unwrap()))");
+                ParameterIn::FormData { param } => {
+                    if param.required {
+                        form_methods += &format!("let builder = builder.multipart(reqwest::multipart::Form::new().part(\"attachment\", reqwest::multipart::Part::bytes({name}).file_name(\"file\").mime_str(\"*/*\").unwrap()));");
+                    } else {
+                        form_methods += &format!("let builder = match {name} {{ 
+                            Some({name}) => builder.multipart(reqwest::multipart::Form::new().part(\"attachment\", reqwest::multipart::Part::bytes({name}).file_name(\"file\").mime_str(\"*/*\").unwrap())), 
+                            None => builder,
+                        }};");
+                    }
                 }
             }
         }
@@ -394,7 +406,15 @@ fn create_method_request(
         format!("\"{fmt_str}\"")
     };
 
-    let out = format!("let request = self.{method}({path_arg}){body_method}.build()?;");
+    let out = if form_methods.is_empty() {
+        format!("let request = self.{method}({path_arg}){body_method}.build()?;")
+    } else {
+        format!(
+            "let builder = self.{method}({path_arg}){body_method};
+            {form_methods}\
+            let request = builder.build()?;"
+        )
+    };
     Ok(out)
 }
 

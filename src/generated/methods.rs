@@ -428,7 +428,7 @@ impl crate::Forgejo {
     /// Deletes a quota rule
     ///
     /// - `quotarule`: quota rule to delete
-    pub async fn admin_d_elete_quota_rule(&self, quotarule: &str) -> Result<(), ForgejoError> {
+    pub async fn admin_delete_quota_rule(&self, quotarule: &str) -> Result<(), ForgejoError> {
         let request = self
             .delete(&format!("admin/quota/rules/{quotarule}"))
             .build()?;
@@ -3621,20 +3621,19 @@ impl crate::Forgejo {
         attachment: Vec<u8>,
         query: IssueCreateIssueCommentAttachmentQuery,
     ) -> Result<Attachment, ForgejoError> {
-        let request = self
-            .post(&format!(
-                "repos/{owner}/{repo}/issues/comments/{id}/assets?{query}"
-            ))
-            .multipart(
-                reqwest::multipart::Form::new().part(
-                    "attachment",
-                    reqwest::multipart::Part::bytes(attachment)
-                        .file_name("file")
-                        .mime_str("*/*")
-                        .unwrap(),
-                ),
-            )
-            .build()?;
+        let builder = self.post(&format!(
+            "repos/{owner}/{repo}/issues/comments/{id}/assets?{query}"
+        ));
+        let builder = builder.multipart(
+            reqwest::multipart::Form::new().part(
+                "attachment",
+                reqwest::multipart::Part::bytes(attachment)
+                    .file_name("file")
+                    .mime_str("*/*")
+                    .unwrap(),
+            ),
+        );
+        let request = builder.build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -3916,20 +3915,19 @@ impl crate::Forgejo {
         attachment: Vec<u8>,
         query: IssueCreateIssueAttachmentQuery,
     ) -> Result<Attachment, ForgejoError> {
-        let request = self
-            .post(&format!(
-                "repos/{owner}/{repo}/issues/{index}/assets?{query}"
-            ))
-            .multipart(
-                reqwest::multipart::Form::new().part(
-                    "attachment",
-                    reqwest::multipart::Part::bytes(attachment)
-                        .file_name("file")
-                        .mime_str("*/*")
-                        .unwrap(),
-                ),
-            )
-            .build()?;
+        let builder = self.post(&format!(
+            "repos/{owner}/{repo}/issues/{index}/assets?{query}"
+        ));
+        let builder = builder.multipart(
+            reqwest::multipart::Form::new().part(
+                "attachment",
+                reqwest::multipart::Part::bytes(attachment)
+                    .file_name("file")
+                    .mime_str("*/*")
+                    .unwrap(),
+            ),
+        );
+        let request = builder.build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
@@ -6184,15 +6182,15 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-        attachment: Vec<u8>,
-        external_url: Vec<u8>,
+        attachment: Option<Vec<u8>>,
+        external_url: Option<Vec<u8>>,
         query: RepoCreateReleaseAttachmentQuery,
     ) -> Result<Attachment, ForgejoError> {
-        let request = self
-            .post(&format!(
-                "repos/{owner}/{repo}/releases/{id}/assets?{query}"
-            ))
-            .multipart(
+        let builder = self.post(&format!(
+            "repos/{owner}/{repo}/releases/{id}/assets?{query}"
+        ));
+        let builder = match attachment {
+            Some(attachment) => builder.multipart(
                 reqwest::multipart::Form::new().part(
                     "attachment",
                     reqwest::multipart::Part::bytes(attachment)
@@ -6200,8 +6198,11 @@ impl crate::Forgejo {
                         .mime_str("*/*")
                         .unwrap(),
                 ),
-            )
-            .multipart(
+            ),
+            None => builder,
+        };
+        let builder = match external_url {
+            Some(external_url) => builder.multipart(
                 reqwest::multipart::Form::new().part(
                     "attachment",
                     reqwest::multipart::Part::bytes(external_url)
@@ -6209,8 +6210,10 @@ impl crate::Forgejo {
                         .mime_str("*/*")
                         .unwrap(),
                 ),
-            )
-            .build()?;
+            ),
+            None => builder,
+        };
+        let request = builder.build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             201 => Ok(response.json().await?),
