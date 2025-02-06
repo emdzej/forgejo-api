@@ -26,14 +26,14 @@ async fn follow() {
     let api = common::login();
 
     let query = UserListFollowingQuery::default();
-    let following = api
+    let (_, following) = api
         .user_list_following("TestingAdmin", query)
         .await
         .unwrap();
     assert!(following.is_empty(), "following list not empty");
 
     let query = UserListFollowersQuery::default();
-    let followers = api
+    let (_, followers) = api
         .user_list_followers("TestingAdmin", query)
         .await
         .unwrap();
@@ -62,14 +62,14 @@ async fn follow() {
     api.user_current_put_follow("Follower").await.unwrap();
 
     let query = UserListFollowingQuery::default();
-    let following = api
+    let (_, following) = api
         .user_list_following("TestingAdmin", query)
         .await
         .unwrap();
     assert!(!following.is_empty(), "following list empty");
 
     let query = UserListFollowersQuery::default();
-    let followers = api
+    let (_, followers) = api
         .user_list_followers("TestingAdmin", query)
         .await
         .unwrap();
@@ -197,7 +197,7 @@ async fn user_vars() {
     let api = common::login();
 
     let query = GetUserVariablesListQuery::default();
-    let var_list = api
+    let (_, var_list) = api
         .get_user_variables_list(query)
         .await
         .expect("failed to list user vars");

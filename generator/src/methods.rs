@@ -302,7 +302,7 @@ fn response_ref_type_name(
                 eyre::bail!("could not find parent name for header type")
             }
         };
-        ty.headers = Some(format!("{}Headers", parent_name));
+        ty.headers = Some(format!("{}Headers", parent_name.to_pascal_case()));
     }
     let produces = op
         .produces

@@ -18,7 +18,7 @@ async fn org_vars() {
     api.org_create(org_opt).await.expect("failed to create org");
 
     let query = GetOrgVariablesListQuery::default();
-    let var_list = api
+    let (_, var_list) = api
         .get_org_variables_list("org-vars", query)
         .await
         .expect("failed to list org vars");

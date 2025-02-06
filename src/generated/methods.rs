@@ -93,11 +93,11 @@ impl crate::Forgejo {
     pub async fn admin_cron_list(
         &self,
         query: AdminCronListQuery,
-    ) -> Result<Vec<Cron>, ForgejoError> {
+    ) -> Result<(CronListHeaders, Vec<Cron>), ForgejoError> {
         let request = self.get(&format!("admin/cron?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -119,11 +119,11 @@ impl crate::Forgejo {
     pub async fn admin_get_all_emails(
         &self,
         query: AdminGetAllEmailsQuery,
-    ) -> Result<Vec<Email>, ForgejoError> {
+    ) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
         let request = self.get(&format!("admin/emails?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -133,11 +133,11 @@ impl crate::Forgejo {
     pub async fn admin_search_emails(
         &self,
         query: AdminSearchEmailsQuery,
-    ) -> Result<Vec<Email>, ForgejoError> {
+    ) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
         let request = self.get(&format!("admin/emails/search?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -147,11 +147,11 @@ impl crate::Forgejo {
     pub async fn admin_list_hooks(
         &self,
         query: AdminListHooksQuery,
-    ) -> Result<Vec<Hook>, ForgejoError> {
+    ) -> Result<(HookListHeaders, Vec<Hook>), ForgejoError> {
         let request = self.get(&format!("admin/hooks?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -217,21 +217,23 @@ impl crate::Forgejo {
     pub async fn admin_get_all_orgs(
         &self,
         query: AdminGetAllOrgsQuery,
-    ) -> Result<Vec<Organization>, ForgejoError> {
+    ) -> Result<(OrganizationListHeaders, Vec<Organization>), ForgejoError> {
         let request = self.get(&format!("admin/orgs?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
 
     /// List the available quota groups
-    pub async fn admin_list_quota_groups(&self) -> Result<Vec<QuotaGroup>, ForgejoError> {
+    pub async fn admin_list_quota_groups(
+        &self,
+    ) -> Result<(QuotaGroupListHeaders, Vec<QuotaGroup>), ForgejoError> {
         let request = self.get("admin/quota/groups").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -332,13 +334,13 @@ impl crate::Forgejo {
     pub async fn admin_list_users_in_quota_group(
         &self,
         quotagroup: &str,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("admin/quota/groups/{quotagroup}/users"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -382,11 +384,13 @@ impl crate::Forgejo {
     }
 
     /// List the available quota rules
-    pub async fn admin_list_quota_rules(&self) -> Result<Vec<QuotaRuleInfo>, ForgejoError> {
+    pub async fn admin_list_quota_rules(
+        &self,
+    ) -> Result<(QuotaRuleInfoListHeaders, Vec<QuotaRuleInfo>), ForgejoError> {
         let request = self.get("admin/quota/rules").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -528,11 +532,11 @@ impl crate::Forgejo {
     pub async fn admin_search_users(
         &self,
         query: AdminSearchUsersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self.get(&format!("admin/users?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -721,11 +725,13 @@ impl crate::Forgejo {
     }
 
     /// Returns a list of all gitignore templates
-    pub async fn list_gitignores_templates(&self) -> Result<Vec<String>, ForgejoError> {
+    pub async fn list_gitignores_templates(
+        &self,
+    ) -> Result<(GitignoreTemplateListHeaders, Vec<String>), ForgejoError> {
         let request = self.get("gitignore/templates").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -746,11 +752,13 @@ impl crate::Forgejo {
     }
 
     /// Returns a list of all label templates
-    pub async fn list_label_templates(&self) -> Result<Vec<String>, ForgejoError> {
+    pub async fn list_label_templates(
+        &self,
+    ) -> Result<(LabelTemplateListHeaders, Vec<String>), ForgejoError> {
         let request = self.get("label/templates").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -773,11 +781,11 @@ impl crate::Forgejo {
     /// Returns a list of all license templates
     pub async fn list_license_templates(
         &self,
-    ) -> Result<Vec<LicensesTemplateListEntry>, ForgejoError> {
+    ) -> Result<(LicenseTemplateListHeaders, Vec<LicensesTemplateListEntry>), ForgejoError> {
         let request = self.get("licenses").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -850,11 +858,11 @@ impl crate::Forgejo {
     pub async fn notify_get_list(
         &self,
         query: NotifyGetListQuery,
-    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+    ) -> Result<(NotificationThreadListHeaders, Vec<NotificationThread>), ForgejoError> {
         let request = self.get(&format!("notifications?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -864,11 +872,11 @@ impl crate::Forgejo {
     pub async fn notify_read_list(
         &self,
         query: NotifyReadListQuery,
-    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+    ) -> Result<(NotificationThreadListHeaders, Vec<NotificationThread>), ForgejoError> {
         let request = self.put(&format!("notifications?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            205 => Ok(response.json().await?),
+            205 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -935,11 +943,11 @@ impl crate::Forgejo {
     pub async fn org_get_all(
         &self,
         query: OrgGetAllQuery,
-    ) -> Result<Vec<Organization>, ForgejoError> {
+    ) -> Result<(OrganizationListHeaders, Vec<Organization>), ForgejoError> {
         let request = self.get(&format!("orgs?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1024,13 +1032,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListActionsSecretsQuery,
-    ) -> Result<Vec<Secret>, ForgejoError> {
+    ) -> Result<(SecretListHeaders, Vec<Secret>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/actions/secrets?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1080,13 +1088,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: GetOrgVariablesListQuery,
-    ) -> Result<Vec<ActionVariable>, ForgejoError> {
+    ) -> Result<(VariableListHeaders, Vec<ActionVariable>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/actions/variables?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1184,13 +1192,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListActivityFeedsQuery,
-    ) -> Result<Vec<Activity>, ForgejoError> {
+    ) -> Result<(ActivityFeedsListHeaders, Vec<Activity>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/activities/feeds?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1247,11 +1255,11 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListHooksQuery,
-    ) -> Result<Vec<Hook>, ForgejoError> {
+    ) -> Result<(HookListHeaders, Vec<Hook>), ForgejoError> {
         let request = self.get(&format!("orgs/{org}/hooks?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1331,11 +1339,11 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListLabelsQuery,
-    ) -> Result<Vec<Label>, ForgejoError> {
+    ) -> Result<(LabelListHeaders, Vec<Label>), ForgejoError> {
         let request = self.get(&format!("orgs/{org}/labels?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1415,13 +1423,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListBlockedUsersQuery,
-    ) -> Result<Vec<BlockedUser>, ForgejoError> {
+    ) -> Result<(BlockedUserListHeaders, Vec<BlockedUser>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/list_blocked?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1433,11 +1441,11 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListMembersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self.get(&format!("orgs/{org}/members?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1479,13 +1487,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListPublicMembersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/public_members?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1562,13 +1570,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListQuotaArtifactsQuery,
-    ) -> Result<Vec<QuotaUsedArtifact>, ForgejoError> {
+    ) -> Result<(QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/quota/artifacts?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1580,13 +1588,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListQuotaAttachmentsQuery,
-    ) -> Result<Vec<QuotaUsedAttachment>, ForgejoError> {
+    ) -> Result<(QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/quota/attachments?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1610,13 +1618,13 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListQuotaPackagesQuery,
-    ) -> Result<Vec<QuotaUsedPackage>, ForgejoError> {
+    ) -> Result<(QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>), ForgejoError> {
         let request = self
             .get(&format!("orgs/{org}/quota/packages?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1628,11 +1636,11 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListReposQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self.get(&format!("orgs/{org}/repos?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1664,11 +1672,11 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListTeamsQuery,
-    ) -> Result<Vec<Team>, ForgejoError> {
+    ) -> Result<(TeamListHeaders, Vec<Team>), ForgejoError> {
         let request = self.get(&format!("orgs/{org}/teams?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1733,11 +1741,11 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         query: ListPackagesQuery,
-    ) -> Result<Vec<Package>, ForgejoError> {
+    ) -> Result<(PackageListHeaders, Vec<Package>), ForgejoError> {
         let request = self.get(&format!("packages/{owner}?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1800,13 +1808,13 @@ impl crate::Forgejo {
         r#type: &str,
         name: &str,
         version: &str,
-    ) -> Result<Vec<PackageFile>, ForgejoError> {
+    ) -> Result<(PackageFileListHeaders, Vec<PackageFile>), ForgejoError> {
         let request = self
             .get(&format!("packages/{owner}/{type}/{name}/{version}/files"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1816,11 +1824,11 @@ impl crate::Forgejo {
     pub async fn issue_search_issues(
         &self,
         query: IssueSearchIssuesQuery,
-    ) -> Result<Vec<Issue>, ForgejoError> {
+    ) -> Result<(IssueListHeaders, Vec<Issue>), ForgejoError> {
         let request = self.get(&format!("repos/issues/search?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1928,13 +1936,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListActionsSecretsQuery,
-    ) -> Result<Vec<Secret>, ForgejoError> {
+    ) -> Result<(SecretListHeaders, Vec<Secret>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/actions/secrets?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -1998,13 +2006,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: ListActionTasksQuery,
-    ) -> Result<ActionTaskResponse, ForgejoError> {
+    ) -> Result<(TasksListHeaders, ActionTaskResponse), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/actions/tasks?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2018,13 +2026,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: GetRepoVariablesListQuery,
-    ) -> Result<Vec<ActionVariable>, ForgejoError> {
+    ) -> Result<(VariableListHeaders, Vec<ActionVariable>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/actions/variables?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2166,13 +2174,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListActivityFeedsQuery,
-    ) -> Result<Vec<Activity>, ForgejoError> {
+    ) -> Result<(ActivityFeedsListHeaders, Vec<Activity>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/activities/feeds?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2206,13 +2214,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/assignees"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2262,13 +2270,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<BranchProtection>, ForgejoError> {
+    ) -> Result<(BranchProtectionListHeaders, Vec<BranchProtection>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/branch_protections"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2370,13 +2378,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListBranchesQuery,
-    ) -> Result<Vec<Branch>, ForgejoError> {
+    ) -> Result<(BranchListHeaders, Vec<Branch>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/branches?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2454,13 +2462,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListCollaboratorsQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/collaborators?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2615,7 +2623,7 @@ impl crate::Forgejo {
         repo: &str,
         r#ref: &str,
         query: RepoListStatusesByRefQuery,
-    ) -> Result<Vec<CommitStatus>, ForgejoError> {
+    ) -> Result<(CommitStatusListHeaders, Vec<CommitStatus>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/commits/{ref}/statuses?{query}"
@@ -2623,7 +2631,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2978,13 +2986,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: ListForksQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/forks?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3109,13 +3117,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<Reference>, ForgejoError> {
+    ) -> Result<(ReferenceListHeaders, Vec<Reference>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/git/refs"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3130,13 +3138,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         r#ref: &str,
-    ) -> Result<Vec<Reference>, ForgejoError> {
+    ) -> Result<(ReferenceListHeaders, Vec<Reference>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/git/refs/{ref}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3193,13 +3201,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListHooksQuery,
-    ) -> Result<Vec<Hook>, ForgejoError> {
+    ) -> Result<(HookListHeaders, Vec<Hook>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/hooks?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3234,13 +3242,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<GitHook>, ForgejoError> {
+    ) -> Result<(GitHookListHeaders, Vec<GitHook>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/hooks/git"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3465,13 +3473,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: IssueListIssuesQuery,
-    ) -> Result<Vec<Issue>, ForgejoError> {
+    ) -> Result<(IssueListHeaders, Vec<Issue>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3507,13 +3515,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: IssueGetRepoCommentsQuery,
-    ) -> Result<Vec<Comment>, ForgejoError> {
+    ) -> Result<(CommentListHeaders, Vec<Comment>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues/comments?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3596,13 +3604,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> Result<Vec<Attachment>, ForgejoError> {
+    ) -> Result<(AttachmentListHeaders, Vec<Attachment>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues/comments/{id}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3729,7 +3737,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> Result<Vec<Reaction>, ForgejoError> {
+    ) -> Result<(ReactionListHeaders, Vec<Reaction>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/comments/{id}/reactions"
@@ -3737,7 +3745,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3803,13 +3811,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<Issue>, ForgejoError> {
+    ) -> Result<(IssueListHeaders, Vec<Issue>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues/pinned"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3890,13 +3898,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> Result<Vec<Attachment>, ForgejoError> {
+    ) -> Result<(AttachmentListHeaders, Vec<Attachment>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues/{index}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4024,7 +4032,7 @@ impl crate::Forgejo {
         repo: &str,
         index: &str,
         query: IssueListBlocksQuery,
-    ) -> Result<Vec<Issue>, ForgejoError> {
+    ) -> Result<(IssueListHeaders, Vec<Issue>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/{index}/blocks?{query}"
@@ -4032,7 +4040,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4096,7 +4104,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueGetCommentsQuery,
-    ) -> Result<Vec<Comment>, ForgejoError> {
+    ) -> Result<(CommentListHeaders, Vec<Comment>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/{index}/comments?{query}"
@@ -4104,7 +4112,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4222,7 +4230,7 @@ impl crate::Forgejo {
         repo: &str,
         index: &str,
         query: IssueListIssueDependenciesQuery,
-    ) -> Result<Vec<Issue>, ForgejoError> {
+    ) -> Result<(IssueListHeaders, Vec<Issue>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/{index}/dependencies?{query}"
@@ -4230,7 +4238,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4293,13 +4301,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> Result<Vec<Label>, ForgejoError> {
+    ) -> Result<(LabelListHeaders, Vec<Label>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues/{index}/labels"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4316,14 +4324,14 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: IssueLabelsOption,
-    ) -> Result<Vec<Label>, ForgejoError> {
+    ) -> Result<(LabelListHeaders, Vec<Label>), ForgejoError> {
         let request = self
             .put(&format!("repos/{owner}/{repo}/issues/{index}/labels"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4340,14 +4348,14 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: IssueLabelsOption,
-    ) -> Result<Vec<Label>, ForgejoError> {
+    ) -> Result<(LabelListHeaders, Vec<Label>), ForgejoError> {
         let request = self
             .post(&format!("repos/{owner}/{repo}/issues/{index}/labels"))
             .json(&body)
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4475,7 +4483,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueGetIssueReactionsQuery,
-    ) -> Result<Vec<Reaction>, ForgejoError> {
+    ) -> Result<(ReactionListHeaders, Vec<Reaction>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/{index}/reactions?{query}"
@@ -4483,7 +4491,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4617,7 +4625,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueSubscriptionsQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/{index}/subscriptions?{query}"
@@ -4625,7 +4633,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4716,7 +4724,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueGetCommentsAndTimelineQuery,
-    ) -> Result<Vec<TimelineComment>, ForgejoError> {
+    ) -> Result<(TimelineListHeaders, Vec<TimelineComment>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/{index}/timeline?{query}"
@@ -4724,7 +4732,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4740,7 +4748,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueTrackedTimesQuery,
-    ) -> Result<Vec<TrackedTime>, ForgejoError> {
+    ) -> Result<(TrackedTimeListHeaders, Vec<TrackedTime>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/issues/{index}/times?{query}"
@@ -4748,7 +4756,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4830,13 +4838,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListKeysQuery,
-    ) -> Result<Vec<DeployKey>, ForgejoError> {
+    ) -> Result<(DeployKeyListHeaders, Vec<DeployKey>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/keys?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -4914,13 +4922,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: IssueListLabelsQuery,
-    ) -> Result<Vec<Label>, ForgejoError> {
+    ) -> Result<(LabelListHeaders, Vec<Label>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/labels?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5063,13 +5071,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: IssueGetMilestonesListQuery,
-    ) -> Result<Vec<Milestone>, ForgejoError> {
+    ) -> Result<(MilestoneListHeaders, Vec<Milestone>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/milestones?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5205,13 +5213,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: NotifyGetRepoListQuery,
-    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+    ) -> Result<(NotificationThreadListHeaders, Vec<NotificationThread>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/notifications?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5225,13 +5233,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: NotifyReadRepoListQuery,
-    ) -> Result<Vec<NotificationThread>, ForgejoError> {
+    ) -> Result<(NotificationThreadListHeaders, Vec<NotificationThread>), ForgejoError> {
         let request = self
             .put(&format!("repos/{owner}/{repo}/notifications?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            205 => Ok(response.json().await?),
+            205 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5245,13 +5253,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListPullRequestsQuery,
-    ) -> Result<Vec<PullRequest>, ForgejoError> {
+    ) -> Result<(PullRequestListHeaders, Vec<PullRequest>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/pulls?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5286,13 +5294,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<PullRequest>, ForgejoError> {
+    ) -> Result<(PullRequestListHeaders, Vec<PullRequest>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/pulls/pinned"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5515,7 +5523,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: PullReviewRequestOptions,
-    ) -> Result<Vec<PullReview>, ForgejoError> {
+    ) -> Result<(PullReviewListHeaders, Vec<PullReview>), ForgejoError> {
         let request = self
             .post(&format!(
                 "repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
@@ -5524,7 +5532,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            201 => Ok(response.json().await?),
+            201 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5566,7 +5574,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoListPullReviewsQuery,
-    ) -> Result<Vec<PullReview>, ForgejoError> {
+    ) -> Result<(PullReviewListHeaders, Vec<PullReview>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/pulls/{index}/reviews?{query}"
@@ -5574,7 +5582,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5687,7 +5695,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         id: u64,
-    ) -> Result<Vec<PullReviewComment>, ForgejoError> {
+    ) -> Result<(PullReviewCommentListHeaders, Vec<PullReviewComment>), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
@@ -5695,7 +5703,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5868,13 +5876,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListPushMirrorsQuery,
-    ) -> Result<Vec<PushMirror>, ForgejoError> {
+    ) -> Result<(PushMirrorListHeaders, Vec<PushMirror>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/push_mirrors?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5989,13 +5997,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListReleasesQuery,
-    ) -> Result<Vec<Release>, ForgejoError> {
+    ) -> Result<(ReleaseListHeaders, Vec<Release>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/releases?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6159,13 +6167,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> Result<Vec<Attachment>, ForgejoError> {
+    ) -> Result<(AttachmentListHeaders, Vec<Attachment>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/releases/{id}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6307,13 +6315,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/reviewers"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6342,13 +6350,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListStargazersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/stargazers?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6364,13 +6372,13 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         query: RepoListStatusesQuery,
-    ) -> Result<Vec<CommitStatus>, ForgejoError> {
+    ) -> Result<(CommitStatusListHeaders, Vec<CommitStatus>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/statuses/{sha}?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6408,13 +6416,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListSubscribersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/subscribers?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6484,13 +6492,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<TagProtection>, ForgejoError> {
+    ) -> Result<(TagProtectionListHeaders, Vec<TagProtection>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/tag_protections"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6592,13 +6600,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListTagsQuery,
-    ) -> Result<Vec<Tag>, ForgejoError> {
+    ) -> Result<(TagListHeaders, Vec<Tag>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/tags?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6675,11 +6683,11 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<Vec<Team>, ForgejoError> {
+    ) -> Result<(TeamListHeaders, Vec<Team>), ForgejoError> {
         let request = self.get(&format!("repos/{owner}/{repo}/teams")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6756,13 +6764,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoTrackedTimesQuery,
-    ) -> Result<Vec<TrackedTime>, ForgejoError> {
+    ) -> Result<(TrackedTimeListHeaders, Vec<TrackedTime>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/times?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6777,13 +6785,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         user: &str,
-    ) -> Result<Vec<TrackedTime>, ForgejoError> {
+    ) -> Result<(TrackedTimeListHeaders, Vec<TrackedTime>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/times/{user}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7031,13 +7039,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoGetWikiPagesQuery,
-    ) -> Result<Vec<WikiPageMetaData>, ForgejoError> {
+    ) -> Result<(WikiPageListHeaders, Vec<WikiPageMetaData>), ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/wiki/pages?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7053,7 +7061,7 @@ impl crate::Forgejo {
         repo: &str,
         page_name: &str,
         query: RepoGetWikiPageRevisionsQuery,
-    ) -> Result<WikiCommitList, ForgejoError> {
+    ) -> Result<(WikiCommitListHeaders, WikiCommitList), ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/wiki/revisions/{page_name}?{query}"
@@ -7061,7 +7069,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7198,13 +7206,13 @@ impl crate::Forgejo {
         &self,
         id: u64,
         query: OrgListTeamActivityFeedsQuery,
-    ) -> Result<Vec<Activity>, ForgejoError> {
+    ) -> Result<(ActivityFeedsListHeaders, Vec<Activity>), ForgejoError> {
         let request = self
             .get(&format!("teams/{id}/activities/feeds?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7216,11 +7224,11 @@ impl crate::Forgejo {
         &self,
         id: u64,
         query: OrgListTeamMembersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self.get(&format!("teams/{id}/members?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7285,11 +7293,11 @@ impl crate::Forgejo {
         &self,
         id: u64,
         query: OrgListTeamReposQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self.get(&format!("teams/{id}/repos?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7435,13 +7443,13 @@ impl crate::Forgejo {
     pub async fn get_user_variables_list(
         &self,
         query: GetUserVariablesListQuery,
-    ) -> Result<Vec<ActionVariable>, ForgejoError> {
+    ) -> Result<(VariableListHeaders, Vec<ActionVariable>), ForgejoError> {
         let request = self
             .get(&format!("user/actions/variables?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7525,13 +7533,13 @@ impl crate::Forgejo {
     pub async fn user_get_oauth2_applications(
         &self,
         query: UserGetOAuth2ApplicationsQuery,
-    ) -> Result<Vec<OAuth2Application>, ForgejoError> {
+    ) -> Result<(OAuth2ApplicationListHeaders, Vec<OAuth2Application>), ForgejoError> {
         let request = self
             .get(&format!("user/applications/oauth2?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7640,11 +7648,11 @@ impl crate::Forgejo {
     }
 
     /// List the authenticated user's email addresses
-    pub async fn user_list_emails(&self) -> Result<Vec<Email>, ForgejoError> {
+    pub async fn user_list_emails(&self) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
         let request = self.get("user/emails").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7655,11 +7663,11 @@ impl crate::Forgejo {
     pub async fn user_add_email(
         &self,
         body: CreateEmailOption,
-    ) -> Result<Vec<Email>, ForgejoError> {
+    ) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
         let request = self.post("user/emails").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            201 => Ok(response.json().await?),
+            201 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7681,11 +7689,11 @@ impl crate::Forgejo {
     pub async fn user_current_list_followers(
         &self,
         query: UserCurrentListFollowersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self.get(&format!("user/followers?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7695,11 +7703,11 @@ impl crate::Forgejo {
     pub async fn user_current_list_following(
         &self,
         query: UserCurrentListFollowingQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self.get(&format!("user/following?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7765,11 +7773,11 @@ impl crate::Forgejo {
     pub async fn user_current_list_gpg_keys(
         &self,
         query: UserCurrentListGpgKeysQuery,
-    ) -> Result<Vec<GPGKey>, ForgejoError> {
+    ) -> Result<(GpgKeyListHeaders, Vec<GPGKey>), ForgejoError> {
         let request = self.get(&format!("user/gpg_keys?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7818,11 +7826,11 @@ impl crate::Forgejo {
     pub async fn user_list_hooks(
         &self,
         query: UserListHooksQuery,
-    ) -> Result<Vec<Hook>, ForgejoError> {
+    ) -> Result<(HookListHeaders, Vec<Hook>), ForgejoError> {
         let request = self.get(&format!("user/hooks?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7888,11 +7896,11 @@ impl crate::Forgejo {
     pub async fn user_current_list_keys(
         &self,
         query: UserCurrentListKeysQuery,
-    ) -> Result<Vec<PublicKey>, ForgejoError> {
+    ) -> Result<(PublicKeyListHeaders, Vec<PublicKey>), ForgejoError> {
         let request = self.get(&format!("user/keys?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7941,11 +7949,11 @@ impl crate::Forgejo {
     pub async fn user_list_blocked_users(
         &self,
         query: UserListBlockedUsersQuery,
-    ) -> Result<Vec<BlockedUser>, ForgejoError> {
+    ) -> Result<(BlockedUserListHeaders, Vec<BlockedUser>), ForgejoError> {
         let request = self.get(&format!("user/list_blocked?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7955,11 +7963,11 @@ impl crate::Forgejo {
     pub async fn org_list_current_user_orgs(
         &self,
         query: OrgListCurrentUserOrgsQuery,
-    ) -> Result<Vec<Organization>, ForgejoError> {
+    ) -> Result<(OrganizationListHeaders, Vec<Organization>), ForgejoError> {
         let request = self.get(&format!("user/orgs?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7979,11 +7987,11 @@ impl crate::Forgejo {
     pub async fn user_list_quota_artifacts(
         &self,
         query: UserListQuotaArtifactsQuery,
-    ) -> Result<Vec<QuotaUsedArtifact>, ForgejoError> {
+    ) -> Result<(QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>), ForgejoError> {
         let request = self.get(&format!("user/quota/artifacts?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7993,13 +8001,13 @@ impl crate::Forgejo {
     pub async fn user_list_quota_attachments(
         &self,
         query: UserListQuotaAttachmentsQuery,
-    ) -> Result<Vec<QuotaUsedAttachment>, ForgejoError> {
+    ) -> Result<(QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>), ForgejoError> {
         let request = self
             .get(&format!("user/quota/attachments?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8019,11 +8027,11 @@ impl crate::Forgejo {
     pub async fn user_list_quota_packages(
         &self,
         query: UserListQuotaPackagesQuery,
-    ) -> Result<Vec<QuotaUsedPackage>, ForgejoError> {
+    ) -> Result<(QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>), ForgejoError> {
         let request = self.get(&format!("user/quota/packages?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8033,11 +8041,11 @@ impl crate::Forgejo {
     pub async fn user_current_list_repos(
         &self,
         query: UserCurrentListReposQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self.get(&format!("user/repos?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8087,11 +8095,11 @@ impl crate::Forgejo {
     pub async fn user_current_list_starred(
         &self,
         query: UserCurrentListStarredQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self.get(&format!("user/starred?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8150,11 +8158,11 @@ impl crate::Forgejo {
     pub async fn user_get_stop_watches(
         &self,
         query: UserGetStopWatchesQuery,
-    ) -> Result<Vec<StopWatch>, ForgejoError> {
+    ) -> Result<(StopWatchListHeaders, Vec<StopWatch>), ForgejoError> {
         let request = self.get(&format!("user/stopwatches?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8164,11 +8172,11 @@ impl crate::Forgejo {
     pub async fn user_current_list_subscriptions(
         &self,
         query: UserCurrentListSubscriptionsQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self.get(&format!("user/subscriptions?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8178,11 +8186,11 @@ impl crate::Forgejo {
     pub async fn user_list_teams(
         &self,
         query: UserListTeamsQuery,
-    ) -> Result<Vec<Team>, ForgejoError> {
+    ) -> Result<(TeamListHeaders, Vec<Team>), ForgejoError> {
         let request = self.get(&format!("user/teams?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8192,11 +8200,11 @@ impl crate::Forgejo {
     pub async fn user_current_tracked_times(
         &self,
         query: UserCurrentTrackedTimesQuery,
-    ) -> Result<Vec<TrackedTime>, ForgejoError> {
+    ) -> Result<(TrackedTimeListHeaders, Vec<TrackedTime>), ForgejoError> {
         let request = self.get(&format!("user/times?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8246,13 +8254,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListActivityFeedsQuery,
-    ) -> Result<Vec<Activity>, ForgejoError> {
+    ) -> Result<(ActivityFeedsListHeaders, Vec<Activity>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/activities/feeds?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8264,13 +8272,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListFollowersQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/followers?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8282,13 +8290,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListFollowingQuery,
-    ) -> Result<Vec<User>, ForgejoError> {
+    ) -> Result<(UserListHeaders, Vec<User>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/following?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8319,13 +8327,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListGpgKeysQuery,
-    ) -> Result<Vec<GPGKey>, ForgejoError> {
+    ) -> Result<(GpgKeyListHeaders, Vec<GPGKey>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/gpg_keys?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8352,13 +8360,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListKeysQuery,
-    ) -> Result<Vec<PublicKey>, ForgejoError> {
+    ) -> Result<(PublicKeyListHeaders, Vec<PublicKey>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/keys?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8370,13 +8378,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: OrgListUserOrgsQuery,
-    ) -> Result<Vec<Organization>, ForgejoError> {
+    ) -> Result<(OrganizationListHeaders, Vec<Organization>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/orgs?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8407,13 +8415,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListReposQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/repos?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8425,13 +8433,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListStarredQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/starred?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8443,13 +8451,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListSubscriptionsQuery,
-    ) -> Result<Vec<Repository>, ForgejoError> {
+    ) -> Result<(RepositoryListHeaders, Vec<Repository>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/subscriptions?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -8461,13 +8469,13 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserGetTokensQuery,
-    ) -> Result<Vec<AccessToken>, ForgejoError> {
+    ) -> Result<(AccessTokenListHeaders, Vec<AccessToken>), ForgejoError> {
         let request = self
             .get(&format!("users/{username}/tokens?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+            200 => Ok((response.headers().try_into()?, response.json().await?)),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }

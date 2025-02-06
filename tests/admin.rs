@@ -25,7 +25,7 @@ async fn user() {
         .expect("failed to create user");
 
     let query = AdminSearchUsersQuery::default();
-    let users = api
+    let (_, users) = api
         .admin_search_users(query)
         .await
         .expect("failed to search users");
@@ -34,7 +34,7 @@ async fn user() {
         "could not find new user"
     );
     let query = AdminGetAllEmailsQuery::default();
-    let users = api
+    let (_, users) = api
         .admin_get_all_emails(query)
         .await
         .expect("failed to search emails");
@@ -84,7 +84,7 @@ async fn org() {
         .expect("failed to create org");
     let query = AdminGetAllOrgsQuery::default();
     assert!(
-        !api.admin_get_all_orgs(query).await.unwrap().is_empty(),
+        !api.admin_get_all_orgs(query).await.unwrap().1.is_empty(),
         "org list empty"
     );
     let rename_opt = RenameUserOption {
@@ -145,7 +145,7 @@ async fn cron() {
     let api = common::login();
 
     let query = AdminCronListQuery::default();
-    let crons = api
+    let (_, crons) = api
         .admin_cron_list(query)
         .await
         .expect("failed to get crons list");
@@ -236,7 +236,7 @@ async fn quota_group() {
         .as_ref()
         .is_some_and(|rules| rules.len() == 1));
 
-    let quota_groups = api
+    let (_, quota_groups) = api
         .admin_list_quota_groups()
         .await
         .expect("failed to list quota groups");
