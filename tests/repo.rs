@@ -212,6 +212,7 @@ async fn release() {
         api.repo_list_releases("TestingAdmin", "release-test", query)
             .await
             .unwrap()
+            .1
             .is_empty(),
         "there should be no releases yet"
     );
@@ -400,7 +401,7 @@ async fn tag_protection() {
     let git = Git::new("./test_repos/tag-protect");
     let _ = basic_repo(&api, &git, "tag-protect").await;
 
-    let tag_protections = api
+    let (_, tag_protections) = api
         .repo_list_tag_protection("TestingAdmin", "tag-protect")
         .await
         .expect("failed to list tag protections");
@@ -455,7 +456,7 @@ async fn repo_vars() {
     let _ = basic_repo(&api, &git, "repo-vars").await;
 
     let query = GetRepoVariablesListQuery::default();
-    let var_list = api
+    let (_, var_list) = api
         .get_repo_variables_list("TestingAdmin", "repo-vars", query)
         .await
         .expect("failed to list repo vars");
