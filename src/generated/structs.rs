@@ -9,6 +9,44 @@ pub struct APIError {
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APIForbiddenError {
+    pub message: Option<String>,
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APIInvalidTopicsError {
+    #[serde(rename = "invalidTopics")]
+    pub invalid_topics: Option<Vec<String>>,
+    pub message: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APINotFound {
+    pub errors: Option<Vec<String>>,
+    pub message: Option<String>,
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APIRepoArchivedError {
+    pub message: Option<String>,
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APIUnauthorizedError {
+    pub message: Option<String>,
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APIValidationError {
+    pub message: Option<String>,
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
     pub id: Option<i64>,
     pub name: Option<String>,
@@ -1276,6 +1314,8 @@ pub struct EditRepoOption {
     /// set to `true` to delete pr branch after merge by default
     pub default_delete_branch_after_merge: Option<bool>,
     pub default_merge_style: Option<DefaultMergeStyle>,
+    /// set to a update style to be used by this repository: "rebase" or "merge"
+    pub default_update_style: Option<String>,
     /// a short description of the repository.
     pub description: Option<String>,
     /// enable prune - remove obsolete remote-tracking references when mirroring
@@ -1844,6 +1884,13 @@ pub struct MarkdownOption {
 /// MarkupOption markup options
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct MarkupOption {
+    /// The current branch path where the form gets posted
+    ///
+    ///
+    ///
+    /// in: body
+    #[serde(rename = "BranchPath")]
+    pub branch_path: Option<String>,
     /// Context to render
     ///
     ///
@@ -2040,6 +2087,11 @@ pub struct NodeInfoUsageUsers {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Note {
     pub commit: Option<Commit>,
+    pub message: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct NoteOptions {
     pub message: Option<String>,
 }
 
@@ -2623,6 +2675,7 @@ pub struct Repository {
     pub default_branch: Option<String>,
     pub default_delete_branch_after_merge: Option<bool>,
     pub default_merge_style: Option<DefaultMergeStyle>,
+    pub default_update_style: Option<String>,
     pub description: Option<String>,
     pub empty: Option<bool>,
     pub external_tracker: Option<ExternalTracker>,
@@ -2897,6 +2950,13 @@ pub struct TransferRepoOption {
     pub new_owner: String,
     /// ID of the team or teams to add to the repository. Teams can only be added to organization-owned repositories.
     pub team_ids: Option<Vec<i64>>,
+}
+
+/// UpdateBranchRepoOption options when updating a branch in a repository
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct UpdateBranchRepoOption {
+    /// New branch name
+    pub name: String,
 }
 
 /// UpdateFileOptions options for updating files
@@ -6397,92 +6457,6 @@ impl TryFrom<&reqwest::header::HeaderMap> for WikiPageListHeaders {
     }
 }
 
-pub struct ErrorHeaders {
-    pub message: Option<String>,
-    pub url: Option<url::Url>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for ErrorHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let message = map
-            .get("message")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
-            })
-            .transpose()?;
-        let url = map
-            .get("url")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<url::Url>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { message, url })
-    }
-}
-
-pub struct ForbiddenHeaders {
-    pub message: Option<String>,
-    pub url: Option<url::Url>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for ForbiddenHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let message = map
-            .get("message")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
-            })
-            .transpose()?;
-        let url = map
-            .get("url")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<url::Url>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { message, url })
-    }
-}
-
-pub struct InvalidTopicsErrorHeaders {
-    pub invalid_topics: Option<Vec<String>>,
-    pub message: Option<String>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for InvalidTopicsErrorHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let invalid_topics = map
-            .get("invalidTopics")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.split(",").map(|s| s.to_string()).collect::<Vec<_>>())
-            })
-            .transpose()?;
-        let message = map
-            .get("message")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
-            })
-            .transpose()?;
-        Ok(Self {
-            invalid_topics,
-            message,
-        })
-    }
-}
-
 pub struct QuotaExceededHeaders {
     pub message: Option<String>,
     pub user_id: Option<i64>,
@@ -6520,62 +6494,6 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaExceededHeaders {
             user_id,
             username,
         })
-    }
-}
-
-pub struct RepoArchivedErrorHeaders {
-    pub message: Option<String>,
-    pub url: Option<url::Url>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for RepoArchivedErrorHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let message = map
-            .get("message")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
-            })
-            .transpose()?;
-        let url = map
-            .get("url")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<url::Url>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { message, url })
-    }
-}
-
-pub struct ValidationErrorHeaders {
-    pub message: Option<String>,
-    pub url: Option<url::Url>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for ValidationErrorHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let message = map
-            .get("message")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
-            })
-            .transpose()?;
-        let url = map
-            .get("url")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<url::Url>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { message, url })
     }
 }
 
@@ -6721,6 +6639,8 @@ pub struct AdminSearchUsersQuery {
     pub source_id: Option<u64>,
     /// user's login name to search for
     pub login_name: Option<String>,
+    /// sort order of results
+    pub sort: Option<AdminSearchUsersQuerySort>,
     /// page number of results to return (1-based)
     pub page: Option<u32>,
     /// page size of results
@@ -6735,6 +6655,9 @@ impl std::fmt::Display for AdminSearchUsersQuery {
         if let Some(login_name) = &self.login_name {
             write!(f, "login_name={login_name}&")?;
         }
+        if let Some(sort) = &self.sort {
+            write!(f, "sort={}&", sort.as_str())?;
+        }
         if let Some(page) = &self.page {
             write!(f, "page={page}&")?;
         }
@@ -6746,6 +6669,34 @@ impl std::fmt::Display for AdminSearchUsersQuery {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum AdminSearchUsersQuerySort {
+    #[serde(rename = "oldest")]
+    Oldest,
+    #[serde(rename = "newest")]
+    Newest,
+    #[serde(rename = "alphabetically")]
+    Alphabetically,
+    #[serde(rename = "reversealphabetically")]
+    Reversealphabetically,
+    #[serde(rename = "recentupdate")]
+    Recentupdate,
+    #[serde(rename = "leastupdate")]
+    Leastupdate,
+}
+
+impl AdminSearchUsersQuerySort {
+    fn as_str(&self) -> &'static str {
+        match self {
+            AdminSearchUsersQuerySort::Oldest => "oldest",
+            AdminSearchUsersQuerySort::Newest => "newest",
+            AdminSearchUsersQuerySort::Alphabetically => "alphabetically",
+            AdminSearchUsersQuerySort::Reversealphabetically => "reversealphabetically",
+            AdminSearchUsersQuerySort::Recentupdate => "recentupdate",
+            AdminSearchUsersQuerySort::Leastupdate => "leastupdate",
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminDeleteUserQuery {
     /// purge the user from the system completely
@@ -7360,46 +7311,46 @@ impl ListPackagesQueryType {
 }
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct IssueSearchIssuesQuery {
-    /// whether issue is open or closed
-    pub state: Option<String>,
-    /// comma separated list of labels. Fetch only issues that have any of this labels. Non existent labels are discarded
+    /// State of the issue
+    pub state: Option<IssueSearchIssuesQueryState>,
+    /// Comma-separated list of label names. Fetch only issues that have any of these labels. Non existent labels are discarded.
     pub labels: Option<String>,
-    /// comma separated list of milestone names. Fetch only issues that have any of this milestones. Non existent are discarded
+    /// Comma-separated list of milestone names. Fetch only issues that have any of these milestones. Non existent milestones are discarded.
     pub milestones: Option<String>,
-    /// search string
+    /// Search string
     pub q: Option<String>,
-    /// repository to prioritize in the results
+    /// Repository ID to prioritize in the results
     pub priority_repo_id: Option<u64>,
-    /// filter by type (issues / pulls) if set
-    pub r#type: Option<String>,
-    /// Only show notifications updated after the given time. This is a timestamp in RFC 3339 format
+    /// Filter by issue type
+    pub r#type: Option<IssueSearchIssuesQueryType>,
+    /// Only show issues updated after the given time (RFC 3339 format)
     pub since: Option<time::OffsetDateTime>,
-    /// Only show notifications updated before the given time. This is a timestamp in RFC 3339 format
+    /// Only show issues updated before the given time (RFC 3339 format)
     pub before: Option<time::OffsetDateTime>,
-    /// filter (issues / pulls) assigned to you, default is false
+    /// Filter issues or pulls assigned to the authenticated user
     pub assigned: Option<bool>,
-    /// filter (issues / pulls) created by you, default is false
+    /// Filter issues or pulls created by the authenticated user
     pub created: Option<bool>,
-    /// filter (issues / pulls) mentioning you, default is false
+    /// Filter issues or pulls mentioning the authenticated user
     pub mentioned: Option<bool>,
-    /// filter pulls requesting your review, default is false
+    /// Filter pull requests where the authenticated user's review was requested
     pub review_requested: Option<bool>,
-    /// filter pulls reviewed by you, default is false
+    /// Filter pull requests reviewed by the authenticated user
     pub reviewed: Option<bool>,
-    /// filter by owner
+    /// Filter by repository owner
     pub owner: Option<String>,
-    /// filter by team (requires organization owner parameter to be provided)
+    /// Filter by team (requires organization owner parameter)
     pub team: Option<String>,
-    /// page number of results to return (1-based)
+    /// Page number of results to return (1-based)
     pub page: Option<u32>,
-    /// page size of results
+    /// Number of items per page
     pub limit: Option<u32>,
 }
 
 impl std::fmt::Display for IssueSearchIssuesQuery {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(state) = &self.state {
-            write!(f, "state={state}&")?;
+            write!(f, "state={}&", state.as_str())?;
         }
         if let Some(labels) = &self.labels {
             write!(f, "labels={labels}&")?;
@@ -7414,7 +7365,7 @@ impl std::fmt::Display for IssueSearchIssuesQuery {
             write!(f, "priority_repo_id={priority_repo_id}&")?;
         }
         if let Some(r#type) = &self.r#type {
-            write!(f, "type={type}&")?;
+            write!(f, "type={}&", r#type.as_str())?;
         }
         if let Some(since) = &self.since {
             write!(
@@ -7466,6 +7417,42 @@ impl std::fmt::Display for IssueSearchIssuesQuery {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum IssueSearchIssuesQueryState {
+    #[serde(rename = "open")]
+    Open,
+    #[serde(rename = "closed")]
+    Closed,
+    #[serde(rename = "all")]
+    All,
+}
+
+impl IssueSearchIssuesQueryState {
+    fn as_str(&self) -> &'static str {
+        match self {
+            IssueSearchIssuesQueryState::Open => "open",
+            IssueSearchIssuesQueryState::Closed => "closed",
+            IssueSearchIssuesQueryState::All => "all",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum IssueSearchIssuesQueryType {
+    #[serde(rename = "issues")]
+    Issues,
+    #[serde(rename = "pulls")]
+    Pulls,
+}
+
+impl IssueSearchIssuesQueryType {
+    fn as_str(&self) -> &'static str {
+        match self {
+            IssueSearchIssuesQueryType::Issues => "issues",
+            IssueSearchIssuesQueryType::Pulls => "pulls",
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoSearchQuery {
     /// keyword
@@ -8692,7 +8679,7 @@ impl std::fmt::Display for NotifyReadRepoListQuery {
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListPullRequestsQuery {
-    /// State of pull request: open or closed (optional)
+    /// State of pull request
     pub state: Option<RepoListPullRequestsQueryState>,
     /// Type of sort
     pub sort: Option<RepoListPullRequestsQuerySort>,
@@ -8700,9 +8687,11 @@ pub struct RepoListPullRequestsQuery {
     pub milestone: Option<u64>,
     /// Label IDs
     pub labels: Option<Vec<u64>>,
-    /// page number of results to return (1-based)
+    /// Filter by pull request author
+    pub poster: Option<String>,
+    /// Page number of results to return (1-based)
     pub page: Option<u32>,
-    /// page size of results
+    /// Page size of results
     pub limit: Option<u32>,
 }
 
@@ -8726,6 +8715,9 @@ impl std::fmt::Display for RepoListPullRequestsQuery {
                 }
             }
         }
+        if let Some(poster) = &self.poster {
+            write!(f, "poster={poster}&")?;
+        }
         if let Some(page) = &self.page {
             write!(f, "page={page}&")?;
         }
@@ -8739,10 +8731,10 @@ impl std::fmt::Display for RepoListPullRequestsQuery {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RepoListPullRequestsQueryState {
-    #[serde(rename = "closed")]
-    Closed,
     #[serde(rename = "open")]
     Open,
+    #[serde(rename = "closed")]
+    Closed,
     #[serde(rename = "all")]
     All,
 }
@@ -8750,8 +8742,8 @@ pub enum RepoListPullRequestsQueryState {
 impl RepoListPullRequestsQueryState {
     fn as_str(&self) -> &'static str {
         match self {
-            RepoListPullRequestsQueryState::Closed => "closed",
             RepoListPullRequestsQueryState::Open => "open",
+            RepoListPullRequestsQueryState::Closed => "closed",
             RepoListPullRequestsQueryState::All => "all",
         }
     }
@@ -8981,6 +8973,8 @@ pub struct RepoListReleasesQuery {
     pub draft: Option<bool>,
     /// filter (exclude / include) pre-releases
     pub pre_release: Option<bool>,
+    /// Search string
+    pub q: Option<String>,
     /// page number of results to return (1-based)
     pub page: Option<u32>,
     /// page size of results
@@ -8994,6 +8988,9 @@ impl std::fmt::Display for RepoListReleasesQuery {
         }
         if let Some(pre_release) = &self.pre_release {
             write!(f, "pre-release={pre_release}&")?;
+        }
+        if let Some(q) = &self.q {
+            write!(f, "q={q}&")?;
         }
         if let Some(page) = &self.page {
             write!(f, "page={page}&")?;

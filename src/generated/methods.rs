@@ -2453,6 +2453,30 @@ impl crate::Forgejo {
         }
     }
 
+    /// Update a branch
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `branch`: name of the branch
+    /// - `body`: See [`UpdateBranchRepoOption`]
+    pub async fn repo_update_branch(
+        &self,
+        owner: &str,
+        repo: &str,
+        branch: &str,
+        body: UpdateBranchRepoOption,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .patch(&format!("repos/{owner}/{repo}/branches/{branch}"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
     /// List a repository's collaborators
     ///
     /// - `owner`: owner of the repo
@@ -3105,6 +3129,51 @@ impl crate::Forgejo {
         let response = self.execute(request).await?;
         match response.status().as_u16() {
             200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Set a note corresponding to a single commit from a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `sha`: a git ref or commit sha
+    /// - `body`: See [`NoteOptions`]
+    pub async fn repo_set_note(
+        &self,
+        owner: &str,
+        repo: &str,
+        sha: &str,
+        body: NoteOptions,
+    ) -> Result<Note, ForgejoError> {
+        let request = self
+            .post(&format!("repos/{owner}/{repo}/git/notes/{sha}"))
+            .json(&body)
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            200 => Ok(response.json().await?),
+            _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
+        }
+    }
+
+    /// Removes a note corresponding to a single commit from a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `sha`: a git ref or commit sha
+    pub async fn repo_remove_note(
+        &self,
+        owner: &str,
+        repo: &str,
+        sha: &str,
+    ) -> Result<(), ForgejoError> {
+        let request = self
+            .delete(&format!("repos/{owner}/{repo}/git/notes/{sha}"))
+            .build()?;
+        let response = self.execute(request).await?;
+        match response.status().as_u16() {
+            204 => Ok(()),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5246,8 +5315,8 @@ impl crate::Forgejo {
 
     /// List a repo's pull requests
     ///
-    /// - `owner`: owner of the repo
-    /// - `repo`: name of the repo
+    /// - `owner`: Owner of the repo
+    /// - `repo`: Name of the repo
     pub async fn repo_list_pull_requests(
         &self,
         owner: &str,
