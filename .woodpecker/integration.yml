@@ -4,8 +4,8 @@ steps:
   test:
     image: rust
     environment:
-      - "FORGEJO_API_CI_INSTANCE_URL=http://forgejo-testing:3000/"
-      - FORGEJO_API_CI_TOKEN=6eaba97c49d9f1bbe54f8975ea884af54826c9fe
+      FORGEJO_API_CI_INSTANCE_URL: http://forgejo-testing:3000/
+      FORGEJO_API_CI_TOKEN: 6eaba97c49d9f1bbe54f8975ea884af54826c9fe
     commands:
       - cargo test
 
