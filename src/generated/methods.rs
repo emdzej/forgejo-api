@@ -119,11 +119,11 @@ impl crate::Forgejo {
     pub async fn admin_get_all_emails(
         &self,
         query: AdminGetAllEmailsQuery,
-    ) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
+    ) -> Result<Vec<Email>, ForgejoError> {
         let request = self.get(&format!("admin/emails?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -133,11 +133,11 @@ impl crate::Forgejo {
     pub async fn admin_search_emails(
         &self,
         query: AdminSearchEmailsQuery,
-    ) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
+    ) -> Result<Vec<Email>, ForgejoError> {
         let request = self.get(&format!("admin/emails/search?{query}")).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -725,13 +725,11 @@ impl crate::Forgejo {
     }
 
     /// Returns a list of all gitignore templates
-    pub async fn list_gitignores_templates(
-        &self,
-    ) -> Result<(GitignoreTemplateListHeaders, Vec<String>), ForgejoError> {
+    pub async fn list_gitignores_templates(&self) -> Result<Vec<String>, ForgejoError> {
         let request = self.get("gitignore/templates").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -752,13 +750,11 @@ impl crate::Forgejo {
     }
 
     /// Returns a list of all label templates
-    pub async fn list_label_templates(
-        &self,
-    ) -> Result<(LabelTemplateListHeaders, Vec<String>), ForgejoError> {
+    pub async fn list_label_templates(&self) -> Result<Vec<String>, ForgejoError> {
         let request = self.get("label/templates").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -781,11 +777,11 @@ impl crate::Forgejo {
     /// Returns a list of all license templates
     pub async fn list_license_templates(
         &self,
-    ) -> Result<(LicenseTemplateListHeaders, Vec<LicensesTemplateListEntry>), ForgejoError> {
+    ) -> Result<Vec<LicensesTemplateListEntry>, ForgejoError> {
         let request = self.get("licenses").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2006,13 +2002,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: ListActionTasksQuery,
-    ) -> Result<(TasksListHeaders, ActionTaskResponse), ForgejoError> {
+    ) -> Result<ActionTaskResponse, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/actions/tasks?{query}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -2270,13 +2266,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<(BranchProtectionListHeaders, Vec<BranchProtection>), ForgejoError> {
+    ) -> Result<Vec<BranchProtection>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/branch_protections"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3186,13 +3182,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<(ReferenceListHeaders, Vec<Reference>), ForgejoError> {
+    ) -> Result<Vec<Reference>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/git/refs"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3207,13 +3203,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         r#ref: &str,
-    ) -> Result<(ReferenceListHeaders, Vec<Reference>), ForgejoError> {
+    ) -> Result<Vec<Reference>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/git/refs/{ref}"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3673,13 +3669,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> Result<(AttachmentListHeaders, Vec<Attachment>), ForgejoError> {
+    ) -> Result<Vec<Attachment>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues/comments/{id}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -3967,13 +3963,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> Result<(AttachmentListHeaders, Vec<Attachment>), ForgejoError> {
+    ) -> Result<Vec<Attachment>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/issues/{index}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -5764,7 +5760,7 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         id: u64,
-    ) -> Result<(PullReviewCommentListHeaders, Vec<PullReviewComment>), ForgejoError> {
+    ) -> Result<Vec<PullReviewComment>, ForgejoError> {
         let request = self
             .get(&format!(
                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
@@ -5772,7 +5768,7 @@ impl crate::Forgejo {
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6236,13 +6232,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> Result<(AttachmentListHeaders, Vec<Attachment>), ForgejoError> {
+    ) -> Result<Vec<Attachment>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/releases/{id}/assets"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -6561,13 +6557,13 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Result<(TagProtectionListHeaders, Vec<TagProtection>), ForgejoError> {
+    ) -> Result<Vec<TagProtection>, ForgejoError> {
         let request = self
             .get(&format!("repos/{owner}/{repo}/tag_protections"))
             .build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7717,11 +7713,11 @@ impl crate::Forgejo {
     }
 
     /// List the authenticated user's email addresses
-    pub async fn user_list_emails(&self) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
+    pub async fn user_list_emails(&self) -> Result<Vec<Email>, ForgejoError> {
         let request = self.get("user/emails").build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            200 => Ok((response.headers().try_into()?, response.json().await?)),
+            200 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
@@ -7732,11 +7728,11 @@ impl crate::Forgejo {
     pub async fn user_add_email(
         &self,
         body: CreateEmailOption,
-    ) -> Result<(EmailListHeaders, Vec<Email>), ForgejoError> {
+    ) -> Result<Vec<Email>, ForgejoError> {
         let request = self.post("user/emails").json(&body).build()?;
         let response = self.execute(request).await?;
         match response.status().as_u16() {
-            201 => Ok((response.headers().try_into()?, response.json().await?)),
+            201 => Ok(response.json().await?),
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }

@@ -20391,20 +20391,20 @@
           "items": {
             "type": "string",
             "enum": [
-                "none",
-                "size:all",
-                "size:repos:all",
-                "size:repos:public",
-                "size:repos:private",
-                "size:git:all",
-                "size:git:lfs",
-                "size:assets:all",
-                "size:assets:attachments:all",
-                "size:assets:attachments:issues",
-                "size:assets:attachments:releases",
-                "size:assets:artifacts",
-                "size:assets:packages:all",
-                "size:assets:wiki"
+              "none",
+              "size:all",
+              "size:repos:all",
+              "size:repos:public",
+              "size:repos:private",
+              "size:git:all",
+              "size:git:lfs",
+              "size:assets:all",
+              "size:assets:attachments:all",
+              "size:assets:attachments:issues",
+              "size:assets:attachments:releases",
+              "size:assets:artifacts",
+              "size:assets:packages:all",
+              "size:assets:wiki"
             ]
           },
           "x-go-name": "Subjects"
@@ -25098,10 +25098,7 @@
     "StateType": {
       "description": "StateType issue state type",
       "type": "string",
-      "enum": [
-          "open",
-          "closed"
-      ],
+      "enum": ["open", "closed"],
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
     "StopWatch": {
@@ -26064,26 +26061,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26105,26 +26083,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26156,32 +26115,6 @@
         "items": {
           "$ref": "#/definitions/Attachment"
         }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "BlockedUserList": {
@@ -26193,26 +26126,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26234,26 +26148,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26273,32 +26168,6 @@
         "items": {
           "$ref": "#/definitions/BranchProtection"
         }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "ChangedFileList": {
@@ -26313,21 +26182,6 @@
         "X-HasMore": {
           "type": "boolean",
           "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
         },
         "X-Total-Count": {
           "type": "integer",
@@ -26357,26 +26211,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26402,22 +26237,7 @@
           "type": "boolean",
           "description": "True if there is another page"
         },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26439,26 +26259,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26495,26 +26296,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26536,26 +26318,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26568,32 +26331,6 @@
         "type": "array",
         "items": {
           "$ref": "#/definitions/Email"
-        }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
         }
       }
     },
@@ -26636,26 +26373,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26707,26 +26425,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26752,32 +26451,6 @@
         "items": {
           "type": "string"
         }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "Hook": {
@@ -26795,26 +26468,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26842,26 +26496,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26892,26 +26527,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -26933,32 +26549,6 @@
         "type": "array",
         "items": {
           "type": "string"
-        }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
         }
       }
     },
@@ -26984,32 +26574,6 @@
         "type": "array",
         "items": {
           "$ref": "#/definitions/LicensesTemplateListEntry"
-        }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
         }
       }
     },
@@ -27040,26 +26604,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27099,26 +26644,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27140,26 +26666,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27181,26 +26688,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27228,26 +26716,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27263,26 +26732,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27304,26 +26754,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27345,26 +26776,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27390,32 +26802,6 @@
         "items": {
           "$ref": "#/definitions/PullReviewComment"
         }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "PullReviewList": {
@@ -27427,26 +26813,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27468,26 +26835,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27506,26 +26854,7 @@
         "$ref": "#/definitions/QuotaGroupList"
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27553,26 +26882,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27585,26 +26895,7 @@
         "$ref": "#/definitions/QuotaUsedArtifactList"
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27617,26 +26908,7 @@
         "$ref": "#/definitions/QuotaUsedAttachmentList"
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27649,26 +26921,7 @@
         "$ref": "#/definitions/QuotaUsedPackageList"
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27690,26 +26943,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27728,32 +26962,6 @@
         "type": "array",
         "items": {
           "$ref": "#/definitions/Reference"
-        }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
         }
       }
     },
@@ -27780,26 +26988,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27845,26 +27034,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27892,26 +27062,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27939,26 +27090,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -27989,26 +27121,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -28028,64 +27141,12 @@
         "items": {
           "$ref": "#/definitions/TagProtection"
         }
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "TasksList": {
       "description": "TasksList",
       "schema": {
         "$ref": "#/definitions/ActionTaskResponse"
-      },
-      "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "Team": {
@@ -28103,26 +27164,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -28138,26 +27180,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -28194,26 +27217,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -28244,26 +27248,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -28285,26 +27270,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -28323,26 +27289,7 @@
         "$ref": "#/definitions/WikiCommitList"
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
@@ -28364,26 +27311,7 @@
         }
       },
       "headers": {
-        "X-HasMore": {
-          "type": "boolean",
-          "description": "True if there is another page"
-        },
-        "X-Page": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The current page"
-        },
-        "X-PageCount": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of pages"
-        },
-        "X-PerPage": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Commits per page"
-        },
-        "X-Total": {
+        "X-Total-Count": {
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
