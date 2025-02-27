@@ -3153,382 +3153,87 @@ pub struct WikiPageMetaData {
 }
 
 pub struct AccessTokenListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for AccessTokenListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct ActivityFeedsListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ActivityFeedsListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct AttachmentListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for AttachmentListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct BlockedUserListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for BlockedUserListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct BranchListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for BranchListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct BranchProtectionListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for BranchProtectionListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct ChangedFileListHeaders {
     pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
     pub x_total_count: Option<i64>,
 }
 
@@ -3537,39 +3242,15 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
         let x_has_more = map
-            .get("X-HasMore")
+            .get("x-hasmore")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<bool>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
         let x_total_count = map
-            .get("X-Total-Count")
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
@@ -3578,82 +3259,34 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             .transpose()?;
         Ok(Self {
             x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
             x_total_count,
         })
     }
 }
 
 pub struct CommentListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for CommentListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct CommitListHeaders {
     pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
@@ -3661,39 +3294,15 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
         let x_has_more = map
-            .get("X-HasMore")
+            .get("x-hasmore")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<bool>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
@@ -3702,1871 +3311,488 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
             .transpose()?;
         Ok(Self {
             x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
+            x_total_count,
         })
     }
 }
 
 pub struct CommitStatusListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for CommitStatusListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct CronListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for CronListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct DeployKeyListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for DeployKeyListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct EmailListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for EmailListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct GpgKeyListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for GpgKeyListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct GitHookListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for GitHookListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct GitignoreTemplateListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for GitignoreTemplateListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct HookListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for HookListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct IssueListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for IssueListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct LabelListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for LabelListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct LabelTemplateListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for LabelTemplateListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct LicenseTemplateListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for LicenseTemplateListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct MilestoneListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for MilestoneListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct NotificationThreadListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for NotificationThreadListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct OAuth2ApplicationListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for OAuth2ApplicationListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct OrganizationListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for OrganizationListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct PackageFileListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for PackageFileListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct PackageListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for PackageListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct PublicKeyListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for PublicKeyListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct PullRequestListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for PullRequestListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct PullReviewCommentListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for PullReviewCommentListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct PullReviewListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for PullReviewListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct PushMirrorListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for PushMirrorListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct QuotaGroupListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for QuotaGroupListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct QuotaRuleInfoListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for QuotaRuleInfoListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct QuotaUsedArtifactListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for QuotaUsedArtifactListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct QuotaUsedAttachmentListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for QuotaUsedAttachmentListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct QuotaUsedPackageListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for QuotaUsedPackageListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct ReactionListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ReactionListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct ReferenceListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for ReferenceListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
@@ -5590,870 +3816,242 @@ impl TryFrom<&reqwest::header::HeaderMap> for RegistrationTokenHeaders {
 }
 
 pub struct ReleaseListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ReleaseListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct RepositoryListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for RepositoryListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct SecretListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for SecretListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct StopWatchListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for StopWatchListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct TagListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for TagListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct TagProtectionListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for TagProtectionListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
-    }
-}
-
-pub struct TasksListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for TasksListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct TeamListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for TeamListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct TimelineListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for TimelineListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct TrackedTimeListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for TrackedTimeListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct UserListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for UserListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct VariableListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for VariableListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct WikiCommitListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for WikiCommitListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 
 pub struct WikiPageListHeaders {
-    pub x_has_more: Option<bool>,
-    pub x_page: Option<i64>,
-    pub x_page_count: Option<i64>,
-    pub x_per_page: Option<i64>,
-    pub x_total: Option<i64>,
+    pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for WikiPageListHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_has_more = map
-            .get("X-HasMore")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<bool>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_page = map
-            .get("X-Page")
+        let x_total_count = map
+            .get("x-total-count")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
-        let x_page_count = map
-            .get("X-PageCount")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_per_page = map
-            .get("X-PerPage")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        let x_total = map
-            .get("X-Total")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self {
-            x_has_more,
-            x_page,
-            x_page_count,
-            x_per_page,
-            x_total,
-        })
+        Ok(Self { x_total_count })
     }
 }
 

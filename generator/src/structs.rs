@@ -550,9 +550,10 @@ fn create_header_struct(
         write!(
             &mut imp,
             "
-            let {field_name} = map.get(\"{header_name}\").map(|s| -> Result<_, _> {{
+            let {field_name} = map.get(\"{}\").map(|s| -> Result<_, _> {{
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-        "
+        ",
+            header_name.to_lowercase(),
         )
         .unwrap();
         match &header._type {

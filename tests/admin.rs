@@ -34,7 +34,7 @@ async fn user() {
         "could not find new user"
     );
     let query = AdminGetAllEmailsQuery::default();
-    let (_, users) = api
+    let users = api
         .admin_get_all_emails(query)
         .await
         .expect("failed to search emails");
