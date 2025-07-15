@@ -25,18 +25,10 @@ async fn myself() {
 async fn follow() {
     let api = common::login();
 
-    let query = UserListFollowingQuery::default();
-    let (_, following) = api
-        .user_list_following("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, following) = api.user_list_following("TestingAdmin").await.unwrap();
     assert!(following.is_empty(), "following list not empty");
 
-    let query = UserListFollowersQuery::default();
-    let (_, followers) = api
-        .user_list_followers("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, followers) = api.user_list_followers("TestingAdmin").await.unwrap();
     assert!(followers.is_empty(), "follower list not empty");
 
     let option = CreateUserOption {
@@ -61,18 +53,10 @@ async fn follow() {
         .unwrap();
     api.user_current_put_follow("Follower").await.unwrap();
 
-    let query = UserListFollowingQuery::default();
-    let (_, following) = api
-        .user_list_following("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, following) = api.user_list_following("TestingAdmin").await.unwrap();
     assert!(!following.is_empty(), "following list empty");
 
-    let query = UserListFollowersQuery::default();
-    let (_, followers) = api
-        .user_list_followers("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, followers) = api.user_list_followers("TestingAdmin").await.unwrap();
     assert!(!followers.is_empty(), "follower list empty");
 }
 
@@ -196,9 +180,8 @@ async fn oauth2_login() {
 async fn user_vars() {
     let api = common::login();
 
-    let query = GetUserVariablesListQuery::default();
     let (_, var_list) = api
-        .get_user_variables_list(query)
+        .get_user_variables_list()
         .await
         .expect("failed to list user vars");
     assert!(var_list.is_empty());

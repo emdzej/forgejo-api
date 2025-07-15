@@ -3172,6 +3172,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for AccessTokenListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for AccessTokenListHeaders {}
+impl crate::CountHeader for AccessTokenListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct ActivityFeedsListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3189,6 +3196,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for ActivityFeedsListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for ActivityFeedsListHeaders {}
+impl crate::CountHeader for ActivityFeedsListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3212,6 +3226,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for BlockedUserListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for BlockedUserListHeaders {}
+impl crate::CountHeader for BlockedUserListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct BranchListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3229,6 +3250,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for BranchListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for BranchListHeaders {}
+impl crate::CountHeader for BranchListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3264,6 +3292,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for ChangedFileListHeaders {}
+impl crate::CountHeader for ChangedFileListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct CommentListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3281,6 +3316,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommentListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for CommentListHeaders {}
+impl crate::CountHeader for CommentListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3316,6 +3358,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for CommitListHeaders {}
+impl crate::CountHeader for CommitListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct CommitStatusListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3333,6 +3382,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for CommitStatusListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for CommitStatusListHeaders {}
+impl crate::CountHeader for CommitStatusListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3356,6 +3412,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for CronListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for CronListHeaders {}
+impl crate::CountHeader for CronListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct DeployKeyListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3373,6 +3436,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for DeployKeyListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for DeployKeyListHeaders {}
+impl crate::CountHeader for DeployKeyListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3396,6 +3466,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for GpgKeyListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for GpgKeyListHeaders {}
+impl crate::CountHeader for GpgKeyListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct GitHookListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3413,6 +3490,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for GitHookListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for GitHookListHeaders {}
+impl crate::CountHeader for GitHookListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3436,6 +3520,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for HookListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for HookListHeaders {}
+impl crate::CountHeader for HookListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct IssueListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3453,6 +3544,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for IssueListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for IssueListHeaders {}
+impl crate::CountHeader for IssueListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3476,6 +3574,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for LabelListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for LabelListHeaders {}
+impl crate::CountHeader for LabelListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct MilestoneListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3493,6 +3598,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for MilestoneListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for MilestoneListHeaders {}
+impl crate::CountHeader for MilestoneListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3516,6 +3628,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for NotificationThreadListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for NotificationThreadListHeaders {}
+impl crate::CountHeader for NotificationThreadListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct OAuth2ApplicationListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3533,6 +3652,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for OAuth2ApplicationListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for OAuth2ApplicationListHeaders {}
+impl crate::CountHeader for OAuth2ApplicationListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3556,6 +3682,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for OrganizationListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for OrganizationListHeaders {}
+impl crate::CountHeader for OrganizationListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct PackageFileListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3573,6 +3706,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for PackageFileListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for PackageFileListHeaders {}
+impl crate::CountHeader for PackageFileListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3596,6 +3736,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for PackageListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for PackageListHeaders {}
+impl crate::CountHeader for PackageListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct PublicKeyListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3613,6 +3760,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for PublicKeyListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for PublicKeyListHeaders {}
+impl crate::CountHeader for PublicKeyListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3636,6 +3790,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for PullRequestListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for PullRequestListHeaders {}
+impl crate::CountHeader for PullRequestListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct PullReviewListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3653,6 +3814,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for PullReviewListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for PullReviewListHeaders {}
+impl crate::CountHeader for PullReviewListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3676,6 +3844,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for PushMirrorListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for PushMirrorListHeaders {}
+impl crate::CountHeader for PushMirrorListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct QuotaGroupListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3693,6 +3868,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaGroupListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for QuotaGroupListHeaders {}
+impl crate::CountHeader for QuotaGroupListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3716,6 +3898,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaRuleInfoListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for QuotaRuleInfoListHeaders {}
+impl crate::CountHeader for QuotaRuleInfoListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct QuotaUsedArtifactListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3733,6 +3922,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaUsedArtifactListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for QuotaUsedArtifactListHeaders {}
+impl crate::CountHeader for QuotaUsedArtifactListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3756,6 +3952,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaUsedAttachmentListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for QuotaUsedAttachmentListHeaders {}
+impl crate::CountHeader for QuotaUsedAttachmentListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct QuotaUsedPackageListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3773,6 +3976,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaUsedPackageListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for QuotaUsedPackageListHeaders {}
+impl crate::CountHeader for QuotaUsedPackageListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3796,6 +4006,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for ReactionListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for ReactionListHeaders {}
+impl crate::CountHeader for ReactionListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct RegistrationTokenHeaders {
     pub token: Option<String>,
 }
@@ -3808,7 +4025,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for RegistrationTokenHeaders {
             .get("token")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
+                Ok::<_, StructureError>(s.to_string())
             })
             .transpose()?;
         Ok(Self { token })
@@ -3835,6 +4052,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for ReleaseListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for ReleaseListHeaders {}
+impl crate::CountHeader for ReleaseListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct RepositoryListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3852,6 +4076,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for RepositoryListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for RepositoryListHeaders {}
+impl crate::CountHeader for RepositoryListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3875,6 +4106,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for SecretListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for SecretListHeaders {}
+impl crate::CountHeader for SecretListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct StopWatchListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3892,6 +4130,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for StopWatchListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for StopWatchListHeaders {}
+impl crate::CountHeader for StopWatchListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3915,6 +4160,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for TagListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for TagListHeaders {}
+impl crate::CountHeader for TagListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct TeamListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3932,6 +4184,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for TeamListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for TeamListHeaders {}
+impl crate::CountHeader for TeamListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3955,6 +4214,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for TimelineListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for TimelineListHeaders {}
+impl crate::CountHeader for TimelineListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct TrackedTimeListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -3972,6 +4238,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for TrackedTimeListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for TrackedTimeListHeaders {}
+impl crate::CountHeader for TrackedTimeListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -3995,6 +4268,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for UserListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for UserListHeaders {}
+impl crate::CountHeader for UserListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct VariableListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -4012,6 +4292,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for VariableListHeaders {
             })
             .transpose()?;
         Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for VariableListHeaders {}
+impl crate::CountHeader for VariableListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
     }
 }
 
@@ -4035,6 +4322,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for WikiCommitListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for WikiCommitListHeaders {}
+impl crate::CountHeader for WikiCommitListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct WikiPageListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -4055,6 +4349,13 @@ impl TryFrom<&reqwest::header::HeaderMap> for WikiPageListHeaders {
     }
 }
 
+impl crate::sealed::Sealed for WikiPageListHeaders {}
+impl crate::CountHeader for WikiPageListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct QuotaExceededHeaders {
     pub message: Option<String>,
     pub user_id: Option<i64>,
@@ -4069,7 +4370,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaExceededHeaders {
             .get("message")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
+                Ok::<_, StructureError>(s.to_string())
             })
             .transpose()?;
         let user_id = map
@@ -4084,7 +4385,7 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaExceededHeaders {
             .get("username")
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok(s.to_string())
+                Ok::<_, StructureError>(s.to_string())
             })
             .transpose()?;
         Ok(Self {
@@ -4096,138 +4397,36 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaExceededHeaders {
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct AdminCronListQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for AdminCronListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct AdminGetAllEmailsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for AdminGetAllEmailsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminSearchEmailsQuery {
     /// keyword
     pub q: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for AdminSearchEmailsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+impl AdminSearchEmailsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct AdminListHooksQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for AdminListHooksQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct AdminGetAllOrgsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for AdminGetAllOrgsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminUnadoptedListQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
     /// pattern of repositories to search for
     pub pattern: Option<String>,
 }
 
-impl std::fmt::Display for AdminUnadoptedListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-        if let Some(pattern) = &self.pattern {
-            write!(f, "pattern={pattern}&")?;
+impl AdminUnadoptedListQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(pattern) = self.pattern {
+            list.push(("pattern", pattern));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -4239,31 +4438,22 @@ pub struct AdminSearchUsersQuery {
     pub login_name: Option<String>,
     /// sort order of results
     pub sort: Option<AdminSearchUsersQuerySort>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for AdminSearchUsersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(source_id) = &self.source_id {
-            write!(f, "source_id={source_id}&")?;
+impl AdminSearchUsersQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(source_id) = self.source_id {
+            list.push(("source_id", source_id.to_string()));
         }
-        if let Some(login_name) = &self.login_name {
-            write!(f, "login_name={login_name}&")?;
+        if let Some(login_name) = self.login_name {
+            list.push(("login_name", login_name));
         }
-        if let Some(sort) = &self.sort {
-            write!(f, "sort={}&", sort.as_str())?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -4301,13 +4491,14 @@ pub struct AdminDeleteUserQuery {
     pub purge: Option<bool>,
 }
 
-impl std::fmt::Display for AdminDeleteUserQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(purge) = &self.purge {
-            write!(f, "purge={purge}&")?;
+impl AdminDeleteUserQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(purge) = self.purge {
+            list.push(("purge", purge.to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -4323,61 +4514,46 @@ pub struct NotifyGetListQuery {
     pub since: Option<time::OffsetDateTime>,
     /// Only show notifications updated before the given time. This is a timestamp in RFC 3339 format
     pub before: Option<time::OffsetDateTime>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for NotifyGetListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(all) = &self.all {
-            write!(f, "all={all}&")?;
+impl NotifyGetListQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(all) = self.all {
+            list.push(("all", all.to_string()));
         }
-        if let Some(status_types) = &self.status_types {
+        if let Some(status_types) = self.status_types {
             if !status_types.is_empty() {
                 for item in status_types {
-                    write!(f, "status-types=")?;
-                    write!(f, "{item}")?;
-                    write!(f, "&")?;
+                    list.push(("status-types", item.to_string()));
                 }
             }
         }
-        if let Some(subject_type) = &self.subject_type {
+        if let Some(subject_type) = self.subject_type {
             if !subject_type.is_empty() {
                 for item in subject_type {
-                    write!(f, "subject-type=")?;
-                    write!(f, "{}", item.as_str())?;
-                    write!(f, "&")?;
+                    list.push(("subject-type", item.as_str().to_string()));
                 }
             }
         }
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -4415,34 +4591,32 @@ pub struct NotifyReadListQuery {
     pub to_status: Option<String>,
 }
 
-impl std::fmt::Display for NotifyReadListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(last_read_at) = &self.last_read_at {
-            write!(
-                f,
-                "last_read_at={field_name}&",
-                field_name = last_read_at
+impl NotifyReadListQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(last_read_at) = self.last_read_at {
+            list.push((
+                "last_read_at",
+                last_read_at
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(all) = &self.all {
-            write!(f, "all={all}&")?;
+        if let Some(all) = self.all {
+            list.push(("all", all));
         }
-        if let Some(status_types) = &self.status_types {
+        if let Some(status_types) = self.status_types {
             if !status_types.is_empty() {
                 for item in status_types {
-                    write!(f, "status-types=")?;
-                    write!(f, "{item}")?;
-                    write!(f, "&")?;
+                    list.push(("status-types", item.to_string()));
                 }
             }
         }
-        if let Some(to_status) = &self.to_status {
-            write!(f, "to-status={to_status}&")?;
+        if let Some(to_status) = self.to_status {
+            list.push(("to-status", to_status));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -4452,76 +4626,14 @@ pub struct NotifyReadThreadQuery {
     pub to_status: Option<String>,
 }
 
-impl std::fmt::Display for NotifyReadThreadQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(to_status) = &self.to_status {
-            write!(f, "to-status={to_status}&")?;
+impl NotifyReadThreadQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(to_status) = self.to_status {
+            list.push(("to-status", to_status));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgGetAllQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgGetAllQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListActionsSecretsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListActionsSecretsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct GetOrgVariablesListQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for GetOrgVariablesListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -4529,241 +4641,20 @@ impl std::fmt::Display for GetOrgVariablesListQuery {
 pub struct OrgListActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for OrgListActivityFeedsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(date) = &self.date {
-            write!(
-                f,
-                "date={field_name}&",
-                field_name = date
-                    .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+impl OrgListActivityFeedsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(date) = self.date {
+            list.push((
+                "date",
+                date.format(&time::format_description::well_known::Rfc3339)
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListHooksQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListHooksQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListLabelsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListLabelsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListBlockedUsersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListBlockedUsersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListMembersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListMembersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListPublicMembersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListPublicMembersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListQuotaArtifactsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListQuotaArtifactsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListQuotaAttachmentsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListQuotaAttachmentsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListQuotaPackagesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListQuotaPackagesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListReposQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListReposQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListTeamsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListTeamsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -4773,28 +4664,19 @@ pub struct TeamSearchQuery {
     pub q: Option<String>,
     /// include search within team description (defaults to true)
     pub include_desc: Option<bool>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for TeamSearchQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
+impl TeamSearchQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
-        if let Some(include_desc) = &self.include_desc {
-            write!(f, "include_desc={include_desc}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(include_desc) = self.include_desc {
+            list.push(("include_desc", include_desc.to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -4805,32 +4687,23 @@ pub struct TeamSearchResponse {
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct ListPackagesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
     /// package type filter
     pub r#type: Option<ListPackagesQueryType>,
     /// name filter
     pub q: Option<String>,
 }
 
-impl std::fmt::Display for ListPackagesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
+impl ListPackagesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(r#type) = self.r#type {
+            list.push(("type", r#type.as_str().to_string()));
         }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-        if let Some(r#type) = &self.r#type {
-            write!(f, "type={}&", r#type.as_str())?;
-        }
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -4939,79 +4812,68 @@ pub struct IssueSearchIssuesQuery {
     pub owner: Option<String>,
     /// Filter by team (requires organization owner parameter)
     pub team: Option<String>,
-    /// Page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// Number of items per page
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for IssueSearchIssuesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(state) = &self.state {
-            write!(f, "state={}&", state.as_str())?;
+impl IssueSearchIssuesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(state) = self.state {
+            list.push(("state", state.as_str().to_string()));
         }
-        if let Some(labels) = &self.labels {
-            write!(f, "labels={labels}&")?;
+        if let Some(labels) = self.labels {
+            list.push(("labels", labels));
         }
-        if let Some(milestones) = &self.milestones {
-            write!(f, "milestones={milestones}&")?;
+        if let Some(milestones) = self.milestones {
+            list.push(("milestones", milestones));
         }
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
-        if let Some(priority_repo_id) = &self.priority_repo_id {
-            write!(f, "priority_repo_id={priority_repo_id}&")?;
+        if let Some(priority_repo_id) = self.priority_repo_id {
+            list.push(("priority_repo_id", priority_repo_id.to_string()));
         }
-        if let Some(r#type) = &self.r#type {
-            write!(f, "type={}&", r#type.as_str())?;
+        if let Some(r#type) = self.r#type {
+            list.push(("type", r#type.as_str().to_string()));
         }
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(assigned) = &self.assigned {
-            write!(f, "assigned={assigned}&")?;
+        if let Some(assigned) = self.assigned {
+            list.push(("assigned", assigned.to_string()));
         }
-        if let Some(created) = &self.created {
-            write!(f, "created={created}&")?;
+        if let Some(created) = self.created {
+            list.push(("created", created.to_string()));
         }
-        if let Some(mentioned) = &self.mentioned {
-            write!(f, "mentioned={mentioned}&")?;
+        if let Some(mentioned) = self.mentioned {
+            list.push(("mentioned", mentioned.to_string()));
         }
-        if let Some(review_requested) = &self.review_requested {
-            write!(f, "review_requested={review_requested}&")?;
+        if let Some(review_requested) = self.review_requested {
+            list.push(("review_requested", review_requested.to_string()));
         }
-        if let Some(reviewed) = &self.reviewed {
-            write!(f, "reviewed={reviewed}&")?;
+        if let Some(reviewed) = self.reviewed {
+            list.push(("reviewed", reviewed.to_string()));
         }
-        if let Some(owner) = &self.owner {
-            write!(f, "owner={owner}&")?;
+        if let Some(owner) = self.owner {
+            list.push(("owner", owner));
         }
-        if let Some(team) = &self.team {
-            write!(f, "team={team}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(team) = self.team {
+            list.push(("team", team));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5083,130 +4945,58 @@ pub struct RepoSearchQuery {
     pub sort: Option<String>,
     /// sort order, either "asc" (ascending) or "desc" (descending). Default is "asc", ignored if "sort" is not specified.
     pub order: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoSearchQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
+impl RepoSearchQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
-        if let Some(topic) = &self.topic {
-            write!(f, "topic={topic}&")?;
+        if let Some(topic) = self.topic {
+            list.push(("topic", topic.to_string()));
         }
-        if let Some(include_desc) = &self.include_desc {
-            write!(f, "includeDesc={include_desc}&")?;
+        if let Some(include_desc) = self.include_desc {
+            list.push(("includeDesc", include_desc.to_string()));
         }
-        if let Some(uid) = &self.uid {
-            write!(f, "uid={uid}&")?;
+        if let Some(uid) = self.uid {
+            list.push(("uid", uid.to_string()));
         }
-        if let Some(priority_owner_id) = &self.priority_owner_id {
-            write!(f, "priority_owner_id={priority_owner_id}&")?;
+        if let Some(priority_owner_id) = self.priority_owner_id {
+            list.push(("priority_owner_id", priority_owner_id.to_string()));
         }
-        if let Some(team_id) = &self.team_id {
-            write!(f, "team_id={team_id}&")?;
+        if let Some(team_id) = self.team_id {
+            list.push(("team_id", team_id.to_string()));
         }
-        if let Some(starred_by) = &self.starred_by {
-            write!(f, "starredBy={starred_by}&")?;
+        if let Some(starred_by) = self.starred_by {
+            list.push(("starredBy", starred_by.to_string()));
         }
-        if let Some(private) = &self.private {
-            write!(f, "private={private}&")?;
+        if let Some(private) = self.private {
+            list.push(("private", private.to_string()));
         }
-        if let Some(is_private) = &self.is_private {
-            write!(f, "is_private={is_private}&")?;
+        if let Some(is_private) = self.is_private {
+            list.push(("is_private", is_private.to_string()));
         }
-        if let Some(template) = &self.template {
-            write!(f, "template={template}&")?;
+        if let Some(template) = self.template {
+            list.push(("template", template.to_string()));
         }
-        if let Some(archived) = &self.archived {
-            write!(f, "archived={archived}&")?;
+        if let Some(archived) = self.archived {
+            list.push(("archived", archived.to_string()));
         }
-        if let Some(mode) = &self.mode {
-            write!(f, "mode={mode}&")?;
+        if let Some(mode) = self.mode {
+            list.push(("mode", mode));
         }
-        if let Some(exclusive) = &self.exclusive {
-            write!(f, "exclusive={exclusive}&")?;
+        if let Some(exclusive) = self.exclusive {
+            list.push(("exclusive", exclusive.to_string()));
         }
-        if let Some(sort) = &self.sort {
-            write!(f, "sort={sort}&")?;
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort));
         }
-        if let Some(order) = &self.order {
-            write!(f, "order={order}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(order) = self.order {
+            list.push(("order", order));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListActionsSecretsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListActionsSecretsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct ListActionTasksQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results, default maximum page size is 50
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for ListActionTasksQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct GetRepoVariablesListQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for GetRepoVariablesListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -5214,73 +5004,20 @@ impl std::fmt::Display for GetRepoVariablesListQuery {
 pub struct RepoListActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoListActivityFeedsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(date) = &self.date {
-            write!(
-                f,
-                "date={field_name}&",
-                field_name = date
-                    .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+impl RepoListActivityFeedsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(date) = self.date {
+            list.push((
+                "date",
+                date.format(&time::format_description::well_known::Rfc3339)
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListBranchesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListBranchesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListCollaboratorsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListCollaboratorsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -5296,63 +5033,33 @@ pub struct RepoGetAllCommitsQuery {
     pub verification: Option<bool>,
     /// include a list of affected files for every commit (disable for speedup, default 'true')
     pub files: Option<bool>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results (ignored if used with 'path')
-    pub limit: Option<u32>,
     /// commits that match the given specifier will not be listed.
     pub not: Option<String>,
 }
 
-impl std::fmt::Display for RepoGetAllCommitsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(sha) = &self.sha {
-            write!(f, "sha={sha}&")?;
+impl RepoGetAllCommitsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(sha) = self.sha {
+            list.push(("sha", sha));
         }
-        if let Some(path) = &self.path {
-            write!(f, "path={path}&")?;
+        if let Some(path) = self.path {
+            list.push(("path", path));
         }
-        if let Some(stat) = &self.stat {
-            write!(f, "stat={stat}&")?;
+        if let Some(stat) = self.stat {
+            list.push(("stat", stat.to_string()));
         }
-        if let Some(verification) = &self.verification {
-            write!(f, "verification={verification}&")?;
+        if let Some(verification) = self.verification {
+            list.push(("verification", verification.to_string()));
         }
-        if let Some(files) = &self.files {
-            write!(f, "files={files}&")?;
+        if let Some(files) = self.files {
+            list.push(("files", files.to_string()));
         }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-        if let Some(not) = &self.not {
-            write!(f, "not={not}&")?;
+        if let Some(not) = self.not {
+            list.push(("not", not));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoGetCombinedStatusByRefQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoGetCombinedStatusByRefQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -5362,28 +5069,19 @@ pub struct RepoListStatusesByRefQuery {
     pub sort: Option<RepoListStatusesByRefQuerySort>,
     /// type of state
     pub state: Option<RepoListStatusesByRefQueryState>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoListStatusesByRefQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(sort) = &self.sort {
-            write!(f, "sort={}&", sort.as_str())?;
+impl RepoListStatusesByRefQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
         }
-        if let Some(state) = &self.state {
-            write!(f, "state={}&", state.as_str())?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(state) = self.state {
+            list.push(("state", state.as_str().to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5444,13 +5142,14 @@ pub struct RepoGetContentsListQuery {
     pub r#ref: Option<String>,
 }
 
-impl std::fmt::Display for RepoGetContentsListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(r#ref) = &self.r#ref {
-            write!(f, "ref={ref}&")?;
+impl RepoGetContentsListQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(r#ref) = self.r#ref {
+            list.push(("ref", r#ref));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5460,13 +5159,14 @@ pub struct RepoGetContentsQuery {
     pub r#ref: Option<String>,
 }
 
-impl std::fmt::Display for RepoGetContentsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(r#ref) = &self.r#ref {
-            write!(f, "ref={ref}&")?;
+impl RepoGetContentsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(r#ref) = self.r#ref {
+            list.push(("ref", r#ref));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5476,34 +5176,14 @@ pub struct RepoGetEditorConfigQuery {
     pub r#ref: Option<String>,
 }
 
-impl std::fmt::Display for RepoGetEditorConfigQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(r#ref) = &self.r#ref {
-            write!(f, "ref={ref}&")?;
+impl RepoGetEditorConfigQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(r#ref) = self.r#ref {
+            list.push(("ref", r#ref));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct ListForksQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for ListForksQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -5517,19 +5197,20 @@ pub struct RepoGetSingleCommitQuery {
     pub files: Option<bool>,
 }
 
-impl std::fmt::Display for RepoGetSingleCommitQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(stat) = &self.stat {
-            write!(f, "stat={stat}&")?;
+impl RepoGetSingleCommitQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(stat) = self.stat {
+            list.push(("stat", stat.to_string()));
         }
-        if let Some(verification) = &self.verification {
-            write!(f, "verification={verification}&")?;
+        if let Some(verification) = self.verification {
+            list.push(("verification", verification.to_string()));
         }
-        if let Some(files) = &self.files {
-            write!(f, "files={files}&")?;
+        if let Some(files) = self.files {
+            list.push(("files", files.to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5541,16 +5222,17 @@ pub struct RepoGetNoteQuery {
     pub files: Option<bool>,
 }
 
-impl std::fmt::Display for RepoGetNoteQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(verification) = &self.verification {
-            write!(f, "verification={verification}&")?;
+impl RepoGetNoteQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(verification) = self.verification {
+            list.push(("verification", verification.to_string()));
         }
-        if let Some(files) = &self.files {
-            write!(f, "files={files}&")?;
+        if let Some(files) = self.files {
+            list.push(("files", files.to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5558,46 +5240,21 @@ impl std::fmt::Display for RepoGetNoteQuery {
 pub struct GetTreeQuery {
     /// show all directories and files
     pub recursive: Option<bool>,
-    /// page number; the 'truncated' field in the response will be true if there are still more items after this page, false if the last page
-    pub page: Option<u32>,
     /// number of items per page
     pub per_page: Option<u32>,
 }
 
-impl std::fmt::Display for GetTreeQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(recursive) = &self.recursive {
-            write!(f, "recursive={recursive}&")?;
+impl GetTreeQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(recursive) = self.recursive {
+            list.push(("recursive", recursive.to_string()));
         }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(per_page) = &self.per_page {
-            write!(f, "per_page={per_page}&")?;
+        if let Some(per_page) = self.per_page {
+            list.push(("per_page", per_page.to_string()));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListHooksQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListHooksQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -5607,13 +5264,14 @@ pub struct RepoTestHookQuery {
     pub r#ref: Option<String>,
 }
 
-impl std::fmt::Display for RepoTestHookQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(r#ref) = &self.r#ref {
-            write!(f, "ref={ref}&")?;
+impl RepoTestHookQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(r#ref) = self.r#ref {
+            list.push(("ref", r#ref));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5639,64 +5297,53 @@ pub struct IssueListIssuesQuery {
     pub assigned_by: Option<String>,
     /// Only show items in which the given user was mentioned
     pub mentioned_by: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for IssueListIssuesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(state) = &self.state {
-            write!(f, "state={}&", state.as_str())?;
+impl IssueListIssuesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(state) = self.state {
+            list.push(("state", state.as_str().to_string()));
         }
-        if let Some(labels) = &self.labels {
-            write!(f, "labels={labels}&")?;
+        if let Some(labels) = self.labels {
+            list.push(("labels", labels));
         }
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
-        if let Some(r#type) = &self.r#type {
-            write!(f, "type={}&", r#type.as_str())?;
+        if let Some(r#type) = self.r#type {
+            list.push(("type", r#type.as_str().to_string()));
         }
-        if let Some(milestones) = &self.milestones {
-            write!(f, "milestones={milestones}&")?;
+        if let Some(milestones) = self.milestones {
+            list.push(("milestones", milestones));
         }
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(created_by) = &self.created_by {
-            write!(f, "created_by={created_by}&")?;
+        if let Some(created_by) = self.created_by {
+            list.push(("created_by", created_by));
         }
-        if let Some(assigned_by) = &self.assigned_by {
-            write!(f, "assigned_by={assigned_by}&")?;
+        if let Some(assigned_by) = self.assigned_by {
+            list.push(("assigned_by", assigned_by));
         }
-        if let Some(mentioned_by) = &self.mentioned_by {
-            write!(f, "mentioned_by={mentioned_by}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(mentioned_by) = self.mentioned_by {
+            list.push(("mentioned_by", mentioned_by));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5742,40 +5389,29 @@ pub struct IssueGetRepoCommentsQuery {
     pub since: Option<time::OffsetDateTime>,
     /// if provided, only comments updated before the provided time are returned.
     pub before: Option<time::OffsetDateTime>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for IssueGetRepoCommentsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+impl IssueGetRepoCommentsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5787,22 +5423,22 @@ pub struct IssueCreateIssueCommentAttachmentQuery {
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
-impl std::fmt::Display for IssueCreateIssueCommentAttachmentQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(name) = &self.name {
-            write!(f, "name={name}&")?;
+impl IssueCreateIssueCommentAttachmentQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(name) = self.name {
+            list.push(("name", name));
         }
-        if let Some(updated_at) = &self.updated_at {
-            write!(
-                f,
-                "updated_at={field_name}&",
-                field_name = updated_at
+        if let Some(updated_at) = self.updated_at {
+            list.push((
+                "updated_at",
+                updated_at
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -5814,43 +5450,22 @@ pub struct IssueCreateIssueAttachmentQuery {
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
-impl std::fmt::Display for IssueCreateIssueAttachmentQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(name) = &self.name {
-            write!(f, "name={name}&")?;
+impl IssueCreateIssueAttachmentQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(name) = self.name {
+            list.push(("name", name));
         }
-        if let Some(updated_at) = &self.updated_at {
-            write!(
-                f,
-                "updated_at={field_name}&",
-                field_name = updated_at
+        if let Some(updated_at) = self.updated_at {
+            list.push((
+                "updated_at",
+                updated_at
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct IssueListBlocksQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for IssueListBlocksQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -5862,91 +5477,27 @@ pub struct IssueGetCommentsQuery {
     pub before: Option<time::OffsetDateTime>,
 }
 
-impl std::fmt::Display for IssueGetCommentsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+impl IssueGetCommentsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct IssueListIssueDependenciesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for IssueListIssueDependenciesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct IssueGetIssueReactionsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for IssueGetIssueReactionsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct IssueSubscriptionsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for IssueSubscriptionsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -5954,42 +5505,31 @@ impl std::fmt::Display for IssueSubscriptionsQuery {
 pub struct IssueGetCommentsAndTimelineQuery {
     /// if provided, only comments updated since the specified time are returned.
     pub since: Option<time::OffsetDateTime>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
     /// if provided, only comments updated before the provided time are returned.
     pub before: Option<time::OffsetDateTime>,
 }
 
-impl std::fmt::Display for IssueGetCommentsAndTimelineQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+impl IssueGetCommentsAndTimelineQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6001,43 +5541,32 @@ pub struct IssueTrackedTimesQuery {
     pub since: Option<time::OffsetDateTime>,
     /// Only show times updated before the given time. This is a timestamp in RFC 3339 format
     pub before: Option<time::OffsetDateTime>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for IssueTrackedTimesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(user) = &self.user {
-            write!(f, "user={user}&")?;
+impl IssueTrackedTimesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(user) = self.user {
+            list.push(("user", user));
         }
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6047,49 +5576,19 @@ pub struct RepoListKeysQuery {
     pub key_id: Option<u32>,
     /// fingerprint of the key
     pub fingerprint: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoListKeysQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(key_id) = &self.key_id {
-            write!(f, "key_id={key_id}&")?;
+impl RepoListKeysQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(key_id) = self.key_id {
+            list.push(("key_id", key_id.to_string()));
         }
-        if let Some(fingerprint) = &self.fingerprint {
-            write!(f, "fingerprint={fingerprint}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(fingerprint) = self.fingerprint {
+            list.push(("fingerprint", fingerprint));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct IssueListLabelsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for IssueListLabelsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -6099,13 +5598,14 @@ pub struct RepoGetRawFileOrLfsQuery {
     pub r#ref: Option<String>,
 }
 
-impl std::fmt::Display for RepoGetRawFileOrLfsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(r#ref) = &self.r#ref {
-            write!(f, "ref={ref}&")?;
+impl RepoGetRawFileOrLfsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(r#ref) = self.r#ref {
+            list.push(("ref", r#ref));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6115,28 +5615,19 @@ pub struct IssueGetMilestonesListQuery {
     pub state: Option<String>,
     /// filter by milestone name
     pub name: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for IssueGetMilestonesListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(state) = &self.state {
-            write!(f, "state={state}&")?;
+impl IssueGetMilestonesListQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(state) = self.state {
+            list.push(("state", state));
         }
-        if let Some(name) = &self.name {
-            write!(f, "name={name}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(name) = self.name {
+            list.push(("name", name));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6152,61 +5643,46 @@ pub struct NotifyGetRepoListQuery {
     pub since: Option<time::OffsetDateTime>,
     /// Only show notifications updated before the given time. This is a timestamp in RFC 3339 format
     pub before: Option<time::OffsetDateTime>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for NotifyGetRepoListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(all) = &self.all {
-            write!(f, "all={all}&")?;
+impl NotifyGetRepoListQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(all) = self.all {
+            list.push(("all", all.to_string()));
         }
-        if let Some(status_types) = &self.status_types {
+        if let Some(status_types) = self.status_types {
             if !status_types.is_empty() {
                 for item in status_types {
-                    write!(f, "status-types=")?;
-                    write!(f, "{item}")?;
-                    write!(f, "&")?;
+                    list.push(("status-types", item.to_string()));
                 }
             }
         }
-        if let Some(subject_type) = &self.subject_type {
+        if let Some(subject_type) = self.subject_type {
             if !subject_type.is_empty() {
                 for item in subject_type {
-                    write!(f, "subject-type=")?;
-                    write!(f, "{}", item.as_str())?;
-                    write!(f, "&")?;
+                    list.push(("subject-type", item.as_str().to_string()));
                 }
             }
         }
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6244,34 +5720,32 @@ pub struct NotifyReadRepoListQuery {
     pub last_read_at: Option<time::OffsetDateTime>,
 }
 
-impl std::fmt::Display for NotifyReadRepoListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(all) = &self.all {
-            write!(f, "all={all}&")?;
+impl NotifyReadRepoListQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(all) = self.all {
+            list.push(("all", all));
         }
-        if let Some(status_types) = &self.status_types {
+        if let Some(status_types) = self.status_types {
             if !status_types.is_empty() {
                 for item in status_types {
-                    write!(f, "status-types=")?;
-                    write!(f, "{item}")?;
-                    write!(f, "&")?;
+                    list.push(("status-types", item.to_string()));
                 }
             }
         }
-        if let Some(to_status) = &self.to_status {
-            write!(f, "to-status={to_status}&")?;
+        if let Some(to_status) = self.to_status {
+            list.push(("to-status", to_status));
         }
-        if let Some(last_read_at) = &self.last_read_at {
-            write!(
-                f,
-                "last_read_at={field_name}&",
-                field_name = last_read_at
+        if let Some(last_read_at) = self.last_read_at {
+            list.push((
+                "last_read_at",
+                last_read_at
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6287,43 +5761,32 @@ pub struct RepoListPullRequestsQuery {
     pub labels: Option<Vec<u64>>,
     /// Filter by pull request author
     pub poster: Option<String>,
-    /// Page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// Page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoListPullRequestsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(state) = &self.state {
-            write!(f, "state={}&", state.as_str())?;
+impl RepoListPullRequestsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(state) = self.state {
+            list.push(("state", state.as_str().to_string()));
         }
-        if let Some(sort) = &self.sort {
-            write!(f, "sort={}&", sort.as_str())?;
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
         }
-        if let Some(milestone) = &self.milestone {
-            write!(f, "milestone={milestone}&")?;
+        if let Some(milestone) = self.milestone {
+            list.push(("milestone", milestone.to_string()));
         }
-        if let Some(labels) = &self.labels {
+        if let Some(labels) = self.labels {
             if !labels.is_empty() {
                 for item in labels {
-                    write!(f, "labels=")?;
-                    write!(f, "{item}")?;
-                    write!(f, "&")?;
+                    list.push(("labels", format!("{item}")));
                 }
             }
         }
-        if let Some(poster) = &self.poster {
-            write!(f, "poster={poster}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(poster) = self.poster {
+            list.push(("poster", poster));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6381,44 +5844,36 @@ pub struct RepoDownloadPullDiffOrPatchQuery {
     pub binary: Option<bool>,
 }
 
-impl std::fmt::Display for RepoDownloadPullDiffOrPatchQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(binary) = &self.binary {
-            write!(f, "binary={binary}&")?;
+impl RepoDownloadPullDiffOrPatchQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(binary) = self.binary {
+            list.push(("binary", binary.to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetPullRequestCommitsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
     /// include verification for every commit (disable for speedup, default 'true')
     pub verification: Option<bool>,
     /// include a list of affected files for every commit (disable for speedup, default 'true')
     pub files: Option<bool>,
 }
 
-impl std::fmt::Display for RepoGetPullRequestCommitsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
+impl RepoGetPullRequestCommitsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(verification) = self.verification {
+            list.push(("verification", verification.to_string()));
         }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-        if let Some(verification) = &self.verification {
-            write!(f, "verification={verification}&")?;
-        }
-        if let Some(files) = &self.files {
-            write!(f, "files={files}&")?;
+        if let Some(files) = self.files {
+            list.push(("files", files.to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6428,28 +5883,19 @@ pub struct RepoGetPullRequestFilesQuery {
     pub skip_to: Option<String>,
     /// whitespace behavior
     pub whitespace: Option<RepoGetPullRequestFilesQueryWhitespace>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoGetPullRequestFilesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(skip_to) = &self.skip_to {
-            write!(f, "skip-to={skip_to}&")?;
+impl RepoGetPullRequestFilesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(skip_to) = self.skip_to {
+            list.push(("skip-to", skip_to));
         }
-        if let Some(whitespace) = &self.whitespace {
-            write!(f, "whitespace={}&", whitespace.as_str())?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(whitespace) = self.whitespace {
+            list.push(("whitespace", whitespace.as_str().to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6476,39 +5922,19 @@ impl RepoGetPullRequestFilesQueryWhitespace {
     }
 }
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListPullReviewsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListPullReviewsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoUpdatePullRequestQuery {
     /// how to update pull request
     pub style: Option<RepoUpdatePullRequestQueryStyle>,
 }
 
-impl std::fmt::Display for RepoUpdatePullRequestQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(style) = &self.style {
-            write!(f, "style={}&", style.as_str())?;
+impl RepoUpdatePullRequestQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(style) = self.style {
+            list.push(("style", style.as_str().to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6529,39 +5955,19 @@ impl RepoUpdatePullRequestQueryStyle {
     }
 }
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListPushMirrorsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListPushMirrorsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetRawFileQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
     pub r#ref: Option<String>,
 }
 
-impl std::fmt::Display for RepoGetRawFileQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(r#ref) = &self.r#ref {
-            write!(f, "ref={ref}&")?;
+impl RepoGetRawFileQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(r#ref) = self.r#ref {
+            list.push(("ref", r#ref));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6573,31 +5979,22 @@ pub struct RepoListReleasesQuery {
     pub pre_release: Option<bool>,
     /// Search string
     pub q: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoListReleasesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(draft) = &self.draft {
-            write!(f, "draft={draft}&")?;
+impl RepoListReleasesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(draft) = self.draft {
+            list.push(("draft", draft.to_string()));
         }
-        if let Some(pre_release) = &self.pre_release {
-            write!(f, "pre-release={pre_release}&")?;
+        if let Some(pre_release) = self.pre_release {
+            list.push(("pre-release", pre_release.to_string()));
         }
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6607,34 +6004,14 @@ pub struct RepoCreateReleaseAttachmentQuery {
     pub name: Option<String>,
 }
 
-impl std::fmt::Display for RepoCreateReleaseAttachmentQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(name) = &self.name {
-            write!(f, "name={name}&")?;
+impl RepoCreateReleaseAttachmentQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(name) = self.name {
+            list.push(("name", name));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListStargazersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListStargazersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -6644,28 +6021,19 @@ pub struct RepoListStatusesQuery {
     pub sort: Option<RepoListStatusesQuerySort>,
     /// type of state
     pub state: Option<RepoListStatusesQueryState>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoListStatusesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(sort) = &self.sort {
-            write!(f, "sort={}&", sort.as_str())?;
+impl RepoListStatusesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
         }
-        if let Some(state) = &self.state {
-            write!(f, "state={}&", state.as_str())?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(state) = self.state {
+            list.push(("state", state.as_str().to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -6721,48 +6089,6 @@ impl RepoListStatusesQueryState {
     }
 }
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListSubscribersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListSubscribersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListTagsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results, default maximum page size is 50
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListTagsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoTrackedTimesQuery {
     /// optional filter by user (available for issue managers)
     pub user: Option<String>,
@@ -6770,101 +6096,32 @@ pub struct RepoTrackedTimesQuery {
     pub since: Option<time::OffsetDateTime>,
     /// Only show times updated before the given time. This is a timestamp in RFC 3339 format
     pub before: Option<time::OffsetDateTime>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for RepoTrackedTimesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(user) = &self.user {
-            write!(f, "user={user}&")?;
+impl RepoTrackedTimesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(user) = self.user {
+            list.push(("user", user));
         }
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoListTopicsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoListTopicsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoGetWikiPagesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for RepoGetWikiPagesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct RepoGetWikiPageRevisionsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-}
-
-impl std::fmt::Display for RepoGetWikiPageRevisionsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -6872,73 +6129,20 @@ impl std::fmt::Display for RepoGetWikiPageRevisionsQuery {
 pub struct OrgListTeamActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for OrgListTeamActivityFeedsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(date) = &self.date {
-            write!(
-                f,
-                "date={field_name}&",
-                field_name = date
-                    .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+impl OrgListTeamActivityFeedsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(date) = self.date {
+            list.push((
+                "date",
+                date.format(&time::format_description::well_known::Rfc3339)
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListTeamMembersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListTeamMembersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListTeamReposQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListTeamReposQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -6946,150 +6150,15 @@ impl std::fmt::Display for OrgListTeamReposQuery {
 pub struct TopicSearchQuery {
     /// keywords to search
     pub q: String,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for TopicSearchQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let q = &self.q;
-        write!(f, "q={q}&")?;
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
+impl TopicSearchQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        let q = self.q;
+        list.push(("q", q));
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct GetUserVariablesListQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for GetUserVariablesListQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserGetOAuth2ApplicationsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserGetOAuth2ApplicationsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserCurrentListFollowersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserCurrentListFollowersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserCurrentListFollowingQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserCurrentListFollowingQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserCurrentListGpgKeysQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserCurrentListGpgKeysQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListHooksQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListHooksQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -7097,283 +6166,65 @@ impl std::fmt::Display for UserListHooksQuery {
 pub struct UserCurrentListKeysQuery {
     /// fingerprint of the key
     pub fingerprint: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for UserCurrentListKeysQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(fingerprint) = &self.fingerprint {
-            write!(f, "fingerprint={fingerprint}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+impl UserCurrentListKeysQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(fingerprint) = self.fingerprint {
+            list.push(("fingerprint", fingerprint));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListBlockedUsersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListBlockedUsersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListCurrentUserOrgsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListCurrentUserOrgsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListQuotaArtifactsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListQuotaArtifactsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListQuotaAttachmentsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListQuotaAttachmentsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListQuotaPackagesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListQuotaPackagesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListReposQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
     /// order the repositories by name (default), id, or size
     pub order_by: Option<String>,
 }
 
-impl std::fmt::Display for UserCurrentListReposQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-        if let Some(order_by) = &self.order_by {
-            write!(f, "order_by={order_by}&")?;
+impl UserCurrentListReposQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(order_by) = self.order_by {
+            list.push(("order_by", order_by));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserCurrentListStarredQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserCurrentListStarredQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserGetStopWatchesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserGetStopWatchesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserCurrentListSubscriptionsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserCurrentListSubscriptionsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListTeamsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListTeamsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentTrackedTimesQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
     /// Only show times updated after the given time. This is a timestamp in RFC 3339 format
     pub since: Option<time::OffsetDateTime>,
     /// Only show times updated before the given time. This is a timestamp in RFC 3339 format
     pub before: Option<time::OffsetDateTime>,
 }
 
-impl std::fmt::Display for UserCurrentTrackedTimesQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-        if let Some(since) = &self.since {
-            write!(
-                f,
-                "since={field_name}&",
-                field_name = since
+impl UserCurrentTrackedTimesQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(since) = self.since {
+            list.push((
+                "since",
+                since
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
-        if let Some(before) = &self.before {
-            write!(
-                f,
-                "before={field_name}&",
-                field_name = before
+        if let Some(before) = self.before {
+            list.push((
+                "before",
+                before
                     .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
+        list
     }
 }
 
@@ -7383,28 +6234,19 @@ pub struct UserSearchQuery {
     pub q: Option<String>,
     /// ID of the user to search for
     pub uid: Option<u64>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for UserSearchQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(q) = &self.q {
-            write!(f, "q={q}&")?;
+impl UserSearchQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(q) = self.q {
+            list.push(("q", q));
         }
-        if let Some(uid) = &self.uid {
-            write!(f, "uid={uid}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(uid) = self.uid {
+            list.push(("uid", uid.to_string()));
         }
 
-        Ok(())
+        list
     }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -7419,97 +6261,23 @@ pub struct UserListActivityFeedsQuery {
     pub only_performed_by: Option<bool>,
     /// the date of the activities to be found
     pub date: Option<time::Date>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for UserListActivityFeedsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(only_performed_by) = &self.only_performed_by {
-            write!(f, "only-performed-by={only_performed_by}&")?;
+impl UserListActivityFeedsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(only_performed_by) = self.only_performed_by {
+            list.push(("only-performed-by", only_performed_by.to_string()));
         }
-        if let Some(date) = &self.date {
-            write!(
-                f,
-                "date={field_name}&",
-                field_name = date
-                    .format(&time::format_description::well_known::Rfc3339)
-                    .unwrap()
-            )?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+        if let Some(date) = self.date {
+            list.push((
+                "date",
+                date.format(&time::format_description::well_known::Rfc3339)
+                    .unwrap(),
+            ));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListFollowersQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListFollowersQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListFollowingQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListFollowingQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListGpgKeysQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListGpgKeysQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }
 
@@ -7517,129 +6285,15 @@ impl std::fmt::Display for UserListGpgKeysQuery {
 pub struct UserListKeysQuery {
     /// fingerprint of the key
     pub fingerprint: Option<String>,
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
 }
 
-impl std::fmt::Display for UserListKeysQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(fingerprint) = &self.fingerprint {
-            write!(f, "fingerprint={fingerprint}&")?;
-        }
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
+impl UserListKeysQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(fingerprint) = self.fingerprint {
+            list.push(("fingerprint", fingerprint));
         }
 
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct OrgListUserOrgsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for OrgListUserOrgsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListReposQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListReposQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListStarredQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListStarredQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserListSubscriptionsQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserListSubscriptionsQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct UserGetTokensQuery {
-    /// page number of results to return (1-based)
-    pub page: Option<u32>,
-    /// page size of results
-    pub limit: Option<u32>,
-}
-
-impl std::fmt::Display for UserGetTokensQuery {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(page) = &self.page {
-            write!(f, "page={page}&")?;
-        }
-        if let Some(limit) = &self.limit {
-            write!(f, "limit={limit}&")?;
-        }
-
-        Ok(())
+        list
     }
 }

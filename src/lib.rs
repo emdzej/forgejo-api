@@ -1,3 +1,7 @@
+use std::{
+    borrow::Cow, collections::VecDeque, future::Future, marker::PhantomData, pin::Pin, task::Poll,
+};
+
 use reqwest::{Client, Request, StatusCode};
 use serde::{Deserialize, Deserializer};
 use soft_assert::*;
@@ -33,17 +37,25 @@ pub enum ForgejoError {
 
 #[derive(thiserror::Error, Debug)]
 pub enum StructureError {
-    #[error("{contents}")]
+    #[error("{e}")]
     Serde {
         e: serde_json::Error,
-        contents: String,
+        contents: bytes::Bytes,
     },
+    #[error(transparent)]
+    Utf8(#[from] std::str::Utf8Error),
     #[error("failed to find header `{0}`")]
     HeaderMissing(&'static str),
     #[error("header was not ascii")]
     HeaderNotAscii,
     #[error("failed to parse header")]
     HeaderParseFailed,
+}
+
+impl From<std::str::Utf8Error> for ForgejoError {
+    fn from(error: std::str::Utf8Error) -> Self {
+        Self::BadStructure(StructureError::Utf8(error))
+    }
 }
 
 /// Method of authentication to connect to the Forgejo host with.
@@ -433,5 +445,244 @@ impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {
                 structs::MergePullRequestOptionDo::FastForwardOnly
             }
         }
+    }
+}
+
+mod sealed {
+    pub trait Sealed {}
+}
+
+pub trait Endpoint: sealed::Sealed {
+    type Response;
+    fn make_request(self) -> ApiRequest;
+    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError>;
+}
+
+#[derive(Clone)]
+pub struct ApiRequest {
+    method: reqwest::Method,
+    path: Cow<'static, str>,
+    query: Option<Vec<(&'static str, String)>>,
+    body: RequestBody,
+    page: Option<u32>,
+    limit: Option<u32>,
+}
+
+impl ApiRequest {
+    pub(crate) fn wrap<E: Endpoint>(self, client: &Forgejo) -> WrappedRequest<'_, E> {
+        WrappedRequest {
+            inner: TypedRequest {
+                inner: self,
+                __endpoint: PhantomData,
+            },
+            client,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub enum RequestBody {
+    Json(bytes::Bytes),
+    Form(Vec<(&'static str, Vec<u8>)>),
+    None,
+}
+
+pub struct TypedRequest<E> {
+    inner: ApiRequest,
+    __endpoint: PhantomData<*const E>,
+}
+
+impl<E: Endpoint> TypedRequest<E> {
+    async fn send(&self, client: &Forgejo) -> Result<E::Response, ForgejoError> {
+        E::handle_response(client.send_request(&self.inner).await?)
+    }
+}
+
+pub struct ApiResponse {
+    status_code: StatusCode,
+    headers: reqwest::header::HeaderMap,
+    body: bytes::Bytes,
+}
+
+pub struct WrappedRequest<'a, E> {
+    inner: TypedRequest<E>,
+    client: &'a Forgejo,
+}
+
+impl<'a, E: Endpoint<Response = R>, R> WrappedRequest<'a, E> {
+    pub async fn send(self) -> Result<R, ForgejoError> {
+        self.inner.send(&self.client).await
+    }
+
+    pub fn page(mut self, page: u32) -> Self {
+        self.inner.inner.page = Some(page);
+        self
+    }
+
+    pub fn page_size(mut self, limit: u32) -> Self {
+        self.inner.inner.limit = Some(limit);
+        self
+    }
+}
+
+pub trait CountHeader: sealed::Sealed {
+    fn count(&self) -> Option<usize>;
+}
+
+impl<'a, E: Endpoint<Response = (H, Vec<R>)>, R, H: CountHeader> WrappedRequest<'a, E> {
+    pub fn stream(self) -> ResponseStream<'a, E, R, H> {
+        ResponseStream {
+            request: self,
+            total_seen: 0,
+            last_page: false,
+            state: StreamState::Results(Default::default()),
+        }
+    }
+}
+
+impl<'a, E: Endpoint<Response = R>, R> std::future::IntoFuture for WrappedRequest<'a, E> {
+    type Output = Result<R, ForgejoError>;
+
+    type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + 'a>>;
+
+    fn into_future(self) -> Self::IntoFuture {
+        Box::pin(
+            async move { E::handle_response(self.client.send_request(&self.inner.inner).await?) },
+        )
+    }
+}
+
+pub struct ResponseStream<'a, E: Endpoint<Response = (H, Vec<T>)>, T, H> {
+    request: WrappedRequest<'a, E>,
+    total_seen: usize,
+    last_page: bool,
+    state: StreamState<'a, T, H>,
+}
+
+enum StreamState<'a, T, H> {
+    Results(VecDeque<T>),
+    Future(Pin<Box<dyn Future<Output = Result<(H, Vec<T>), ForgejoError>> + 'a>>),
+    Finished,
+}
+
+impl<'a, E: Endpoint<Response = (H, Vec<T>)>, T, H: CountHeader> futures::stream::Stream
+    for ResponseStream<'a, E, T, H>
+where
+    Self: Unpin + 'a,
+{
+    type Item = Result<T, ForgejoError>;
+
+    fn poll_next(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> Poll<Option<Self::Item>> {
+        match &mut self.state {
+            StreamState::Results(list) => match list.pop_front() {
+                Some(ret) => Poll::Ready(Some(Ok(ret))),
+                None => {
+                    if self.last_page {
+                        self.state = StreamState::Finished;
+                        Poll::Ready(None)
+                    } else {
+                        let page = match self.request.inner.inner.page {
+                            Some(n) => n + 1,
+                            None => 1,
+                        };
+                        self.request.inner.inner.page = Some(page);
+
+                        let request = self.request.inner.inner.clone();
+                        let client = self.request.client;
+                        let fut = Box::pin(async move {
+                            E::handle_response(client.send_request(&request).await?)
+                        });
+                        self.state = StreamState::Future(fut);
+
+                        cx.waker().wake_by_ref();
+
+                        Poll::Pending
+                    }
+                }
+            },
+            StreamState::Future(fut) => match fut.as_mut().poll(cx) {
+                Poll::Ready(res) => match res {
+                    Ok((headers, list)) => {
+                        let total_count = match headers.count() {
+                            Some(n) => n,
+                            None => {
+                                self.state = StreamState::Finished;
+                                return Poll::Ready(Some(Err(StructureError::HeaderMissing(
+                                    "x-total-count",
+                                )
+                                .into())));
+                            }
+                        };
+                        self.total_seen += list.len();
+                        if self.total_seen >= total_count {
+                            self.last_page = true;
+                        }
+                        self.state = StreamState::Results(list.into());
+                        cx.waker().wake_by_ref();
+                        Poll::Pending
+                    }
+                    Err(e) => {
+                        self.state = StreamState::Finished;
+                        Poll::Ready(Some(Err(e)))
+                    }
+                },
+                Poll::Pending => Poll::Pending,
+            },
+            StreamState::Finished => Poll::Ready(None),
+        }
+    }
+}
+
+impl Forgejo {
+    pub async fn send_request(&self, request: &ApiRequest) -> Result<ApiResponse, ForgejoError> {
+        let mut url = self
+            .url
+            .join(&request.path)
+            .expect("url fail. bug in forgejo-api");
+        let mut query_pairs = url.query_pairs_mut();
+        if let Some(query) = &request.query {
+            query_pairs.extend_pairs(query.iter());
+        }
+        if let Some(page) = request.page {
+            query_pairs.append_pair("page", &format!("{page}"));
+        }
+        if let Some(limit) = request.limit {
+            query_pairs.append_pair("limit", &format!("{limit}"));
+        }
+        drop(query_pairs);
+        let mut reqwest_request = self.client.request(request.method.clone(), url);
+        reqwest_request = match &request.body {
+            RequestBody::Json(bytes) => reqwest_request
+                .body(bytes.clone())
+                .header(reqwest::header::CONTENT_TYPE, "application/json"),
+            RequestBody::Form(list) => {
+                let mut form = reqwest::multipart::Form::new();
+                for (k, v) in list {
+                    form = form.part(
+                        *k,
+                        reqwest::multipart::Part::bytes(v.clone()).file_name("file"),
+                    );
+                }
+                reqwest_request.multipart(form)
+            }
+            RequestBody::None => reqwest_request,
+        };
+        let mut reqwest_response = reqwest_request.send().await?;
+        let response = ApiResponse {
+            status_code: reqwest_response.status(),
+            headers: std::mem::take(reqwest_response.headers_mut()),
+            body: reqwest_response.bytes().await?,
+        };
+        Ok(response)
+    }
+
+    pub async fn hit_endpoint<E: Endpoint<Response = R>, R>(
+        &self,
+        endpoint: E,
+    ) -> Result<R, ForgejoError> {
+        E::handle_response(self.send_request(&endpoint.make_request()).await?)
     }
 }

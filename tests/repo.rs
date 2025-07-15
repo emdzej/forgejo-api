@@ -160,7 +160,7 @@ async fn release() {
             "TestingAdmin",
             "release-test",
             release.id.unwrap() as u64,
-            Some(b"This is a file!".to_vec()),
+            Some(b"This is a file!"),
             None,
             RepoCreateReleaseAttachmentQuery {
                 name: Some("test.txt".into()),
@@ -343,9 +343,8 @@ async fn repo_vars() {
     let git = Git::new("./test_repos/repo-vars");
     let _ = basic_repo(&api, &git, "repo-vars").await;
 
-    let query = GetRepoVariablesListQuery::default();
     let (_, var_list) = api
-        .get_repo_variables_list("TestingAdmin", "repo-vars", query)
+        .get_repo_variables_list("TestingAdmin", "repo-vars")
         .await
         .expect("failed to list repo vars");
     assert!(var_list.is_empty());
@@ -382,4 +381,36 @@ async fn repo_vars() {
     api.delete_repo_variable("TestingAdmin", "repo-vars", "extremely_cool")
         .await
         .expect("failed to delete repo var");
+}
+
+#[tokio::test]
+async fn many_repos() {
+    use futures::stream::StreamExt;
+    let api = common::login();
+
+    for i in 0..100 {
+        let opts = CreateRepoOption {
+            auto_init: None,
+            default_branch: None,
+            description: None,
+            gitignores: None,
+            issue_labels: None,
+            license: None,
+            name: format!("many-repos-{i}"),
+            object_format_name: None,
+            private: None,
+            readme: None,
+            template: None,
+            trust_model: None,
+        };
+        api.create_current_user_repo(opts).await.unwrap();
+    }
+
+    let mut stream = api
+        .user_current_list_repos(UserCurrentListReposQuery { order_by: None })
+        .stream();
+    while let Some(repo) = stream.next().await {
+        let repo = repo.expect("failed to list repos");
+        eprintln!("{}", repo.full_name.as_deref().unwrap_or("missing name"));
+    }
 }

@@ -1,6 +1,7 @@
 use std::{ffi::OsString, path::PathBuf};
 
-mod methods;
+mod endpoints;
+pub mod methods;
 mod openapi;
 mod structs;
 
@@ -10,9 +11,13 @@ use openapi::*;
 fn main() -> eyre::Result<()> {
     let spec = get_spec()?;
     let files = [
-        ("mod.rs".into(), "pub mod structs;\npub mod methods;".into()),
+        (
+            "mod.rs".into(),
+            "pub mod structs;\npub mod methods;\npub mod endpoints;".into(),
+        ),
         ("methods.rs".into(), methods::create_methods(&spec)?),
         ("structs.rs".into(), structs::create_structs(&spec)?),
+        ("endpoints.rs".into(), endpoints::create_endpoints(&spec)?),
     ];
     save_generated(&files)?;
     Ok(())
