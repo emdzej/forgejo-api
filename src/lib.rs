@@ -315,6 +315,23 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
         }
 
         #[inline]
+        fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            let s: String = serde::Deserialize::deserialize(deserializer)?;
+            if s.is_empty() {
+                return Ok(None);
+            }
+            Url::parse(&s)
+                .map_err(|err| {
+                    let err_s = format!("{}", err);
+                    Error::invalid_value(Unexpected::Str(&s), &err_s.as_str())
+                })
+                .map(Some)
+        }
+
+        #[inline]
         fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
         where
             E: Error,
@@ -331,7 +348,7 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
         }
     }
 
-    deserializer.deserialize_str(EmptyUrlVisitor)
+    deserializer.deserialize_option(EmptyUrlVisitor)
 }
 
 #[allow(dead_code)] // not used yet, but it might appear in the future
