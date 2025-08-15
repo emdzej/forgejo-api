@@ -3,7 +3,7 @@ use eyre::WrapErr;
 use heck::{ToPascalCase, ToSnakeCase};
 use std::fmt::Write;
 
-pub fn create_methods(spec: &OpenApiV2) -> eyre::Result<String> {
+pub fn create_methods(spec: &OpenApiV2, sync: bool) -> eyre::Result<String> {
     let mut s = String::new();
     s.push_str("use crate::ForgejoError;\n");
     s.push_str("use crate::Endpoint;\n");
@@ -13,44 +13,48 @@ pub fn create_methods(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use super::structs::*;\n");
     s.push_str("use bytes::Bytes;\n");
     s.push_str("\n");
-    s.push_str("impl crate::Forgejo {\n");
+    if sync {
+        s.push_str("impl crate::sync::Forgejo {\n");
+    } else {
+        s.push_str("impl crate::Forgejo {\n");
+    }
     for (path, item) in &spec.paths {
-        s.push_str(&create_methods_for_path(&spec, item).wrap_err_with(|| path.clone())?);
+        s.push_str(&create_methods_for_path(&spec, item, sync).wrap_err_with(|| path.clone())?);
     }
     s.push_str("}\n");
     Ok(s)
 }
 
-fn create_methods_for_path(spec: &OpenApiV2, item: &PathItem) -> eyre::Result<String> {
+fn create_methods_for_path(spec: &OpenApiV2, item: &PathItem, sync: bool) -> eyre::Result<String> {
     let mut s = String::new();
     if let Some(op) = &item.get {
-        s.push_str(&create_method(spec, op).wrap_err("GET")?);
+        s.push_str(&create_method(spec, op, sync).wrap_err("GET")?);
     }
     if let Some(op) = &item.put {
-        s.push_str(&create_method(spec, op).wrap_err("PUT")?);
+        s.push_str(&create_method(spec, op, sync).wrap_err("PUT")?);
     }
     if let Some(op) = &item.post {
-        s.push_str(&create_method(spec, op).wrap_err("POST")?);
+        s.push_str(&create_method(spec, op, sync).wrap_err("POST")?);
     }
     if let Some(op) = &item.delete {
-        s.push_str(&create_method(spec, op).wrap_err("DELETE")?);
+        s.push_str(&create_method(spec, op, sync).wrap_err("DELETE")?);
     }
     if let Some(op) = &item.options {
-        s.push_str(&create_method(spec, op).wrap_err("OPTIONS")?);
+        s.push_str(&create_method(spec, op, sync).wrap_err("OPTIONS")?);
     }
     if let Some(op) = &item.head {
-        s.push_str(&create_method(spec, op).wrap_err("HEAD")?);
+        s.push_str(&create_method(spec, op, sync).wrap_err("HEAD")?);
     }
     if let Some(op) = &item.patch {
-        s.push_str(&create_method(spec, op).wrap_err("PATCH")?);
+        s.push_str(&create_method(spec, op, sync).wrap_err("PATCH")?);
     }
     Ok(s)
 }
 
-fn create_method(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
+fn create_method(spec: &OpenApiV2, op: &Operation, sync: bool) -> eyre::Result<String> {
     let doc = method_docs(spec, op)?;
-    let sig = fn_signature_from_op(spec, op)?;
-    let body = create_method_body(spec, op)?;
+    let sig = fn_signature_from_op(spec, op, sync)?;
+    let body = create_method_body(spec, op, sync)?;
     Ok(format!("{doc}{sig} {{\n    {body}\n}}\n\n"))
 }
 
@@ -98,7 +102,7 @@ fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     Ok(out)
 }
 
-fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
+fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation, sync: bool) -> eyre::Result<String> {
     let name = op
         .operation_id
         .as_deref()
@@ -111,9 +115,14 @@ fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String
         .ok_or_else(|| eyre::eyre!("operation did not have id"))?
         .to_pascal_case();
     let args = fn_args_from_op(spec, op)?;
-    Ok(format!(
-        "pub fn {name}({args}) -> WrappedRequest<'_, endpoints::{struct_name}>"
-    ))
+    let code = if sync {
+        format!(
+            "pub fn {name}({args}) -> crate::sync::WrappedRequest<'_, endpoints::{struct_name}>"
+        )
+    } else {
+        format!("pub fn {name}({args}) -> WrappedRequest<'_, endpoints::{struct_name}>")
+    };
+    Ok(code)
 }
 
 fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
@@ -239,7 +248,7 @@ pub fn param_type_inner(
     Ok(ty_name)
 }
 
-fn create_method_body(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
+fn create_method_body(spec: &OpenApiV2, op: &Operation, sync: bool) -> eyre::Result<String> {
     let mut s = String::new();
     let struct_name = op
         .operation_id
@@ -279,9 +288,16 @@ fn create_method_body(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> 
             writeln!(&mut s, "query, ")?;
         }
     }
-    writeln!(
-        &mut s,
-        "}}.make_request().wrap::<endpoints::{struct_name}>(self)"
-    )?;
+    if sync {
+        writeln!(
+            &mut s,
+            "}}.make_request().wrap_sync::<endpoints::{struct_name}>(self)"
+        )?;
+    } else {
+        writeln!(
+            &mut s,
+            "}}.make_request().wrap::<endpoints::{struct_name}>(self)"
+        )?;
+    }
     Ok(s)
 }

@@ -7,7 +7,7 @@ steps:
       FORGEJO_API_CI_INSTANCE_URL: http://forgejo-testing:3000/
       FORGEJO_API_CI_TOKEN: 6d727f8db0df8a2852c9dfd38dca6b830741c079
     commands:
-      - cargo test
+      - cargo test -F sync
 
 services:
   forgejo-testing:

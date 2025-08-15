@@ -21,6 +21,26 @@ async fn myself() {
     );
 }
 
+#[cfg(feature = "sync")]
+#[test]
+fn myself_sync() {
+    let api = common::sync_login();
+
+    let myself = api.user_get_current().unwrap();
+    assert!(myself.is_admin.unwrap(), "user should be admin");
+    assert_eq!(
+        myself.login.as_ref().unwrap(),
+        "TestingAdmin",
+        "user should be named \"TestingAdmin\""
+    );
+
+    let myself_indirect = api.user_get("TestingAdmin").unwrap();
+    assert_eq!(
+        myself, myself_indirect,
+        "result of `myself` does not match result of `get_user`"
+    );
+}
+
 #[tokio::test]
 async fn follow() {
     let api = common::login();

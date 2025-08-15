@@ -2,7 +2,7 @@ use std::{
     borrow::Cow, collections::VecDeque, future::Future, marker::PhantomData, pin::Pin, task::Poll,
 };
 
-use reqwest::{Client, Request, StatusCode};
+use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Deserializer};
 use soft_assert::*;
 use url::Url;
@@ -14,6 +14,8 @@ pub struct Forgejo {
 }
 
 mod generated;
+#[cfg(feature = "sync")]
+pub mod sync;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ForgejoError {
@@ -86,19 +88,10 @@ pub enum Auth<'a> {
     None,
 }
 
-impl Forgejo {
-    pub fn new(auth: Auth, url: Url) -> Result<Self, ForgejoError> {
-        Self::with_user_agent(auth, url, "forgejo-api-rs")
-    }
-
-    pub fn with_user_agent(auth: Auth, url: Url, user_agent: &str) -> Result<Self, ForgejoError> {
-        soft_assert!(
-            matches!(url.scheme(), "http" | "https"),
-            Err(ForgejoError::HttpRequired)
-        );
-
+impl Auth<'_> {
+    fn to_headers(&self) -> Result<reqwest::header::HeaderMap, ForgejoError> {
         let mut headers = reqwest::header::HeaderMap::new();
-        match auth {
+        match self {
             Auth::Token(token) => {
                 let mut header: reqwest::header::HeaderValue = format!("token {token}")
                     .try_into()
@@ -139,7 +132,7 @@ impl Forgejo {
 
                 if let Some(mfa) = mfa {
                     let mut key_header: reqwest::header::HeaderValue =
-                        mfa.try_into().map_err(|_| ForgejoError::KeyNotAscii)?;
+                        (*mfa).try_into().map_err(|_| ForgejoError::KeyNotAscii)?;
                     key_header.set_sensitive(true);
                     headers.insert("X-FORGEJO-OTP", key_header);
                 }
@@ -153,9 +146,24 @@ impl Forgejo {
             }
             Auth::None => (),
         }
+        Ok(headers)
+    }
+}
+
+impl Forgejo {
+    pub fn new(auth: Auth, url: Url) -> Result<Self, ForgejoError> {
+        Self::with_user_agent(auth, url, "forgejo-api-rs")
+    }
+
+    pub fn with_user_agent(auth: Auth, url: Url, user_agent: &str) -> Result<Self, ForgejoError> {
+        soft_assert!(
+            matches!(url.scheme(), "http" | "https"),
+            Err(ForgejoError::HttpRequired)
+        );
+
         let client = Client::builder()
             .user_agent(user_agent)
-            .default_headers(headers)
+            .default_headers(auth.to_headers()?)
             .build()?;
         Ok(Self { url, client })
     }
@@ -176,7 +184,7 @@ impl Forgejo {
             .pop_if_empty()
             .extend(["attachments", &release.uuid.unwrap().to_string()]);
         let request = self.client.get(url).build()?;
-        Ok(self.execute(request).await?.bytes().await?)
+        Ok(self.client.execute(request).await?.bytes().await?)
     }
 
     /// Requests a new OAuth2 access token
@@ -188,52 +196,69 @@ impl Forgejo {
     ) -> Result<structs::OAuthToken, ForgejoError> {
         let url = self.url.join("login/oauth/access_token").unwrap();
         let request = self.client.post(url).json(&body).build()?;
-        let response = self.execute(request).await?;
-        match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            reqwest::StatusCode::OK => Ok(response.json().await?),
+            status if status.is_client_error() => {
+                let err_msg = response
+                    .json::<ErrorMessage>()
+                    .await
+                    .ok()
+                    .map(|e| e.message);
+                Err(ForgejoError::ApiError(status, err_msg))
+            }
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
 
-    fn get(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.get(url)
-    }
-
-    fn put(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.put(url)
-    }
-
-    fn post(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.post(url)
-    }
-
-    fn delete(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.delete(url)
-    }
-
-    fn patch(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.patch(url)
-    }
-
-    async fn execute(&self, request: Request) -> Result<reqwest::Response, ForgejoError> {
-        let response = self.client.execute(request).await?;
-        match response.status() {
-            status if status.is_success() => Ok(response),
-            status if status.is_client_error() => {
-                Err(ForgejoError::ApiError(status, maybe_err(response).await))
-            }
-            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+    pub async fn send_request(&self, request: &ApiRequest) -> Result<ApiResponse, ForgejoError> {
+        let mut url = self
+            .url
+            .join(&request.path)
+            .expect("url fail. bug in forgejo-api");
+        let mut query_pairs = url.query_pairs_mut();
+        if let Some(query) = &request.query {
+            query_pairs.extend_pairs(query.iter());
         }
+        if let Some(page) = request.page {
+            query_pairs.append_pair("page", &format!("{page}"));
+        }
+        if let Some(limit) = request.limit {
+            query_pairs.append_pair("limit", &format!("{limit}"));
+        }
+        drop(query_pairs);
+        let mut reqwest_request = self.client.request(request.method.clone(), url);
+        reqwest_request = match &request.body {
+            RequestBody::Json(bytes) => reqwest_request
+                .body(bytes.clone())
+                .header(reqwest::header::CONTENT_TYPE, "application/json"),
+            RequestBody::Form(list) => {
+                let mut form = reqwest::multipart::Form::new();
+                for (k, v) in list {
+                    form = form.part(
+                        *k,
+                        reqwest::multipart::Part::bytes(v.clone()).file_name("file"),
+                    );
+                }
+                reqwest_request.multipart(form)
+            }
+            RequestBody::None => reqwest_request,
+        };
+        let mut reqwest_response = reqwest_request.send().await?;
+        let response = ApiResponse {
+            status_code: reqwest_response.status(),
+            headers: std::mem::take(reqwest_response.headers_mut()),
+            body: reqwest_response.bytes().await?,
+        };
+        Ok(response)
     }
-}
 
-async fn maybe_err(res: reqwest::Response) -> Option<String> {
-    res.json::<ErrorMessage>().await.ok().map(|e| e.message)
+    pub async fn hit_endpoint<E: Endpoint<Response = R>, R>(
+        &self,
+        endpoint: E,
+    ) -> Result<R, ForgejoError> {
+        E::handle_response(self.send_request(&endpoint.make_request()).await?)
+    }
 }
 
 #[derive(serde::Deserialize)]
@@ -478,6 +503,20 @@ impl ApiRequest {
             client,
         }
     }
+
+    #[cfg(feature = "sync")]
+    pub(crate) fn wrap_sync<E: Endpoint>(
+        self,
+        client: &sync::Forgejo,
+    ) -> sync::WrappedRequest<'_, E> {
+        sync::WrappedRequest {
+            inner: TypedRequest {
+                inner: self,
+                __endpoint: PhantomData,
+            },
+            client,
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -495,6 +534,11 @@ pub struct TypedRequest<E> {
 impl<E: Endpoint> TypedRequest<E> {
     async fn send(&self, client: &Forgejo) -> Result<E::Response, ForgejoError> {
         E::handle_response(client.send_request(&self.inner).await?)
+    }
+
+    #[cfg(feature = "sync")]
+    fn send_sync(&self, client: &sync::Forgejo) -> Result<E::Response, ForgejoError> {
+        E::handle_response(client.send_request(&self.inner)?)
     }
 }
 
@@ -633,56 +677,5 @@ where
             },
             StreamState::Finished => Poll::Ready(None),
         }
-    }
-}
-
-impl Forgejo {
-    pub async fn send_request(&self, request: &ApiRequest) -> Result<ApiResponse, ForgejoError> {
-        let mut url = self
-            .url
-            .join(&request.path)
-            .expect("url fail. bug in forgejo-api");
-        let mut query_pairs = url.query_pairs_mut();
-        if let Some(query) = &request.query {
-            query_pairs.extend_pairs(query.iter());
-        }
-        if let Some(page) = request.page {
-            query_pairs.append_pair("page", &format!("{page}"));
-        }
-        if let Some(limit) = request.limit {
-            query_pairs.append_pair("limit", &format!("{limit}"));
-        }
-        drop(query_pairs);
-        let mut reqwest_request = self.client.request(request.method.clone(), url);
-        reqwest_request = match &request.body {
-            RequestBody::Json(bytes) => reqwest_request
-                .body(bytes.clone())
-                .header(reqwest::header::CONTENT_TYPE, "application/json"),
-            RequestBody::Form(list) => {
-                let mut form = reqwest::multipart::Form::new();
-                for (k, v) in list {
-                    form = form.part(
-                        *k,
-                        reqwest::multipart::Part::bytes(v.clone()).file_name("file"),
-                    );
-                }
-                reqwest_request.multipart(form)
-            }
-            RequestBody::None => reqwest_request,
-        };
-        let mut reqwest_response = reqwest_request.send().await?;
-        let response = ApiResponse {
-            status_code: reqwest_response.status(),
-            headers: std::mem::take(reqwest_response.headers_mut()),
-            body: reqwest_response.bytes().await?,
-        };
-        Ok(response)
-    }
-
-    pub async fn hit_endpoint<E: Endpoint<Response = R>, R>(
-        &self,
-        endpoint: E,
-    ) -> Result<R, ForgejoError> {
-        E::handle_response(self.send_request(&endpoint.make_request()).await?)
     }
 }

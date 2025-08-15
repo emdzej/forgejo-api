@@ -13,11 +13,12 @@ fn main() -> eyre::Result<()> {
     let files = [
         (
             "mod.rs".into(),
-            "pub mod structs;\npub mod methods;\npub mod endpoints;".into(),
+            "pub mod structs;\npub mod methods;\n#[cfg(feature = \"sync\")]\npub mod methods_sync;\npub mod endpoints;".into(),
         ),
-        ("methods.rs".into(), methods::create_methods(&spec)?),
-        ("structs.rs".into(), structs::create_structs(&spec)?),
-        ("endpoints.rs".into(), endpoints::create_endpoints(&spec)?),
+        ("methods.rs", methods::create_methods(&spec, false)?),
+        ("methods_sync.rs", methods::create_methods(&spec, true)?),
+        ("structs.rs", structs::create_structs(&spec)?),
+        ("endpoints.rs", endpoints::create_endpoints(&spec)?),
     ];
     save_generated(&files)?;
     Ok(())
@@ -32,7 +33,7 @@ fn get_spec() -> eyre::Result<OpenApiV2> {
     Ok(spec)
 }
 
-fn save_generated(files: &[(String, String)]) -> eyre::Result<()> {
+fn save_generated(files: &[(&'static str, String)]) -> eyre::Result<()> {
     let root_path = PathBuf::from(
         std::env::var_os("FORGEJO_API_GENERATED_PATH")
             .unwrap_or_else(|| OsString::from("./src/generated/")),
