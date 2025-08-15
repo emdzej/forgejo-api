@@ -10,19 +10,27 @@ impl crate::Forgejo {
     /// Returns the instance's Actor
     pub fn activitypub_instance_actor(
         &self,
-    ) -> WrappedRequest<'_, endpoints::ActivitypubInstanceActor> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ActivitypubInstanceActor,
+        <endpoints::ActivitypubInstanceActor as Endpoint>::Response,
+    > {
         endpoints::ActivitypubInstanceActor {}
             .make_request()
-            .wrap::<endpoints::ActivitypubInstanceActor>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Send to the inbox
     pub fn activitypub_instance_actor_inbox(
         &self,
-    ) -> WrappedRequest<'_, endpoints::ActivitypubInstanceActorInbox> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ActivitypubInstanceActorInbox,
+        <endpoints::ActivitypubInstanceActorInbox as Endpoint>::Response,
+    > {
         endpoints::ActivitypubInstanceActorInbox {}
             .make_request()
-            .wrap::<endpoints::ActivitypubInstanceActorInbox>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns the Repository actor for a repo
@@ -31,10 +39,14 @@ impl crate::Forgejo {
     pub fn activitypub_repository(
         &self,
         repository_id: u32,
-    ) -> WrappedRequest<'_, endpoints::ActivitypubRepository> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ActivitypubRepository,
+        <endpoints::ActivitypubRepository as Endpoint>::Response,
+    > {
         endpoints::ActivitypubRepository { repository_id }
             .make_request()
-            .wrap::<endpoints::ActivitypubRepository>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Send to the inbox
@@ -45,13 +57,17 @@ impl crate::Forgejo {
         &self,
         repository_id: u32,
         body: ForgeLike,
-    ) -> WrappedRequest<'_, endpoints::ActivitypubRepositoryInbox> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ActivitypubRepositoryInbox,
+        <endpoints::ActivitypubRepositoryInbox as Endpoint>::Response,
+    > {
         endpoints::ActivitypubRepositoryInbox {
             repository_id,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::ActivitypubRepositoryInbox>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Returns the Person actor for a user
@@ -60,10 +76,14 @@ impl crate::Forgejo {
     pub fn activitypub_person(
         &self,
         user_id: u32,
-    ) -> WrappedRequest<'_, endpoints::ActivitypubPerson> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ActivitypubPerson,
+        <endpoints::ActivitypubPerson as Endpoint>::Response,
+    > {
         endpoints::ActivitypubPerson { user_id }
             .make_request()
-            .wrap::<endpoints::ActivitypubPerson>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Send to the inbox
@@ -72,35 +92,55 @@ impl crate::Forgejo {
     pub fn activitypub_person_inbox(
         &self,
         user_id: u32,
-    ) -> WrappedRequest<'_, endpoints::ActivitypubPersonInbox> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ActivitypubPersonInbox,
+        <endpoints::ActivitypubPersonInbox as Endpoint>::Response,
+    > {
         endpoints::ActivitypubPersonInbox { user_id }
             .make_request()
-            .wrap::<endpoints::ActivitypubPersonInbox>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List cron tasks
     ///
-    pub fn admin_cron_list(&self) -> WrappedRequest<'_, endpoints::AdminCronList> {
+    pub fn admin_cron_list(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCronList,
+        <endpoints::AdminCronList as Endpoint>::Response,
+    > {
         endpoints::AdminCronList {}
             .make_request()
-            .wrap::<endpoints::AdminCronList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Run cron task
     ///
     /// - `task`: task to run
-    pub fn admin_cron_run(&self, task: &str) -> WrappedRequest<'_, endpoints::AdminCronRun> {
+    pub fn admin_cron_run(
+        &self,
+        task: &str,
+    ) -> WrappedRequest<'_, endpoints::AdminCronRun, <endpoints::AdminCronRun as Endpoint>::Response>
+    {
         endpoints::AdminCronRun { task }
             .make_request()
-            .wrap::<endpoints::AdminCronRun>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List all emails
     ///
-    pub fn admin_get_all_emails(&self) -> WrappedRequest<'_, endpoints::AdminGetAllEmails> {
+    pub fn admin_get_all_emails(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminGetAllEmails,
+        <endpoints::AdminGetAllEmails as Endpoint>::Response,
+    > {
         endpoints::AdminGetAllEmails {}
             .make_request()
-            .wrap::<endpoints::AdminGetAllEmails>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Search all emails
@@ -108,18 +148,28 @@ impl crate::Forgejo {
     pub fn admin_search_emails(
         &self,
         query: AdminSearchEmailsQuery,
-    ) -> WrappedRequest<'_, endpoints::AdminSearchEmails> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminSearchEmails,
+        <endpoints::AdminSearchEmails as Endpoint>::Response,
+    > {
         endpoints::AdminSearchEmails { query }
             .make_request()
-            .wrap::<endpoints::AdminSearchEmails>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List system's webhooks
     ///
-    pub fn admin_list_hooks(&self) -> WrappedRequest<'_, endpoints::AdminListHooks> {
+    pub fn admin_list_hooks(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminListHooks,
+        <endpoints::AdminListHooks as Endpoint>::Response,
+    > {
         endpoints::AdminListHooks {}
             .make_request()
-            .wrap::<endpoints::AdminListHooks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a hook
@@ -128,28 +178,43 @@ impl crate::Forgejo {
     pub fn admin_create_hook(
         &self,
         body: CreateHookOption,
-    ) -> WrappedRequest<'_, endpoints::AdminCreateHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCreateHook,
+        <endpoints::AdminCreateHook as Endpoint>::Response,
+    > {
         endpoints::AdminCreateHook { body: body }
             .make_request()
-            .wrap::<endpoints::AdminCreateHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a hook
     ///
     /// - `id`: id of the hook to get
-    pub fn admin_get_hook(&self, id: u64) -> WrappedRequest<'_, endpoints::AdminGetHook> {
+    pub fn admin_get_hook(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<'_, endpoints::AdminGetHook, <endpoints::AdminGetHook as Endpoint>::Response>
+    {
         endpoints::AdminGetHook { id }
             .make_request()
-            .wrap::<endpoints::AdminGetHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a hook
     ///
     /// - `id`: id of the hook to delete
-    pub fn admin_delete_hook(&self, id: u64) -> WrappedRequest<'_, endpoints::AdminDeleteHook> {
+    pub fn admin_delete_hook(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminDeleteHook,
+        <endpoints::AdminDeleteHook as Endpoint>::Response,
+    > {
         endpoints::AdminDeleteHook { id }
             .make_request()
-            .wrap::<endpoints::AdminDeleteHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a hook
@@ -160,25 +225,41 @@ impl crate::Forgejo {
         &self,
         id: u64,
         body: EditHookOption,
-    ) -> WrappedRequest<'_, endpoints::AdminEditHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminEditHook,
+        <endpoints::AdminEditHook as Endpoint>::Response,
+    > {
         endpoints::AdminEditHook { id, body: body }
             .make_request()
-            .wrap::<endpoints::AdminEditHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List all organizations
     ///
-    pub fn admin_get_all_orgs(&self) -> WrappedRequest<'_, endpoints::AdminGetAllOrgs> {
+    pub fn admin_get_all_orgs(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminGetAllOrgs,
+        <endpoints::AdminGetAllOrgs as Endpoint>::Response,
+    > {
         endpoints::AdminGetAllOrgs {}
             .make_request()
-            .wrap::<endpoints::AdminGetAllOrgs>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the available quota groups
-    pub fn admin_list_quota_groups(&self) -> WrappedRequest<'_, endpoints::AdminListQuotaGroups> {
+    pub fn admin_list_quota_groups(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminListQuotaGroups,
+        <endpoints::AdminListQuotaGroups as Endpoint>::Response,
+    > {
         endpoints::AdminListQuotaGroups {}
             .make_request()
-            .wrap::<endpoints::AdminListQuotaGroups>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a new quota group
@@ -189,10 +270,14 @@ impl crate::Forgejo {
     pub fn admin_create_quota_group(
         &self,
         group: CreateQuotaGroupOptions,
-    ) -> WrappedRequest<'_, endpoints::AdminCreateQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCreateQuotaGroup,
+        <endpoints::AdminCreateQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminCreateQuotaGroup { body: group }
             .make_request()
-            .wrap::<endpoints::AdminCreateQuotaGroup>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get information about the quota group
@@ -201,10 +286,14 @@ impl crate::Forgejo {
     pub fn admin_get_quota_group(
         &self,
         quotagroup: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminGetQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminGetQuotaGroup,
+        <endpoints::AdminGetQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminGetQuotaGroup { quotagroup }
             .make_request()
-            .wrap::<endpoints::AdminGetQuotaGroup>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a quota group
@@ -213,10 +302,14 @@ impl crate::Forgejo {
     pub fn admin_delete_quota_group(
         &self,
         quotagroup: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminDeleteQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminDeleteQuotaGroup,
+        <endpoints::AdminDeleteQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminDeleteQuotaGroup { quotagroup }
             .make_request()
-            .wrap::<endpoints::AdminDeleteQuotaGroup>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Adds a rule to a quota group
@@ -227,13 +320,17 @@ impl crate::Forgejo {
         &self,
         quotagroup: &str,
         quotarule: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminAddRuleToQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminAddRuleToQuotaGroup,
+        <endpoints::AdminAddRuleToQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminAddRuleToQuotaGroup {
             quotagroup,
             quotarule,
         }
         .make_request()
-        .wrap::<endpoints::AdminAddRuleToQuotaGroup>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Removes a rule from a quota group
@@ -244,13 +341,17 @@ impl crate::Forgejo {
         &self,
         quotagroup: &str,
         quotarule: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminRemoveRuleFromQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminRemoveRuleFromQuotaGroup,
+        <endpoints::AdminRemoveRuleFromQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminRemoveRuleFromQuotaGroup {
             quotagroup,
             quotarule,
         }
         .make_request()
-        .wrap::<endpoints::AdminRemoveRuleFromQuotaGroup>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List users in a quota group
@@ -259,10 +360,14 @@ impl crate::Forgejo {
     pub fn admin_list_users_in_quota_group(
         &self,
         quotagroup: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminListUsersInQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminListUsersInQuotaGroup,
+        <endpoints::AdminListUsersInQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminListUsersInQuotaGroup { quotagroup }
             .make_request()
-            .wrap::<endpoints::AdminListUsersInQuotaGroup>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a user to a quota group
@@ -273,13 +378,17 @@ impl crate::Forgejo {
         &self,
         quotagroup: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminAddUserToQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminAddUserToQuotaGroup,
+        <endpoints::AdminAddUserToQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminAddUserToQuotaGroup {
             quotagroup,
             username,
         }
         .make_request()
-        .wrap::<endpoints::AdminAddUserToQuotaGroup>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Remove a user from a quota group
@@ -290,20 +399,30 @@ impl crate::Forgejo {
         &self,
         quotagroup: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminRemoveUserFromQuotaGroup> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminRemoveUserFromQuotaGroup,
+        <endpoints::AdminRemoveUserFromQuotaGroup as Endpoint>::Response,
+    > {
         endpoints::AdminRemoveUserFromQuotaGroup {
             quotagroup,
             username,
         }
         .make_request()
-        .wrap::<endpoints::AdminRemoveUserFromQuotaGroup>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List the available quota rules
-    pub fn admin_list_quota_rules(&self) -> WrappedRequest<'_, endpoints::AdminListQuotaRules> {
+    pub fn admin_list_quota_rules(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminListQuotaRules,
+        <endpoints::AdminListQuotaRules as Endpoint>::Response,
+    > {
         endpoints::AdminListQuotaRules {}
             .make_request()
-            .wrap::<endpoints::AdminListQuotaRules>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a new quota rule
@@ -314,10 +433,14 @@ impl crate::Forgejo {
     pub fn admin_create_quota_rule(
         &self,
         rule: CreateQuotaRuleOptions,
-    ) -> WrappedRequest<'_, endpoints::AdminCreateQuotaRule> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCreateQuotaRule,
+        <endpoints::AdminCreateQuotaRule as Endpoint>::Response,
+    > {
         endpoints::AdminCreateQuotaRule { body: rule }
             .make_request()
-            .wrap::<endpoints::AdminCreateQuotaRule>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get information about a quota rule
@@ -326,10 +449,14 @@ impl crate::Forgejo {
     pub fn admin_get_quota_rule(
         &self,
         quotarule: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminGetQuotaRule> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminGetQuotaRule,
+        <endpoints::AdminGetQuotaRule as Endpoint>::Response,
+    > {
         endpoints::AdminGetQuotaRule { quotarule }
             .make_request()
-            .wrap::<endpoints::AdminGetQuotaRule>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Deletes a quota rule
@@ -338,10 +465,14 @@ impl crate::Forgejo {
     pub fn admin_delete_quota_rule(
         &self,
         quotarule: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminDeleteQuotaRule> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminDeleteQuotaRule,
+        <endpoints::AdminDeleteQuotaRule as Endpoint>::Response,
+    > {
         endpoints::AdminDeleteQuotaRule { quotarule }
             .make_request()
-            .wrap::<endpoints::AdminDeleteQuotaRule>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Change an existing quota rule
@@ -352,22 +483,30 @@ impl crate::Forgejo {
         &self,
         quotarule: &str,
         rule: EditQuotaRuleOptions,
-    ) -> WrappedRequest<'_, endpoints::AdminEditQuotaRule> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminEditQuotaRule,
+        <endpoints::AdminEditQuotaRule as Endpoint>::Response,
+    > {
         endpoints::AdminEditQuotaRule {
             quotarule,
             body: rule,
         }
         .make_request()
-        .wrap::<endpoints::AdminEditQuotaRule>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get an global actions runner registration token
     pub fn admin_get_runner_registration_token(
         &self,
-    ) -> WrappedRequest<'_, endpoints::AdminGetRunnerRegistrationToken> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminGetRunnerRegistrationToken,
+        <endpoints::AdminGetRunnerRegistrationToken as Endpoint>::Response,
+    > {
         endpoints::AdminGetRunnerRegistrationToken {}
             .make_request()
-            .wrap::<endpoints::AdminGetRunnerRegistrationToken>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List unadopted repositories
@@ -375,10 +514,14 @@ impl crate::Forgejo {
     pub fn admin_unadopted_list(
         &self,
         query: AdminUnadoptedListQuery,
-    ) -> WrappedRequest<'_, endpoints::AdminUnadoptedList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminUnadoptedList,
+        <endpoints::AdminUnadoptedList as Endpoint>::Response,
+    > {
         endpoints::AdminUnadoptedList { query }
             .make_request()
-            .wrap::<endpoints::AdminUnadoptedList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Adopt unadopted files as a repository
@@ -389,10 +532,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminAdoptRepository> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminAdoptRepository,
+        <endpoints::AdminAdoptRepository as Endpoint>::Response,
+    > {
         endpoints::AdminAdoptRepository { owner, repo }
             .make_request()
-            .wrap::<endpoints::AdminAdoptRepository>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete unadopted files
@@ -403,10 +550,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminDeleteUnadoptedRepository> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminDeleteUnadoptedRepository,
+        <endpoints::AdminDeleteUnadoptedRepository as Endpoint>::Response,
+    > {
         endpoints::AdminDeleteUnadoptedRepository { owner, repo }
             .make_request()
-            .wrap::<endpoints::AdminDeleteUnadoptedRepository>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Search users according filter conditions
@@ -414,10 +565,14 @@ impl crate::Forgejo {
     pub fn admin_search_users(
         &self,
         query: AdminSearchUsersQuery,
-    ) -> WrappedRequest<'_, endpoints::AdminSearchUsers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminSearchUsers,
+        <endpoints::AdminSearchUsers as Endpoint>::Response,
+    > {
         endpoints::AdminSearchUsers { query }
             .make_request()
-            .wrap::<endpoints::AdminSearchUsers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a user
@@ -426,10 +581,14 @@ impl crate::Forgejo {
     pub fn admin_create_user(
         &self,
         body: CreateUserOption,
-    ) -> WrappedRequest<'_, endpoints::AdminCreateUser> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCreateUser,
+        <endpoints::AdminCreateUser as Endpoint>::Response,
+    > {
         endpoints::AdminCreateUser { body: body }
             .make_request()
-            .wrap::<endpoints::AdminCreateUser>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a user
@@ -439,10 +598,14 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: AdminDeleteUserQuery,
-    ) -> WrappedRequest<'_, endpoints::AdminDeleteUser> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminDeleteUser,
+        <endpoints::AdminDeleteUser as Endpoint>::Response,
+    > {
         endpoints::AdminDeleteUser { username, query }
             .make_request()
-            .wrap::<endpoints::AdminDeleteUser>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit an existing user
@@ -453,13 +616,17 @@ impl crate::Forgejo {
         &self,
         username: &str,
         body: EditUserOption,
-    ) -> WrappedRequest<'_, endpoints::AdminEditUser> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminEditUser,
+        <endpoints::AdminEditUser as Endpoint>::Response,
+    > {
         endpoints::AdminEditUser {
             username,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::AdminEditUser>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Add a public key on behalf of a user
@@ -470,13 +637,17 @@ impl crate::Forgejo {
         &self,
         username: &str,
         key: CreateKeyOption,
-    ) -> WrappedRequest<'_, endpoints::AdminCreatePublicKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCreatePublicKey,
+        <endpoints::AdminCreatePublicKey as Endpoint>::Response,
+    > {
         endpoints::AdminCreatePublicKey {
             username,
             body: key,
         }
         .make_request()
-        .wrap::<endpoints::AdminCreatePublicKey>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a user's public key
@@ -487,10 +658,14 @@ impl crate::Forgejo {
         &self,
         username: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::AdminDeleteUserPublicKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminDeleteUserPublicKey,
+        <endpoints::AdminDeleteUserPublicKey as Endpoint>::Response,
+    > {
         endpoints::AdminDeleteUserPublicKey { username, id }
             .make_request()
-            .wrap::<endpoints::AdminDeleteUserPublicKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create an organization
@@ -501,13 +676,17 @@ impl crate::Forgejo {
         &self,
         username: &str,
         organization: CreateOrgOption,
-    ) -> WrappedRequest<'_, endpoints::AdminCreateOrg> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCreateOrg,
+        <endpoints::AdminCreateOrg as Endpoint>::Response,
+    > {
         endpoints::AdminCreateOrg {
             username,
             body: organization,
         }
         .make_request()
-        .wrap::<endpoints::AdminCreateOrg>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get the user's quota info
@@ -516,10 +695,14 @@ impl crate::Forgejo {
     pub fn admin_get_user_quota(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::AdminGetUserQuota> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminGetUserQuota,
+        <endpoints::AdminGetUserQuota as Endpoint>::Response,
+    > {
         endpoints::AdminGetUserQuota { username }
             .make_request()
-            .wrap::<endpoints::AdminGetUserQuota>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Set the user's quota groups to a given list.
@@ -532,13 +715,17 @@ impl crate::Forgejo {
         &self,
         username: &str,
         groups: SetUserQuotaGroupsOptions,
-    ) -> WrappedRequest<'_, endpoints::AdminSetUserQuotaGroups> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminSetUserQuotaGroups,
+        <endpoints::AdminSetUserQuotaGroups as Endpoint>::Response,
+    > {
         endpoints::AdminSetUserQuotaGroups {
             username,
             body: groups,
         }
         .make_request()
-        .wrap::<endpoints::AdminSetUserQuotaGroups>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Rename a user
@@ -549,13 +736,17 @@ impl crate::Forgejo {
         &self,
         username: &str,
         body: RenameUserOption,
-    ) -> WrappedRequest<'_, endpoints::AdminRenameUser> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminRenameUser,
+        <endpoints::AdminRenameUser as Endpoint>::Response,
+    > {
         endpoints::AdminRenameUser {
             username,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::AdminRenameUser>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Create a repository on behalf of a user
@@ -566,22 +757,30 @@ impl crate::Forgejo {
         &self,
         username: &str,
         repository: CreateRepoOption,
-    ) -> WrappedRequest<'_, endpoints::AdminCreateRepo> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AdminCreateRepo,
+        <endpoints::AdminCreateRepo as Endpoint>::Response,
+    > {
         endpoints::AdminCreateRepo {
             username,
             body: repository,
         }
         .make_request()
-        .wrap::<endpoints::AdminCreateRepo>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Returns a list of all gitignore templates
     pub fn list_gitignores_templates(
         &self,
-    ) -> WrappedRequest<'_, endpoints::ListGitignoresTemplates> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ListGitignoresTemplates,
+        <endpoints::ListGitignoresTemplates as Endpoint>::Response,
+    > {
         endpoints::ListGitignoresTemplates {}
             .make_request()
-            .wrap::<endpoints::ListGitignoresTemplates>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns information about a gitignore template
@@ -590,17 +789,27 @@ impl crate::Forgejo {
     pub fn get_gitignore_template_info(
         &self,
         name: &str,
-    ) -> WrappedRequest<'_, endpoints::GetGitignoreTemplateInfo> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetGitignoreTemplateInfo,
+        <endpoints::GetGitignoreTemplateInfo as Endpoint>::Response,
+    > {
         endpoints::GetGitignoreTemplateInfo { name }
             .make_request()
-            .wrap::<endpoints::GetGitignoreTemplateInfo>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns a list of all label templates
-    pub fn list_label_templates(&self) -> WrappedRequest<'_, endpoints::ListLabelTemplates> {
+    pub fn list_label_templates(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ListLabelTemplates,
+        <endpoints::ListLabelTemplates as Endpoint>::Response,
+    > {
         endpoints::ListLabelTemplates {}
             .make_request()
-            .wrap::<endpoints::ListLabelTemplates>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns all labels in a template
@@ -609,17 +818,27 @@ impl crate::Forgejo {
     pub fn get_label_template_info(
         &self,
         name: &str,
-    ) -> WrappedRequest<'_, endpoints::GetLabelTemplateInfo> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetLabelTemplateInfo,
+        <endpoints::GetLabelTemplateInfo as Endpoint>::Response,
+    > {
         endpoints::GetLabelTemplateInfo { name }
             .make_request()
-            .wrap::<endpoints::GetLabelTemplateInfo>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns a list of all license templates
-    pub fn list_license_templates(&self) -> WrappedRequest<'_, endpoints::ListLicenseTemplates> {
+    pub fn list_license_templates(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ListLicenseTemplates,
+        <endpoints::ListLicenseTemplates as Endpoint>::Response,
+    > {
         endpoints::ListLicenseTemplates {}
             .make_request()
-            .wrap::<endpoints::ListLicenseTemplates>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns information about a license template
@@ -628,10 +847,14 @@ impl crate::Forgejo {
     pub fn get_license_template_info(
         &self,
         name: &str,
-    ) -> WrappedRequest<'_, endpoints::GetLicenseTemplateInfo> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetLicenseTemplateInfo,
+        <endpoints::GetLicenseTemplateInfo as Endpoint>::Response,
+    > {
         endpoints::GetLicenseTemplateInfo { name }
             .make_request()
-            .wrap::<endpoints::GetLicenseTemplateInfo>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Render a markdown document as HTML
@@ -640,10 +863,14 @@ impl crate::Forgejo {
     pub fn render_markdown(
         &self,
         body: MarkdownOption,
-    ) -> WrappedRequest<'_, endpoints::RenderMarkdown> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RenderMarkdown,
+        <endpoints::RenderMarkdown as Endpoint>::Response,
+    > {
         endpoints::RenderMarkdown { body: body }
             .make_request()
-            .wrap::<endpoints::RenderMarkdown>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Render raw markdown as HTML
@@ -654,26 +881,35 @@ impl crate::Forgejo {
     pub fn render_markdown_raw(
         &self,
         body: String,
-    ) -> WrappedRequest<'_, endpoints::RenderMarkdownRaw> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RenderMarkdownRaw,
+        <endpoints::RenderMarkdownRaw as Endpoint>::Response,
+    > {
         endpoints::RenderMarkdownRaw { body: body }
             .make_request()
-            .wrap::<endpoints::RenderMarkdownRaw>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Render a markup document as HTML
     ///
     /// - `body`: See [`MarkupOption`]
-    pub fn render_markup(&self, body: MarkupOption) -> WrappedRequest<'_, endpoints::RenderMarkup> {
+    pub fn render_markup(
+        &self,
+        body: MarkupOption,
+    ) -> WrappedRequest<'_, endpoints::RenderMarkup, <endpoints::RenderMarkup as Endpoint>::Response>
+    {
         endpoints::RenderMarkup { body: body }
             .make_request()
-            .wrap::<endpoints::RenderMarkup>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns the nodeinfo of the Forgejo application
-    pub fn get_node_info(&self) -> WrappedRequest<'_, endpoints::GetNodeInfo> {
-        endpoints::GetNodeInfo {}
-            .make_request()
-            .wrap::<endpoints::GetNodeInfo>(self)
+    pub fn get_node_info(
+        &self,
+    ) -> WrappedRequest<'_, endpoints::GetNodeInfo, <endpoints::GetNodeInfo as Endpoint>::Response>
+    {
+        endpoints::GetNodeInfo {}.make_request().wrap::<_, _>(self)
     }
 
     /// List users's notification threads
@@ -681,10 +917,14 @@ impl crate::Forgejo {
     pub fn notify_get_list(
         &self,
         query: NotifyGetListQuery,
-    ) -> WrappedRequest<'_, endpoints::NotifyGetList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::NotifyGetList,
+        <endpoints::NotifyGetList as Endpoint>::Response,
+    > {
         endpoints::NotifyGetList { query }
             .make_request()
-            .wrap::<endpoints::NotifyGetList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Mark notification threads as read, pinned or unread
@@ -692,26 +932,43 @@ impl crate::Forgejo {
     pub fn notify_read_list(
         &self,
         query: NotifyReadListQuery,
-    ) -> WrappedRequest<'_, endpoints::NotifyReadList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::NotifyReadList,
+        <endpoints::NotifyReadList as Endpoint>::Response,
+    > {
         endpoints::NotifyReadList { query }
             .make_request()
-            .wrap::<endpoints::NotifyReadList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if unread notifications exist
-    pub fn notify_new_available(&self) -> WrappedRequest<'_, endpoints::NotifyNewAvailable> {
+    pub fn notify_new_available(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::NotifyNewAvailable,
+        <endpoints::NotifyNewAvailable as Endpoint>::Response,
+    > {
         endpoints::NotifyNewAvailable {}
             .make_request()
-            .wrap::<endpoints::NotifyNewAvailable>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get notification thread by ID
     ///
     /// - `id`: id of notification thread
-    pub fn notify_get_thread(&self, id: &str) -> WrappedRequest<'_, endpoints::NotifyGetThread> {
+    pub fn notify_get_thread(
+        &self,
+        id: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::NotifyGetThread,
+        <endpoints::NotifyGetThread as Endpoint>::Response,
+    > {
         endpoints::NotifyGetThread { id }
             .make_request()
-            .wrap::<endpoints::NotifyGetThread>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Mark notification thread as read by ID
@@ -721,10 +978,14 @@ impl crate::Forgejo {
         &self,
         id: &str,
         query: NotifyReadThreadQuery,
-    ) -> WrappedRequest<'_, endpoints::NotifyReadThread> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::NotifyReadThread,
+        <endpoints::NotifyReadThread as Endpoint>::Response,
+    > {
         endpoints::NotifyReadThread { id, query }
             .make_request()
-            .wrap::<endpoints::NotifyReadThread>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a repository in an organization
@@ -735,18 +996,23 @@ impl crate::Forgejo {
         &self,
         org: &str,
         body: CreateRepoOption,
-    ) -> WrappedRequest<'_, endpoints::CreateOrgRepoDeprecated> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::CreateOrgRepoDeprecated,
+        <endpoints::CreateOrgRepoDeprecated as Endpoint>::Response,
+    > {
         endpoints::CreateOrgRepoDeprecated { org, body: body }
             .make_request()
-            .wrap::<endpoints::CreateOrgRepoDeprecated>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get list of organizations
     ///
-    pub fn org_get_all(&self) -> WrappedRequest<'_, endpoints::OrgGetAll> {
-        endpoints::OrgGetAll {}
-            .make_request()
-            .wrap::<endpoints::OrgGetAll>(self)
+    pub fn org_get_all(
+        &self,
+    ) -> WrappedRequest<'_, endpoints::OrgGetAll, <endpoints::OrgGetAll as Endpoint>::Response>
+    {
+        endpoints::OrgGetAll {}.make_request().wrap::<_, _>(self)
     }
 
     /// Create an organization
@@ -755,28 +1021,34 @@ impl crate::Forgejo {
     pub fn org_create(
         &self,
         organization: CreateOrgOption,
-    ) -> WrappedRequest<'_, endpoints::OrgCreate> {
+    ) -> WrappedRequest<'_, endpoints::OrgCreate, <endpoints::OrgCreate as Endpoint>::Response>
+    {
         endpoints::OrgCreate { body: organization }
             .make_request()
-            .wrap::<endpoints::OrgCreate>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get an organization
     ///
     /// - `org`: name of the organization to get
-    pub fn org_get(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgGet> {
-        endpoints::OrgGet { org }
-            .make_request()
-            .wrap::<endpoints::OrgGet>(self)
+    pub fn org_get(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<'_, endpoints::OrgGet, <endpoints::OrgGet as Endpoint>::Response> {
+        endpoints::OrgGet { org }.make_request().wrap::<_, _>(self)
     }
 
     /// Delete an organization
     ///
     /// - `org`: organization that is to be deleted
-    pub fn org_delete(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgDelete> {
+    pub fn org_delete(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<'_, endpoints::OrgDelete, <endpoints::OrgDelete as Endpoint>::Response>
+    {
         endpoints::OrgDelete { org }
             .make_request()
-            .wrap::<endpoints::OrgDelete>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit an organization
@@ -787,10 +1059,10 @@ impl crate::Forgejo {
         &self,
         org: &str,
         body: EditOrgOption,
-    ) -> WrappedRequest<'_, endpoints::OrgEdit> {
+    ) -> WrappedRequest<'_, endpoints::OrgEdit, <endpoints::OrgEdit as Endpoint>::Response> {
         endpoints::OrgEdit { org, body: body }
             .make_request()
-            .wrap::<endpoints::OrgEdit>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get an organization's actions runner registration token
@@ -799,10 +1071,14 @@ impl crate::Forgejo {
     pub fn org_get_runner_registration_token(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgGetRunnerRegistrationToken> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgGetRunnerRegistrationToken,
+        <endpoints::OrgGetRunnerRegistrationToken as Endpoint>::Response,
+    > {
         endpoints::OrgGetRunnerRegistrationToken { org }
             .make_request()
-            .wrap::<endpoints::OrgGetRunnerRegistrationToken>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an organization's actions secrets
@@ -811,10 +1087,14 @@ impl crate::Forgejo {
     pub fn org_list_actions_secrets(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListActionsSecrets> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListActionsSecrets,
+        <endpoints::OrgListActionsSecrets as Endpoint>::Response,
+    > {
         endpoints::OrgListActionsSecrets { org }
             .make_request()
-            .wrap::<endpoints::OrgListActionsSecrets>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create or Update a secret value in an organization
@@ -827,14 +1107,18 @@ impl crate::Forgejo {
         org: &str,
         secretname: &str,
         body: CreateOrUpdateSecretOption,
-    ) -> WrappedRequest<'_, endpoints::UpdateOrgSecret> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UpdateOrgSecret,
+        <endpoints::UpdateOrgSecret as Endpoint>::Response,
+    > {
         endpoints::UpdateOrgSecret {
             org,
             secretname,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::UpdateOrgSecret>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a secret in an organization
@@ -845,10 +1129,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         secretname: &str,
-    ) -> WrappedRequest<'_, endpoints::DeleteOrgSecret> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DeleteOrgSecret,
+        <endpoints::DeleteOrgSecret as Endpoint>::Response,
+    > {
         endpoints::DeleteOrgSecret { org, secretname }
             .make_request()
-            .wrap::<endpoints::DeleteOrgSecret>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get an org-level variables list
@@ -857,10 +1145,14 @@ impl crate::Forgejo {
     pub fn get_org_variables_list(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::GetOrgVariablesList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetOrgVariablesList,
+        <endpoints::GetOrgVariablesList as Endpoint>::Response,
+    > {
         endpoints::GetOrgVariablesList { org }
             .make_request()
-            .wrap::<endpoints::GetOrgVariablesList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get an org-level variable
@@ -871,10 +1163,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         variablename: &str,
-    ) -> WrappedRequest<'_, endpoints::GetOrgVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetOrgVariable,
+        <endpoints::GetOrgVariable as Endpoint>::Response,
+    > {
         endpoints::GetOrgVariable { org, variablename }
             .make_request()
-            .wrap::<endpoints::GetOrgVariable>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update an org-level variable
@@ -887,14 +1183,18 @@ impl crate::Forgejo {
         org: &str,
         variablename: &str,
         body: UpdateVariableOption,
-    ) -> WrappedRequest<'_, endpoints::UpdateOrgVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UpdateOrgVariable,
+        <endpoints::UpdateOrgVariable as Endpoint>::Response,
+    > {
         endpoints::UpdateOrgVariable {
             org,
             variablename,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::UpdateOrgVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Create an org-level variable
@@ -907,14 +1207,18 @@ impl crate::Forgejo {
         org: &str,
         variablename: &str,
         body: CreateVariableOption,
-    ) -> WrappedRequest<'_, endpoints::CreateOrgVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::CreateOrgVariable,
+        <endpoints::CreateOrgVariable as Endpoint>::Response,
+    > {
         endpoints::CreateOrgVariable {
             org,
             variablename,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::CreateOrgVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete an org-level variable
@@ -925,10 +1229,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         variablename: &str,
-    ) -> WrappedRequest<'_, endpoints::DeleteOrgVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DeleteOrgVariable,
+        <endpoints::DeleteOrgVariable as Endpoint>::Response,
+    > {
         endpoints::DeleteOrgVariable { org, variablename }
             .make_request()
-            .wrap::<endpoints::DeleteOrgVariable>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an organization's activity feeds
@@ -938,10 +1246,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: OrgListActivityFeedsQuery,
-    ) -> WrappedRequest<'_, endpoints::OrgListActivityFeeds> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListActivityFeeds,
+        <endpoints::OrgListActivityFeeds as Endpoint>::Response,
+    > {
         endpoints::OrgListActivityFeeds { org, query }
             .make_request()
-            .wrap::<endpoints::OrgListActivityFeeds>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update Avatar
@@ -952,19 +1264,30 @@ impl crate::Forgejo {
         &self,
         org: &str,
         body: UpdateUserAvatarOption,
-    ) -> WrappedRequest<'_, endpoints::OrgUpdateAvatar> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgUpdateAvatar,
+        <endpoints::OrgUpdateAvatar as Endpoint>::Response,
+    > {
         endpoints::OrgUpdateAvatar { org, body: body }
             .make_request()
-            .wrap::<endpoints::OrgUpdateAvatar>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete Avatar
     ///
     /// - `org`: name of the organization
-    pub fn org_delete_avatar(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgDeleteAvatar> {
+    pub fn org_delete_avatar(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgDeleteAvatar,
+        <endpoints::OrgDeleteAvatar as Endpoint>::Response,
+    > {
         endpoints::OrgDeleteAvatar { org }
             .make_request()
-            .wrap::<endpoints::OrgDeleteAvatar>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Blocks a user from the organization
@@ -975,19 +1298,24 @@ impl crate::Forgejo {
         &self,
         org: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgBlockUser> {
+    ) -> WrappedRequest<'_, endpoints::OrgBlockUser, <endpoints::OrgBlockUser as Endpoint>::Response>
+    {
         endpoints::OrgBlockUser { org, username }
             .make_request()
-            .wrap::<endpoints::OrgBlockUser>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an organization's webhooks
     ///
     /// - `org`: name of the organization
-    pub fn org_list_hooks(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgListHooks> {
+    pub fn org_list_hooks(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<'_, endpoints::OrgListHooks, <endpoints::OrgListHooks as Endpoint>::Response>
+    {
         endpoints::OrgListHooks { org }
             .make_request()
-            .wrap::<endpoints::OrgListHooks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a hook
@@ -998,20 +1326,29 @@ impl crate::Forgejo {
         &self,
         org: &str,
         body: CreateHookOption,
-    ) -> WrappedRequest<'_, endpoints::OrgCreateHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgCreateHook,
+        <endpoints::OrgCreateHook as Endpoint>::Response,
+    > {
         endpoints::OrgCreateHook { org, body: body }
             .make_request()
-            .wrap::<endpoints::OrgCreateHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a hook
     ///
     /// - `org`: name of the organization
     /// - `id`: id of the hook to get
-    pub fn org_get_hook(&self, org: &str, id: u64) -> WrappedRequest<'_, endpoints::OrgGetHook> {
+    pub fn org_get_hook(
+        &self,
+        org: &str,
+        id: u64,
+    ) -> WrappedRequest<'_, endpoints::OrgGetHook, <endpoints::OrgGetHook as Endpoint>::Response>
+    {
         endpoints::OrgGetHook { org, id }
             .make_request()
-            .wrap::<endpoints::OrgGetHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a hook
@@ -1022,10 +1359,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::OrgDeleteHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgDeleteHook,
+        <endpoints::OrgDeleteHook as Endpoint>::Response,
+    > {
         endpoints::OrgDeleteHook { org, id }
             .make_request()
-            .wrap::<endpoints::OrgDeleteHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a hook
@@ -1038,23 +1379,31 @@ impl crate::Forgejo {
         org: &str,
         id: u64,
         body: EditHookOption,
-    ) -> WrappedRequest<'_, endpoints::OrgEditHook> {
+    ) -> WrappedRequest<'_, endpoints::OrgEditHook, <endpoints::OrgEditHook as Endpoint>::Response>
+    {
         endpoints::OrgEditHook {
             org,
             id,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::OrgEditHook>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List an organization's labels
     ///
     /// - `org`: name of the organization
-    pub fn org_list_labels(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgListLabels> {
+    pub fn org_list_labels(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListLabels,
+        <endpoints::OrgListLabels as Endpoint>::Response,
+    > {
         endpoints::OrgListLabels { org }
             .make_request()
-            .wrap::<endpoints::OrgListLabels>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a label for an organization
@@ -1065,20 +1414,29 @@ impl crate::Forgejo {
         &self,
         org: &str,
         body: CreateLabelOption,
-    ) -> WrappedRequest<'_, endpoints::OrgCreateLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgCreateLabel,
+        <endpoints::OrgCreateLabel as Endpoint>::Response,
+    > {
         endpoints::OrgCreateLabel { org, body: body }
             .make_request()
-            .wrap::<endpoints::OrgCreateLabel>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a single label
     ///
     /// - `org`: name of the organization
     /// - `id`: id of the label to get
-    pub fn org_get_label(&self, org: &str, id: u64) -> WrappedRequest<'_, endpoints::OrgGetLabel> {
+    pub fn org_get_label(
+        &self,
+        org: &str,
+        id: u64,
+    ) -> WrappedRequest<'_, endpoints::OrgGetLabel, <endpoints::OrgGetLabel as Endpoint>::Response>
+    {
         endpoints::OrgGetLabel { org, id }
             .make_request()
-            .wrap::<endpoints::OrgGetLabel>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a label
@@ -1089,10 +1447,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::OrgDeleteLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgDeleteLabel,
+        <endpoints::OrgDeleteLabel as Endpoint>::Response,
+    > {
         endpoints::OrgDeleteLabel { org, id }
             .make_request()
-            .wrap::<endpoints::OrgDeleteLabel>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a label
@@ -1105,14 +1467,15 @@ impl crate::Forgejo {
         org: &str,
         id: u64,
         body: EditLabelOption,
-    ) -> WrappedRequest<'_, endpoints::OrgEditLabel> {
+    ) -> WrappedRequest<'_, endpoints::OrgEditLabel, <endpoints::OrgEditLabel as Endpoint>::Response>
+    {
         endpoints::OrgEditLabel {
             org,
             id,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::OrgEditLabel>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List the organization's blocked users
@@ -1121,19 +1484,30 @@ impl crate::Forgejo {
     pub fn org_list_blocked_users(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListBlockedUsers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListBlockedUsers,
+        <endpoints::OrgListBlockedUsers as Endpoint>::Response,
+    > {
         endpoints::OrgListBlockedUsers { org }
             .make_request()
-            .wrap::<endpoints::OrgListBlockedUsers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an organization's members
     ///
     /// - `org`: name of the organization
-    pub fn org_list_members(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgListMembers> {
+    pub fn org_list_members(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListMembers,
+        <endpoints::OrgListMembers as Endpoint>::Response,
+    > {
         endpoints::OrgListMembers { org }
             .make_request()
-            .wrap::<endpoints::OrgListMembers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if a user is a member of an organization
@@ -1144,10 +1518,11 @@ impl crate::Forgejo {
         &self,
         org: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgIsMember> {
+    ) -> WrappedRequest<'_, endpoints::OrgIsMember, <endpoints::OrgIsMember as Endpoint>::Response>
+    {
         endpoints::OrgIsMember { org, username }
             .make_request()
-            .wrap::<endpoints::OrgIsMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Remove a member from an organization
@@ -1158,10 +1533,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgDeleteMember> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgDeleteMember,
+        <endpoints::OrgDeleteMember as Endpoint>::Response,
+    > {
         endpoints::OrgDeleteMember { org, username }
             .make_request()
-            .wrap::<endpoints::OrgDeleteMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an organization's public members
@@ -1170,10 +1549,14 @@ impl crate::Forgejo {
     pub fn org_list_public_members(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListPublicMembers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListPublicMembers,
+        <endpoints::OrgListPublicMembers as Endpoint>::Response,
+    > {
         endpoints::OrgListPublicMembers { org }
             .make_request()
-            .wrap::<endpoints::OrgListPublicMembers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if a user is a public member of an organization
@@ -1184,10 +1567,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgIsPublicMember> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgIsPublicMember,
+        <endpoints::OrgIsPublicMember as Endpoint>::Response,
+    > {
         endpoints::OrgIsPublicMember { org, username }
             .make_request()
-            .wrap::<endpoints::OrgIsPublicMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Publicize a user's membership
@@ -1198,10 +1585,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgPublicizeMember> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgPublicizeMember,
+        <endpoints::OrgPublicizeMember as Endpoint>::Response,
+    > {
         endpoints::OrgPublicizeMember { org, username }
             .make_request()
-            .wrap::<endpoints::OrgPublicizeMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Conceal a user's membership
@@ -1212,19 +1603,27 @@ impl crate::Forgejo {
         &self,
         org: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgConcealMember> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgConcealMember,
+        <endpoints::OrgConcealMember as Endpoint>::Response,
+    > {
         endpoints::OrgConcealMember { org, username }
             .make_request()
-            .wrap::<endpoints::OrgConcealMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get quota information for an organization
     ///
     /// - `org`: name of the organization
-    pub fn org_get_quota(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgGetQuota> {
+    pub fn org_get_quota(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<'_, endpoints::OrgGetQuota, <endpoints::OrgGetQuota as Endpoint>::Response>
+    {
         endpoints::OrgGetQuota { org }
             .make_request()
-            .wrap::<endpoints::OrgGetQuota>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the artifacts affecting the organization's quota
@@ -1233,10 +1632,14 @@ impl crate::Forgejo {
     pub fn org_list_quota_artifacts(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListQuotaArtifacts> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListQuotaArtifacts,
+        <endpoints::OrgListQuotaArtifacts as Endpoint>::Response,
+    > {
         endpoints::OrgListQuotaArtifacts { org }
             .make_request()
-            .wrap::<endpoints::OrgListQuotaArtifacts>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the attachments affecting the organization's quota
@@ -1245,19 +1648,30 @@ impl crate::Forgejo {
     pub fn org_list_quota_attachments(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListQuotaAttachments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListQuotaAttachments,
+        <endpoints::OrgListQuotaAttachments as Endpoint>::Response,
+    > {
         endpoints::OrgListQuotaAttachments { org }
             .make_request()
-            .wrap::<endpoints::OrgListQuotaAttachments>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if the organization is over quota for a given subject
     ///
     /// - `org`: name of the organization
-    pub fn org_check_quota(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgCheckQuota> {
+    pub fn org_check_quota(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgCheckQuota,
+        <endpoints::OrgCheckQuota as Endpoint>::Response,
+    > {
         endpoints::OrgCheckQuota { org }
             .make_request()
-            .wrap::<endpoints::OrgCheckQuota>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the packages affecting the organization's quota
@@ -1266,19 +1680,27 @@ impl crate::Forgejo {
     pub fn org_list_quota_packages(
         &self,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListQuotaPackages> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListQuotaPackages,
+        <endpoints::OrgListQuotaPackages as Endpoint>::Response,
+    > {
         endpoints::OrgListQuotaPackages { org }
             .make_request()
-            .wrap::<endpoints::OrgListQuotaPackages>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an organization's repos
     ///
     /// - `org`: name of the organization
-    pub fn org_list_repos(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgListRepos> {
+    pub fn org_list_repos(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<'_, endpoints::OrgListRepos, <endpoints::OrgListRepos as Endpoint>::Response>
+    {
         endpoints::OrgListRepos { org }
             .make_request()
-            .wrap::<endpoints::OrgListRepos>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a repository in an organization
@@ -1289,19 +1711,27 @@ impl crate::Forgejo {
         &self,
         org: &str,
         body: CreateRepoOption,
-    ) -> WrappedRequest<'_, endpoints::CreateOrgRepo> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::CreateOrgRepo,
+        <endpoints::CreateOrgRepo as Endpoint>::Response,
+    > {
         endpoints::CreateOrgRepo { org, body: body }
             .make_request()
-            .wrap::<endpoints::CreateOrgRepo>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an organization's teams
     ///
     /// - `org`: name of the organization
-    pub fn org_list_teams(&self, org: &str) -> WrappedRequest<'_, endpoints::OrgListTeams> {
+    pub fn org_list_teams(
+        &self,
+        org: &str,
+    ) -> WrappedRequest<'_, endpoints::OrgListTeams, <endpoints::OrgListTeams as Endpoint>::Response>
+    {
         endpoints::OrgListTeams { org }
             .make_request()
-            .wrap::<endpoints::OrgListTeams>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a team
@@ -1312,10 +1742,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         body: CreateTeamOption,
-    ) -> WrappedRequest<'_, endpoints::OrgCreateTeam> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgCreateTeam,
+        <endpoints::OrgCreateTeam as Endpoint>::Response,
+    > {
         endpoints::OrgCreateTeam { org, body: body }
             .make_request()
-            .wrap::<endpoints::OrgCreateTeam>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Search for teams within an organization
@@ -1325,10 +1759,11 @@ impl crate::Forgejo {
         &self,
         org: &str,
         query: TeamSearchQuery,
-    ) -> WrappedRequest<'_, endpoints::TeamSearch> {
+    ) -> WrappedRequest<'_, endpoints::TeamSearch, <endpoints::TeamSearch as Endpoint>::Response>
+    {
         endpoints::TeamSearch { org, query }
             .make_request()
-            .wrap::<endpoints::TeamSearch>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Unblock a user from the organization
@@ -1339,10 +1774,14 @@ impl crate::Forgejo {
         &self,
         org: &str,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgUnblockUser> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgUnblockUser,
+        <endpoints::OrgUnblockUser as Endpoint>::Response,
+    > {
         endpoints::OrgUnblockUser { org, username }
             .make_request()
-            .wrap::<endpoints::OrgUnblockUser>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Gets all packages of an owner
@@ -1352,10 +1791,11 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         query: ListPackagesQuery,
-    ) -> WrappedRequest<'_, endpoints::ListPackages> {
+    ) -> WrappedRequest<'_, endpoints::ListPackages, <endpoints::ListPackages as Endpoint>::Response>
+    {
         endpoints::ListPackages { owner, query }
             .make_request()
-            .wrap::<endpoints::ListPackages>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Gets a package
@@ -1370,7 +1810,8 @@ impl crate::Forgejo {
         r#type: &str,
         name: &str,
         version: &str,
-    ) -> WrappedRequest<'_, endpoints::GetPackage> {
+    ) -> WrappedRequest<'_, endpoints::GetPackage, <endpoints::GetPackage as Endpoint>::Response>
+    {
         endpoints::GetPackage {
             owner,
             r#type,
@@ -1378,7 +1819,7 @@ impl crate::Forgejo {
             version,
         }
         .make_request()
-        .wrap::<endpoints::GetPackage>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a package
@@ -1393,7 +1834,11 @@ impl crate::Forgejo {
         r#type: &str,
         name: &str,
         version: &str,
-    ) -> WrappedRequest<'_, endpoints::DeletePackage> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DeletePackage,
+        <endpoints::DeletePackage as Endpoint>::Response,
+    > {
         endpoints::DeletePackage {
             owner,
             r#type,
@@ -1401,7 +1846,7 @@ impl crate::Forgejo {
             version,
         }
         .make_request()
-        .wrap::<endpoints::DeletePackage>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Gets all files of a package
@@ -1416,7 +1861,11 @@ impl crate::Forgejo {
         r#type: &str,
         name: &str,
         version: &str,
-    ) -> WrappedRequest<'_, endpoints::ListPackageFiles> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ListPackageFiles,
+        <endpoints::ListPackageFiles as Endpoint>::Response,
+    > {
         endpoints::ListPackageFiles {
             owner,
             r#type,
@@ -1424,7 +1873,7 @@ impl crate::Forgejo {
             version,
         }
         .make_request()
-        .wrap::<endpoints::ListPackageFiles>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Search for issues across the repositories that the user has access to
@@ -1432,10 +1881,14 @@ impl crate::Forgejo {
     pub fn issue_search_issues(
         &self,
         query: IssueSearchIssuesQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueSearchIssues> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueSearchIssues,
+        <endpoints::IssueSearchIssues as Endpoint>::Response,
+    > {
         endpoints::IssueSearchIssues { query }
             .make_request()
-            .wrap::<endpoints::IssueSearchIssues>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Migrate a remote git repository
@@ -1444,28 +1897,37 @@ impl crate::Forgejo {
     pub fn repo_migrate(
         &self,
         body: MigrateRepoOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoMigrate> {
+    ) -> WrappedRequest<'_, endpoints::RepoMigrate, <endpoints::RepoMigrate as Endpoint>::Response>
+    {
         endpoints::RepoMigrate { body: body }
             .make_request()
-            .wrap::<endpoints::RepoMigrate>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Search for repositories
     ///
-    pub fn repo_search(&self, query: RepoSearchQuery) -> WrappedRequest<'_, endpoints::RepoSearch> {
+    pub fn repo_search(
+        &self,
+        query: RepoSearchQuery,
+    ) -> WrappedRequest<'_, endpoints::RepoSearch, <endpoints::RepoSearch as Endpoint>::Response>
+    {
         endpoints::RepoSearch { query }
             .make_request()
-            .wrap::<endpoints::RepoSearch>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a repository
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    pub fn repo_get(&self, owner: &str, repo: &str) -> WrappedRequest<'_, endpoints::RepoGet> {
+    pub fn repo_get(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> WrappedRequest<'_, endpoints::RepoGet, <endpoints::RepoGet as Endpoint>::Response> {
         endpoints::RepoGet { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGet>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a repository
@@ -1476,10 +1938,11 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDelete> {
+    ) -> WrappedRequest<'_, endpoints::RepoDelete, <endpoints::RepoDelete as Endpoint>::Response>
+    {
         endpoints::RepoDelete { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoDelete>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit a repository's properties. Only fields that are set will be changed.
@@ -1494,14 +1957,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: EditRepoOption,
-    ) -> WrappedRequest<'_, endpoints::RepoEdit> {
+    ) -> WrappedRequest<'_, endpoints::RepoEdit, <endpoints::RepoEdit as Endpoint>::Response> {
         endpoints::RepoEdit {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEdit>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a repository's actions runner registration token
@@ -1512,10 +1975,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetRunnerRegistrationToken> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetRunnerRegistrationToken,
+        <endpoints::RepoGetRunnerRegistrationToken as Endpoint>::Response,
+    > {
         endpoints::RepoGetRunnerRegistrationToken { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetRunnerRegistrationToken>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List an repo's actions secrets
@@ -1526,10 +1993,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListActionsSecrets> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListActionsSecrets,
+        <endpoints::RepoListActionsSecrets as Endpoint>::Response,
+    > {
         endpoints::RepoListActionsSecrets { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListActionsSecrets>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create or Update a secret value in a repository
@@ -1544,7 +2015,11 @@ impl crate::Forgejo {
         repo: &str,
         secretname: &str,
         body: CreateOrUpdateSecretOption,
-    ) -> WrappedRequest<'_, endpoints::UpdateRepoSecret> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UpdateRepoSecret,
+        <endpoints::UpdateRepoSecret as Endpoint>::Response,
+    > {
         endpoints::UpdateRepoSecret {
             owner,
             repo,
@@ -1552,7 +2027,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::UpdateRepoSecret>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a secret in a repository
@@ -1565,14 +2040,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         secretname: &str,
-    ) -> WrappedRequest<'_, endpoints::DeleteRepoSecret> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DeleteRepoSecret,
+        <endpoints::DeleteRepoSecret as Endpoint>::Response,
+    > {
         endpoints::DeleteRepoSecret {
             owner,
             repo,
             secretname,
         }
         .make_request()
-        .wrap::<endpoints::DeleteRepoSecret>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's action tasks
@@ -1583,10 +2062,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::ListActionTasks> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::ListActionTasks,
+        <endpoints::ListActionTasks as Endpoint>::Response,
+    > {
         endpoints::ListActionTasks { owner, repo }
             .make_request()
-            .wrap::<endpoints::ListActionTasks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get repo-level variables list
@@ -1597,10 +2080,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::GetRepoVariablesList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetRepoVariablesList,
+        <endpoints::GetRepoVariablesList as Endpoint>::Response,
+    > {
         endpoints::GetRepoVariablesList { owner, repo }
             .make_request()
-            .wrap::<endpoints::GetRepoVariablesList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a repo-level variable
@@ -1613,14 +2100,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         variablename: &str,
-    ) -> WrappedRequest<'_, endpoints::GetRepoVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetRepoVariable,
+        <endpoints::GetRepoVariable as Endpoint>::Response,
+    > {
         endpoints::GetRepoVariable {
             owner,
             repo,
             variablename,
         }
         .make_request()
-        .wrap::<endpoints::GetRepoVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Update a repo-level variable
@@ -1635,7 +2126,11 @@ impl crate::Forgejo {
         repo: &str,
         variablename: &str,
         body: UpdateVariableOption,
-    ) -> WrappedRequest<'_, endpoints::UpdateRepoVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UpdateRepoVariable,
+        <endpoints::UpdateRepoVariable as Endpoint>::Response,
+    > {
         endpoints::UpdateRepoVariable {
             owner,
             repo,
@@ -1643,7 +2138,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::UpdateRepoVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Create a repo-level variable
@@ -1658,7 +2153,11 @@ impl crate::Forgejo {
         repo: &str,
         variablename: &str,
         body: CreateVariableOption,
-    ) -> WrappedRequest<'_, endpoints::CreateRepoVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::CreateRepoVariable,
+        <endpoints::CreateRepoVariable as Endpoint>::Response,
+    > {
         endpoints::CreateRepoVariable {
             owner,
             repo,
@@ -1666,7 +2165,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::CreateRepoVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a repo-level variable
@@ -1679,14 +2178,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         variablename: &str,
-    ) -> WrappedRequest<'_, endpoints::DeleteRepoVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DeleteRepoVariable,
+        <endpoints::DeleteRepoVariable as Endpoint>::Response,
+    > {
         endpoints::DeleteRepoVariable {
             owner,
             repo,
             variablename,
         }
         .make_request()
-        .wrap::<endpoints::DeleteRepoVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Dispatches a workflow
@@ -1701,7 +2204,11 @@ impl crate::Forgejo {
         repo: &str,
         workflowname: &str,
         body: DispatchWorkflowOption,
-    ) -> WrappedRequest<'_, endpoints::DispatchWorkflow> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DispatchWorkflow,
+        <endpoints::DispatchWorkflow as Endpoint>::Response,
+    > {
         endpoints::DispatchWorkflow {
             owner,
             repo,
@@ -1709,7 +2216,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::DispatchWorkflow>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's activity feeds
@@ -1721,10 +2228,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListActivityFeedsQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoListActivityFeeds> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListActivityFeeds,
+        <endpoints::RepoListActivityFeeds as Endpoint>::Response,
+    > {
         endpoints::RepoListActivityFeeds { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::RepoListActivityFeeds>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get an archive of a repository
@@ -1737,14 +2248,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         archive: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetArchive> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetArchive,
+        <endpoints::RepoGetArchive as Endpoint>::Response,
+    > {
         endpoints::RepoGetArchive {
             owner,
             repo,
             archive,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetArchive>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Return all users that have write access and can be assigned to issues
@@ -1755,10 +2270,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetAssignees> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetAssignees,
+        <endpoints::RepoGetAssignees as Endpoint>::Response,
+    > {
         endpoints::RepoGetAssignees { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetAssignees>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update avatar
@@ -1771,14 +2290,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: UpdateRepoAvatarOption,
-    ) -> WrappedRequest<'_, endpoints::RepoUpdateAvatar> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoUpdateAvatar,
+        <endpoints::RepoUpdateAvatar as Endpoint>::Response,
+    > {
         endpoints::RepoUpdateAvatar {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoUpdateAvatar>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete avatar
@@ -1789,10 +2312,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteAvatar> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteAvatar,
+        <endpoints::RepoDeleteAvatar as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteAvatar { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoDeleteAvatar>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List branch protections for a repository
@@ -1803,10 +2330,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListBranchProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListBranchProtection,
+        <endpoints::RepoListBranchProtection as Endpoint>::Response,
+    > {
         endpoints::RepoListBranchProtection { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListBranchProtection>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a branch protections for a repository
@@ -1819,14 +2350,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateBranchProtectionOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateBranchProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateBranchProtection,
+        <endpoints::RepoCreateBranchProtection as Endpoint>::Response,
+    > {
         endpoints::RepoCreateBranchProtection {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateBranchProtection>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a specific branch protection for the repository
@@ -1839,10 +2374,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         name: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetBranchProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetBranchProtection,
+        <endpoints::RepoGetBranchProtection as Endpoint>::Response,
+    > {
         endpoints::RepoGetBranchProtection { owner, repo, name }
             .make_request()
-            .wrap::<endpoints::RepoGetBranchProtection>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a specific branch protection for the repository
@@ -1855,10 +2394,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         name: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteBranchProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteBranchProtection,
+        <endpoints::RepoDeleteBranchProtection as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteBranchProtection { owner, repo, name }
             .make_request()
-            .wrap::<endpoints::RepoDeleteBranchProtection>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit a branch protections for a repository. Only fields that are set will be changed
@@ -1873,7 +2416,11 @@ impl crate::Forgejo {
         repo: &str,
         name: &str,
         body: EditBranchProtectionOption,
-    ) -> WrappedRequest<'_, endpoints::RepoEditBranchProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoEditBranchProtection,
+        <endpoints::RepoEditBranchProtection as Endpoint>::Response,
+    > {
         endpoints::RepoEditBranchProtection {
             owner,
             repo,
@@ -1881,7 +2428,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditBranchProtection>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's branches
@@ -1892,10 +2439,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListBranches> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListBranches,
+        <endpoints::RepoListBranches as Endpoint>::Response,
+    > {
         endpoints::RepoListBranches { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListBranches>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a branch
@@ -1908,14 +2459,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateBranchRepoOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateBranch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateBranch,
+        <endpoints::RepoCreateBranch as Endpoint>::Response,
+    > {
         endpoints::RepoCreateBranch {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateBranch>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Retrieve a specific branch from a repository, including its effective branch protection
@@ -1928,14 +2483,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         branch: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetBranch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetBranch,
+        <endpoints::RepoGetBranch as Endpoint>::Response,
+    > {
         endpoints::RepoGetBranch {
             owner,
             repo,
             branch,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetBranch>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a specific branch from a repository
@@ -1948,14 +2507,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         branch: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteBranch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteBranch,
+        <endpoints::RepoDeleteBranch as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteBranch {
             owner,
             repo,
             branch,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeleteBranch>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Update a branch
@@ -1970,7 +2533,11 @@ impl crate::Forgejo {
         repo: &str,
         branch: &str,
         body: UpdateBranchRepoOption,
-    ) -> WrappedRequest<'_, endpoints::RepoUpdateBranch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoUpdateBranch,
+        <endpoints::RepoUpdateBranch as Endpoint>::Response,
+    > {
         endpoints::RepoUpdateBranch {
             owner,
             repo,
@@ -1978,7 +2545,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoUpdateBranch>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's collaborators
@@ -1989,10 +2556,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListCollaborators> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListCollaborators,
+        <endpoints::RepoListCollaborators as Endpoint>::Response,
+    > {
         endpoints::RepoListCollaborators { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListCollaborators>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if a user is a collaborator of a repository
@@ -2005,14 +2576,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         collaborator: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoCheckCollaborator> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCheckCollaborator,
+        <endpoints::RepoCheckCollaborator as Endpoint>::Response,
+    > {
         endpoints::RepoCheckCollaborator {
             owner,
             repo,
             collaborator,
         }
         .make_request()
-        .wrap::<endpoints::RepoCheckCollaborator>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Add a collaborator to a repository
@@ -2027,7 +2602,11 @@ impl crate::Forgejo {
         repo: &str,
         collaborator: &str,
         body: AddCollaboratorOption,
-    ) -> WrappedRequest<'_, endpoints::RepoAddCollaborator> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoAddCollaborator,
+        <endpoints::RepoAddCollaborator as Endpoint>::Response,
+    > {
         endpoints::RepoAddCollaborator {
             owner,
             repo,
@@ -2035,7 +2614,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoAddCollaborator>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a collaborator from a repository
@@ -2048,14 +2627,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         collaborator: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteCollaborator> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteCollaborator,
+        <endpoints::RepoDeleteCollaborator as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteCollaborator {
             owner,
             repo,
             collaborator,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeleteCollaborator>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get repository permissions for a user
@@ -2068,14 +2651,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         collaborator: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetRepoPermissions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetRepoPermissions,
+        <endpoints::RepoGetRepoPermissions as Endpoint>::Response,
+    > {
         endpoints::RepoGetRepoPermissions {
             owner,
             repo,
             collaborator,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetRepoPermissions>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a list of all commits from a repository
@@ -2087,10 +2674,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoGetAllCommitsQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetAllCommits> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetAllCommits,
+        <endpoints::RepoGetAllCommits as Endpoint>::Response,
+    > {
         endpoints::RepoGetAllCommits { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::RepoGetAllCommits>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a commit's combined status, by branch/tag/commit reference
@@ -2103,10 +2694,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         r#ref: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetCombinedStatusByRef> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetCombinedStatusByRef,
+        <endpoints::RepoGetCombinedStatusByRef as Endpoint>::Response,
+    > {
         endpoints::RepoGetCombinedStatusByRef { owner, repo, r#ref }
             .make_request()
-            .wrap::<endpoints::RepoGetCombinedStatusByRef>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a commit's statuses, by branch/tag/commit reference
@@ -2120,7 +2715,11 @@ impl crate::Forgejo {
         repo: &str,
         r#ref: &str,
         query: RepoListStatusesByRefQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoListStatusesByRef> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListStatusesByRef,
+        <endpoints::RepoListStatusesByRef as Endpoint>::Response,
+    > {
         endpoints::RepoListStatusesByRef {
             owner,
             repo,
@@ -2128,7 +2727,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoListStatusesByRef>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get the pull request of the commit
@@ -2141,10 +2740,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         sha: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetCommitPullRequest> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetCommitPullRequest,
+        <endpoints::RepoGetCommitPullRequest as Endpoint>::Response,
+    > {
         endpoints::RepoGetCommitPullRequest { owner, repo, sha }
             .make_request()
-            .wrap::<endpoints::RepoGetCommitPullRequest>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get commit comparison information
@@ -2157,14 +2760,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         basehead: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoCompareDiff> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCompareDiff,
+        <endpoints::RepoCompareDiff as Endpoint>::Response,
+    > {
         endpoints::RepoCompareDiff {
             owner,
             repo,
             basehead,
         }
         .make_request()
-        .wrap::<endpoints::RepoCompareDiff>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Gets the metadata of all the entries of the root dir
@@ -2176,10 +2783,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoGetContentsListQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetContentsList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetContentsList,
+        <endpoints::RepoGetContentsList as Endpoint>::Response,
+    > {
         endpoints::RepoGetContentsList { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::RepoGetContentsList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Modify multiple files in a repository
@@ -2192,14 +2803,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: ChangeFilesOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoChangeFiles> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoChangeFiles,
+        <endpoints::RepoChangeFiles as Endpoint>::Response,
+    > {
         endpoints::RepoChangeFiles {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoChangeFiles>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Gets the metadata and contents (if a file) of an entry in a repository, or a list of entries if a dir
@@ -2213,7 +2828,11 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         query: RepoGetContentsQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetContents> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetContents,
+        <endpoints::RepoGetContents as Endpoint>::Response,
+    > {
         endpoints::RepoGetContents {
             owner,
             repo,
@@ -2221,7 +2840,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetContents>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Update a file in a repository
@@ -2236,7 +2855,11 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         body: UpdateFileOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoUpdateFile> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoUpdateFile,
+        <endpoints::RepoUpdateFile as Endpoint>::Response,
+    > {
         endpoints::RepoUpdateFile {
             owner,
             repo,
@@ -2244,7 +2867,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoUpdateFile>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Create a file in a repository
@@ -2259,7 +2882,11 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         body: CreateFileOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateFile> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateFile,
+        <endpoints::RepoCreateFile as Endpoint>::Response,
+    > {
         endpoints::RepoCreateFile {
             owner,
             repo,
@@ -2267,7 +2894,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateFile>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a file in a repository
@@ -2282,7 +2909,11 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         body: DeleteFileOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteFile> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteFile,
+        <endpoints::RepoDeleteFile as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteFile {
             owner,
             repo,
@@ -2290,7 +2921,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeleteFile>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Apply diff patch to repository
@@ -2303,14 +2934,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: UpdateFileOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoApplyDiffPatch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoApplyDiffPatch,
+        <endpoints::RepoApplyDiffPatch as Endpoint>::Response,
+    > {
         endpoints::RepoApplyDiffPatch {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoApplyDiffPatch>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get the EditorConfig definitions of a file in a repository
@@ -2324,7 +2959,11 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         query: RepoGetEditorConfigQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetEditorConfig> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetEditorConfig,
+        <endpoints::RepoGetEditorConfig as Endpoint>::Response,
+    > {
         endpoints::RepoGetEditorConfig {
             owner,
             repo,
@@ -2332,7 +2971,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetEditorConfig>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's flags
@@ -2343,10 +2982,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListFlags> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListFlags,
+        <endpoints::RepoListFlags as Endpoint>::Response,
+    > {
         endpoints::RepoListFlags { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListFlags>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Replace all flags of a repository
@@ -2359,14 +3002,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: ReplaceFlagsOption,
-    ) -> WrappedRequest<'_, endpoints::RepoReplaceAllFlags> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoReplaceAllFlags,
+        <endpoints::RepoReplaceAllFlags as Endpoint>::Response,
+    > {
         endpoints::RepoReplaceAllFlags {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoReplaceAllFlags>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Remove all flags from a repository
@@ -2377,10 +3024,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteAllFlags> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteAllFlags,
+        <endpoints::RepoDeleteAllFlags as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteAllFlags { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoDeleteAllFlags>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if a repository has a given flag
@@ -2393,10 +3044,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         flag: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoCheckFlag> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCheckFlag,
+        <endpoints::RepoCheckFlag as Endpoint>::Response,
+    > {
         endpoints::RepoCheckFlag { owner, repo, flag }
             .make_request()
-            .wrap::<endpoints::RepoCheckFlag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a flag to a repository
@@ -2409,10 +3064,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         flag: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoAddFlag> {
+    ) -> WrappedRequest<'_, endpoints::RepoAddFlag, <endpoints::RepoAddFlag as Endpoint>::Response>
+    {
         endpoints::RepoAddFlag { owner, repo, flag }
             .make_request()
-            .wrap::<endpoints::RepoAddFlag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Remove a flag from a repository
@@ -2425,20 +3081,29 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         flag: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteFlag> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteFlag,
+        <endpoints::RepoDeleteFlag as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteFlag { owner, repo, flag }
             .make_request()
-            .wrap::<endpoints::RepoDeleteFlag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a repository's forks
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
-    pub fn list_forks(&self, owner: &str, repo: &str) -> WrappedRequest<'_, endpoints::ListForks> {
+    pub fn list_forks(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> WrappedRequest<'_, endpoints::ListForks, <endpoints::ListForks as Endpoint>::Response>
+    {
         endpoints::ListForks { owner, repo }
             .make_request()
-            .wrap::<endpoints::ListForks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Fork a repository
@@ -2451,14 +3116,15 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateForkOption,
-    ) -> WrappedRequest<'_, endpoints::CreateFork> {
+    ) -> WrappedRequest<'_, endpoints::CreateFork, <endpoints::CreateFork as Endpoint>::Response>
+    {
         endpoints::CreateFork {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::CreateFork>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Gets the blob of a repository.
@@ -2471,10 +3137,10 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         sha: &str,
-    ) -> WrappedRequest<'_, endpoints::GetBlob> {
+    ) -> WrappedRequest<'_, endpoints::GetBlob, <endpoints::GetBlob as Endpoint>::Response> {
         endpoints::GetBlob { owner, repo, sha }
             .make_request()
-            .wrap::<endpoints::GetBlob>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a single commit from a repository
@@ -2488,7 +3154,11 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         query: RepoGetSingleCommitQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetSingleCommit> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetSingleCommit,
+        <endpoints::RepoGetSingleCommit as Endpoint>::Response,
+    > {
         endpoints::RepoGetSingleCommit {
             owner,
             repo,
@@ -2496,7 +3166,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetSingleCommit>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a commit's diff or patch
@@ -2511,7 +3181,11 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         diff_type: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDownloadCommitDiffOrPatch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDownloadCommitDiffOrPatch,
+        <endpoints::RepoDownloadCommitDiffOrPatch as Endpoint>::Response,
+    > {
         endpoints::RepoDownloadCommitDiffOrPatch {
             owner,
             repo,
@@ -2519,7 +3193,7 @@ impl crate::Forgejo {
             diff_type,
         }
         .make_request()
-        .wrap::<endpoints::RepoDownloadCommitDiffOrPatch>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a note corresponding to a single commit from a repository
@@ -2533,7 +3207,8 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         query: RepoGetNoteQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetNote> {
+    ) -> WrappedRequest<'_, endpoints::RepoGetNote, <endpoints::RepoGetNote as Endpoint>::Response>
+    {
         endpoints::RepoGetNote {
             owner,
             repo,
@@ -2541,7 +3216,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetNote>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Set a note corresponding to a single commit from a repository
@@ -2556,7 +3231,8 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         body: NoteOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoSetNote> {
+    ) -> WrappedRequest<'_, endpoints::RepoSetNote, <endpoints::RepoSetNote as Endpoint>::Response>
+    {
         endpoints::RepoSetNote {
             owner,
             repo,
@@ -2564,7 +3240,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoSetNote>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Removes a note corresponding to a single commit from a repository
@@ -2577,10 +3253,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         sha: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoRemoveNote> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoRemoveNote,
+        <endpoints::RepoRemoveNote as Endpoint>::Response,
+    > {
         endpoints::RepoRemoveNote { owner, repo, sha }
             .make_request()
-            .wrap::<endpoints::RepoRemoveNote>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get specified ref or filtered repository's refs
@@ -2591,10 +3271,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListAllGitRefs> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListAllGitRefs,
+        <endpoints::RepoListAllGitRefs as Endpoint>::Response,
+    > {
         endpoints::RepoListAllGitRefs { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListAllGitRefs>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get specified ref or filtered repository's refs
@@ -2607,10 +3291,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         r#ref: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListGitRefs> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListGitRefs,
+        <endpoints::RepoListGitRefs as Endpoint>::Response,
+    > {
         endpoints::RepoListGitRefs { owner, repo, r#ref }
             .make_request()
-            .wrap::<endpoints::RepoListGitRefs>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Gets the tag object of an annotated tag (not lightweight tags)
@@ -2623,10 +3311,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         sha: &str,
-    ) -> WrappedRequest<'_, endpoints::GetAnnotatedTag> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetAnnotatedTag,
+        <endpoints::GetAnnotatedTag as Endpoint>::Response,
+    > {
         endpoints::GetAnnotatedTag { owner, repo, sha }
             .make_request()
-            .wrap::<endpoints::GetAnnotatedTag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Gets the tree of a repository.
@@ -2640,7 +3332,7 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         query: GetTreeQuery,
-    ) -> WrappedRequest<'_, endpoints::GetTree> {
+    ) -> WrappedRequest<'_, endpoints::GetTree, <endpoints::GetTree as Endpoint>::Response> {
         endpoints::GetTree {
             owner,
             repo,
@@ -2648,7 +3340,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::GetTree>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List the hooks in a repository
@@ -2659,10 +3351,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListHooks> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListHooks,
+        <endpoints::RepoListHooks as Endpoint>::Response,
+    > {
         endpoints::RepoListHooks { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListHooks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a hook
@@ -2675,14 +3371,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateHookOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateHook,
+        <endpoints::RepoCreateHook as Endpoint>::Response,
+    > {
         endpoints::RepoCreateHook {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateHook>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List the Git hooks in a repository
@@ -2693,10 +3393,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListGitHooks> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListGitHooks,
+        <endpoints::RepoListGitHooks as Endpoint>::Response,
+    > {
         endpoints::RepoListGitHooks { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListGitHooks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a Git hook
@@ -2709,10 +3413,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetGitHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetGitHook,
+        <endpoints::RepoGetGitHook as Endpoint>::Response,
+    > {
         endpoints::RepoGetGitHook { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoGetGitHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a Git hook in a repository
@@ -2725,10 +3433,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteGitHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteGitHook,
+        <endpoints::RepoDeleteGitHook as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteGitHook { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoDeleteGitHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit a Git hook in a repository
@@ -2743,7 +3455,11 @@ impl crate::Forgejo {
         repo: &str,
         id: &str,
         body: EditGitHookOption,
-    ) -> WrappedRequest<'_, endpoints::RepoEditGitHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoEditGitHook,
+        <endpoints::RepoEditGitHook as Endpoint>::Response,
+    > {
         endpoints::RepoEditGitHook {
             owner,
             repo,
@@ -2751,7 +3467,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditGitHook>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a hook
@@ -2764,10 +3480,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetHook> {
+    ) -> WrappedRequest<'_, endpoints::RepoGetHook, <endpoints::RepoGetHook as Endpoint>::Response>
+    {
         endpoints::RepoGetHook { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoGetHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a hook in a repository
@@ -2780,10 +3497,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteHook,
+        <endpoints::RepoDeleteHook as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteHook { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoDeleteHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit a hook in a repository
@@ -2798,7 +3519,8 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         body: EditHookOption,
-    ) -> WrappedRequest<'_, endpoints::RepoEditHook> {
+    ) -> WrappedRequest<'_, endpoints::RepoEditHook, <endpoints::RepoEditHook as Endpoint>::Response>
+    {
         endpoints::RepoEditHook {
             owner,
             repo,
@@ -2806,7 +3528,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditHook>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Test a push webhook
@@ -2820,7 +3542,8 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         query: RepoTestHookQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoTestHook> {
+    ) -> WrappedRequest<'_, endpoints::RepoTestHook, <endpoints::RepoTestHook as Endpoint>::Response>
+    {
         endpoints::RepoTestHook {
             owner,
             repo,
@@ -2828,7 +3551,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoTestHook>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Returns the issue config for a repo
@@ -2839,10 +3562,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetIssueConfig> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetIssueConfig,
+        <endpoints::RepoGetIssueConfig as Endpoint>::Response,
+    > {
         endpoints::RepoGetIssueConfig { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetIssueConfig>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns the validation information for a issue config
@@ -2853,10 +3580,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoValidateIssueConfig> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoValidateIssueConfig,
+        <endpoints::RepoValidateIssueConfig as Endpoint>::Response,
+    > {
         endpoints::RepoValidateIssueConfig { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoValidateIssueConfig>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get available issue templates for a repository
@@ -2867,10 +3598,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetIssueTemplates> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetIssueTemplates,
+        <endpoints::RepoGetIssueTemplates as Endpoint>::Response,
+    > {
         endpoints::RepoGetIssueTemplates { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetIssueTemplates>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a repository's issues
@@ -2882,10 +3617,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: IssueListIssuesQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueListIssues> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueListIssues,
+        <endpoints::IssueListIssues as Endpoint>::Response,
+    > {
         endpoints::IssueListIssues { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::IssueListIssues>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create an issue. If using deadline only the date will be taken into account, and time of day ignored.
@@ -2898,14 +3637,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateIssueOption,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateIssue> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateIssue,
+        <endpoints::IssueCreateIssue as Endpoint>::Response,
+    > {
         endpoints::IssueCreateIssue {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateIssue>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List all comments in a repository
@@ -2917,10 +3660,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: IssueGetRepoCommentsQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueGetRepoComments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetRepoComments,
+        <endpoints::IssueGetRepoComments as Endpoint>::Response,
+    > {
         endpoints::IssueGetRepoComments { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::IssueGetRepoComments>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a comment
@@ -2933,10 +3680,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetComment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetComment,
+        <endpoints::IssueGetComment as Endpoint>::Response,
+    > {
         endpoints::IssueGetComment { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueGetComment>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a comment
@@ -2949,10 +3700,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteComment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteComment,
+        <endpoints::IssueDeleteComment as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteComment { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueDeleteComment>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit a comment
@@ -2967,7 +3722,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         body: EditIssueCommentOption,
-    ) -> WrappedRequest<'_, endpoints::IssueEditComment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditComment,
+        <endpoints::IssueEditComment as Endpoint>::Response,
+    > {
         endpoints::IssueEditComment {
             owner,
             repo,
@@ -2975,7 +3734,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditComment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List comment's attachments
@@ -2988,10 +3747,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueListIssueCommentAttachments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueListIssueCommentAttachments,
+        <endpoints::IssueListIssueCommentAttachments as Endpoint>::Response,
+    > {
         endpoints::IssueListIssueCommentAttachments { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueListIssueCommentAttachments>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a comment attachment
@@ -3007,7 +3770,11 @@ impl crate::Forgejo {
         id: u64,
         attachment: &[u8],
         query: IssueCreateIssueCommentAttachmentQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateIssueCommentAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateIssueCommentAttachment,
+        <endpoints::IssueCreateIssueCommentAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueCreateIssueCommentAttachment {
             owner,
             repo,
@@ -3016,7 +3783,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateIssueCommentAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a comment attachment
@@ -3031,7 +3798,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         attachment_id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetIssueCommentAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetIssueCommentAttachment,
+        <endpoints::IssueGetIssueCommentAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueGetIssueCommentAttachment {
             owner,
             repo,
@@ -3039,7 +3810,7 @@ impl crate::Forgejo {
             attachment_id,
         }
         .make_request()
-        .wrap::<endpoints::IssueGetIssueCommentAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a comment attachment
@@ -3054,7 +3825,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         attachment_id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteIssueCommentAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteIssueCommentAttachment,
+        <endpoints::IssueDeleteIssueCommentAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteIssueCommentAttachment {
             owner,
             repo,
@@ -3062,7 +3837,7 @@ impl crate::Forgejo {
             attachment_id,
         }
         .make_request()
-        .wrap::<endpoints::IssueDeleteIssueCommentAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Edit a comment attachment
@@ -3079,7 +3854,11 @@ impl crate::Forgejo {
         id: u64,
         attachment_id: u64,
         body: EditAttachmentOptions,
-    ) -> WrappedRequest<'_, endpoints::IssueEditIssueCommentAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditIssueCommentAttachment,
+        <endpoints::IssueEditIssueCommentAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueEditIssueCommentAttachment {
             owner,
             repo,
@@ -3088,7 +3867,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditIssueCommentAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a list of reactions from a comment of an issue
@@ -3101,10 +3880,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetCommentReactions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetCommentReactions,
+        <endpoints::IssueGetCommentReactions as Endpoint>::Response,
+    > {
         endpoints::IssueGetCommentReactions { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueGetCommentReactions>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a reaction to a comment of an issue
@@ -3119,7 +3902,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         content: EditReactionOption,
-    ) -> WrappedRequest<'_, endpoints::IssuePostCommentReaction> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssuePostCommentReaction,
+        <endpoints::IssuePostCommentReaction as Endpoint>::Response,
+    > {
         endpoints::IssuePostCommentReaction {
             owner,
             repo,
@@ -3127,7 +3914,7 @@ impl crate::Forgejo {
             body: content,
         }
         .make_request()
-        .wrap::<endpoints::IssuePostCommentReaction>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Remove a reaction from a comment of an issue
@@ -3142,7 +3929,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         content: EditReactionOption,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteCommentReaction> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteCommentReaction,
+        <endpoints::IssueDeleteCommentReaction as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteCommentReaction {
             owner,
             repo,
@@ -3150,7 +3941,7 @@ impl crate::Forgejo {
             body: content,
         }
         .make_request()
-        .wrap::<endpoints::IssueDeleteCommentReaction>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repo's pinned issues
@@ -3161,10 +3952,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListPinnedIssues> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListPinnedIssues,
+        <endpoints::RepoListPinnedIssues as Endpoint>::Response,
+    > {
         endpoints::RepoListPinnedIssues { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListPinnedIssues>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get an issue
@@ -3177,10 +3972,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetIssue> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetIssue,
+        <endpoints::IssueGetIssue as Endpoint>::Response,
+    > {
         endpoints::IssueGetIssue { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueGetIssue>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete an issue
@@ -3193,10 +3992,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDelete> {
+    ) -> WrappedRequest<'_, endpoints::IssueDelete, <endpoints::IssueDelete as Endpoint>::Response>
+    {
         endpoints::IssueDelete { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueDelete>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit an issue. If using deadline only the date will be taken into account, and time of day ignored.
@@ -3211,7 +4011,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: EditIssueOption,
-    ) -> WrappedRequest<'_, endpoints::IssueEditIssue> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditIssue,
+        <endpoints::IssueEditIssue as Endpoint>::Response,
+    > {
         endpoints::IssueEditIssue {
             owner,
             repo,
@@ -3219,7 +4023,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditIssue>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List issue's attachments
@@ -3232,10 +4036,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueListIssueAttachments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueListIssueAttachments,
+        <endpoints::IssueListIssueAttachments as Endpoint>::Response,
+    > {
         endpoints::IssueListIssueAttachments { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueListIssueAttachments>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create an issue attachment
@@ -3251,7 +4059,11 @@ impl crate::Forgejo {
         index: u64,
         attachment: &[u8],
         query: IssueCreateIssueAttachmentQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateIssueAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateIssueAttachment,
+        <endpoints::IssueCreateIssueAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueCreateIssueAttachment {
             owner,
             repo,
@@ -3260,7 +4072,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateIssueAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get an issue attachment
@@ -3275,7 +4087,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         attachment_id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetIssueAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetIssueAttachment,
+        <endpoints::IssueGetIssueAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueGetIssueAttachment {
             owner,
             repo,
@@ -3283,7 +4099,7 @@ impl crate::Forgejo {
             attachment_id,
         }
         .make_request()
-        .wrap::<endpoints::IssueGetIssueAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete an issue attachment
@@ -3298,7 +4114,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         attachment_id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteIssueAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteIssueAttachment,
+        <endpoints::IssueDeleteIssueAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteIssueAttachment {
             owner,
             repo,
@@ -3306,7 +4126,7 @@ impl crate::Forgejo {
             attachment_id,
         }
         .make_request()
-        .wrap::<endpoints::IssueDeleteIssueAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Edit an issue attachment
@@ -3323,7 +4143,11 @@ impl crate::Forgejo {
         index: u64,
         attachment_id: u64,
         body: EditAttachmentOptions,
-    ) -> WrappedRequest<'_, endpoints::IssueEditIssueAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditIssueAttachment,
+        <endpoints::IssueEditIssueAttachment as Endpoint>::Response,
+    > {
         endpoints::IssueEditIssueAttachment {
             owner,
             repo,
@@ -3332,7 +4156,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditIssueAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List issues that are blocked by this issue
@@ -3345,10 +4169,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: &str,
-    ) -> WrappedRequest<'_, endpoints::IssueListBlocks> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueListBlocks,
+        <endpoints::IssueListBlocks as Endpoint>::Response,
+    > {
         endpoints::IssueListBlocks { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueListBlocks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Block the issue given in the body by the issue in path
@@ -3363,7 +4191,11 @@ impl crate::Forgejo {
         repo: &str,
         index: &str,
         body: IssueMeta,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateIssueBlocking> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateIssueBlocking,
+        <endpoints::IssueCreateIssueBlocking as Endpoint>::Response,
+    > {
         endpoints::IssueCreateIssueBlocking {
             owner,
             repo,
@@ -3371,7 +4203,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateIssueBlocking>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Unblock the issue given in the body by the issue in path
@@ -3386,7 +4218,11 @@ impl crate::Forgejo {
         repo: &str,
         index: &str,
         body: IssueMeta,
-    ) -> WrappedRequest<'_, endpoints::IssueRemoveIssueBlocking> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueRemoveIssueBlocking,
+        <endpoints::IssueRemoveIssueBlocking as Endpoint>::Response,
+    > {
         endpoints::IssueRemoveIssueBlocking {
             owner,
             repo,
@@ -3394,7 +4230,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueRemoveIssueBlocking>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List all comments on an issue
@@ -3408,7 +4244,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueGetCommentsQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueGetComments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetComments,
+        <endpoints::IssueGetComments as Endpoint>::Response,
+    > {
         endpoints::IssueGetComments {
             owner,
             repo,
@@ -3416,7 +4256,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::IssueGetComments>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Add a comment to an issue
@@ -3431,7 +4271,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: CreateIssueCommentOption,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateComment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateComment,
+        <endpoints::IssueCreateComment as Endpoint>::Response,
+    > {
         endpoints::IssueCreateComment {
             owner,
             repo,
@@ -3439,7 +4283,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateComment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a comment
@@ -3454,7 +4298,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u32,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteCommentDeprecated> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteCommentDeprecated,
+        <endpoints::IssueDeleteCommentDeprecated as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteCommentDeprecated {
             owner,
             repo,
@@ -3462,7 +4310,7 @@ impl crate::Forgejo {
             id,
         }
         .make_request()
-        .wrap::<endpoints::IssueDeleteCommentDeprecated>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Edit a comment
@@ -3479,7 +4327,11 @@ impl crate::Forgejo {
         index: u32,
         id: u64,
         body: EditIssueCommentOption,
-    ) -> WrappedRequest<'_, endpoints::IssueEditCommentDeprecated> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditCommentDeprecated,
+        <endpoints::IssueEditCommentDeprecated as Endpoint>::Response,
+    > {
         endpoints::IssueEditCommentDeprecated {
             owner,
             repo,
@@ -3488,7 +4340,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditCommentDeprecated>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Set an issue deadline. If set to null, the deadline is deleted. If using deadline only the date will be taken into account, and time of day ignored.
@@ -3503,7 +4355,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: EditDeadlineOption,
-    ) -> WrappedRequest<'_, endpoints::IssueEditIssueDeadline> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditIssueDeadline,
+        <endpoints::IssueEditIssueDeadline as Endpoint>::Response,
+    > {
         endpoints::IssueEditIssueDeadline {
             owner,
             repo,
@@ -3511,7 +4367,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditIssueDeadline>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List an issue's dependencies, i.e all issues that block this issue.
@@ -3524,10 +4380,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: &str,
-    ) -> WrappedRequest<'_, endpoints::IssueListIssueDependencies> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueListIssueDependencies,
+        <endpoints::IssueListIssueDependencies as Endpoint>::Response,
+    > {
         endpoints::IssueListIssueDependencies { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueListIssueDependencies>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Make the issue in the url depend on the issue in the form.
@@ -3542,7 +4402,11 @@ impl crate::Forgejo {
         repo: &str,
         index: &str,
         body: IssueMeta,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateIssueDependencies> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateIssueDependencies,
+        <endpoints::IssueCreateIssueDependencies as Endpoint>::Response,
+    > {
         endpoints::IssueCreateIssueDependencies {
             owner,
             repo,
@@ -3550,7 +4414,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateIssueDependencies>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Remove an issue dependency
@@ -3565,7 +4429,11 @@ impl crate::Forgejo {
         repo: &str,
         index: &str,
         body: IssueMeta,
-    ) -> WrappedRequest<'_, endpoints::IssueRemoveIssueDependencies> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueRemoveIssueDependencies,
+        <endpoints::IssueRemoveIssueDependencies as Endpoint>::Response,
+    > {
         endpoints::IssueRemoveIssueDependencies {
             owner,
             repo,
@@ -3573,7 +4441,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueRemoveIssueDependencies>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get an issue's labels
@@ -3586,10 +4454,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetLabels> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetLabels,
+        <endpoints::IssueGetLabels as Endpoint>::Response,
+    > {
         endpoints::IssueGetLabels { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueGetLabels>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Replace an issue's labels
@@ -3604,7 +4476,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: IssueLabelsOption,
-    ) -> WrappedRequest<'_, endpoints::IssueReplaceLabels> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueReplaceLabels,
+        <endpoints::IssueReplaceLabels as Endpoint>::Response,
+    > {
         endpoints::IssueReplaceLabels {
             owner,
             repo,
@@ -3612,7 +4488,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueReplaceLabels>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Add a label to an issue
@@ -3627,7 +4503,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: IssueLabelsOption,
-    ) -> WrappedRequest<'_, endpoints::IssueAddLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueAddLabel,
+        <endpoints::IssueAddLabel as Endpoint>::Response,
+    > {
         endpoints::IssueAddLabel {
             owner,
             repo,
@@ -3635,7 +4515,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueAddLabel>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Remove all labels from an issue
@@ -3650,7 +4530,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: DeleteLabelsOption,
-    ) -> WrappedRequest<'_, endpoints::IssueClearLabels> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueClearLabels,
+        <endpoints::IssueClearLabels as Endpoint>::Response,
+    > {
         endpoints::IssueClearLabels {
             owner,
             repo,
@@ -3658,7 +4542,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueClearLabels>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Remove a label from an issue
@@ -3675,7 +4559,11 @@ impl crate::Forgejo {
         index: u64,
         id: u64,
         body: DeleteLabelsOption,
-    ) -> WrappedRequest<'_, endpoints::IssueRemoveLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueRemoveLabel,
+        <endpoints::IssueRemoveLabel as Endpoint>::Response,
+    > {
         endpoints::IssueRemoveLabel {
             owner,
             repo,
@@ -3684,7 +4572,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueRemoveLabel>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Pin an Issue
@@ -3697,10 +4585,10 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::PinIssue> {
+    ) -> WrappedRequest<'_, endpoints::PinIssue, <endpoints::PinIssue as Endpoint>::Response> {
         endpoints::PinIssue { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::PinIssue>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Unpin an Issue
@@ -3713,10 +4601,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::UnpinIssue> {
+    ) -> WrappedRequest<'_, endpoints::UnpinIssue, <endpoints::UnpinIssue as Endpoint>::Response>
+    {
         endpoints::UnpinIssue { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::UnpinIssue>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Moves the Pin to the given Position
@@ -3731,7 +4620,8 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         position: u64,
-    ) -> WrappedRequest<'_, endpoints::MoveIssuePin> {
+    ) -> WrappedRequest<'_, endpoints::MoveIssuePin, <endpoints::MoveIssuePin as Endpoint>::Response>
+    {
         endpoints::MoveIssuePin {
             owner,
             repo,
@@ -3739,7 +4629,7 @@ impl crate::Forgejo {
             position,
         }
         .make_request()
-        .wrap::<endpoints::MoveIssuePin>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a list reactions of an issue
@@ -3752,10 +4642,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetIssueReactions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetIssueReactions,
+        <endpoints::IssueGetIssueReactions as Endpoint>::Response,
+    > {
         endpoints::IssueGetIssueReactions { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueGetIssueReactions>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a reaction to an issue
@@ -3770,7 +4664,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         content: EditReactionOption,
-    ) -> WrappedRequest<'_, endpoints::IssuePostIssueReaction> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssuePostIssueReaction,
+        <endpoints::IssuePostIssueReaction as Endpoint>::Response,
+    > {
         endpoints::IssuePostIssueReaction {
             owner,
             repo,
@@ -3778,7 +4676,7 @@ impl crate::Forgejo {
             body: content,
         }
         .make_request()
-        .wrap::<endpoints::IssuePostIssueReaction>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Remove a reaction from an issue
@@ -3793,7 +4691,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         content: EditReactionOption,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteIssueReaction> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteIssueReaction,
+        <endpoints::IssueDeleteIssueReaction as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteIssueReaction {
             owner,
             repo,
@@ -3801,7 +4703,7 @@ impl crate::Forgejo {
             body: content,
         }
         .make_request()
-        .wrap::<endpoints::IssueDeleteIssueReaction>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete an issue's existing stopwatch.
@@ -3814,10 +4716,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteStopWatch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteStopWatch,
+        <endpoints::IssueDeleteStopWatch as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteStopWatch { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueDeleteStopWatch>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Start stopwatch on an issue.
@@ -3830,10 +4736,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueStartStopWatch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueStartStopWatch,
+        <endpoints::IssueStartStopWatch as Endpoint>::Response,
+    > {
         endpoints::IssueStartStopWatch { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueStartStopWatch>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Stop an issue's existing stopwatch.
@@ -3846,10 +4756,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueStopStopWatch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueStopStopWatch,
+        <endpoints::IssueStopStopWatch as Endpoint>::Response,
+    > {
         endpoints::IssueStopStopWatch { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueStopStopWatch>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get users who subscribed on an issue.
@@ -3862,10 +4776,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueSubscriptions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueSubscriptions,
+        <endpoints::IssueSubscriptions as Endpoint>::Response,
+    > {
         endpoints::IssueSubscriptions { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueSubscriptions>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if user is subscribed to an issue
@@ -3878,10 +4796,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueCheckSubscription> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCheckSubscription,
+        <endpoints::IssueCheckSubscription as Endpoint>::Response,
+    > {
         endpoints::IssueCheckSubscription { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueCheckSubscription>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Subscribe user to issue
@@ -3896,7 +4818,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         user: &str,
-    ) -> WrappedRequest<'_, endpoints::IssueAddSubscription> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueAddSubscription,
+        <endpoints::IssueAddSubscription as Endpoint>::Response,
+    > {
         endpoints::IssueAddSubscription {
             owner,
             repo,
@@ -3904,7 +4830,7 @@ impl crate::Forgejo {
             user,
         }
         .make_request()
-        .wrap::<endpoints::IssueAddSubscription>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Unsubscribe user from issue
@@ -3919,7 +4845,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         user: &str,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteSubscription> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteSubscription,
+        <endpoints::IssueDeleteSubscription as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteSubscription {
             owner,
             repo,
@@ -3927,7 +4857,7 @@ impl crate::Forgejo {
             user,
         }
         .make_request()
-        .wrap::<endpoints::IssueDeleteSubscription>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List all comments and events on an issue
@@ -3941,7 +4871,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueGetCommentsAndTimelineQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueGetCommentsAndTimeline> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetCommentsAndTimeline,
+        <endpoints::IssueGetCommentsAndTimeline as Endpoint>::Response,
+    > {
         endpoints::IssueGetCommentsAndTimeline {
             owner,
             repo,
@@ -3949,7 +4883,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::IssueGetCommentsAndTimeline>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List an issue's tracked times
@@ -3963,7 +4897,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: IssueTrackedTimesQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueTrackedTimes> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueTrackedTimes,
+        <endpoints::IssueTrackedTimes as Endpoint>::Response,
+    > {
         endpoints::IssueTrackedTimes {
             owner,
             repo,
@@ -3971,7 +4909,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::IssueTrackedTimes>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Add tracked time to a issue
@@ -3986,7 +4924,8 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: AddTimeOption,
-    ) -> WrappedRequest<'_, endpoints::IssueAddTime> {
+    ) -> WrappedRequest<'_, endpoints::IssueAddTime, <endpoints::IssueAddTime as Endpoint>::Response>
+    {
         endpoints::IssueAddTime {
             owner,
             repo,
@@ -3994,7 +4933,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueAddTime>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Reset a tracked time of an issue
@@ -4007,10 +4946,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueResetTime> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueResetTime,
+        <endpoints::IssueResetTime as Endpoint>::Response,
+    > {
         endpoints::IssueResetTime { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::IssueResetTime>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete specific tracked time
@@ -4025,7 +4968,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteTime> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteTime,
+        <endpoints::IssueDeleteTime as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteTime {
             owner,
             repo,
@@ -4033,7 +4980,7 @@ impl crate::Forgejo {
             id,
         }
         .make_request()
-        .wrap::<endpoints::IssueDeleteTime>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's keys
@@ -4045,10 +4992,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListKeysQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoListKeys> {
+    ) -> WrappedRequest<'_, endpoints::RepoListKeys, <endpoints::RepoListKeys as Endpoint>::Response>
+    {
         endpoints::RepoListKeys { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::RepoListKeys>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a key to a repository
@@ -4061,14 +5009,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateKeyOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateKey,
+        <endpoints::RepoCreateKey as Endpoint>::Response,
+    > {
         endpoints::RepoCreateKey {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateKey>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a repository's key by id
@@ -4081,10 +5033,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetKey> {
+    ) -> WrappedRequest<'_, endpoints::RepoGetKey, <endpoints::RepoGetKey as Endpoint>::Response>
+    {
         endpoints::RepoGetKey { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoGetKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a key from a repository
@@ -4097,10 +5050,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteKey,
+        <endpoints::RepoDeleteKey as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteKey { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoDeleteKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get all of a repository's labels
@@ -4111,10 +5068,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::IssueListLabels> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueListLabels,
+        <endpoints::IssueListLabels as Endpoint>::Response,
+    > {
         endpoints::IssueListLabels { owner, repo }
             .make_request()
-            .wrap::<endpoints::IssueListLabels>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a label
@@ -4127,14 +5088,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateLabelOption,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateLabel,
+        <endpoints::IssueCreateLabel as Endpoint>::Response,
+    > {
         endpoints::IssueCreateLabel {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateLabel>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a single label
@@ -4147,10 +5112,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueGetLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetLabel,
+        <endpoints::IssueGetLabel as Endpoint>::Response,
+    > {
         endpoints::IssueGetLabel { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueGetLabel>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a label
@@ -4163,10 +5132,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteLabel,
+        <endpoints::IssueDeleteLabel as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteLabel { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueDeleteLabel>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a label
@@ -4181,7 +5154,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         body: EditLabelOption,
-    ) -> WrappedRequest<'_, endpoints::IssueEditLabel> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditLabel,
+        <endpoints::IssueEditLabel as Endpoint>::Response,
+    > {
         endpoints::IssueEditLabel {
             owner,
             repo,
@@ -4189,7 +5166,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditLabel>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get languages and number of bytes of code written
@@ -4200,10 +5177,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetLanguages> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetLanguages,
+        <endpoints::RepoGetLanguages as Endpoint>::Response,
+    > {
         endpoints::RepoGetLanguages { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetLanguages>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a file or it's LFS object from a repository
@@ -4217,7 +5198,11 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         query: RepoGetRawFileOrLfsQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetRawFileOrLfs> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetRawFileOrLfs,
+        <endpoints::RepoGetRawFileOrLfs as Endpoint>::Response,
+    > {
         endpoints::RepoGetRawFileOrLfs {
             owner,
             repo,
@@ -4225,7 +5210,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetRawFileOrLfs>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get all of a repository's opened milestones
@@ -4237,10 +5222,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: IssueGetMilestonesListQuery,
-    ) -> WrappedRequest<'_, endpoints::IssueGetMilestonesList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetMilestonesList,
+        <endpoints::IssueGetMilestonesList as Endpoint>::Response,
+    > {
         endpoints::IssueGetMilestonesList { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::IssueGetMilestonesList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a milestone
@@ -4253,14 +5242,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateMilestoneOption,
-    ) -> WrappedRequest<'_, endpoints::IssueCreateMilestone> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueCreateMilestone,
+        <endpoints::IssueCreateMilestone as Endpoint>::Response,
+    > {
         endpoints::IssueCreateMilestone {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueCreateMilestone>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a milestone
@@ -4273,10 +5266,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: &str,
-    ) -> WrappedRequest<'_, endpoints::IssueGetMilestone> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueGetMilestone,
+        <endpoints::IssueGetMilestone as Endpoint>::Response,
+    > {
         endpoints::IssueGetMilestone { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueGetMilestone>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a milestone
@@ -4289,10 +5286,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: &str,
-    ) -> WrappedRequest<'_, endpoints::IssueDeleteMilestone> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueDeleteMilestone,
+        <endpoints::IssueDeleteMilestone as Endpoint>::Response,
+    > {
         endpoints::IssueDeleteMilestone { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::IssueDeleteMilestone>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a milestone
@@ -4307,7 +5308,11 @@ impl crate::Forgejo {
         repo: &str,
         id: &str,
         body: EditMilestoneOption,
-    ) -> WrappedRequest<'_, endpoints::IssueEditMilestone> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::IssueEditMilestone,
+        <endpoints::IssueEditMilestone as Endpoint>::Response,
+    > {
         endpoints::IssueEditMilestone {
             owner,
             repo,
@@ -4315,7 +5320,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::IssueEditMilestone>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Sync a mirrored repository
@@ -4326,10 +5331,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoMirrorSync> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoMirrorSync,
+        <endpoints::RepoMirrorSync as Endpoint>::Response,
+    > {
         endpoints::RepoMirrorSync { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoMirrorSync>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns if new Issue Pins are allowed
@@ -4340,10 +5349,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoNewPinAllowed> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoNewPinAllowed,
+        <endpoints::RepoNewPinAllowed as Endpoint>::Response,
+    > {
         endpoints::RepoNewPinAllowed { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoNewPinAllowed>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List users's notification threads on a specific repo
@@ -4355,10 +5368,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: NotifyGetRepoListQuery,
-    ) -> WrappedRequest<'_, endpoints::NotifyGetRepoList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::NotifyGetRepoList,
+        <endpoints::NotifyGetRepoList as Endpoint>::Response,
+    > {
         endpoints::NotifyGetRepoList { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::NotifyGetRepoList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Mark notification threads as read, pinned or unread on a specific repo
@@ -4370,10 +5387,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: NotifyReadRepoListQuery,
-    ) -> WrappedRequest<'_, endpoints::NotifyReadRepoList> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::NotifyReadRepoList,
+        <endpoints::NotifyReadRepoList as Endpoint>::Response,
+    > {
         endpoints::NotifyReadRepoList { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::NotifyReadRepoList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a repo's pull requests
@@ -4385,10 +5406,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListPullRequestsQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoListPullRequests> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListPullRequests,
+        <endpoints::RepoListPullRequests as Endpoint>::Response,
+    > {
         endpoints::RepoListPullRequests { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::RepoListPullRequests>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a pull request
@@ -4401,14 +5426,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreatePullRequestOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreatePullRequest> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreatePullRequest,
+        <endpoints::RepoCreatePullRequest as Endpoint>::Response,
+    > {
         endpoints::RepoCreatePullRequest {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreatePullRequest>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repo's pinned pull requests
@@ -4419,10 +5448,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListPinnedPullRequests> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListPinnedPullRequests,
+        <endpoints::RepoListPinnedPullRequests as Endpoint>::Response,
+    > {
         endpoints::RepoListPinnedPullRequests { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListPinnedPullRequests>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a pull request by base and head
@@ -4437,7 +5470,11 @@ impl crate::Forgejo {
         repo: &str,
         base: &str,
         head: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPullRequestByBaseHead> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPullRequestByBaseHead,
+        <endpoints::RepoGetPullRequestByBaseHead as Endpoint>::Response,
+    > {
         endpoints::RepoGetPullRequestByBaseHead {
             owner,
             repo,
@@ -4445,7 +5482,7 @@ impl crate::Forgejo {
             head,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetPullRequestByBaseHead>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a pull request
@@ -4458,10 +5495,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPullRequest> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPullRequest,
+        <endpoints::RepoGetPullRequest as Endpoint>::Response,
+    > {
         endpoints::RepoGetPullRequest { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::RepoGetPullRequest>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a pull request. If using deadline only the date will be taken into account, and time of day ignored.
@@ -4476,7 +5517,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: EditPullRequestOption,
-    ) -> WrappedRequest<'_, endpoints::RepoEditPullRequest> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoEditPullRequest,
+        <endpoints::RepoEditPullRequest as Endpoint>::Response,
+    > {
         endpoints::RepoEditPullRequest {
             owner,
             repo,
@@ -4484,7 +5529,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditPullRequest>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a pull request diff or patch
@@ -4500,7 +5545,11 @@ impl crate::Forgejo {
         index: u64,
         diff_type: &str,
         query: RepoDownloadPullDiffOrPatchQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoDownloadPullDiffOrPatch> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDownloadPullDiffOrPatch,
+        <endpoints::RepoDownloadPullDiffOrPatch as Endpoint>::Response,
+    > {
         endpoints::RepoDownloadPullDiffOrPatch {
             owner,
             repo,
@@ -4509,7 +5558,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoDownloadPullDiffOrPatch>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get commits for a pull request
@@ -4523,7 +5572,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoGetPullRequestCommitsQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPullRequestCommits> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPullRequestCommits,
+        <endpoints::RepoGetPullRequestCommits as Endpoint>::Response,
+    > {
         endpoints::RepoGetPullRequestCommits {
             owner,
             repo,
@@ -4531,7 +5584,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetPullRequestCommits>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get changed files for a pull request
@@ -4545,7 +5598,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoGetPullRequestFilesQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPullRequestFiles> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPullRequestFiles,
+        <endpoints::RepoGetPullRequestFiles as Endpoint>::Response,
+    > {
         endpoints::RepoGetPullRequestFiles {
             owner,
             repo,
@@ -4553,7 +5610,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetPullRequestFiles>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Check if a pull request has been merged
@@ -4566,10 +5623,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoPullRequestIsMerged> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoPullRequestIsMerged,
+        <endpoints::RepoPullRequestIsMerged as Endpoint>::Response,
+    > {
         endpoints::RepoPullRequestIsMerged { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::RepoPullRequestIsMerged>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Merge a pull request
@@ -4584,7 +5645,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: MergePullRequestOption,
-    ) -> WrappedRequest<'_, endpoints::RepoMergePullRequest> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoMergePullRequest,
+        <endpoints::RepoMergePullRequest as Endpoint>::Response,
+    > {
         endpoints::RepoMergePullRequest {
             owner,
             repo,
@@ -4592,7 +5657,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoMergePullRequest>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Cancel the scheduled auto merge for the given pull request
@@ -4605,10 +5670,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoCancelScheduledAutoMerge> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCancelScheduledAutoMerge,
+        <endpoints::RepoCancelScheduledAutoMerge as Endpoint>::Response,
+    > {
         endpoints::RepoCancelScheduledAutoMerge { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::RepoCancelScheduledAutoMerge>(self)
+            .wrap::<_, _>(self)
     }
 
     /// create review requests for a pull request
@@ -4623,7 +5692,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: PullReviewRequestOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoCreatePullReviewRequests> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreatePullReviewRequests,
+        <endpoints::RepoCreatePullReviewRequests as Endpoint>::Response,
+    > {
         endpoints::RepoCreatePullReviewRequests {
             owner,
             repo,
@@ -4631,7 +5704,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreatePullReviewRequests>(self)
+        .wrap::<_, _>(self)
     }
 
     /// cancel review requests for a pull request
@@ -4646,7 +5719,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: PullReviewRequestOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoDeletePullReviewRequests> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeletePullReviewRequests,
+        <endpoints::RepoDeletePullReviewRequests as Endpoint>::Response,
+    > {
         endpoints::RepoDeletePullReviewRequests {
             owner,
             repo,
@@ -4654,7 +5731,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeletePullReviewRequests>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List all reviews for a pull request
@@ -4667,10 +5744,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoListPullReviews> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListPullReviews,
+        <endpoints::RepoListPullReviews as Endpoint>::Response,
+    > {
         endpoints::RepoListPullReviews { owner, repo, index }
             .make_request()
-            .wrap::<endpoints::RepoListPullReviews>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a review to an pull request
@@ -4685,7 +5766,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         body: CreatePullReviewOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoCreatePullReview> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreatePullReview,
+        <endpoints::RepoCreatePullReview as Endpoint>::Response,
+    > {
         endpoints::RepoCreatePullReview {
             owner,
             repo,
@@ -4693,7 +5778,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreatePullReview>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a specific review for a pull request
@@ -4708,7 +5793,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPullReview> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPullReview,
+        <endpoints::RepoGetPullReview as Endpoint>::Response,
+    > {
         endpoints::RepoGetPullReview {
             owner,
             repo,
@@ -4716,7 +5805,7 @@ impl crate::Forgejo {
             id,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetPullReview>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Submit a pending review to an pull request
@@ -4733,7 +5822,11 @@ impl crate::Forgejo {
         index: u64,
         id: u64,
         body: SubmitPullReviewOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoSubmitPullReview> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoSubmitPullReview,
+        <endpoints::RepoSubmitPullReview as Endpoint>::Response,
+    > {
         endpoints::RepoSubmitPullReview {
             owner,
             repo,
@@ -4742,7 +5835,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoSubmitPullReview>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a specific review from a pull request
@@ -4757,7 +5850,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoDeletePullReview> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeletePullReview,
+        <endpoints::RepoDeletePullReview as Endpoint>::Response,
+    > {
         endpoints::RepoDeletePullReview {
             owner,
             repo,
@@ -4765,7 +5862,7 @@ impl crate::Forgejo {
             id,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeletePullReview>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a specific review for a pull request
@@ -4780,7 +5877,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPullReviewComments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPullReviewComments,
+        <endpoints::RepoGetPullReviewComments as Endpoint>::Response,
+    > {
         endpoints::RepoGetPullReviewComments {
             owner,
             repo,
@@ -4788,7 +5889,7 @@ impl crate::Forgejo {
             id,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetPullReviewComments>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Add a new comment to a pull request review
@@ -4805,7 +5906,11 @@ impl crate::Forgejo {
         index: u64,
         id: u64,
         body: serde_json::Value,
-    ) -> WrappedRequest<'_, endpoints::RepoCreatePullReviewComment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreatePullReviewComment,
+        <endpoints::RepoCreatePullReviewComment as Endpoint>::Response,
+    > {
         endpoints::RepoCreatePullReviewComment {
             owner,
             repo,
@@ -4814,7 +5919,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreatePullReviewComment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a pull review comment
@@ -4831,7 +5936,11 @@ impl crate::Forgejo {
         index: u64,
         id: u64,
         comment: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPullReviewComment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPullReviewComment,
+        <endpoints::RepoGetPullReviewComment as Endpoint>::Response,
+    > {
         endpoints::RepoGetPullReviewComment {
             owner,
             repo,
@@ -4840,7 +5949,7 @@ impl crate::Forgejo {
             comment,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetPullReviewComment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a pull review comment
@@ -4857,7 +5966,11 @@ impl crate::Forgejo {
         index: u64,
         id: u64,
         comment: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoDeletePullReviewComment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeletePullReviewComment,
+        <endpoints::RepoDeletePullReviewComment as Endpoint>::Response,
+    > {
         endpoints::RepoDeletePullReviewComment {
             owner,
             repo,
@@ -4866,7 +5979,7 @@ impl crate::Forgejo {
             comment,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeletePullReviewComment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Dismiss a review for a pull request
@@ -4883,7 +5996,11 @@ impl crate::Forgejo {
         index: u64,
         id: u64,
         body: DismissPullReviewOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoDismissPullReview> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDismissPullReview,
+        <endpoints::RepoDismissPullReview as Endpoint>::Response,
+    > {
         endpoints::RepoDismissPullReview {
             owner,
             repo,
@@ -4892,7 +6009,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoDismissPullReview>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Cancel to dismiss a review for a pull request
@@ -4907,7 +6024,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoUnDismissPullReview> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoUnDismissPullReview,
+        <endpoints::RepoUnDismissPullReview as Endpoint>::Response,
+    > {
         endpoints::RepoUnDismissPullReview {
             owner,
             repo,
@@ -4915,7 +6036,7 @@ impl crate::Forgejo {
             id,
         }
         .make_request()
-        .wrap::<endpoints::RepoUnDismissPullReview>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Merge PR's baseBranch into headBranch
@@ -4929,7 +6050,11 @@ impl crate::Forgejo {
         repo: &str,
         index: u64,
         query: RepoUpdatePullRequestQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoUpdatePullRequest> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoUpdatePullRequest,
+        <endpoints::RepoUpdatePullRequest as Endpoint>::Response,
+    > {
         endpoints::RepoUpdatePullRequest {
             owner,
             repo,
@@ -4937,7 +6062,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoUpdatePullRequest>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get all push mirrors of the repository
@@ -4948,10 +6073,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListPushMirrors> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListPushMirrors,
+        <endpoints::RepoListPushMirrors as Endpoint>::Response,
+    > {
         endpoints::RepoListPushMirrors { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListPushMirrors>(self)
+            .wrap::<_, _>(self)
     }
 
     /// add a push mirror to the repository
@@ -4964,14 +6093,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreatePushMirrorOption,
-    ) -> WrappedRequest<'_, endpoints::RepoAddPushMirror> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoAddPushMirror,
+        <endpoints::RepoAddPushMirror as Endpoint>::Response,
+    > {
         endpoints::RepoAddPushMirror {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoAddPushMirror>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Sync all push mirrored repository
@@ -4982,10 +6115,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoPushMirrorSync> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoPushMirrorSync,
+        <endpoints::RepoPushMirrorSync as Endpoint>::Response,
+    > {
         endpoints::RepoPushMirrorSync { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoPushMirrorSync>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get push mirror of the repository by remoteName
@@ -4998,10 +6135,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         name: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetPushMirrorByRemoteName> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetPushMirrorByRemoteName,
+        <endpoints::RepoGetPushMirrorByRemoteName as Endpoint>::Response,
+    > {
         endpoints::RepoGetPushMirrorByRemoteName { owner, repo, name }
             .make_request()
-            .wrap::<endpoints::RepoGetPushMirrorByRemoteName>(self)
+            .wrap::<_, _>(self)
     }
 
     /// deletes a push mirror from a repository by remoteName
@@ -5014,10 +6155,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         name: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeletePushMirror> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeletePushMirror,
+        <endpoints::RepoDeletePushMirror as Endpoint>::Response,
+    > {
         endpoints::RepoDeletePushMirror { owner, repo, name }
             .make_request()
-            .wrap::<endpoints::RepoDeletePushMirror>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a file from a repository
@@ -5031,7 +6176,11 @@ impl crate::Forgejo {
         repo: &str,
         filepath: &str,
         query: RepoGetRawFileQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoGetRawFile> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetRawFile,
+        <endpoints::RepoGetRawFile as Endpoint>::Response,
+    > {
         endpoints::RepoGetRawFile {
             owner,
             repo,
@@ -5039,7 +6188,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetRawFile>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repo's releases
@@ -5051,10 +6200,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoListReleasesQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoListReleases> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListReleases,
+        <endpoints::RepoListReleases as Endpoint>::Response,
+    > {
         endpoints::RepoListReleases { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::RepoListReleases>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a release
@@ -5067,14 +6220,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateReleaseOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateRelease> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateRelease,
+        <endpoints::RepoCreateRelease as Endpoint>::Response,
+    > {
         endpoints::RepoCreateRelease {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateRelease>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Gets the most recent non-prerelease, non-draft release of a repository, sorted by created_at
@@ -5085,10 +6242,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetLatestRelease> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetLatestRelease,
+        <endpoints::RepoGetLatestRelease as Endpoint>::Response,
+    > {
         endpoints::RepoGetLatestRelease { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetLatestRelease>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a release by tag name
@@ -5101,10 +6262,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         tag: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetReleaseByTag> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetReleaseByTag,
+        <endpoints::RepoGetReleaseByTag as Endpoint>::Response,
+    > {
         endpoints::RepoGetReleaseByTag { owner, repo, tag }
             .make_request()
-            .wrap::<endpoints::RepoGetReleaseByTag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a release by tag name
@@ -5117,10 +6282,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         tag: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteReleaseByTag> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteReleaseByTag,
+        <endpoints::RepoDeleteReleaseByTag as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteReleaseByTag { owner, repo, tag }
             .make_request()
-            .wrap::<endpoints::RepoDeleteReleaseByTag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a release
@@ -5133,10 +6302,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetRelease> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetRelease,
+        <endpoints::RepoGetRelease as Endpoint>::Response,
+    > {
         endpoints::RepoGetRelease { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoGetRelease>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a release
@@ -5149,10 +6322,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteRelease> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteRelease,
+        <endpoints::RepoDeleteRelease as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteRelease { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoDeleteRelease>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a release
@@ -5167,7 +6344,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         body: EditReleaseOption,
-    ) -> WrappedRequest<'_, endpoints::RepoEditRelease> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoEditRelease,
+        <endpoints::RepoEditRelease as Endpoint>::Response,
+    > {
         endpoints::RepoEditRelease {
             owner,
             repo,
@@ -5175,7 +6356,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditRelease>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List release's attachments
@@ -5188,10 +6369,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoListReleaseAttachments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListReleaseAttachments,
+        <endpoints::RepoListReleaseAttachments as Endpoint>::Response,
+    > {
         endpoints::RepoListReleaseAttachments { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoListReleaseAttachments>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a release attachment
@@ -5209,7 +6394,11 @@ impl crate::Forgejo {
         attachment: Option<&[u8]>,
         external_url: Option<&str>,
         query: RepoCreateReleaseAttachmentQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateReleaseAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateReleaseAttachment,
+        <endpoints::RepoCreateReleaseAttachment as Endpoint>::Response,
+    > {
         endpoints::RepoCreateReleaseAttachment {
             owner,
             repo,
@@ -5219,7 +6408,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateReleaseAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a release attachment
@@ -5234,7 +6423,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         attachment_id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoGetReleaseAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetReleaseAttachment,
+        <endpoints::RepoGetReleaseAttachment as Endpoint>::Response,
+    > {
         endpoints::RepoGetReleaseAttachment {
             owner,
             repo,
@@ -5242,7 +6435,7 @@ impl crate::Forgejo {
             attachment_id,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetReleaseAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a release attachment
@@ -5257,7 +6450,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u64,
         attachment_id: u64,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteReleaseAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteReleaseAttachment,
+        <endpoints::RepoDeleteReleaseAttachment as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteReleaseAttachment {
             owner,
             repo,
@@ -5265,7 +6462,7 @@ impl crate::Forgejo {
             attachment_id,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeleteReleaseAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Edit a release attachment
@@ -5282,7 +6479,11 @@ impl crate::Forgejo {
         id: u64,
         attachment_id: u64,
         body: EditAttachmentOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoEditReleaseAttachment> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoEditReleaseAttachment,
+        <endpoints::RepoEditReleaseAttachment as Endpoint>::Response,
+    > {
         endpoints::RepoEditReleaseAttachment {
             owner,
             repo,
@@ -5291,7 +6492,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditReleaseAttachment>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Return all users that can be requested to review in this repo
@@ -5302,10 +6503,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetReviewers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetReviewers,
+        <endpoints::RepoGetReviewers as Endpoint>::Response,
+    > {
         endpoints::RepoGetReviewers { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetReviewers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get signing-key.gpg for given repository
@@ -5316,10 +6521,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoSigningKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoSigningKey,
+        <endpoints::RepoSigningKey as Endpoint>::Response,
+    > {
         endpoints::RepoSigningKey { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoSigningKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a repo's stargazers
@@ -5330,10 +6539,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListStargazers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListStargazers,
+        <endpoints::RepoListStargazers as Endpoint>::Response,
+    > {
         endpoints::RepoListStargazers { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListStargazers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a commit's statuses
@@ -5347,7 +6560,11 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         query: RepoListStatusesQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoListStatuses> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListStatuses,
+        <endpoints::RepoListStatuses as Endpoint>::Response,
+    > {
         endpoints::RepoListStatuses {
             owner,
             repo,
@@ -5355,7 +6572,7 @@ impl crate::Forgejo {
             query,
         }
         .make_request()
-        .wrap::<endpoints::RepoListStatuses>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Create a commit status
@@ -5370,7 +6587,11 @@ impl crate::Forgejo {
         repo: &str,
         sha: &str,
         body: CreateStatusOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateStatus> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateStatus,
+        <endpoints::RepoCreateStatus as Endpoint>::Response,
+    > {
         endpoints::RepoCreateStatus {
             owner,
             repo,
@@ -5378,7 +6599,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateStatus>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repo's watchers
@@ -5389,10 +6610,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListSubscribers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListSubscribers,
+        <endpoints::RepoListSubscribers as Endpoint>::Response,
+    > {
         endpoints::RepoListSubscribers { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListSubscribers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if the current user is watching a repo
@@ -5403,10 +6628,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentCheckSubscription> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentCheckSubscription,
+        <endpoints::UserCurrentCheckSubscription as Endpoint>::Response,
+    > {
         endpoints::UserCurrentCheckSubscription { owner, repo }
             .make_request()
-            .wrap::<endpoints::UserCurrentCheckSubscription>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Watch a repo
@@ -5417,10 +6646,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentPutSubscription> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentPutSubscription,
+        <endpoints::UserCurrentPutSubscription as Endpoint>::Response,
+    > {
         endpoints::UserCurrentPutSubscription { owner, repo }
             .make_request()
-            .wrap::<endpoints::UserCurrentPutSubscription>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Unwatch a repo
@@ -5431,10 +6664,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentDeleteSubscription> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentDeleteSubscription,
+        <endpoints::UserCurrentDeleteSubscription as Endpoint>::Response,
+    > {
         endpoints::UserCurrentDeleteSubscription { owner, repo }
             .make_request()
-            .wrap::<endpoints::UserCurrentDeleteSubscription>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List tag protections for a repository
@@ -5445,10 +6682,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListTagProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListTagProtection,
+        <endpoints::RepoListTagProtection as Endpoint>::Response,
+    > {
         endpoints::RepoListTagProtection { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListTagProtection>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a tag protections for a repository
@@ -5461,14 +6702,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateTagProtectionOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateTagProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateTagProtection,
+        <endpoints::RepoCreateTagProtection as Endpoint>::Response,
+    > {
         endpoints::RepoCreateTagProtection {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateTagProtection>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a specific tag protection for the repository
@@ -5481,10 +6726,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u32,
-    ) -> WrappedRequest<'_, endpoints::RepoGetTagProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetTagProtection,
+        <endpoints::RepoGetTagProtection as Endpoint>::Response,
+    > {
         endpoints::RepoGetTagProtection { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoGetTagProtection>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a specific tag protection for the repository
@@ -5497,10 +6746,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: u32,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteTagProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteTagProtection,
+        <endpoints::RepoDeleteTagProtection as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteTagProtection { owner, repo, id }
             .make_request()
-            .wrap::<endpoints::RepoDeleteTagProtection>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit a tag protections for a repository. Only fields that are set will be changed
@@ -5515,7 +6768,11 @@ impl crate::Forgejo {
         repo: &str,
         id: u32,
         body: EditTagProtectionOption,
-    ) -> WrappedRequest<'_, endpoints::RepoEditTagProtection> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoEditTagProtection,
+        <endpoints::RepoEditTagProtection as Endpoint>::Response,
+    > {
         endpoints::RepoEditTagProtection {
             owner,
             repo,
@@ -5523,7 +6780,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditTagProtection>(self)
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's tags
@@ -5534,10 +6791,11 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListTags> {
+    ) -> WrappedRequest<'_, endpoints::RepoListTags, <endpoints::RepoListTags as Endpoint>::Response>
+    {
         endpoints::RepoListTags { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListTags>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a new git tag in a repository
@@ -5550,14 +6808,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateTagOption,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateTag> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateTag,
+        <endpoints::RepoCreateTag as Endpoint>::Response,
+    > {
         endpoints::RepoCreateTag {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateTag>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get the tag of a repository by tag name
@@ -5570,10 +6832,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         tag: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetTag> {
+    ) -> WrappedRequest<'_, endpoints::RepoGetTag, <endpoints::RepoGetTag as Endpoint>::Response>
+    {
         endpoints::RepoGetTag { owner, repo, tag }
             .make_request()
-            .wrap::<endpoints::RepoGetTag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a repository's tag by name
@@ -5586,10 +6849,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         tag: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteTag> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteTag,
+        <endpoints::RepoDeleteTag as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteTag { owner, repo, tag }
             .make_request()
-            .wrap::<endpoints::RepoDeleteTag>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a repository's teams
@@ -5600,10 +6867,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListTeams> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListTeams,
+        <endpoints::RepoListTeams as Endpoint>::Response,
+    > {
         endpoints::RepoListTeams { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListTeams>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if a team is assigned to a repository
@@ -5616,10 +6887,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         team: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoCheckTeam> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCheckTeam,
+        <endpoints::RepoCheckTeam as Endpoint>::Response,
+    > {
         endpoints::RepoCheckTeam { owner, repo, team }
             .make_request()
-            .wrap::<endpoints::RepoCheckTeam>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a team to a repository
@@ -5632,10 +6907,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         team: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoAddTeam> {
+    ) -> WrappedRequest<'_, endpoints::RepoAddTeam, <endpoints::RepoAddTeam as Endpoint>::Response>
+    {
         endpoints::RepoAddTeam { owner, repo, team }
             .make_request()
-            .wrap::<endpoints::RepoAddTeam>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a team from a repository
@@ -5648,10 +6924,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         team: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteTeam> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteTeam,
+        <endpoints::RepoDeleteTeam as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteTeam { owner, repo, team }
             .make_request()
-            .wrap::<endpoints::RepoDeleteTeam>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a repo's tracked times
@@ -5663,10 +6943,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: RepoTrackedTimesQuery,
-    ) -> WrappedRequest<'_, endpoints::RepoTrackedTimes> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoTrackedTimes,
+        <endpoints::RepoTrackedTimes as Endpoint>::Response,
+    > {
         endpoints::RepoTrackedTimes { owner, repo, query }
             .make_request()
-            .wrap::<endpoints::RepoTrackedTimes>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a user's tracked times in a repo
@@ -5679,10 +6963,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         user: &str,
-    ) -> WrappedRequest<'_, endpoints::UserTrackedTimes> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserTrackedTimes,
+        <endpoints::UserTrackedTimes as Endpoint>::Response,
+    > {
         endpoints::UserTrackedTimes { owner, repo, user }
             .make_request()
-            .wrap::<endpoints::UserTrackedTimes>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get list of topics that a repository has
@@ -5693,10 +6981,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoListTopics> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoListTopics,
+        <endpoints::RepoListTopics as Endpoint>::Response,
+    > {
         endpoints::RepoListTopics { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoListTopics>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Replace list of topics for a repository
@@ -5709,14 +7001,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: RepoTopicOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoUpdateTopics> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoUpdateTopics,
+        <endpoints::RepoUpdateTopics as Endpoint>::Response,
+    > {
         endpoints::RepoUpdateTopics {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoUpdateTopics>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Add a topic to a repository
@@ -5729,10 +7025,11 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         topic: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoAddTopic> {
+    ) -> WrappedRequest<'_, endpoints::RepoAddTopic, <endpoints::RepoAddTopic as Endpoint>::Response>
+    {
         endpoints::RepoAddTopic { owner, repo, topic }
             .make_request()
-            .wrap::<endpoints::RepoAddTopic>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a topic from a repository
@@ -5745,10 +7042,14 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         topic: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteTopic> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteTopic,
+        <endpoints::RepoDeleteTopic as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteTopic { owner, repo, topic }
             .make_request()
-            .wrap::<endpoints::RepoDeleteTopic>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Transfer a repo ownership
@@ -5763,14 +7064,15 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: TransferRepoOption,
-    ) -> WrappedRequest<'_, endpoints::RepoTransfer> {
+    ) -> WrappedRequest<'_, endpoints::RepoTransfer, <endpoints::RepoTransfer as Endpoint>::Response>
+    {
         endpoints::RepoTransfer {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoTransfer>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Accept a repo transfer
@@ -5781,10 +7083,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::AcceptRepoTransfer> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::AcceptRepoTransfer,
+        <endpoints::AcceptRepoTransfer as Endpoint>::Response,
+    > {
         endpoints::AcceptRepoTransfer { owner, repo }
             .make_request()
-            .wrap::<endpoints::AcceptRepoTransfer>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Reject a repo transfer
@@ -5795,10 +7101,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RejectRepoTransfer> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RejectRepoTransfer,
+        <endpoints::RejectRepoTransfer as Endpoint>::Response,
+    > {
         endpoints::RejectRepoTransfer { owner, repo }
             .make_request()
-            .wrap::<endpoints::RejectRepoTransfer>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a wiki page
@@ -5811,14 +7121,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         body: CreateWikiPageOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoCreateWikiPage> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoCreateWikiPage,
+        <endpoints::RepoCreateWikiPage as Endpoint>::Response,
+    > {
         endpoints::RepoCreateWikiPage {
             owner,
             repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoCreateWikiPage>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a wiki page
@@ -5831,14 +7145,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         page_name: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetWikiPage> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetWikiPage,
+        <endpoints::RepoGetWikiPage as Endpoint>::Response,
+    > {
         endpoints::RepoGetWikiPage {
             owner,
             repo,
             page_name,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetWikiPage>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a wiki page
@@ -5851,14 +7169,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         page_name: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoDeleteWikiPage> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoDeleteWikiPage,
+        <endpoints::RepoDeleteWikiPage as Endpoint>::Response,
+    > {
         endpoints::RepoDeleteWikiPage {
             owner,
             repo,
             page_name,
         }
         .make_request()
-        .wrap::<endpoints::RepoDeleteWikiPage>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Edit a wiki page
@@ -5873,7 +7195,11 @@ impl crate::Forgejo {
         repo: &str,
         page_name: &str,
         body: CreateWikiPageOptions,
-    ) -> WrappedRequest<'_, endpoints::RepoEditWikiPage> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoEditWikiPage,
+        <endpoints::RepoEditWikiPage as Endpoint>::Response,
+    > {
         endpoints::RepoEditWikiPage {
             owner,
             repo,
@@ -5881,7 +7207,7 @@ impl crate::Forgejo {
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::RepoEditWikiPage>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get all wiki pages
@@ -5892,10 +7218,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetWikiPages> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetWikiPages,
+        <endpoints::RepoGetWikiPages as Endpoint>::Response,
+    > {
         endpoints::RepoGetWikiPages { owner, repo }
             .make_request()
-            .wrap::<endpoints::RepoGetWikiPages>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get revisions of a wiki page
@@ -5908,14 +7238,18 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         page_name: &str,
-    ) -> WrappedRequest<'_, endpoints::RepoGetWikiPageRevisions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::RepoGetWikiPageRevisions,
+        <endpoints::RepoGetWikiPageRevisions as Endpoint>::Response,
+    > {
         endpoints::RepoGetWikiPageRevisions {
             owner,
             repo,
             page_name,
         }
         .make_request()
-        .wrap::<endpoints::RepoGetWikiPageRevisions>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Create a repository using a template
@@ -5928,80 +7262,122 @@ impl crate::Forgejo {
         template_owner: &str,
         template_repo: &str,
         body: GenerateRepoOption,
-    ) -> WrappedRequest<'_, endpoints::GenerateRepo> {
+    ) -> WrappedRequest<'_, endpoints::GenerateRepo, <endpoints::GenerateRepo as Endpoint>::Response>
+    {
         endpoints::GenerateRepo {
             template_owner,
             template_repo,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::GenerateRepo>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Get a repository by id
     ///
     /// - `id`: id of the repo to get
-    pub fn repo_get_by_id(&self, id: u64) -> WrappedRequest<'_, endpoints::RepoGetById> {
+    pub fn repo_get_by_id(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<'_, endpoints::RepoGetById, <endpoints::RepoGetById as Endpoint>::Response>
+    {
         endpoints::RepoGetById { id }
             .make_request()
-            .wrap::<endpoints::RepoGetById>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get instance's global settings for api
-    pub fn get_general_api_settings(&self) -> WrappedRequest<'_, endpoints::GetGeneralApiSettings> {
+    pub fn get_general_api_settings(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetGeneralApiSettings,
+        <endpoints::GetGeneralApiSettings as Endpoint>::Response,
+    > {
         endpoints::GetGeneralApiSettings {}
             .make_request()
-            .wrap::<endpoints::GetGeneralApiSettings>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get instance's global settings for Attachment
     pub fn get_general_attachment_settings(
         &self,
-    ) -> WrappedRequest<'_, endpoints::GetGeneralAttachmentSettings> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetGeneralAttachmentSettings,
+        <endpoints::GetGeneralAttachmentSettings as Endpoint>::Response,
+    > {
         endpoints::GetGeneralAttachmentSettings {}
             .make_request()
-            .wrap::<endpoints::GetGeneralAttachmentSettings>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get instance's global settings for repositories
     pub fn get_general_repository_settings(
         &self,
-    ) -> WrappedRequest<'_, endpoints::GetGeneralRepositorySettings> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetGeneralRepositorySettings,
+        <endpoints::GetGeneralRepositorySettings as Endpoint>::Response,
+    > {
         endpoints::GetGeneralRepositorySettings {}
             .make_request()
-            .wrap::<endpoints::GetGeneralRepositorySettings>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get instance's global settings for ui
-    pub fn get_general_ui_settings(&self) -> WrappedRequest<'_, endpoints::GetGeneralUiSettings> {
+    pub fn get_general_ui_settings(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetGeneralUiSettings,
+        <endpoints::GetGeneralUiSettings as Endpoint>::Response,
+    > {
         endpoints::GetGeneralUiSettings {}
             .make_request()
-            .wrap::<endpoints::GetGeneralUiSettings>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get default signing-key.gpg
-    pub fn get_signing_key(&self) -> WrappedRequest<'_, endpoints::GetSigningKey> {
+    pub fn get_signing_key(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetSigningKey,
+        <endpoints::GetSigningKey as Endpoint>::Response,
+    > {
         endpoints::GetSigningKey {}
             .make_request()
-            .wrap::<endpoints::GetSigningKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a team
     ///
     /// - `id`: id of the team to get
-    pub fn org_get_team(&self, id: u64) -> WrappedRequest<'_, endpoints::OrgGetTeam> {
+    pub fn org_get_team(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<'_, endpoints::OrgGetTeam, <endpoints::OrgGetTeam as Endpoint>::Response>
+    {
         endpoints::OrgGetTeam { id }
             .make_request()
-            .wrap::<endpoints::OrgGetTeam>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a team
     ///
     /// - `id`: id of the team to delete
-    pub fn org_delete_team(&self, id: u64) -> WrappedRequest<'_, endpoints::OrgDeleteTeam> {
+    pub fn org_delete_team(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgDeleteTeam,
+        <endpoints::OrgDeleteTeam as Endpoint>::Response,
+    > {
         endpoints::OrgDeleteTeam { id }
             .make_request()
-            .wrap::<endpoints::OrgDeleteTeam>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Edit a team
@@ -6012,10 +7388,11 @@ impl crate::Forgejo {
         &self,
         id: u32,
         body: EditTeamOption,
-    ) -> WrappedRequest<'_, endpoints::OrgEditTeam> {
+    ) -> WrappedRequest<'_, endpoints::OrgEditTeam, <endpoints::OrgEditTeam as Endpoint>::Response>
+    {
         endpoints::OrgEditTeam { id, body: body }
             .make_request()
-            .wrap::<endpoints::OrgEditTeam>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a team's activity feeds
@@ -6025,10 +7402,14 @@ impl crate::Forgejo {
         &self,
         id: u64,
         query: OrgListTeamActivityFeedsQuery,
-    ) -> WrappedRequest<'_, endpoints::OrgListTeamActivityFeeds> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListTeamActivityFeeds,
+        <endpoints::OrgListTeamActivityFeeds as Endpoint>::Response,
+    > {
         endpoints::OrgListTeamActivityFeeds { id, query }
             .make_request()
-            .wrap::<endpoints::OrgListTeamActivityFeeds>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a team's members
@@ -6037,10 +7418,14 @@ impl crate::Forgejo {
     pub fn org_list_team_members(
         &self,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::OrgListTeamMembers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListTeamMembers,
+        <endpoints::OrgListTeamMembers as Endpoint>::Response,
+    > {
         endpoints::OrgListTeamMembers { id }
             .make_request()
-            .wrap::<endpoints::OrgListTeamMembers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a particular member of team
@@ -6051,10 +7436,14 @@ impl crate::Forgejo {
         &self,
         id: u64,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListTeamMember> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListTeamMember,
+        <endpoints::OrgListTeamMember as Endpoint>::Response,
+    > {
         endpoints::OrgListTeamMember { id, username }
             .make_request()
-            .wrap::<endpoints::OrgListTeamMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a team member
@@ -6065,10 +7454,14 @@ impl crate::Forgejo {
         &self,
         id: u64,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgAddTeamMember> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgAddTeamMember,
+        <endpoints::OrgAddTeamMember as Endpoint>::Response,
+    > {
         endpoints::OrgAddTeamMember { id, username }
             .make_request()
-            .wrap::<endpoints::OrgAddTeamMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Remove a team member
@@ -6079,19 +7472,30 @@ impl crate::Forgejo {
         &self,
         id: u64,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgRemoveTeamMember> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgRemoveTeamMember,
+        <endpoints::OrgRemoveTeamMember as Endpoint>::Response,
+    > {
         endpoints::OrgRemoveTeamMember { id, username }
             .make_request()
-            .wrap::<endpoints::OrgRemoveTeamMember>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a team's repos
     ///
     /// - `id`: id of the team
-    pub fn org_list_team_repos(&self, id: u64) -> WrappedRequest<'_, endpoints::OrgListTeamRepos> {
+    pub fn org_list_team_repos(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListTeamRepos,
+        <endpoints::OrgListTeamRepos as Endpoint>::Response,
+    > {
         endpoints::OrgListTeamRepos { id }
             .make_request()
-            .wrap::<endpoints::OrgListTeamRepos>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a particular repo of team
@@ -6104,10 +7508,14 @@ impl crate::Forgejo {
         id: u64,
         org: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListTeamRepo> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListTeamRepo,
+        <endpoints::OrgListTeamRepo as Endpoint>::Response,
+    > {
         endpoints::OrgListTeamRepo { id, org, repo }
             .make_request()
-            .wrap::<endpoints::OrgListTeamRepo>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add a repository to a team
@@ -6120,10 +7528,14 @@ impl crate::Forgejo {
         id: u64,
         org: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgAddTeamRepository> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgAddTeamRepository,
+        <endpoints::OrgAddTeamRepository as Endpoint>::Response,
+    > {
         endpoints::OrgAddTeamRepository { id, org, repo }
             .make_request()
-            .wrap::<endpoints::OrgAddTeamRepository>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Remove a repository from a team
@@ -6136,10 +7548,14 @@ impl crate::Forgejo {
         id: u64,
         org: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgRemoveTeamRepository> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgRemoveTeamRepository,
+        <endpoints::OrgRemoveTeamRepository as Endpoint>::Response,
+    > {
         endpoints::OrgRemoveTeamRepository { id, org, repo }
             .make_request()
-            .wrap::<endpoints::OrgRemoveTeamRepository>(self)
+            .wrap::<_, _>(self)
     }
 
     /// search topics via keyword
@@ -6147,26 +7563,37 @@ impl crate::Forgejo {
     pub fn topic_search(
         &self,
         query: TopicSearchQuery,
-    ) -> WrappedRequest<'_, endpoints::TopicSearch> {
+    ) -> WrappedRequest<'_, endpoints::TopicSearch, <endpoints::TopicSearch as Endpoint>::Response>
+    {
         endpoints::TopicSearch { query }
             .make_request()
-            .wrap::<endpoints::TopicSearch>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get the authenticated user
-    pub fn user_get_current(&self) -> WrappedRequest<'_, endpoints::UserGetCurrent> {
+    pub fn user_get_current(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserGetCurrent,
+        <endpoints::UserGetCurrent as Endpoint>::Response,
+    > {
         endpoints::UserGetCurrent {}
             .make_request()
-            .wrap::<endpoints::UserGetCurrent>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get an user's actions runner registration token
     pub fn user_get_runner_registration_token(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserGetRunnerRegistrationToken> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserGetRunnerRegistrationToken,
+        <endpoints::UserGetRunnerRegistrationToken as Endpoint>::Response,
+    > {
         endpoints::UserGetRunnerRegistrationToken {}
             .make_request()
-            .wrap::<endpoints::UserGetRunnerRegistrationToken>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create or Update a secret value in a user scope
@@ -6177,13 +7604,17 @@ impl crate::Forgejo {
         &self,
         secretname: &str,
         body: CreateOrUpdateSecretOption,
-    ) -> WrappedRequest<'_, endpoints::UpdateUserSecret> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UpdateUserSecret,
+        <endpoints::UpdateUserSecret as Endpoint>::Response,
+    > {
         endpoints::UpdateUserSecret {
             secretname,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::UpdateUserSecret>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a secret in a user scope
@@ -6192,18 +7623,28 @@ impl crate::Forgejo {
     pub fn delete_user_secret(
         &self,
         secretname: &str,
-    ) -> WrappedRequest<'_, endpoints::DeleteUserSecret> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DeleteUserSecret,
+        <endpoints::DeleteUserSecret as Endpoint>::Response,
+    > {
         endpoints::DeleteUserSecret { secretname }
             .make_request()
-            .wrap::<endpoints::DeleteUserSecret>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get the user-level list of variables which is created by current doer
     ///
-    pub fn get_user_variables_list(&self) -> WrappedRequest<'_, endpoints::GetUserVariablesList> {
+    pub fn get_user_variables_list(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetUserVariablesList,
+        <endpoints::GetUserVariablesList as Endpoint>::Response,
+    > {
         endpoints::GetUserVariablesList {}
             .make_request()
-            .wrap::<endpoints::GetUserVariablesList>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a user-level variable which is created by current doer
@@ -6212,10 +7653,14 @@ impl crate::Forgejo {
     pub fn get_user_variable(
         &self,
         variablename: &str,
-    ) -> WrappedRequest<'_, endpoints::GetUserVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetUserVariable,
+        <endpoints::GetUserVariable as Endpoint>::Response,
+    > {
         endpoints::GetUserVariable { variablename }
             .make_request()
-            .wrap::<endpoints::GetUserVariable>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a user-level variable which is created by current doer
@@ -6226,13 +7671,17 @@ impl crate::Forgejo {
         &self,
         variablename: &str,
         body: UpdateVariableOption,
-    ) -> WrappedRequest<'_, endpoints::UpdateUserVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UpdateUserVariable,
+        <endpoints::UpdateUserVariable as Endpoint>::Response,
+    > {
         endpoints::UpdateUserVariable {
             variablename,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::UpdateUserVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Create a user-level variable
@@ -6243,13 +7692,17 @@ impl crate::Forgejo {
         &self,
         variablename: &str,
         body: CreateVariableOption,
-    ) -> WrappedRequest<'_, endpoints::CreateUserVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::CreateUserVariable,
+        <endpoints::CreateUserVariable as Endpoint>::Response,
+    > {
         endpoints::CreateUserVariable {
             variablename,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::CreateUserVariable>(self)
+        .wrap::<_, _>(self)
     }
 
     /// Delete a user-level variable which is created by current doer
@@ -6258,20 +7711,28 @@ impl crate::Forgejo {
     pub fn delete_user_variable(
         &self,
         variablename: &str,
-    ) -> WrappedRequest<'_, endpoints::DeleteUserVariable> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::DeleteUserVariable,
+        <endpoints::DeleteUserVariable as Endpoint>::Response,
+    > {
         endpoints::DeleteUserVariable { variablename }
             .make_request()
-            .wrap::<endpoints::DeleteUserVariable>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's oauth2 applications
     ///
     pub fn user_get_oauth2_applications(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserGetOAuth2Applications> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserGetOAuth2Applications,
+        <endpoints::UserGetOAuth2Applications as Endpoint>::Response,
+    > {
         endpoints::UserGetOAuth2Applications {}
             .make_request()
-            .wrap::<endpoints::UserGetOAuth2Applications>(self)
+            .wrap::<_, _>(self)
     }
 
     /// creates a new OAuth2 application
@@ -6280,10 +7741,14 @@ impl crate::Forgejo {
     pub fn user_create_oauth2_application(
         &self,
         body: CreateOAuth2ApplicationOptions,
-    ) -> WrappedRequest<'_, endpoints::UserCreateOAuth2Application> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCreateOAuth2Application,
+        <endpoints::UserCreateOAuth2Application as Endpoint>::Response,
+    > {
         endpoints::UserCreateOAuth2Application { body: body }
             .make_request()
-            .wrap::<endpoints::UserCreateOAuth2Application>(self)
+            .wrap::<_, _>(self)
     }
 
     /// get an OAuth2 Application
@@ -6292,10 +7757,14 @@ impl crate::Forgejo {
     pub fn user_get_oauth2_application(
         &self,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::UserGetOAuth2Application> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserGetOAuth2Application,
+        <endpoints::UserGetOAuth2Application as Endpoint>::Response,
+    > {
         endpoints::UserGetOAuth2Application { id }
             .make_request()
-            .wrap::<endpoints::UserGetOAuth2Application>(self)
+            .wrap::<_, _>(self)
     }
 
     /// delete an OAuth2 Application
@@ -6304,10 +7773,14 @@ impl crate::Forgejo {
     pub fn user_delete_oauth2_application(
         &self,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::UserDeleteOAuth2Application> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserDeleteOAuth2Application,
+        <endpoints::UserDeleteOAuth2Application as Endpoint>::Response,
+    > {
         endpoints::UserDeleteOAuth2Application { id }
             .make_request()
-            .wrap::<endpoints::UserDeleteOAuth2Application>(self)
+            .wrap::<_, _>(self)
     }
 
     /// update an OAuth2 Application, this includes regenerating the client secret
@@ -6318,10 +7791,14 @@ impl crate::Forgejo {
         &self,
         id: u64,
         body: CreateOAuth2ApplicationOptions,
-    ) -> WrappedRequest<'_, endpoints::UserUpdateOAuth2Application> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserUpdateOAuth2Application,
+        <endpoints::UserUpdateOAuth2Application as Endpoint>::Response,
+    > {
         endpoints::UserUpdateOAuth2Application { id, body: body }
             .make_request()
-            .wrap::<endpoints::UserUpdateOAuth2Application>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update Avatar
@@ -6330,33 +7807,56 @@ impl crate::Forgejo {
     pub fn user_update_avatar(
         &self,
         body: UpdateUserAvatarOption,
-    ) -> WrappedRequest<'_, endpoints::UserUpdateAvatar> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserUpdateAvatar,
+        <endpoints::UserUpdateAvatar as Endpoint>::Response,
+    > {
         endpoints::UserUpdateAvatar { body: body }
             .make_request()
-            .wrap::<endpoints::UserUpdateAvatar>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete Avatar
-    pub fn user_delete_avatar(&self) -> WrappedRequest<'_, endpoints::UserDeleteAvatar> {
+    pub fn user_delete_avatar(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserDeleteAvatar,
+        <endpoints::UserDeleteAvatar as Endpoint>::Response,
+    > {
         endpoints::UserDeleteAvatar {}
             .make_request()
-            .wrap::<endpoints::UserDeleteAvatar>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Blocks a user from the doer.
     ///
     /// - `username`: username of the user
-    pub fn user_block_user(&self, username: &str) -> WrappedRequest<'_, endpoints::UserBlockUser> {
+    pub fn user_block_user(
+        &self,
+        username: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserBlockUser,
+        <endpoints::UserBlockUser as Endpoint>::Response,
+    > {
         endpoints::UserBlockUser { username }
             .make_request()
-            .wrap::<endpoints::UserBlockUser>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's email addresses
-    pub fn user_list_emails(&self) -> WrappedRequest<'_, endpoints::UserListEmails> {
+    pub fn user_list_emails(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListEmails,
+        <endpoints::UserListEmails as Endpoint>::Response,
+    > {
         endpoints::UserListEmails {}
             .make_request()
-            .wrap::<endpoints::UserListEmails>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Add email addresses
@@ -6365,10 +7865,11 @@ impl crate::Forgejo {
     pub fn user_add_email(
         &self,
         body: CreateEmailOption,
-    ) -> WrappedRequest<'_, endpoints::UserAddEmail> {
+    ) -> WrappedRequest<'_, endpoints::UserAddEmail, <endpoints::UserAddEmail as Endpoint>::Response>
+    {
         endpoints::UserAddEmail { body: body }
             .make_request()
-            .wrap::<endpoints::UserAddEmail>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete email addresses
@@ -6377,30 +7878,42 @@ impl crate::Forgejo {
     pub fn user_delete_email(
         &self,
         body: DeleteEmailOption,
-    ) -> WrappedRequest<'_, endpoints::UserDeleteEmail> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserDeleteEmail,
+        <endpoints::UserDeleteEmail as Endpoint>::Response,
+    > {
         endpoints::UserDeleteEmail { body: body }
             .make_request()
-            .wrap::<endpoints::UserDeleteEmail>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's followers
     ///
     pub fn user_current_list_followers(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentListFollowers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentListFollowers,
+        <endpoints::UserCurrentListFollowers as Endpoint>::Response,
+    > {
         endpoints::UserCurrentListFollowers {}
             .make_request()
-            .wrap::<endpoints::UserCurrentListFollowers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the users that the authenticated user is following
     ///
     pub fn user_current_list_following(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentListFollowing> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentListFollowing,
+        <endpoints::UserCurrentListFollowing as Endpoint>::Response,
+    > {
         endpoints::UserCurrentListFollowing {}
             .make_request()
-            .wrap::<endpoints::UserCurrentListFollowing>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check whether a user is followed by the authenticated user
@@ -6409,10 +7922,14 @@ impl crate::Forgejo {
     pub fn user_current_check_following(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentCheckFollowing> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentCheckFollowing,
+        <endpoints::UserCurrentCheckFollowing as Endpoint>::Response,
+    > {
         endpoints::UserCurrentCheckFollowing { username }
             .make_request()
-            .wrap::<endpoints::UserCurrentCheckFollowing>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Follow a user
@@ -6421,10 +7938,14 @@ impl crate::Forgejo {
     pub fn user_current_put_follow(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentPutFollow> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentPutFollow,
+        <endpoints::UserCurrentPutFollow as Endpoint>::Response,
+    > {
         endpoints::UserCurrentPutFollow { username }
             .make_request()
-            .wrap::<endpoints::UserCurrentPutFollow>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Unfollow a user
@@ -6433,34 +7954,54 @@ impl crate::Forgejo {
     pub fn user_current_delete_follow(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentDeleteFollow> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentDeleteFollow,
+        <endpoints::UserCurrentDeleteFollow as Endpoint>::Response,
+    > {
         endpoints::UserCurrentDeleteFollow { username }
             .make_request()
-            .wrap::<endpoints::UserCurrentDeleteFollow>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a Token to verify
-    pub fn get_verification_token(&self) -> WrappedRequest<'_, endpoints::GetVerificationToken> {
+    pub fn get_verification_token(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetVerificationToken,
+        <endpoints::GetVerificationToken as Endpoint>::Response,
+    > {
         endpoints::GetVerificationToken {}
             .make_request()
-            .wrap::<endpoints::GetVerificationToken>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Verify a GPG key
-    pub fn user_verify_gpg_key(&self) -> WrappedRequest<'_, endpoints::UserVerifyGpgKey> {
+    pub fn user_verify_gpg_key(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserVerifyGpgKey,
+        <endpoints::UserVerifyGpgKey as Endpoint>::Response,
+    > {
         endpoints::UserVerifyGpgKey {}
             .make_request()
-            .wrap::<endpoints::UserVerifyGpgKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's GPG keys
     ///
     pub fn user_current_list_gpg_keys(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentListGpgKeys> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentListGpgKeys,
+        <endpoints::UserCurrentListGpgKeys as Endpoint>::Response,
+    > {
         endpoints::UserCurrentListGpgKeys {}
             .make_request()
-            .wrap::<endpoints::UserCurrentListGpgKeys>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a GPG key
@@ -6469,10 +8010,14 @@ impl crate::Forgejo {
     pub fn user_current_post_gpg_key(
         &self,
         form: CreateGPGKeyOption,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentPostGpgKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentPostGpgKey,
+        <endpoints::UserCurrentPostGpgKey as Endpoint>::Response,
+    > {
         endpoints::UserCurrentPostGpgKey { body: form }
             .make_request()
-            .wrap::<endpoints::UserCurrentPostGpgKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a GPG key
@@ -6481,10 +8026,14 @@ impl crate::Forgejo {
     pub fn user_current_get_gpg_key(
         &self,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentGetGpgKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentGetGpgKey,
+        <endpoints::UserCurrentGetGpgKey as Endpoint>::Response,
+    > {
         endpoints::UserCurrentGetGpgKey { id }
             .make_request()
-            .wrap::<endpoints::UserCurrentGetGpgKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Remove a GPG key
@@ -6493,18 +8042,28 @@ impl crate::Forgejo {
     pub fn user_current_delete_gpg_key(
         &self,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentDeleteGpgKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentDeleteGpgKey,
+        <endpoints::UserCurrentDeleteGpgKey as Endpoint>::Response,
+    > {
         endpoints::UserCurrentDeleteGpgKey { id }
             .make_request()
-            .wrap::<endpoints::UserCurrentDeleteGpgKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's webhooks
     ///
-    pub fn user_list_hooks(&self) -> WrappedRequest<'_, endpoints::UserListHooks> {
+    pub fn user_list_hooks(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListHooks,
+        <endpoints::UserListHooks as Endpoint>::Response,
+    > {
         endpoints::UserListHooks {}
             .make_request()
-            .wrap::<endpoints::UserListHooks>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a hook
@@ -6513,28 +8072,43 @@ impl crate::Forgejo {
     pub fn user_create_hook(
         &self,
         body: CreateHookOption,
-    ) -> WrappedRequest<'_, endpoints::UserCreateHook> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCreateHook,
+        <endpoints::UserCreateHook as Endpoint>::Response,
+    > {
         endpoints::UserCreateHook { body: body }
             .make_request()
-            .wrap::<endpoints::UserCreateHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a hook
     ///
     /// - `id`: id of the hook to get
-    pub fn user_get_hook(&self, id: u64) -> WrappedRequest<'_, endpoints::UserGetHook> {
+    pub fn user_get_hook(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<'_, endpoints::UserGetHook, <endpoints::UserGetHook as Endpoint>::Response>
+    {
         endpoints::UserGetHook { id }
             .make_request()
-            .wrap::<endpoints::UserGetHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a hook
     ///
     /// - `id`: id of the hook to delete
-    pub fn user_delete_hook(&self, id: u64) -> WrappedRequest<'_, endpoints::UserDeleteHook> {
+    pub fn user_delete_hook(
+        &self,
+        id: u64,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserDeleteHook,
+        <endpoints::UserDeleteHook as Endpoint>::Response,
+    > {
         endpoints::UserDeleteHook { id }
             .make_request()
-            .wrap::<endpoints::UserDeleteHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update a hook
@@ -6545,10 +8119,11 @@ impl crate::Forgejo {
         &self,
         id: u64,
         body: EditHookOption,
-    ) -> WrappedRequest<'_, endpoints::UserEditHook> {
+    ) -> WrappedRequest<'_, endpoints::UserEditHook, <endpoints::UserEditHook as Endpoint>::Response>
+    {
         endpoints::UserEditHook { id, body: body }
             .make_request()
-            .wrap::<endpoints::UserEditHook>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's public keys
@@ -6556,10 +8131,14 @@ impl crate::Forgejo {
     pub fn user_current_list_keys(
         &self,
         query: UserCurrentListKeysQuery,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentListKeys> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentListKeys,
+        <endpoints::UserCurrentListKeys as Endpoint>::Response,
+    > {
         endpoints::UserCurrentListKeys { query }
             .make_request()
-            .wrap::<endpoints::UserCurrentListKeys>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a public key
@@ -6568,10 +8147,14 @@ impl crate::Forgejo {
     pub fn user_current_post_key(
         &self,
         body: CreateKeyOption,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentPostKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentPostKey,
+        <endpoints::UserCurrentPostKey as Endpoint>::Response,
+    > {
         endpoints::UserCurrentPostKey { body: body }
             .make_request()
-            .wrap::<endpoints::UserCurrentPostKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a public key
@@ -6580,10 +8163,14 @@ impl crate::Forgejo {
     pub fn user_current_get_key(
         &self,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentGetKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentGetKey,
+        <endpoints::UserCurrentGetKey as Endpoint>::Response,
+    > {
         endpoints::UserCurrentGetKey { id }
             .make_request()
-            .wrap::<endpoints::UserCurrentGetKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Delete a public key
@@ -6592,70 +8179,105 @@ impl crate::Forgejo {
     pub fn user_current_delete_key(
         &self,
         id: u64,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentDeleteKey> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentDeleteKey,
+        <endpoints::UserCurrentDeleteKey as Endpoint>::Response,
+    > {
         endpoints::UserCurrentDeleteKey { id }
             .make_request()
-            .wrap::<endpoints::UserCurrentDeleteKey>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's blocked users
     ///
-    pub fn user_list_blocked_users(&self) -> WrappedRequest<'_, endpoints::UserListBlockedUsers> {
+    pub fn user_list_blocked_users(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListBlockedUsers,
+        <endpoints::UserListBlockedUsers as Endpoint>::Response,
+    > {
         endpoints::UserListBlockedUsers {}
             .make_request()
-            .wrap::<endpoints::UserListBlockedUsers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the current user's organizations
     ///
     pub fn org_list_current_user_orgs(
         &self,
-    ) -> WrappedRequest<'_, endpoints::OrgListCurrentUserOrgs> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListCurrentUserOrgs,
+        <endpoints::OrgListCurrentUserOrgs as Endpoint>::Response,
+    > {
         endpoints::OrgListCurrentUserOrgs {}
             .make_request()
-            .wrap::<endpoints::OrgListCurrentUserOrgs>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get quota information for the authenticated user
-    pub fn user_get_quota(&self) -> WrappedRequest<'_, endpoints::UserGetQuota> {
-        endpoints::UserGetQuota {}
-            .make_request()
-            .wrap::<endpoints::UserGetQuota>(self)
+    pub fn user_get_quota(
+        &self,
+    ) -> WrappedRequest<'_, endpoints::UserGetQuota, <endpoints::UserGetQuota as Endpoint>::Response>
+    {
+        endpoints::UserGetQuota {}.make_request().wrap::<_, _>(self)
     }
 
     /// List the artifacts affecting the authenticated user's quota
     ///
     pub fn user_list_quota_artifacts(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserListQuotaArtifacts> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListQuotaArtifacts,
+        <endpoints::UserListQuotaArtifacts as Endpoint>::Response,
+    > {
         endpoints::UserListQuotaArtifacts {}
             .make_request()
-            .wrap::<endpoints::UserListQuotaArtifacts>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the attachments affecting the authenticated user's quota
     ///
     pub fn user_list_quota_attachments(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserListQuotaAttachments> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListQuotaAttachments,
+        <endpoints::UserListQuotaAttachments as Endpoint>::Response,
+    > {
         endpoints::UserListQuotaAttachments {}
             .make_request()
-            .wrap::<endpoints::UserListQuotaAttachments>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if the authenticated user is over quota for a given subject
-    pub fn user_check_quota(&self) -> WrappedRequest<'_, endpoints::UserCheckQuota> {
+    pub fn user_check_quota(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCheckQuota,
+        <endpoints::UserCheckQuota as Endpoint>::Response,
+    > {
         endpoints::UserCheckQuota {}
             .make_request()
-            .wrap::<endpoints::UserCheckQuota>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the packages affecting the authenticated user's quota
     ///
-    pub fn user_list_quota_packages(&self) -> WrappedRequest<'_, endpoints::UserListQuotaPackages> {
+    pub fn user_list_quota_packages(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListQuotaPackages,
+        <endpoints::UserListQuotaPackages as Endpoint>::Response,
+    > {
         endpoints::UserListQuotaPackages {}
             .make_request()
-            .wrap::<endpoints::UserListQuotaPackages>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the repos that the authenticated user owns
@@ -6663,10 +8285,14 @@ impl crate::Forgejo {
     pub fn user_current_list_repos(
         &self,
         query: UserCurrentListReposQuery,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentListRepos> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentListRepos,
+        <endpoints::UserCurrentListRepos as Endpoint>::Response,
+    > {
         endpoints::UserCurrentListRepos { query }
             .make_request()
-            .wrap::<endpoints::UserCurrentListRepos>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create a repository
@@ -6675,17 +8301,27 @@ impl crate::Forgejo {
     pub fn create_current_user_repo(
         &self,
         body: CreateRepoOption,
-    ) -> WrappedRequest<'_, endpoints::CreateCurrentUserRepo> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::CreateCurrentUserRepo,
+        <endpoints::CreateCurrentUserRepo as Endpoint>::Response,
+    > {
         endpoints::CreateCurrentUserRepo { body: body }
             .make_request()
-            .wrap::<endpoints::CreateCurrentUserRepo>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get user settings
-    pub fn get_user_settings(&self) -> WrappedRequest<'_, endpoints::GetUserSettings> {
+    pub fn get_user_settings(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::GetUserSettings,
+        <endpoints::GetUserSettings as Endpoint>::Response,
+    > {
         endpoints::GetUserSettings {}
             .make_request()
-            .wrap::<endpoints::GetUserSettings>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Update user settings
@@ -6694,20 +8330,28 @@ impl crate::Forgejo {
     pub fn update_user_settings(
         &self,
         body: UserSettingsOptions,
-    ) -> WrappedRequest<'_, endpoints::UpdateUserSettings> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UpdateUserSettings,
+        <endpoints::UpdateUserSettings as Endpoint>::Response,
+    > {
         endpoints::UpdateUserSettings { body: body }
             .make_request()
-            .wrap::<endpoints::UpdateUserSettings>(self)
+            .wrap::<_, _>(self)
     }
 
     /// The repos that the authenticated user has starred
     ///
     pub fn user_current_list_starred(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentListStarred> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentListStarred,
+        <endpoints::UserCurrentListStarred as Endpoint>::Response,
+    > {
         endpoints::UserCurrentListStarred {}
             .make_request()
-            .wrap::<endpoints::UserCurrentListStarred>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Whether the authenticated is starring the repo
@@ -6718,10 +8362,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentCheckStarring> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentCheckStarring,
+        <endpoints::UserCurrentCheckStarring as Endpoint>::Response,
+    > {
         endpoints::UserCurrentCheckStarring { owner, repo }
             .make_request()
-            .wrap::<endpoints::UserCurrentCheckStarring>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Star the given repo
@@ -6732,10 +8380,14 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentPutStar> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentPutStar,
+        <endpoints::UserCurrentPutStar as Endpoint>::Response,
+    > {
         endpoints::UserCurrentPutStar { owner, repo }
             .make_request()
-            .wrap::<endpoints::UserCurrentPutStar>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Unstar the given repo
@@ -6746,36 +8398,56 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentDeleteStar> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentDeleteStar,
+        <endpoints::UserCurrentDeleteStar as Endpoint>::Response,
+    > {
         endpoints::UserCurrentDeleteStar { owner, repo }
             .make_request()
-            .wrap::<endpoints::UserCurrentDeleteStar>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get list of all existing stopwatches
     ///
-    pub fn user_get_stop_watches(&self) -> WrappedRequest<'_, endpoints::UserGetStopWatches> {
+    pub fn user_get_stop_watches(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserGetStopWatches,
+        <endpoints::UserGetStopWatches as Endpoint>::Response,
+    > {
         endpoints::UserGetStopWatches {}
             .make_request()
-            .wrap::<endpoints::UserGetStopWatches>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List repositories watched by the authenticated user
     ///
     pub fn user_current_list_subscriptions(
         &self,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentListSubscriptions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentListSubscriptions,
+        <endpoints::UserCurrentListSubscriptions as Endpoint>::Response,
+    > {
         endpoints::UserCurrentListSubscriptions {}
             .make_request()
-            .wrap::<endpoints::UserCurrentListSubscriptions>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List all the teams a user belongs to
     ///
-    pub fn user_list_teams(&self) -> WrappedRequest<'_, endpoints::UserListTeams> {
+    pub fn user_list_teams(
+        &self,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListTeams,
+        <endpoints::UserListTeams as Endpoint>::Response,
+    > {
         endpoints::UserListTeams {}
             .make_request()
-            .wrap::<endpoints::UserListTeams>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the current user's tracked times
@@ -6783,10 +8455,14 @@ impl crate::Forgejo {
     pub fn user_current_tracked_times(
         &self,
         query: UserCurrentTrackedTimesQuery,
-    ) -> WrappedRequest<'_, endpoints::UserCurrentTrackedTimes> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCurrentTrackedTimes,
+        <endpoints::UserCurrentTrackedTimes as Endpoint>::Response,
+    > {
         endpoints::UserCurrentTrackedTimes { query }
             .make_request()
-            .wrap::<endpoints::UserCurrentTrackedTimes>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Unblocks a user from the doer.
@@ -6795,27 +8471,38 @@ impl crate::Forgejo {
     pub fn user_unblock_user(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserUnblockUser> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserUnblockUser,
+        <endpoints::UserUnblockUser as Endpoint>::Response,
+    > {
         endpoints::UserUnblockUser { username }
             .make_request()
-            .wrap::<endpoints::UserUnblockUser>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Search for users
     ///
-    pub fn user_search(&self, query: UserSearchQuery) -> WrappedRequest<'_, endpoints::UserSearch> {
+    pub fn user_search(
+        &self,
+        query: UserSearchQuery,
+    ) -> WrappedRequest<'_, endpoints::UserSearch, <endpoints::UserSearch as Endpoint>::Response>
+    {
         endpoints::UserSearch { query }
             .make_request()
-            .wrap::<endpoints::UserSearch>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a user
     ///
     /// - `username`: username of user to get
-    pub fn user_get(&self, username: &str) -> WrappedRequest<'_, endpoints::UserGet> {
+    pub fn user_get(
+        &self,
+        username: &str,
+    ) -> WrappedRequest<'_, endpoints::UserGet, <endpoints::UserGet as Endpoint>::Response> {
         endpoints::UserGet { username }
             .make_request()
-            .wrap::<endpoints::UserGet>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a user's activity feeds
@@ -6825,10 +8512,14 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListActivityFeedsQuery,
-    ) -> WrappedRequest<'_, endpoints::UserListActivityFeeds> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListActivityFeeds,
+        <endpoints::UserListActivityFeeds as Endpoint>::Response,
+    > {
         endpoints::UserListActivityFeeds { username, query }
             .make_request()
-            .wrap::<endpoints::UserListActivityFeeds>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the given user's followers
@@ -6837,10 +8528,14 @@ impl crate::Forgejo {
     pub fn user_list_followers(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserListFollowers> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListFollowers,
+        <endpoints::UserListFollowers as Endpoint>::Response,
+    > {
         endpoints::UserListFollowers { username }
             .make_request()
-            .wrap::<endpoints::UserListFollowers>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the users that the given user is following
@@ -6849,10 +8544,14 @@ impl crate::Forgejo {
     pub fn user_list_following(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserListFollowing> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListFollowing,
+        <endpoints::UserListFollowing as Endpoint>::Response,
+    > {
         endpoints::UserListFollowing { username }
             .make_request()
-            .wrap::<endpoints::UserListFollowing>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Check if one user is following another user
@@ -6863,10 +8562,14 @@ impl crate::Forgejo {
         &self,
         username: &str,
         target: &str,
-    ) -> WrappedRequest<'_, endpoints::UserCheckFollowing> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCheckFollowing,
+        <endpoints::UserCheckFollowing as Endpoint>::Response,
+    > {
         endpoints::UserCheckFollowing { username, target }
             .make_request()
-            .wrap::<endpoints::UserCheckFollowing>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the given user's GPG keys
@@ -6875,10 +8578,14 @@ impl crate::Forgejo {
     pub fn user_list_gpg_keys(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserListGpgKeys> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListGpgKeys,
+        <endpoints::UserListGpgKeys as Endpoint>::Response,
+    > {
         endpoints::UserListGpgKeys { username }
             .make_request()
-            .wrap::<endpoints::UserListGpgKeys>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get a user's heatmap
@@ -6887,10 +8594,14 @@ impl crate::Forgejo {
     pub fn user_get_heatmap_data(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserGetHeatmapData> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserGetHeatmapData,
+        <endpoints::UserGetHeatmapData as Endpoint>::Response,
+    > {
         endpoints::UserGetHeatmapData { username }
             .make_request()
-            .wrap::<endpoints::UserGetHeatmapData>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the given user's public keys
@@ -6900,10 +8611,11 @@ impl crate::Forgejo {
         &self,
         username: &str,
         query: UserListKeysQuery,
-    ) -> WrappedRequest<'_, endpoints::UserListKeys> {
+    ) -> WrappedRequest<'_, endpoints::UserListKeys, <endpoints::UserListKeys as Endpoint>::Response>
+    {
         endpoints::UserListKeys { username, query }
             .make_request()
-            .wrap::<endpoints::UserListKeys>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List a user's organizations
@@ -6912,10 +8624,14 @@ impl crate::Forgejo {
     pub fn org_list_user_orgs(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgListUserOrgs> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgListUserOrgs,
+        <endpoints::OrgListUserOrgs as Endpoint>::Response,
+    > {
         endpoints::OrgListUserOrgs { username }
             .make_request()
-            .wrap::<endpoints::OrgListUserOrgs>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Get user permissions in organization
@@ -6926,19 +8642,30 @@ impl crate::Forgejo {
         &self,
         username: &str,
         org: &str,
-    ) -> WrappedRequest<'_, endpoints::OrgGetUserPermissions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::OrgGetUserPermissions,
+        <endpoints::OrgGetUserPermissions as Endpoint>::Response,
+    > {
         endpoints::OrgGetUserPermissions { username, org }
             .make_request()
-            .wrap::<endpoints::OrgGetUserPermissions>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the repos owned by the given user
     ///
     /// - `username`: username of user
-    pub fn user_list_repos(&self, username: &str) -> WrappedRequest<'_, endpoints::UserListRepos> {
+    pub fn user_list_repos(
+        &self,
+        username: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListRepos,
+        <endpoints::UserListRepos as Endpoint>::Response,
+    > {
         endpoints::UserListRepos { username }
             .make_request()
-            .wrap::<endpoints::UserListRepos>(self)
+            .wrap::<_, _>(self)
     }
 
     /// The repos that the given user has starred
@@ -6947,10 +8674,14 @@ impl crate::Forgejo {
     pub fn user_list_starred(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserListStarred> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListStarred,
+        <endpoints::UserListStarred as Endpoint>::Response,
+    > {
         endpoints::UserListStarred { username }
             .make_request()
-            .wrap::<endpoints::UserListStarred>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the repositories watched by a user
@@ -6959,19 +8690,30 @@ impl crate::Forgejo {
     pub fn user_list_subscriptions(
         &self,
         username: &str,
-    ) -> WrappedRequest<'_, endpoints::UserListSubscriptions> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserListSubscriptions,
+        <endpoints::UserListSubscriptions as Endpoint>::Response,
+    > {
         endpoints::UserListSubscriptions { username }
             .make_request()
-            .wrap::<endpoints::UserListSubscriptions>(self)
+            .wrap::<_, _>(self)
     }
 
     /// List the authenticated user's access tokens
     ///
     /// - `username`: username of user
-    pub fn user_get_tokens(&self, username: &str) -> WrappedRequest<'_, endpoints::UserGetTokens> {
+    pub fn user_get_tokens(
+        &self,
+        username: &str,
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserGetTokens,
+        <endpoints::UserGetTokens as Endpoint>::Response,
+    > {
         endpoints::UserGetTokens { username }
             .make_request()
-            .wrap::<endpoints::UserGetTokens>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Create an access token
@@ -6982,13 +8724,17 @@ impl crate::Forgejo {
         &self,
         username: &str,
         body: CreateAccessTokenOption,
-    ) -> WrappedRequest<'_, endpoints::UserCreateToken> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserCreateToken,
+        <endpoints::UserCreateToken as Endpoint>::Response,
+    > {
         endpoints::UserCreateToken {
             username,
             body: body,
         }
         .make_request()
-        .wrap::<endpoints::UserCreateToken>(self)
+        .wrap::<_, _>(self)
     }
 
     /// delete an access token
@@ -6999,16 +8745,21 @@ impl crate::Forgejo {
         &self,
         username: &str,
         token: &str,
-    ) -> WrappedRequest<'_, endpoints::UserDeleteAccessToken> {
+    ) -> WrappedRequest<
+        '_,
+        endpoints::UserDeleteAccessToken,
+        <endpoints::UserDeleteAccessToken as Endpoint>::Response,
+    > {
         endpoints::UserDeleteAccessToken { username, token }
             .make_request()
-            .wrap::<endpoints::UserDeleteAccessToken>(self)
+            .wrap::<_, _>(self)
     }
 
     /// Returns the version of the Forgejo application
-    pub fn get_version(&self) -> WrappedRequest<'_, endpoints::GetVersion> {
-        endpoints::GetVersion {}
-            .make_request()
-            .wrap::<endpoints::GetVersion>(self)
+    pub fn get_version(
+        &self,
+    ) -> WrappedRequest<'_, endpoints::GetVersion, <endpoints::GetVersion as Endpoint>::Response>
+    {
+        endpoints::GetVersion {}.make_request().wrap::<_, _>(self)
     }
 }

@@ -1,4 +1,5 @@
 use super::structs::*;
+use crate::response_type::{Bytes as RBytes, Json as RJson, Text as RText, WithHeaders};
 use crate::sealed::Sealed;
 use crate::Endpoint;
 use crate::{ApiRequest, ApiResponse, RequestBody};
@@ -11,7 +12,7 @@ pub struct ActivitypubInstanceActor {}
 
 impl Sealed for ActivitypubInstanceActor {}
 impl Endpoint for ActivitypubInstanceActor {
-    type Response = ActivityPub;
+    type Response = RJson<ActivityPub>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -23,16 +24,9 @@ impl Endpoint for ActivitypubInstanceActor {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -56,9 +50,9 @@ impl Endpoint for ActivitypubInstanceActorInbox {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -72,7 +66,7 @@ pub struct ActivitypubRepository {
 
 impl Sealed for ActivitypubRepository {}
 impl Endpoint for ActivitypubRepository {
-    type Response = ActivityPub;
+    type Response = RJson<ActivityPub>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -84,16 +78,9 @@ impl Endpoint for ActivitypubRepository {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -127,9 +114,9 @@ impl Endpoint for ActivitypubRepositoryInbox {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -143,7 +130,7 @@ pub struct ActivitypubPerson {
 
 impl Sealed for ActivitypubPerson {}
 impl Endpoint for ActivitypubPerson {
-    type Response = ActivityPub;
+    type Response = RJson<ActivityPub>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -155,16 +142,9 @@ impl Endpoint for ActivitypubPerson {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -190,9 +170,9 @@ impl Endpoint for ActivitypubPersonInbox {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -204,7 +184,7 @@ pub struct AdminCronList {}
 
 impl Sealed for AdminCronList {}
 impl Endpoint for AdminCronList {
-    type Response = (CronListHeaders, Vec<Cron>);
+    type Response = WithHeaders<RJson<Vec<Cron>>, CronListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -216,15 +196,9 @@ impl Endpoint for AdminCronList {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -250,9 +224,9 @@ impl Endpoint for AdminCronRun<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -264,7 +238,7 @@ pub struct AdminGetAllEmails {}
 
 impl Sealed for AdminGetAllEmails {}
 impl Endpoint for AdminGetAllEmails {
-    type Response = Vec<Email>;
+    type Response = RJson<Vec<Email>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -276,16 +250,9 @@ impl Endpoint for AdminGetAllEmails {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -299,7 +266,7 @@ pub struct AdminSearchEmails {
 
 impl Sealed for AdminSearchEmails {}
 impl Endpoint for AdminSearchEmails {
-    type Response = Vec<Email>;
+    type Response = RJson<Vec<Email>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -311,16 +278,9 @@ impl Endpoint for AdminSearchEmails {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -332,7 +292,7 @@ pub struct AdminListHooks {}
 
 impl Sealed for AdminListHooks {}
 impl Endpoint for AdminListHooks {
-    type Response = (HookListHeaders, Vec<Hook>);
+    type Response = WithHeaders<RJson<Vec<Hook>>, HookListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -344,15 +304,9 @@ impl Endpoint for AdminListHooks {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -366,7 +320,7 @@ pub struct AdminCreateHook {
 
 impl Sealed for AdminCreateHook {}
 impl Endpoint for AdminCreateHook {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -381,16 +335,9 @@ impl Endpoint for AdminCreateHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -404,7 +351,7 @@ pub struct AdminGetHook {
 
 impl Sealed for AdminGetHook {}
 impl Endpoint for AdminGetHook {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -416,16 +363,9 @@ impl Endpoint for AdminGetHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -451,9 +391,9 @@ impl Endpoint for AdminDeleteHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -468,7 +408,7 @@ pub struct AdminEditHook {
 
 impl Sealed for AdminEditHook {}
 impl Endpoint for AdminEditHook {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -483,16 +423,9 @@ impl Endpoint for AdminEditHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -504,7 +437,7 @@ pub struct AdminGetAllOrgs {}
 
 impl Sealed for AdminGetAllOrgs {}
 impl Endpoint for AdminGetAllOrgs {
-    type Response = (OrganizationListHeaders, Vec<Organization>);
+    type Response = WithHeaders<RJson<Vec<Organization>>, OrganizationListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -516,15 +449,9 @@ impl Endpoint for AdminGetAllOrgs {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -536,7 +463,7 @@ pub struct AdminListQuotaGroups {}
 
 impl Sealed for AdminListQuotaGroups {}
 impl Endpoint for AdminListQuotaGroups {
-    type Response = (QuotaGroupListHeaders, Vec<QuotaGroup>);
+    type Response = WithHeaders<RJson<Vec<QuotaGroup>>, QuotaGroupListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -548,15 +475,9 @@ impl Endpoint for AdminListQuotaGroups {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -570,7 +491,7 @@ pub struct AdminCreateQuotaGroup {
 
 impl Sealed for AdminCreateQuotaGroup {}
 impl Endpoint for AdminCreateQuotaGroup {
-    type Response = QuotaGroup;
+    type Response = RJson<QuotaGroup>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -585,16 +506,9 @@ impl Endpoint for AdminCreateQuotaGroup {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -608,7 +522,7 @@ pub struct AdminGetQuotaGroup<'a> {
 
 impl Sealed for AdminGetQuotaGroup<'_> {}
 impl Endpoint for AdminGetQuotaGroup<'_> {
-    type Response = QuotaGroup;
+    type Response = RJson<QuotaGroup>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -620,16 +534,9 @@ impl Endpoint for AdminGetQuotaGroup<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -655,9 +562,9 @@ impl Endpoint for AdminDeleteQuotaGroup<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -688,9 +595,9 @@ impl Endpoint for AdminAddRuleToQuotaGroup<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -721,9 +628,9 @@ impl Endpoint for AdminRemoveRuleFromQuotaGroup<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -737,7 +644,7 @@ pub struct AdminListUsersInQuotaGroup<'a> {
 
 impl Sealed for AdminListUsersInQuotaGroup<'_> {}
 impl Endpoint for AdminListUsersInQuotaGroup<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -749,15 +656,9 @@ impl Endpoint for AdminListUsersInQuotaGroup<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -788,9 +689,9 @@ impl Endpoint for AdminAddUserToQuotaGroup<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -821,9 +722,9 @@ impl Endpoint for AdminRemoveUserFromQuotaGroup<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -835,7 +736,7 @@ pub struct AdminListQuotaRules {}
 
 impl Sealed for AdminListQuotaRules {}
 impl Endpoint for AdminListQuotaRules {
-    type Response = (QuotaRuleInfoListHeaders, Vec<QuotaRuleInfo>);
+    type Response = WithHeaders<RJson<Vec<QuotaRuleInfo>>, QuotaRuleInfoListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -847,15 +748,9 @@ impl Endpoint for AdminListQuotaRules {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -869,7 +764,7 @@ pub struct AdminCreateQuotaRule {
 
 impl Sealed for AdminCreateQuotaRule {}
 impl Endpoint for AdminCreateQuotaRule {
-    type Response = QuotaRuleInfo;
+    type Response = RJson<QuotaRuleInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -884,16 +779,9 @@ impl Endpoint for AdminCreateQuotaRule {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -907,7 +795,7 @@ pub struct AdminGetQuotaRule<'a> {
 
 impl Sealed for AdminGetQuotaRule<'_> {}
 impl Endpoint for AdminGetQuotaRule<'_> {
-    type Response = QuotaRuleInfo;
+    type Response = RJson<QuotaRuleInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -919,16 +807,9 @@ impl Endpoint for AdminGetQuotaRule<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -954,9 +835,9 @@ impl Endpoint for AdminDeleteQuotaRule<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -971,7 +852,7 @@ pub struct AdminEditQuotaRule<'a> {
 
 impl Sealed for AdminEditQuotaRule<'_> {}
 impl Endpoint for AdminEditQuotaRule<'_> {
-    type Response = QuotaRuleInfo;
+    type Response = RJson<QuotaRuleInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -986,16 +867,9 @@ impl Endpoint for AdminEditQuotaRule<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1007,7 +881,7 @@ pub struct AdminGetRunnerRegistrationToken {}
 
 impl Sealed for AdminGetRunnerRegistrationToken {}
 impl Endpoint for AdminGetRunnerRegistrationToken {
-    type Response = RegistrationTokenHeaders;
+    type Response = WithHeaders<(), RegistrationTokenHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1019,9 +893,9 @@ impl Endpoint for AdminGetRunnerRegistrationToken {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((&response.headers).try_into()?),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1035,7 +909,7 @@ pub struct AdminUnadoptedList {
 
 impl Sealed for AdminUnadoptedList {}
 impl Endpoint for AdminUnadoptedList {
-    type Response = Vec<String>;
+    type Response = RJson<Vec<String>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1047,16 +921,9 @@ impl Endpoint for AdminUnadoptedList {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1083,9 +950,9 @@ impl Endpoint for AdminAdoptRepository<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1112,9 +979,9 @@ impl Endpoint for AdminDeleteUnadoptedRepository<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1128,7 +995,7 @@ pub struct AdminSearchUsers {
 
 impl Sealed for AdminSearchUsers {}
 impl Endpoint for AdminSearchUsers {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1140,15 +1007,9 @@ impl Endpoint for AdminSearchUsers {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1162,7 +1023,7 @@ pub struct AdminCreateUser {
 
 impl Sealed for AdminCreateUser {}
 impl Endpoint for AdminCreateUser {
-    type Response = User;
+    type Response = RJson<User>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1177,16 +1038,9 @@ impl Endpoint for AdminCreateUser {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1213,9 +1067,9 @@ impl Endpoint for AdminDeleteUser<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1230,7 +1084,7 @@ pub struct AdminEditUser<'a> {
 
 impl Sealed for AdminEditUser<'_> {}
 impl Endpoint for AdminEditUser<'_> {
-    type Response = User;
+    type Response = RJson<User>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -1245,16 +1099,9 @@ impl Endpoint for AdminEditUser<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1269,7 +1116,7 @@ pub struct AdminCreatePublicKey<'a> {
 
 impl Sealed for AdminCreatePublicKey<'_> {}
 impl Endpoint for AdminCreatePublicKey<'_> {
-    type Response = PublicKey;
+    type Response = RJson<PublicKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1284,16 +1131,9 @@ impl Endpoint for AdminCreatePublicKey<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1320,9 +1160,9 @@ impl Endpoint for AdminDeleteUserPublicKey<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1337,7 +1177,7 @@ pub struct AdminCreateOrg<'a> {
 
 impl Sealed for AdminCreateOrg<'_> {}
 impl Endpoint for AdminCreateOrg<'_> {
-    type Response = Organization;
+    type Response = RJson<Organization>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1352,16 +1192,9 @@ impl Endpoint for AdminCreateOrg<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1375,7 +1208,7 @@ pub struct AdminGetUserQuota<'a> {
 
 impl Sealed for AdminGetUserQuota<'_> {}
 impl Endpoint for AdminGetUserQuota<'_> {
-    type Response = QuotaInfo;
+    type Response = RJson<QuotaInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1387,16 +1220,9 @@ impl Endpoint for AdminGetUserQuota<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1426,9 +1252,9 @@ impl Endpoint for AdminSetUserQuotaGroups<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1458,9 +1284,9 @@ impl Endpoint for AdminRenameUser<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1475,7 +1301,7 @@ pub struct AdminCreateRepo<'a> {
 
 impl Sealed for AdminCreateRepo<'_> {}
 impl Endpoint for AdminCreateRepo<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1490,16 +1316,9 @@ impl Endpoint for AdminCreateRepo<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1511,7 +1330,7 @@ pub struct ListGitignoresTemplates {}
 
 impl Sealed for ListGitignoresTemplates {}
 impl Endpoint for ListGitignoresTemplates {
-    type Response = Vec<String>;
+    type Response = RJson<Vec<String>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1523,16 +1342,9 @@ impl Endpoint for ListGitignoresTemplates {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1546,7 +1358,7 @@ pub struct GetGitignoreTemplateInfo<'a> {
 
 impl Sealed for GetGitignoreTemplateInfo<'_> {}
 impl Endpoint for GetGitignoreTemplateInfo<'_> {
-    type Response = GitignoreTemplateInfo;
+    type Response = RJson<GitignoreTemplateInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1558,16 +1370,9 @@ impl Endpoint for GetGitignoreTemplateInfo<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1579,7 +1384,7 @@ pub struct ListLabelTemplates {}
 
 impl Sealed for ListLabelTemplates {}
 impl Endpoint for ListLabelTemplates {
-    type Response = Vec<String>;
+    type Response = RJson<Vec<String>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1591,16 +1396,9 @@ impl Endpoint for ListLabelTemplates {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1614,7 +1412,7 @@ pub struct GetLabelTemplateInfo<'a> {
 
 impl Sealed for GetLabelTemplateInfo<'_> {}
 impl Endpoint for GetLabelTemplateInfo<'_> {
-    type Response = Vec<LabelTemplate>;
+    type Response = RJson<Vec<LabelTemplate>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1626,16 +1424,9 @@ impl Endpoint for GetLabelTemplateInfo<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1647,7 +1438,7 @@ pub struct ListLicenseTemplates {}
 
 impl Sealed for ListLicenseTemplates {}
 impl Endpoint for ListLicenseTemplates {
-    type Response = Vec<LicensesTemplateListEntry>;
+    type Response = RJson<Vec<LicensesTemplateListEntry>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1659,16 +1450,9 @@ impl Endpoint for ListLicenseTemplates {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1682,7 +1466,7 @@ pub struct GetLicenseTemplateInfo<'a> {
 
 impl Sealed for GetLicenseTemplateInfo<'_> {}
 impl Endpoint for GetLicenseTemplateInfo<'_> {
-    type Response = LicenseTemplateInfo;
+    type Response = RJson<LicenseTemplateInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1694,16 +1478,9 @@ impl Endpoint for GetLicenseTemplateInfo<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1717,7 +1494,7 @@ pub struct RenderMarkdown {
 
 impl Sealed for RenderMarkdown {}
 impl Endpoint for RenderMarkdown {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1732,9 +1509,9 @@ impl Endpoint for RenderMarkdown {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1748,7 +1525,7 @@ pub struct RenderMarkdownRaw {
 
 impl Sealed for RenderMarkdownRaw {}
 impl Endpoint for RenderMarkdownRaw {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1763,9 +1540,9 @@ impl Endpoint for RenderMarkdownRaw {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1779,7 +1556,7 @@ pub struct RenderMarkup {
 
 impl Sealed for RenderMarkup {}
 impl Endpoint for RenderMarkup {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1794,9 +1571,9 @@ impl Endpoint for RenderMarkup {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1808,7 +1585,7 @@ pub struct GetNodeInfo {}
 
 impl Sealed for GetNodeInfo {}
 impl Endpoint for GetNodeInfo {
-    type Response = NodeInfo;
+    type Response = RJson<NodeInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1820,16 +1597,9 @@ impl Endpoint for GetNodeInfo {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1843,7 +1613,7 @@ pub struct NotifyGetList {
 
 impl Sealed for NotifyGetList {}
 impl Endpoint for NotifyGetList {
-    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
+    type Response = WithHeaders<RJson<Vec<NotificationThread>>, NotificationThreadListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1855,15 +1625,9 @@ impl Endpoint for NotifyGetList {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1877,7 +1641,7 @@ pub struct NotifyReadList {
 
 impl Sealed for NotifyReadList {}
 impl Endpoint for NotifyReadList {
-    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
+    type Response = WithHeaders<RJson<Vec<NotificationThread>>, NotificationThreadListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -1889,15 +1653,9 @@ impl Endpoint for NotifyReadList {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            205 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            205 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1909,7 +1667,7 @@ pub struct NotifyNewAvailable {}
 
 impl Sealed for NotifyNewAvailable {}
 impl Endpoint for NotifyNewAvailable {
-    type Response = NotificationCount;
+    type Response = RJson<NotificationCount>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1921,16 +1679,9 @@ impl Endpoint for NotifyNewAvailable {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1944,7 +1695,7 @@ pub struct NotifyGetThread<'a> {
 
 impl Sealed for NotifyGetThread<'_> {}
 impl Endpoint for NotifyGetThread<'_> {
-    type Response = NotificationThread;
+    type Response = RJson<NotificationThread>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1956,16 +1707,9 @@ impl Endpoint for NotifyGetThread<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1980,7 +1724,7 @@ pub struct NotifyReadThread<'a> {
 
 impl Sealed for NotifyReadThread<'_> {}
 impl Endpoint for NotifyReadThread<'_> {
-    type Response = NotificationThread;
+    type Response = RJson<NotificationThread>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -1992,16 +1736,9 @@ impl Endpoint for NotifyReadThread<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            205 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            205 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2016,7 +1753,7 @@ pub struct CreateOrgRepoDeprecated<'a> {
 
 impl Sealed for CreateOrgRepoDeprecated<'_> {}
 impl Endpoint for CreateOrgRepoDeprecated<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2031,16 +1768,9 @@ impl Endpoint for CreateOrgRepoDeprecated<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2052,7 +1782,7 @@ pub struct OrgGetAll {}
 
 impl Sealed for OrgGetAll {}
 impl Endpoint for OrgGetAll {
-    type Response = (OrganizationListHeaders, Vec<Organization>);
+    type Response = WithHeaders<RJson<Vec<Organization>>, OrganizationListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2064,15 +1794,9 @@ impl Endpoint for OrgGetAll {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2086,7 +1810,7 @@ pub struct OrgCreate {
 
 impl Sealed for OrgCreate {}
 impl Endpoint for OrgCreate {
-    type Response = Organization;
+    type Response = RJson<Organization>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2101,16 +1825,9 @@ impl Endpoint for OrgCreate {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2124,7 +1841,7 @@ pub struct OrgGet<'a> {
 
 impl Sealed for OrgGet<'_> {}
 impl Endpoint for OrgGet<'_> {
-    type Response = Organization;
+    type Response = RJson<Organization>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2136,16 +1853,9 @@ impl Endpoint for OrgGet<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2171,9 +1881,9 @@ impl Endpoint for OrgDelete<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2188,7 +1898,7 @@ pub struct OrgEdit<'a> {
 
 impl Sealed for OrgEdit<'_> {}
 impl Endpoint for OrgEdit<'_> {
-    type Response = Organization;
+    type Response = RJson<Organization>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -2203,16 +1913,9 @@ impl Endpoint for OrgEdit<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2226,7 +1929,7 @@ pub struct OrgGetRunnerRegistrationToken<'a> {
 
 impl Sealed for OrgGetRunnerRegistrationToken<'_> {}
 impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
-    type Response = RegistrationTokenHeaders;
+    type Response = WithHeaders<(), RegistrationTokenHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2242,9 +1945,9 @@ impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((&response.headers).try_into()?),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2258,7 +1961,7 @@ pub struct OrgListActionsSecrets<'a> {
 
 impl Sealed for OrgListActionsSecrets<'_> {}
 impl Endpoint for OrgListActionsSecrets<'_> {
-    type Response = (SecretListHeaders, Vec<Secret>);
+    type Response = WithHeaders<RJson<Vec<Secret>>, SecretListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2270,15 +1973,9 @@ impl Endpoint for OrgListActionsSecrets<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2313,10 +2010,10 @@ impl Endpoint for UpdateOrgSecret<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2347,9 +2044,9 @@ impl Endpoint for DeleteOrgSecret<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2363,7 +2060,7 @@ pub struct GetOrgVariablesList<'a> {
 
 impl Sealed for GetOrgVariablesList<'_> {}
 impl Endpoint for GetOrgVariablesList<'_> {
-    type Response = (VariableListHeaders, Vec<ActionVariable>);
+    type Response = WithHeaders<RJson<Vec<ActionVariable>>, VariableListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2375,15 +2072,9 @@ impl Endpoint for GetOrgVariablesList<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2398,7 +2089,7 @@ pub struct GetOrgVariable<'a> {
 
 impl Sealed for GetOrgVariable<'_> {}
 impl Endpoint for GetOrgVariable<'_> {
-    type Response = ActionVariable;
+    type Response = RJson<ActionVariable>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2414,16 +2105,9 @@ impl Endpoint for GetOrgVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2458,10 +2142,10 @@ impl Endpoint for UpdateOrgVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2496,10 +2180,10 @@ impl Endpoint for CreateOrgVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2514,7 +2198,7 @@ pub struct DeleteOrgVariable<'a> {
 
 impl Sealed for DeleteOrgVariable<'_> {}
 impl Endpoint for DeleteOrgVariable<'_> {
-    type Response = Option<ActionVariable>;
+    type Response = Option<RJson<ActionVariable>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -2530,16 +2214,11 @@ impl Endpoint for DeleteOrgVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(Some(serde_json::from_slice(&*response.body).map_err(
-                |e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                },
-            )?)),
-            201 => Ok(None),
-            204 => Ok(None),
+            200 => Ok((response, true)),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2554,7 +2233,7 @@ pub struct OrgListActivityFeeds<'a> {
 
 impl Sealed for OrgListActivityFeeds<'_> {}
 impl Endpoint for OrgListActivityFeeds<'_> {
-    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
+    type Response = WithHeaders<RJson<Vec<Activity>>, ActivityFeedsListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2566,15 +2245,9 @@ impl Endpoint for OrgListActivityFeeds<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2604,9 +2277,9 @@ impl Endpoint for OrgUpdateAvatar<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2632,9 +2305,9 @@ impl Endpoint for OrgDeleteAvatar<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2661,9 +2334,9 @@ impl Endpoint for OrgBlockUser<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2677,7 +2350,7 @@ pub struct OrgListHooks<'a> {
 
 impl Sealed for OrgListHooks<'_> {}
 impl Endpoint for OrgListHooks<'_> {
-    type Response = (HookListHeaders, Vec<Hook>);
+    type Response = WithHeaders<RJson<Vec<Hook>>, HookListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2689,15 +2362,9 @@ impl Endpoint for OrgListHooks<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2712,7 +2379,7 @@ pub struct OrgCreateHook<'a> {
 
 impl Sealed for OrgCreateHook<'_> {}
 impl Endpoint for OrgCreateHook<'_> {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2727,16 +2394,9 @@ impl Endpoint for OrgCreateHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2751,7 +2411,7 @@ pub struct OrgGetHook<'a> {
 
 impl Sealed for OrgGetHook<'_> {}
 impl Endpoint for OrgGetHook<'_> {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2763,16 +2423,9 @@ impl Endpoint for OrgGetHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2799,9 +2452,9 @@ impl Endpoint for OrgDeleteHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2817,7 +2470,7 @@ pub struct OrgEditHook<'a> {
 
 impl Sealed for OrgEditHook<'_> {}
 impl Endpoint for OrgEditHook<'_> {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -2832,16 +2485,9 @@ impl Endpoint for OrgEditHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2855,7 +2501,7 @@ pub struct OrgListLabels<'a> {
 
 impl Sealed for OrgListLabels<'_> {}
 impl Endpoint for OrgListLabels<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = WithHeaders<RJson<Vec<Label>>, LabelListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2867,15 +2513,9 @@ impl Endpoint for OrgListLabels<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2890,7 +2530,7 @@ pub struct OrgCreateLabel<'a> {
 
 impl Sealed for OrgCreateLabel<'_> {}
 impl Endpoint for OrgCreateLabel<'_> {
-    type Response = Label;
+    type Response = RJson<Label>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2905,16 +2545,9 @@ impl Endpoint for OrgCreateLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2929,7 +2562,7 @@ pub struct OrgGetLabel<'a> {
 
 impl Sealed for OrgGetLabel<'_> {}
 impl Endpoint for OrgGetLabel<'_> {
-    type Response = Label;
+    type Response = RJson<Label>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2941,16 +2574,9 @@ impl Endpoint for OrgGetLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2977,9 +2603,9 @@ impl Endpoint for OrgDeleteLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2995,7 +2621,7 @@ pub struct OrgEditLabel<'a> {
 
 impl Sealed for OrgEditLabel<'_> {}
 impl Endpoint for OrgEditLabel<'_> {
-    type Response = Label;
+    type Response = RJson<Label>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -3010,16 +2636,9 @@ impl Endpoint for OrgEditLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3033,7 +2652,7 @@ pub struct OrgListBlockedUsers<'a> {
 
 impl Sealed for OrgListBlockedUsers<'_> {}
 impl Endpoint for OrgListBlockedUsers<'_> {
-    type Response = (BlockedUserListHeaders, Vec<BlockedUser>);
+    type Response = WithHeaders<RJson<Vec<BlockedUser>>, BlockedUserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3045,15 +2664,9 @@ impl Endpoint for OrgListBlockedUsers<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3067,7 +2680,7 @@ pub struct OrgListMembers<'a> {
 
 impl Sealed for OrgListMembers<'_> {}
 impl Endpoint for OrgListMembers<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3079,15 +2692,9 @@ impl Endpoint for OrgListMembers<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3114,9 +2721,9 @@ impl Endpoint for OrgIsMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3143,9 +2750,9 @@ impl Endpoint for OrgDeleteMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3159,7 +2766,7 @@ pub struct OrgListPublicMembers<'a> {
 
 impl Sealed for OrgListPublicMembers<'_> {}
 impl Endpoint for OrgListPublicMembers<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3171,15 +2778,9 @@ impl Endpoint for OrgListPublicMembers<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3206,9 +2807,9 @@ impl Endpoint for OrgIsPublicMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3235,9 +2836,9 @@ impl Endpoint for OrgPublicizeMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3264,9 +2865,9 @@ impl Endpoint for OrgConcealMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3280,7 +2881,7 @@ pub struct OrgGetQuota<'a> {
 
 impl Sealed for OrgGetQuota<'_> {}
 impl Endpoint for OrgGetQuota<'_> {
-    type Response = QuotaInfo;
+    type Response = RJson<QuotaInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3292,16 +2893,9 @@ impl Endpoint for OrgGetQuota<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3315,7 +2909,7 @@ pub struct OrgListQuotaArtifacts<'a> {
 
 impl Sealed for OrgListQuotaArtifacts<'_> {}
 impl Endpoint for OrgListQuotaArtifacts<'_> {
-    type Response = (QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>);
+    type Response = WithHeaders<RJson<Vec<QuotaUsedArtifact>>, QuotaUsedArtifactListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3327,15 +2921,9 @@ impl Endpoint for OrgListQuotaArtifacts<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3349,7 +2937,7 @@ pub struct OrgListQuotaAttachments<'a> {
 
 impl Sealed for OrgListQuotaAttachments<'_> {}
 impl Endpoint for OrgListQuotaAttachments<'_> {
-    type Response = (QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>);
+    type Response = WithHeaders<RJson<Vec<QuotaUsedAttachment>>, QuotaUsedAttachmentListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3361,15 +2949,9 @@ impl Endpoint for OrgListQuotaAttachments<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3395,9 +2977,9 @@ impl Endpoint for OrgCheckQuota<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3411,7 +2993,7 @@ pub struct OrgListQuotaPackages<'a> {
 
 impl Sealed for OrgListQuotaPackages<'_> {}
 impl Endpoint for OrgListQuotaPackages<'_> {
-    type Response = (QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>);
+    type Response = WithHeaders<RJson<Vec<QuotaUsedPackage>>, QuotaUsedPackageListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3423,15 +3005,9 @@ impl Endpoint for OrgListQuotaPackages<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3445,7 +3021,7 @@ pub struct OrgListRepos<'a> {
 
 impl Sealed for OrgListRepos<'_> {}
 impl Endpoint for OrgListRepos<'_> {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3457,15 +3033,9 @@ impl Endpoint for OrgListRepos<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3480,7 +3050,7 @@ pub struct CreateOrgRepo<'a> {
 
 impl Sealed for CreateOrgRepo<'_> {}
 impl Endpoint for CreateOrgRepo<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -3495,16 +3065,9 @@ impl Endpoint for CreateOrgRepo<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3518,7 +3081,7 @@ pub struct OrgListTeams<'a> {
 
 impl Sealed for OrgListTeams<'_> {}
 impl Endpoint for OrgListTeams<'_> {
-    type Response = (TeamListHeaders, Vec<Team>);
+    type Response = WithHeaders<RJson<Vec<Team>>, TeamListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3530,15 +3093,9 @@ impl Endpoint for OrgListTeams<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3553,7 +3110,7 @@ pub struct OrgCreateTeam<'a> {
 
 impl Sealed for OrgCreateTeam<'_> {}
 impl Endpoint for OrgCreateTeam<'_> {
-    type Response = Team;
+    type Response = RJson<Team>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -3568,16 +3125,9 @@ impl Endpoint for OrgCreateTeam<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3592,7 +3142,7 @@ pub struct TeamSearch<'a> {
 
 impl Sealed for TeamSearch<'_> {}
 impl Endpoint for TeamSearch<'_> {
-    type Response = TeamSearchResponse;
+    type Response = RJson<TeamSearchResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3604,16 +3154,9 @@ impl Endpoint for TeamSearch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3640,9 +3183,9 @@ impl Endpoint for OrgUnblockUser<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3657,7 +3200,7 @@ pub struct ListPackages<'a> {
 
 impl Sealed for ListPackages<'_> {}
 impl Endpoint for ListPackages<'_> {
-    type Response = (PackageListHeaders, Vec<Package>);
+    type Response = WithHeaders<RJson<Vec<Package>>, PackageListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3669,15 +3212,9 @@ impl Endpoint for ListPackages<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3694,7 +3231,7 @@ pub struct GetPackage<'a> {
 
 impl Sealed for GetPackage<'_> {}
 impl Endpoint for GetPackage<'_> {
-    type Response = Package;
+    type Response = RJson<Package>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3710,16 +3247,9 @@ impl Endpoint for GetPackage<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3752,9 +3282,9 @@ impl Endpoint for DeletePackage<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3771,7 +3301,7 @@ pub struct ListPackageFiles<'a> {
 
 impl Sealed for ListPackageFiles<'_> {}
 impl Endpoint for ListPackageFiles<'_> {
-    type Response = (PackageFileListHeaders, Vec<PackageFile>);
+    type Response = WithHeaders<RJson<Vec<PackageFile>>, PackageFileListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3787,15 +3317,9 @@ impl Endpoint for ListPackageFiles<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3809,7 +3333,7 @@ pub struct IssueSearchIssues {
 
 impl Sealed for IssueSearchIssues {}
 impl Endpoint for IssueSearchIssues {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = WithHeaders<RJson<Vec<Issue>>, IssueListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3821,15 +3345,9 @@ impl Endpoint for IssueSearchIssues {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3843,7 +3361,7 @@ pub struct RepoMigrate {
 
 impl Sealed for RepoMigrate {}
 impl Endpoint for RepoMigrate {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -3858,16 +3376,9 @@ impl Endpoint for RepoMigrate {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3881,7 +3392,7 @@ pub struct RepoSearch {
 
 impl Sealed for RepoSearch {}
 impl Endpoint for RepoSearch {
-    type Response = SearchResults;
+    type Response = RJson<SearchResults>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3893,16 +3404,9 @@ impl Endpoint for RepoSearch {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3917,7 +3421,7 @@ pub struct RepoGet<'a> {
 
 impl Sealed for RepoGet<'_> {}
 impl Endpoint for RepoGet<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3929,16 +3433,9 @@ impl Endpoint for RepoGet<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3965,9 +3462,9 @@ impl Endpoint for RepoDelete<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3983,7 +3480,7 @@ pub struct RepoEdit<'a> {
 
 impl Sealed for RepoEdit<'_> {}
 impl Endpoint for RepoEdit<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -3998,16 +3495,9 @@ impl Endpoint for RepoEdit<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4022,7 +3512,7 @@ pub struct RepoGetRunnerRegistrationToken<'a> {
 
 impl Sealed for RepoGetRunnerRegistrationToken<'_> {}
 impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
-    type Response = RegistrationTokenHeaders;
+    type Response = WithHeaders<(), RegistrationTokenHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4038,9 +3528,9 @@ impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((&response.headers).try_into()?),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4055,7 +3545,7 @@ pub struct RepoListActionsSecrets<'a> {
 
 impl Sealed for RepoListActionsSecrets<'_> {}
 impl Endpoint for RepoListActionsSecrets<'_> {
-    type Response = (SecretListHeaders, Vec<Secret>);
+    type Response = WithHeaders<RJson<Vec<Secret>>, SecretListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4067,15 +3557,9 @@ impl Endpoint for RepoListActionsSecrets<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4111,10 +3595,10 @@ impl Endpoint for UpdateRepoSecret<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4146,9 +3630,9 @@ impl Endpoint for DeleteRepoSecret<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4163,7 +3647,7 @@ pub struct ListActionTasks<'a> {
 
 impl Sealed for ListActionTasks<'_> {}
 impl Endpoint for ListActionTasks<'_> {
-    type Response = ActionTaskResponse;
+    type Response = RJson<ActionTaskResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4175,16 +3659,9 @@ impl Endpoint for ListActionTasks<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4199,7 +3676,7 @@ pub struct GetRepoVariablesList<'a> {
 
 impl Sealed for GetRepoVariablesList<'_> {}
 impl Endpoint for GetRepoVariablesList<'_> {
-    type Response = (VariableListHeaders, Vec<ActionVariable>);
+    type Response = WithHeaders<RJson<Vec<ActionVariable>>, VariableListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4215,15 +3692,9 @@ impl Endpoint for GetRepoVariablesList<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4239,7 +3710,7 @@ pub struct GetRepoVariable<'a> {
 
 impl Sealed for GetRepoVariable<'_> {}
 impl Endpoint for GetRepoVariable<'_> {
-    type Response = ActionVariable;
+    type Response = RJson<ActionVariable>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4255,16 +3726,9 @@ impl Endpoint for GetRepoVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4300,10 +3764,10 @@ impl Endpoint for UpdateRepoVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4339,10 +3803,10 @@ impl Endpoint for CreateRepoVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4358,7 +3822,7 @@ pub struct DeleteRepoVariable<'a> {
 
 impl Sealed for DeleteRepoVariable<'_> {}
 impl Endpoint for DeleteRepoVariable<'_> {
-    type Response = Option<ActionVariable>;
+    type Response = Option<RJson<ActionVariable>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -4374,16 +3838,11 @@ impl Endpoint for DeleteRepoVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(Some(serde_json::from_slice(&*response.body).map_err(
-                |e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                },
-            )?)),
-            201 => Ok(None),
-            204 => Ok(None),
+            200 => Ok((response, true)),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4419,9 +3878,9 @@ impl Endpoint for DispatchWorkflow<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4437,7 +3896,7 @@ pub struct RepoListActivityFeeds<'a> {
 
 impl Sealed for RepoListActivityFeeds<'_> {}
 impl Endpoint for RepoListActivityFeeds<'_> {
-    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
+    type Response = WithHeaders<RJson<Vec<Activity>>, ActivityFeedsListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4453,15 +3912,9 @@ impl Endpoint for RepoListActivityFeeds<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4477,7 +3930,7 @@ pub struct RepoGetArchive<'a> {
 
 impl Sealed for RepoGetArchive<'_> {}
 impl Endpoint for RepoGetArchive<'_> {
-    type Response = Bytes;
+    type Response = RBytes;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4493,9 +3946,9 @@ impl Endpoint for RepoGetArchive<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(response.body.clone()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4510,7 +3963,7 @@ pub struct RepoGetAssignees<'a> {
 
 impl Sealed for RepoGetAssignees<'_> {}
 impl Endpoint for RepoGetAssignees<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4522,15 +3975,9 @@ impl Endpoint for RepoGetAssignees<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4561,9 +4008,9 @@ impl Endpoint for RepoUpdateAvatar<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4590,9 +4037,9 @@ impl Endpoint for RepoDeleteAvatar<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4607,7 +4054,7 @@ pub struct RepoListBranchProtection<'a> {
 
 impl Sealed for RepoListBranchProtection<'_> {}
 impl Endpoint for RepoListBranchProtection<'_> {
-    type Response = Vec<BranchProtection>;
+    type Response = RJson<Vec<BranchProtection>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4623,16 +4070,9 @@ impl Endpoint for RepoListBranchProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4648,7 +4088,7 @@ pub struct RepoCreateBranchProtection<'a> {
 
 impl Sealed for RepoCreateBranchProtection<'_> {}
 impl Endpoint for RepoCreateBranchProtection<'_> {
-    type Response = BranchProtection;
+    type Response = RJson<BranchProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -4667,16 +4107,9 @@ impl Endpoint for RepoCreateBranchProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4692,7 +4125,7 @@ pub struct RepoGetBranchProtection<'a> {
 
 impl Sealed for RepoGetBranchProtection<'_> {}
 impl Endpoint for RepoGetBranchProtection<'_> {
-    type Response = BranchProtection;
+    type Response = RJson<BranchProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4708,16 +4141,9 @@ impl Endpoint for RepoGetBranchProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4749,9 +4175,9 @@ impl Endpoint for RepoDeleteBranchProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4768,7 +4194,7 @@ pub struct RepoEditBranchProtection<'a> {
 
 impl Sealed for RepoEditBranchProtection<'_> {}
 impl Endpoint for RepoEditBranchProtection<'_> {
-    type Response = BranchProtection;
+    type Response = RJson<BranchProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -4787,16 +4213,9 @@ impl Endpoint for RepoEditBranchProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4811,7 +4230,7 @@ pub struct RepoListBranches<'a> {
 
 impl Sealed for RepoListBranches<'_> {}
 impl Endpoint for RepoListBranches<'_> {
-    type Response = (BranchListHeaders, Vec<Branch>);
+    type Response = WithHeaders<RJson<Vec<Branch>>, BranchListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4823,15 +4242,9 @@ impl Endpoint for RepoListBranches<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4847,7 +4260,7 @@ pub struct RepoCreateBranch<'a> {
 
 impl Sealed for RepoCreateBranch<'_> {}
 impl Endpoint for RepoCreateBranch<'_> {
-    type Response = Branch;
+    type Response = RJson<Branch>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -4862,16 +4275,9 @@ impl Endpoint for RepoCreateBranch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4887,7 +4293,7 @@ pub struct RepoGetBranch<'a> {
 
 impl Sealed for RepoGetBranch<'_> {}
 impl Endpoint for RepoGetBranch<'_> {
-    type Response = Branch;
+    type Response = RJson<Branch>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4903,16 +4309,9 @@ impl Endpoint for RepoGetBranch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4944,9 +4343,9 @@ impl Endpoint for RepoDeleteBranch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4982,9 +4381,9 @@ impl Endpoint for RepoUpdateBranch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4999,7 +4398,7 @@ pub struct RepoListCollaborators<'a> {
 
 impl Sealed for RepoListCollaborators<'_> {}
 impl Endpoint for RepoListCollaborators<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5011,15 +4410,9 @@ impl Endpoint for RepoListCollaborators<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5051,9 +4444,9 @@ impl Endpoint for RepoCheckCollaborator<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5089,9 +4482,9 @@ impl Endpoint for RepoAddCollaborator<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5123,9 +4516,9 @@ impl Endpoint for RepoDeleteCollaborator<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5141,7 +4534,7 @@ pub struct RepoGetRepoPermissions<'a> {
 
 impl Sealed for RepoGetRepoPermissions<'_> {}
 impl Endpoint for RepoGetRepoPermissions<'_> {
-    type Response = RepoCollaboratorPermission;
+    type Response = RJson<RepoCollaboratorPermission>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5157,16 +4550,9 @@ impl Endpoint for RepoGetRepoPermissions<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5182,7 +4568,7 @@ pub struct RepoGetAllCommits<'a> {
 
 impl Sealed for RepoGetAllCommits<'_> {}
 impl Endpoint for RepoGetAllCommits<'_> {
-    type Response = (CommitListHeaders, Vec<Commit>);
+    type Response = WithHeaders<RJson<Vec<Commit>>, CommitListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5194,15 +4580,9 @@ impl Endpoint for RepoGetAllCommits<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5218,7 +4598,7 @@ pub struct RepoGetCombinedStatusByRef<'a> {
 
 impl Sealed for RepoGetCombinedStatusByRef<'_> {}
 impl Endpoint for RepoGetCombinedStatusByRef<'_> {
-    type Response = CombinedStatus;
+    type Response = RJson<CombinedStatus>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5234,16 +4614,9 @@ impl Endpoint for RepoGetCombinedStatusByRef<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5260,7 +4633,7 @@ pub struct RepoListStatusesByRef<'a> {
 
 impl Sealed for RepoListStatusesByRef<'_> {}
 impl Endpoint for RepoListStatusesByRef<'_> {
-    type Response = (CommitStatusListHeaders, Vec<CommitStatus>);
+    type Response = WithHeaders<RJson<Vec<CommitStatus>>, CommitStatusListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5276,15 +4649,9 @@ impl Endpoint for RepoListStatusesByRef<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5300,7 +4667,7 @@ pub struct RepoGetCommitPullRequest<'a> {
 
 impl Sealed for RepoGetCommitPullRequest<'_> {}
 impl Endpoint for RepoGetCommitPullRequest<'_> {
-    type Response = PullRequest;
+    type Response = RJson<PullRequest>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5316,16 +4683,9 @@ impl Endpoint for RepoGetCommitPullRequest<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5341,7 +4701,7 @@ pub struct RepoCompareDiff<'a> {
 
 impl Sealed for RepoCompareDiff<'_> {}
 impl Endpoint for RepoCompareDiff<'_> {
-    type Response = Compare;
+    type Response = RJson<Compare>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5357,16 +4717,9 @@ impl Endpoint for RepoCompareDiff<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5382,7 +4735,7 @@ pub struct RepoGetContentsList<'a> {
 
 impl Sealed for RepoGetContentsList<'_> {}
 impl Endpoint for RepoGetContentsList<'_> {
-    type Response = Vec<ContentsResponse>;
+    type Response = RJson<Vec<ContentsResponse>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5394,16 +4747,9 @@ impl Endpoint for RepoGetContentsList<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5419,7 +4765,7 @@ pub struct RepoChangeFiles<'a> {
 
 impl Sealed for RepoChangeFiles<'_> {}
 impl Endpoint for RepoChangeFiles<'_> {
-    type Response = FilesResponse;
+    type Response = RJson<FilesResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5434,16 +4780,9 @@ impl Endpoint for RepoChangeFiles<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5460,7 +4799,7 @@ pub struct RepoGetContents<'a> {
 
 impl Sealed for RepoGetContents<'_> {}
 impl Endpoint for RepoGetContents<'_> {
-    type Response = ContentsResponse;
+    type Response = RJson<ContentsResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5476,16 +4815,9 @@ impl Endpoint for RepoGetContents<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5502,7 +4834,7 @@ pub struct RepoUpdateFile<'a> {
 
 impl Sealed for RepoUpdateFile<'_> {}
 impl Endpoint for RepoUpdateFile<'_> {
-    type Response = FileResponse;
+    type Response = RJson<FileResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -5521,16 +4853,9 @@ impl Endpoint for RepoUpdateFile<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5547,7 +4872,7 @@ pub struct RepoCreateFile<'a> {
 
 impl Sealed for RepoCreateFile<'_> {}
 impl Endpoint for RepoCreateFile<'_> {
-    type Response = FileResponse;
+    type Response = RJson<FileResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5566,16 +4891,9 @@ impl Endpoint for RepoCreateFile<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5592,7 +4910,7 @@ pub struct RepoDeleteFile<'a> {
 
 impl Sealed for RepoDeleteFile<'_> {}
 impl Endpoint for RepoDeleteFile<'_> {
-    type Response = FileDeleteResponse;
+    type Response = RJson<FileDeleteResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -5611,16 +4929,9 @@ impl Endpoint for RepoDeleteFile<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5636,7 +4947,7 @@ pub struct RepoApplyDiffPatch<'a> {
 
 impl Sealed for RepoApplyDiffPatch<'_> {}
 impl Endpoint for RepoApplyDiffPatch<'_> {
-    type Response = FileResponse;
+    type Response = RJson<FileResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5651,16 +4962,9 @@ impl Endpoint for RepoApplyDiffPatch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5693,9 +4997,9 @@ impl Endpoint for RepoGetEditorConfig<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5710,7 +5014,7 @@ pub struct RepoListFlags<'a> {
 
 impl Sealed for RepoListFlags<'_> {}
 impl Endpoint for RepoListFlags<'_> {
-    type Response = Vec<String>;
+    type Response = RJson<Vec<String>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5722,16 +5026,9 @@ impl Endpoint for RepoListFlags<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5762,9 +5059,9 @@ impl Endpoint for RepoReplaceAllFlags<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5791,9 +5088,9 @@ impl Endpoint for RepoDeleteAllFlags<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5825,9 +5122,9 @@ impl Endpoint for RepoCheckFlag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5859,9 +5156,9 @@ impl Endpoint for RepoAddFlag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5893,9 +5190,9 @@ impl Endpoint for RepoDeleteFlag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5910,7 +5207,7 @@ pub struct ListForks<'a> {
 
 impl Sealed for ListForks<'_> {}
 impl Endpoint for ListForks<'_> {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5922,15 +5219,9 @@ impl Endpoint for ListForks<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5946,7 +5237,7 @@ pub struct CreateFork<'a> {
 
 impl Sealed for CreateFork<'_> {}
 impl Endpoint for CreateFork<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5961,16 +5252,9 @@ impl Endpoint for CreateFork<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            202 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            202 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5986,7 +5270,7 @@ pub struct GetBlob<'a> {
 
 impl Sealed for GetBlob<'_> {}
 impl Endpoint for GetBlob<'_> {
-    type Response = GitBlobResponse;
+    type Response = RJson<GitBlobResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6002,16 +5286,9 @@ impl Endpoint for GetBlob<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6028,7 +5305,7 @@ pub struct RepoGetSingleCommit<'a> {
 
 impl Sealed for RepoGetSingleCommit<'_> {}
 impl Endpoint for RepoGetSingleCommit<'_> {
-    type Response = Commit;
+    type Response = RJson<Commit>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6044,16 +5321,9 @@ impl Endpoint for RepoGetSingleCommit<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6070,7 +5340,7 @@ pub struct RepoDownloadCommitDiffOrPatch<'a> {
 
 impl Sealed for RepoDownloadCommitDiffOrPatch<'_> {}
 impl Endpoint for RepoDownloadCommitDiffOrPatch<'_> {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6086,9 +5356,9 @@ impl Endpoint for RepoDownloadCommitDiffOrPatch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6105,7 +5375,7 @@ pub struct RepoGetNote<'a> {
 
 impl Sealed for RepoGetNote<'_> {}
 impl Endpoint for RepoGetNote<'_> {
-    type Response = Note;
+    type Response = RJson<Note>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6121,16 +5391,9 @@ impl Endpoint for RepoGetNote<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6147,7 +5410,7 @@ pub struct RepoSetNote<'a> {
 
 impl Sealed for RepoSetNote<'_> {}
 impl Endpoint for RepoSetNote<'_> {
-    type Response = Note;
+    type Response = RJson<Note>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -6166,16 +5429,9 @@ impl Endpoint for RepoSetNote<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6207,9 +5463,9 @@ impl Endpoint for RepoRemoveNote<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6224,7 +5480,7 @@ pub struct RepoListAllGitRefs<'a> {
 
 impl Sealed for RepoListAllGitRefs<'_> {}
 impl Endpoint for RepoListAllGitRefs<'_> {
-    type Response = Vec<Reference>;
+    type Response = RJson<Vec<Reference>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6236,16 +5492,9 @@ impl Endpoint for RepoListAllGitRefs<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6261,7 +5510,7 @@ pub struct RepoListGitRefs<'a> {
 
 impl Sealed for RepoListGitRefs<'_> {}
 impl Endpoint for RepoListGitRefs<'_> {
-    type Response = Vec<Reference>;
+    type Response = RJson<Vec<Reference>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6277,16 +5526,9 @@ impl Endpoint for RepoListGitRefs<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6302,7 +5544,7 @@ pub struct GetAnnotatedTag<'a> {
 
 impl Sealed for GetAnnotatedTag<'_> {}
 impl Endpoint for GetAnnotatedTag<'_> {
-    type Response = AnnotatedTag;
+    type Response = RJson<AnnotatedTag>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6318,16 +5560,9 @@ impl Endpoint for GetAnnotatedTag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6344,7 +5579,7 @@ pub struct GetTree<'a> {
 
 impl Sealed for GetTree<'_> {}
 impl Endpoint for GetTree<'_> {
-    type Response = GitTreeResponse;
+    type Response = RJson<GitTreeResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6360,16 +5595,9 @@ impl Endpoint for GetTree<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6384,7 +5612,7 @@ pub struct RepoListHooks<'a> {
 
 impl Sealed for RepoListHooks<'_> {}
 impl Endpoint for RepoListHooks<'_> {
-    type Response = (HookListHeaders, Vec<Hook>);
+    type Response = WithHeaders<RJson<Vec<Hook>>, HookListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6396,15 +5624,9 @@ impl Endpoint for RepoListHooks<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6420,7 +5642,7 @@ pub struct RepoCreateHook<'a> {
 
 impl Sealed for RepoCreateHook<'_> {}
 impl Endpoint for RepoCreateHook<'_> {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -6435,16 +5657,9 @@ impl Endpoint for RepoCreateHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6459,7 +5674,7 @@ pub struct RepoListGitHooks<'a> {
 
 impl Sealed for RepoListGitHooks<'_> {}
 impl Endpoint for RepoListGitHooks<'_> {
-    type Response = (GitHookListHeaders, Vec<GitHook>);
+    type Response = WithHeaders<RJson<Vec<GitHook>>, GitHookListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6471,15 +5686,9 @@ impl Endpoint for RepoListGitHooks<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6495,7 +5704,7 @@ pub struct RepoGetGitHook<'a> {
 
 impl Sealed for RepoGetGitHook<'_> {}
 impl Endpoint for RepoGetGitHook<'_> {
-    type Response = GitHook;
+    type Response = RJson<GitHook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6511,16 +5720,9 @@ impl Endpoint for RepoGetGitHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6552,9 +5754,9 @@ impl Endpoint for RepoDeleteGitHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6571,7 +5773,7 @@ pub struct RepoEditGitHook<'a> {
 
 impl Sealed for RepoEditGitHook<'_> {}
 impl Endpoint for RepoEditGitHook<'_> {
-    type Response = GitHook;
+    type Response = RJson<GitHook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -6590,16 +5792,9 @@ impl Endpoint for RepoEditGitHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6615,7 +5810,7 @@ pub struct RepoGetHook<'a> {
 
 impl Sealed for RepoGetHook<'_> {}
 impl Endpoint for RepoGetHook<'_> {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6631,16 +5826,9 @@ impl Endpoint for RepoGetHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6672,9 +5860,9 @@ impl Endpoint for RepoDeleteHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6691,7 +5879,7 @@ pub struct RepoEditHook<'a> {
 
 impl Sealed for RepoEditHook<'_> {}
 impl Endpoint for RepoEditHook<'_> {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -6710,16 +5898,9 @@ impl Endpoint for RepoEditHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6752,9 +5933,9 @@ impl Endpoint for RepoTestHook<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6769,7 +5950,7 @@ pub struct RepoGetIssueConfig<'a> {
 
 impl Sealed for RepoGetIssueConfig<'_> {}
 impl Endpoint for RepoGetIssueConfig<'_> {
-    type Response = IssueConfig;
+    type Response = RJson<IssueConfig>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6781,16 +5962,9 @@ impl Endpoint for RepoGetIssueConfig<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6805,7 +5979,7 @@ pub struct RepoValidateIssueConfig<'a> {
 
 impl Sealed for RepoValidateIssueConfig<'_> {}
 impl Endpoint for RepoValidateIssueConfig<'_> {
-    type Response = IssueConfigValidation;
+    type Response = RJson<IssueConfigValidation>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6821,16 +5995,9 @@ impl Endpoint for RepoValidateIssueConfig<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6845,7 +6012,7 @@ pub struct RepoGetIssueTemplates<'a> {
 
 impl Sealed for RepoGetIssueTemplates<'_> {}
 impl Endpoint for RepoGetIssueTemplates<'_> {
-    type Response = Vec<IssueTemplate>;
+    type Response = RJson<Vec<IssueTemplate>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6857,16 +6024,9 @@ impl Endpoint for RepoGetIssueTemplates<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6882,7 +6042,7 @@ pub struct IssueListIssues<'a> {
 
 impl Sealed for IssueListIssues<'_> {}
 impl Endpoint for IssueListIssues<'_> {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = WithHeaders<RJson<Vec<Issue>>, IssueListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6894,15 +6054,9 @@ impl Endpoint for IssueListIssues<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6918,7 +6072,7 @@ pub struct IssueCreateIssue<'a> {
 
 impl Sealed for IssueCreateIssue<'_> {}
 impl Endpoint for IssueCreateIssue<'_> {
-    type Response = Issue;
+    type Response = RJson<Issue>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -6933,16 +6087,9 @@ impl Endpoint for IssueCreateIssue<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6958,7 +6105,7 @@ pub struct IssueGetRepoComments<'a> {
 
 impl Sealed for IssueGetRepoComments<'_> {}
 impl Endpoint for IssueGetRepoComments<'_> {
-    type Response = (CommentListHeaders, Vec<Comment>);
+    type Response = WithHeaders<RJson<Vec<Comment>>, CommentListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6970,15 +6117,9 @@ impl Endpoint for IssueGetRepoComments<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6994,7 +6135,7 @@ pub struct IssueGetComment<'a> {
 
 impl Sealed for IssueGetComment<'_> {}
 impl Endpoint for IssueGetComment<'_> {
-    type Response = Option<Comment>;
+    type Response = Option<RJson<Comment>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7010,15 +6151,10 @@ impl Endpoint for IssueGetComment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(Some(serde_json::from_slice(&*response.body).map_err(
-                |e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                },
-            )?)),
-            204 => Ok(None),
+            200 => Ok((response, true)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7050,9 +6186,9 @@ impl Endpoint for IssueDeleteComment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7069,7 +6205,7 @@ pub struct IssueEditComment<'a> {
 
 impl Sealed for IssueEditComment<'_> {}
 impl Endpoint for IssueEditComment<'_> {
-    type Response = Option<Comment>;
+    type Response = Option<RJson<Comment>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7088,15 +6224,10 @@ impl Endpoint for IssueEditComment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(Some(serde_json::from_slice(&*response.body).map_err(
-                |e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                },
-            )?)),
-            204 => Ok(None),
+            200 => Ok((response, true)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7112,7 +6243,7 @@ pub struct IssueListIssueCommentAttachments<'a> {
 
 impl Sealed for IssueListIssueCommentAttachments<'_> {}
 impl Endpoint for IssueListIssueCommentAttachments<'_> {
-    type Response = Vec<Attachment>;
+    type Response = RJson<Vec<Attachment>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7128,16 +6259,9 @@ impl Endpoint for IssueListIssueCommentAttachments<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7155,7 +6279,7 @@ pub struct IssueCreateIssueCommentAttachment<'a> {
 
 impl Sealed for IssueCreateIssueCommentAttachment<'_> {}
 impl Endpoint for IssueCreateIssueCommentAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7176,16 +6300,9 @@ impl Endpoint for IssueCreateIssueCommentAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7202,7 +6319,7 @@ pub struct IssueGetIssueCommentAttachment<'a> {
 
 impl Sealed for IssueGetIssueCommentAttachment<'_> {}
 impl Endpoint for IssueGetIssueCommentAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7218,16 +6335,9 @@ impl Endpoint for IssueGetIssueCommentAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7260,9 +6370,9 @@ impl Endpoint for IssueDeleteIssueCommentAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7280,7 +6390,7 @@ pub struct IssueEditIssueCommentAttachment<'a> {
 
 impl Sealed for IssueEditIssueCommentAttachment<'_> {}
 impl Endpoint for IssueEditIssueCommentAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7299,16 +6409,9 @@ impl Endpoint for IssueEditIssueCommentAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7324,7 +6427,7 @@ pub struct IssueGetCommentReactions<'a> {
 
 impl Sealed for IssueGetCommentReactions<'_> {}
 impl Endpoint for IssueGetCommentReactions<'_> {
-    type Response = (ReactionListHeaders, Vec<Reaction>);
+    type Response = WithHeaders<RJson<Vec<Reaction>>, ReactionListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7340,15 +6443,9 @@ impl Endpoint for IssueGetCommentReactions<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7365,7 +6462,7 @@ pub struct IssuePostCommentReaction<'a> {
 
 impl Sealed for IssuePostCommentReaction<'_> {}
 impl Endpoint for IssuePostCommentReaction<'_> {
-    type Response = Reaction;
+    type Response = RJson<Reaction>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7384,24 +6481,10 @@ impl Endpoint for IssuePostCommentReaction<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7437,9 +6520,9 @@ impl Endpoint for IssueDeleteCommentReaction<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7454,7 +6537,7 @@ pub struct RepoListPinnedIssues<'a> {
 
 impl Sealed for RepoListPinnedIssues<'_> {}
 impl Endpoint for RepoListPinnedIssues<'_> {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = WithHeaders<RJson<Vec<Issue>>, IssueListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7466,15 +6549,9 @@ impl Endpoint for RepoListPinnedIssues<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7490,7 +6567,7 @@ pub struct IssueGetIssue<'a> {
 
 impl Sealed for IssueGetIssue<'_> {}
 impl Endpoint for IssueGetIssue<'_> {
-    type Response = Issue;
+    type Response = RJson<Issue>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7506,16 +6583,9 @@ impl Endpoint for IssueGetIssue<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7547,9 +6617,9 @@ impl Endpoint for IssueDelete<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7566,7 +6636,7 @@ pub struct IssueEditIssue<'a> {
 
 impl Sealed for IssueEditIssue<'_> {}
 impl Endpoint for IssueEditIssue<'_> {
-    type Response = Issue;
+    type Response = RJson<Issue>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7585,16 +6655,9 @@ impl Endpoint for IssueEditIssue<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7610,7 +6673,7 @@ pub struct IssueListIssueAttachments<'a> {
 
 impl Sealed for IssueListIssueAttachments<'_> {}
 impl Endpoint for IssueListIssueAttachments<'_> {
-    type Response = Vec<Attachment>;
+    type Response = RJson<Vec<Attachment>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7626,16 +6689,9 @@ impl Endpoint for IssueListIssueAttachments<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7653,7 +6709,7 @@ pub struct IssueCreateIssueAttachment<'a> {
 
 impl Sealed for IssueCreateIssueAttachment<'_> {}
 impl Endpoint for IssueCreateIssueAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7674,16 +6730,9 @@ impl Endpoint for IssueCreateIssueAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7700,7 +6749,7 @@ pub struct IssueGetIssueAttachment<'a> {
 
 impl Sealed for IssueGetIssueAttachment<'_> {}
 impl Endpoint for IssueGetIssueAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7716,16 +6765,9 @@ impl Endpoint for IssueGetIssueAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7758,9 +6800,9 @@ impl Endpoint for IssueDeleteIssueAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7778,7 +6820,7 @@ pub struct IssueEditIssueAttachment<'a> {
 
 impl Sealed for IssueEditIssueAttachment<'_> {}
 impl Endpoint for IssueEditIssueAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7797,16 +6839,9 @@ impl Endpoint for IssueEditIssueAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7822,7 +6857,7 @@ pub struct IssueListBlocks<'a> {
 
 impl Sealed for IssueListBlocks<'_> {}
 impl Endpoint for IssueListBlocks<'_> {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = WithHeaders<RJson<Vec<Issue>>, IssueListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7838,15 +6873,9 @@ impl Endpoint for IssueListBlocks<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7863,7 +6892,7 @@ pub struct IssueCreateIssueBlocking<'a> {
 
 impl Sealed for IssueCreateIssueBlocking<'_> {}
 impl Endpoint for IssueCreateIssueBlocking<'_> {
-    type Response = Issue;
+    type Response = RJson<Issue>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7882,16 +6911,9 @@ impl Endpoint for IssueCreateIssueBlocking<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7908,7 +6930,7 @@ pub struct IssueRemoveIssueBlocking<'a> {
 
 impl Sealed for IssueRemoveIssueBlocking<'_> {}
 impl Endpoint for IssueRemoveIssueBlocking<'_> {
-    type Response = Issue;
+    type Response = RJson<Issue>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -7927,16 +6949,9 @@ impl Endpoint for IssueRemoveIssueBlocking<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7953,7 +6968,7 @@ pub struct IssueGetComments<'a> {
 
 impl Sealed for IssueGetComments<'_> {}
 impl Endpoint for IssueGetComments<'_> {
-    type Response = (CommentListHeaders, Vec<Comment>);
+    type Response = WithHeaders<RJson<Vec<Comment>>, CommentListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7969,15 +6984,9 @@ impl Endpoint for IssueGetComments<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7994,7 +7003,7 @@ pub struct IssueCreateComment<'a> {
 
 impl Sealed for IssueCreateComment<'_> {}
 impl Endpoint for IssueCreateComment<'_> {
-    type Response = Comment;
+    type Response = RJson<Comment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8013,16 +7022,9 @@ impl Endpoint for IssueCreateComment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8055,9 +7057,9 @@ impl Endpoint for IssueDeleteCommentDeprecated<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8075,7 +7077,7 @@ pub struct IssueEditCommentDeprecated<'a> {
 
 impl Sealed for IssueEditCommentDeprecated<'_> {}
 impl Endpoint for IssueEditCommentDeprecated<'_> {
-    type Response = Option<Comment>;
+    type Response = Option<RJson<Comment>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -8094,15 +7096,10 @@ impl Endpoint for IssueEditCommentDeprecated<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(Some(serde_json::from_slice(&*response.body).map_err(
-                |e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                },
-            )?)),
-            204 => Ok(None),
+            200 => Ok((response, true)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8119,7 +7116,7 @@ pub struct IssueEditIssueDeadline<'a> {
 
 impl Sealed for IssueEditIssueDeadline<'_> {}
 impl Endpoint for IssueEditIssueDeadline<'_> {
-    type Response = IssueDeadline;
+    type Response = RJson<IssueDeadline>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8138,16 +7135,9 @@ impl Endpoint for IssueEditIssueDeadline<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8163,7 +7153,7 @@ pub struct IssueListIssueDependencies<'a> {
 
 impl Sealed for IssueListIssueDependencies<'_> {}
 impl Endpoint for IssueListIssueDependencies<'_> {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = WithHeaders<RJson<Vec<Issue>>, IssueListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8179,15 +7169,9 @@ impl Endpoint for IssueListIssueDependencies<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8204,7 +7188,7 @@ pub struct IssueCreateIssueDependencies<'a> {
 
 impl Sealed for IssueCreateIssueDependencies<'_> {}
 impl Endpoint for IssueCreateIssueDependencies<'_> {
-    type Response = Issue;
+    type Response = RJson<Issue>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8223,16 +7207,9 @@ impl Endpoint for IssueCreateIssueDependencies<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8249,7 +7226,7 @@ pub struct IssueRemoveIssueDependencies<'a> {
 
 impl Sealed for IssueRemoveIssueDependencies<'_> {}
 impl Endpoint for IssueRemoveIssueDependencies<'_> {
-    type Response = Issue;
+    type Response = RJson<Issue>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -8268,16 +7245,9 @@ impl Endpoint for IssueRemoveIssueDependencies<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8293,7 +7263,7 @@ pub struct IssueGetLabels<'a> {
 
 impl Sealed for IssueGetLabels<'_> {}
 impl Endpoint for IssueGetLabels<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = WithHeaders<RJson<Vec<Label>>, LabelListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8309,15 +7279,9 @@ impl Endpoint for IssueGetLabels<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8334,7 +7298,7 @@ pub struct IssueReplaceLabels<'a> {
 
 impl Sealed for IssueReplaceLabels<'_> {}
 impl Endpoint for IssueReplaceLabels<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = WithHeaders<RJson<Vec<Label>>, LabelListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -8353,15 +7317,9 @@ impl Endpoint for IssueReplaceLabels<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8378,7 +7336,7 @@ pub struct IssueAddLabel<'a> {
 
 impl Sealed for IssueAddLabel<'_> {}
 impl Endpoint for IssueAddLabel<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = WithHeaders<RJson<Vec<Label>>, LabelListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8397,15 +7355,9 @@ impl Endpoint for IssueAddLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8441,9 +7393,9 @@ impl Endpoint for IssueClearLabels<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8480,9 +7432,9 @@ impl Endpoint for IssueRemoveLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8514,9 +7466,9 @@ impl Endpoint for PinIssue<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8548,9 +7500,9 @@ impl Endpoint for UnpinIssue<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8583,9 +7535,9 @@ impl Endpoint for MoveIssuePin<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8601,7 +7553,7 @@ pub struct IssueGetIssueReactions<'a> {
 
 impl Sealed for IssueGetIssueReactions<'_> {}
 impl Endpoint for IssueGetIssueReactions<'_> {
-    type Response = (ReactionListHeaders, Vec<Reaction>);
+    type Response = WithHeaders<RJson<Vec<Reaction>>, ReactionListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8617,15 +7569,9 @@ impl Endpoint for IssueGetIssueReactions<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8642,7 +7588,7 @@ pub struct IssuePostIssueReaction<'a> {
 
 impl Sealed for IssuePostIssueReaction<'_> {}
 impl Endpoint for IssuePostIssueReaction<'_> {
-    type Response = Reaction;
+    type Response = RJson<Reaction>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8661,24 +7607,10 @@ impl Endpoint for IssuePostIssueReaction<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8714,9 +7646,9 @@ impl Endpoint for IssueDeleteIssueReaction<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8748,9 +7680,9 @@ impl Endpoint for IssueDeleteStopWatch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8782,9 +7714,9 @@ impl Endpoint for IssueStartStopWatch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
+            201 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8816,9 +7748,9 @@ impl Endpoint for IssueStopStopWatch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
+            201 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8834,7 +7766,7 @@ pub struct IssueSubscriptions<'a> {
 
 impl Sealed for IssueSubscriptions<'_> {}
 impl Endpoint for IssueSubscriptions<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8850,15 +7782,9 @@ impl Endpoint for IssueSubscriptions<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8874,7 +7800,7 @@ pub struct IssueCheckSubscription<'a> {
 
 impl Sealed for IssueCheckSubscription<'_> {}
 impl Endpoint for IssueCheckSubscription<'_> {
-    type Response = WatchInfo;
+    type Response = RJson<WatchInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8890,16 +7816,9 @@ impl Endpoint for IssueCheckSubscription<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8932,10 +7851,10 @@ impl Endpoint for IssueAddSubscription<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
-            201 => Ok(()),
+            200 => Ok((response, false)),
+            201 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8968,10 +7887,10 @@ impl Endpoint for IssueDeleteSubscription<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
-            201 => Ok(()),
+            200 => Ok((response, false)),
+            201 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8988,7 +7907,7 @@ pub struct IssueGetCommentsAndTimeline<'a> {
 
 impl Sealed for IssueGetCommentsAndTimeline<'_> {}
 impl Endpoint for IssueGetCommentsAndTimeline<'_> {
-    type Response = (TimelineListHeaders, Vec<TimelineComment>);
+    type Response = WithHeaders<RJson<Vec<TimelineComment>>, TimelineListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9004,15 +7923,9 @@ impl Endpoint for IssueGetCommentsAndTimeline<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9029,7 +7942,7 @@ pub struct IssueTrackedTimes<'a> {
 
 impl Sealed for IssueTrackedTimes<'_> {}
 impl Endpoint for IssueTrackedTimes<'_> {
-    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
+    type Response = WithHeaders<RJson<Vec<TrackedTime>>, TrackedTimeListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9045,15 +7958,9 @@ impl Endpoint for IssueTrackedTimes<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9070,7 +7977,7 @@ pub struct IssueAddTime<'a> {
 
 impl Sealed for IssueAddTime<'_> {}
 impl Endpoint for IssueAddTime<'_> {
-    type Response = TrackedTime;
+    type Response = RJson<TrackedTime>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9089,16 +7996,9 @@ impl Endpoint for IssueAddTime<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9130,9 +8030,9 @@ impl Endpoint for IssueResetTime<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9165,9 +8065,9 @@ impl Endpoint for IssueDeleteTime<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9183,7 +8083,7 @@ pub struct RepoListKeys<'a> {
 
 impl Sealed for RepoListKeys<'_> {}
 impl Endpoint for RepoListKeys<'_> {
-    type Response = (DeployKeyListHeaders, Vec<DeployKey>);
+    type Response = WithHeaders<RJson<Vec<DeployKey>>, DeployKeyListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9195,15 +8095,9 @@ impl Endpoint for RepoListKeys<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9219,7 +8113,7 @@ pub struct RepoCreateKey<'a> {
 
 impl Sealed for RepoCreateKey<'_> {}
 impl Endpoint for RepoCreateKey<'_> {
-    type Response = DeployKey;
+    type Response = RJson<DeployKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9234,16 +8128,9 @@ impl Endpoint for RepoCreateKey<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9259,7 +8146,7 @@ pub struct RepoGetKey<'a> {
 
 impl Sealed for RepoGetKey<'_> {}
 impl Endpoint for RepoGetKey<'_> {
-    type Response = DeployKey;
+    type Response = RJson<DeployKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9275,16 +8162,9 @@ impl Endpoint for RepoGetKey<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9316,9 +8196,9 @@ impl Endpoint for RepoDeleteKey<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9333,7 +8213,7 @@ pub struct IssueListLabels<'a> {
 
 impl Sealed for IssueListLabels<'_> {}
 impl Endpoint for IssueListLabels<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = WithHeaders<RJson<Vec<Label>>, LabelListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9345,15 +8225,9 @@ impl Endpoint for IssueListLabels<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9369,7 +8243,7 @@ pub struct IssueCreateLabel<'a> {
 
 impl Sealed for IssueCreateLabel<'_> {}
 impl Endpoint for IssueCreateLabel<'_> {
-    type Response = Label;
+    type Response = RJson<Label>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9384,16 +8258,9 @@ impl Endpoint for IssueCreateLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9409,7 +8276,7 @@ pub struct IssueGetLabel<'a> {
 
 impl Sealed for IssueGetLabel<'_> {}
 impl Endpoint for IssueGetLabel<'_> {
-    type Response = Label;
+    type Response = RJson<Label>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9425,16 +8292,9 @@ impl Endpoint for IssueGetLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9466,9 +8326,9 @@ impl Endpoint for IssueDeleteLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9485,7 +8345,7 @@ pub struct IssueEditLabel<'a> {
 
 impl Sealed for IssueEditLabel<'_> {}
 impl Endpoint for IssueEditLabel<'_> {
-    type Response = Label;
+    type Response = RJson<Label>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -9504,16 +8364,9 @@ impl Endpoint for IssueEditLabel<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9528,7 +8381,7 @@ pub struct RepoGetLanguages<'a> {
 
 impl Sealed for RepoGetLanguages<'_> {}
 impl Endpoint for RepoGetLanguages<'_> {
-    type Response = BTreeMap<String, i64>;
+    type Response = RJson<BTreeMap<String, i64>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9540,16 +8393,9 @@ impl Endpoint for RepoGetLanguages<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9566,7 +8412,7 @@ pub struct RepoGetRawFileOrLfs<'a> {
 
 impl Sealed for RepoGetRawFileOrLfs<'_> {}
 impl Endpoint for RepoGetRawFileOrLfs<'_> {
-    type Response = Bytes;
+    type Response = RBytes;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9582,9 +8428,9 @@ impl Endpoint for RepoGetRawFileOrLfs<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(response.body.clone()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9600,7 +8446,7 @@ pub struct IssueGetMilestonesList<'a> {
 
 impl Sealed for IssueGetMilestonesList<'_> {}
 impl Endpoint for IssueGetMilestonesList<'_> {
-    type Response = (MilestoneListHeaders, Vec<Milestone>);
+    type Response = WithHeaders<RJson<Vec<Milestone>>, MilestoneListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9612,15 +8458,9 @@ impl Endpoint for IssueGetMilestonesList<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9636,7 +8476,7 @@ pub struct IssueCreateMilestone<'a> {
 
 impl Sealed for IssueCreateMilestone<'_> {}
 impl Endpoint for IssueCreateMilestone<'_> {
-    type Response = Milestone;
+    type Response = RJson<Milestone>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9651,16 +8491,9 @@ impl Endpoint for IssueCreateMilestone<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9676,7 +8509,7 @@ pub struct IssueGetMilestone<'a> {
 
 impl Sealed for IssueGetMilestone<'_> {}
 impl Endpoint for IssueGetMilestone<'_> {
-    type Response = Milestone;
+    type Response = RJson<Milestone>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9692,16 +8525,9 @@ impl Endpoint for IssueGetMilestone<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9733,9 +8559,9 @@ impl Endpoint for IssueDeleteMilestone<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9752,7 +8578,7 @@ pub struct IssueEditMilestone<'a> {
 
 impl Sealed for IssueEditMilestone<'_> {}
 impl Endpoint for IssueEditMilestone<'_> {
-    type Response = Milestone;
+    type Response = RJson<Milestone>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -9771,16 +8597,9 @@ impl Endpoint for IssueEditMilestone<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9807,9 +8626,9 @@ impl Endpoint for RepoMirrorSync<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9824,7 +8643,7 @@ pub struct RepoNewPinAllowed<'a> {
 
 impl Sealed for RepoNewPinAllowed<'_> {}
 impl Endpoint for RepoNewPinAllowed<'_> {
-    type Response = NewIssuePinsAllowed;
+    type Response = RJson<NewIssuePinsAllowed>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9836,16 +8655,9 @@ impl Endpoint for RepoNewPinAllowed<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9861,7 +8673,7 @@ pub struct NotifyGetRepoList<'a> {
 
 impl Sealed for NotifyGetRepoList<'_> {}
 impl Endpoint for NotifyGetRepoList<'_> {
-    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
+    type Response = WithHeaders<RJson<Vec<NotificationThread>>, NotificationThreadListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9873,15 +8685,9 @@ impl Endpoint for NotifyGetRepoList<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9897,7 +8703,7 @@ pub struct NotifyReadRepoList<'a> {
 
 impl Sealed for NotifyReadRepoList<'_> {}
 impl Endpoint for NotifyReadRepoList<'_> {
-    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
+    type Response = WithHeaders<RJson<Vec<NotificationThread>>, NotificationThreadListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -9909,15 +8715,9 @@ impl Endpoint for NotifyReadRepoList<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            205 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            205 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9933,7 +8733,7 @@ pub struct RepoListPullRequests<'a> {
 
 impl Sealed for RepoListPullRequests<'_> {}
 impl Endpoint for RepoListPullRequests<'_> {
-    type Response = (PullRequestListHeaders, Vec<PullRequest>);
+    type Response = WithHeaders<RJson<Vec<PullRequest>>, PullRequestListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9945,15 +8745,9 @@ impl Endpoint for RepoListPullRequests<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9969,7 +8763,7 @@ pub struct RepoCreatePullRequest<'a> {
 
 impl Sealed for RepoCreatePullRequest<'_> {}
 impl Endpoint for RepoCreatePullRequest<'_> {
-    type Response = PullRequest;
+    type Response = RJson<PullRequest>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9984,16 +8778,9 @@ impl Endpoint for RepoCreatePullRequest<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10008,7 +8795,7 @@ pub struct RepoListPinnedPullRequests<'a> {
 
 impl Sealed for RepoListPinnedPullRequests<'_> {}
 impl Endpoint for RepoListPinnedPullRequests<'_> {
-    type Response = (PullRequestListHeaders, Vec<PullRequest>);
+    type Response = WithHeaders<RJson<Vec<PullRequest>>, PullRequestListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10020,15 +8807,9 @@ impl Endpoint for RepoListPinnedPullRequests<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10045,7 +8826,7 @@ pub struct RepoGetPullRequestByBaseHead<'a> {
 
 impl Sealed for RepoGetPullRequestByBaseHead<'_> {}
 impl Endpoint for RepoGetPullRequestByBaseHead<'_> {
-    type Response = PullRequest;
+    type Response = RJson<PullRequest>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10061,16 +8842,9 @@ impl Endpoint for RepoGetPullRequestByBaseHead<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10086,7 +8860,7 @@ pub struct RepoGetPullRequest<'a> {
 
 impl Sealed for RepoGetPullRequest<'_> {}
 impl Endpoint for RepoGetPullRequest<'_> {
-    type Response = PullRequest;
+    type Response = RJson<PullRequest>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10102,16 +8876,9 @@ impl Endpoint for RepoGetPullRequest<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10128,7 +8895,7 @@ pub struct RepoEditPullRequest<'a> {
 
 impl Sealed for RepoEditPullRequest<'_> {}
 impl Endpoint for RepoEditPullRequest<'_> {
-    type Response = PullRequest;
+    type Response = RJson<PullRequest>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -10147,16 +8914,9 @@ impl Endpoint for RepoEditPullRequest<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10174,7 +8934,7 @@ pub struct RepoDownloadPullDiffOrPatch<'a> {
 
 impl Sealed for RepoDownloadPullDiffOrPatch<'_> {}
 impl Endpoint for RepoDownloadPullDiffOrPatch<'_> {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10190,9 +8950,9 @@ impl Endpoint for RepoDownloadPullDiffOrPatch<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10209,7 +8969,7 @@ pub struct RepoGetPullRequestCommits<'a> {
 
 impl Sealed for RepoGetPullRequestCommits<'_> {}
 impl Endpoint for RepoGetPullRequestCommits<'_> {
-    type Response = (CommitListHeaders, Vec<Commit>);
+    type Response = WithHeaders<RJson<Vec<Commit>>, CommitListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10225,15 +8985,9 @@ impl Endpoint for RepoGetPullRequestCommits<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10250,7 +9004,7 @@ pub struct RepoGetPullRequestFiles<'a> {
 
 impl Sealed for RepoGetPullRequestFiles<'_> {}
 impl Endpoint for RepoGetPullRequestFiles<'_> {
-    type Response = (ChangedFileListHeaders, Vec<ChangedFile>);
+    type Response = WithHeaders<RJson<Vec<ChangedFile>>, ChangedFileListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10266,15 +9020,9 @@ impl Endpoint for RepoGetPullRequestFiles<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10306,9 +9054,9 @@ impl Endpoint for RepoPullRequestIsMerged<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10344,9 +9092,9 @@ impl Endpoint for RepoMergePullRequest<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10378,9 +9126,9 @@ impl Endpoint for RepoCancelScheduledAutoMerge<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10397,7 +9145,7 @@ pub struct RepoCreatePullReviewRequests<'a> {
 
 impl Sealed for RepoCreatePullReviewRequests<'_> {}
 impl Endpoint for RepoCreatePullReviewRequests<'_> {
-    type Response = (PullReviewListHeaders, Vec<PullReview>);
+    type Response = WithHeaders<RJson<Vec<PullReview>>, PullReviewListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10416,15 +9164,9 @@ impl Endpoint for RepoCreatePullReviewRequests<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10460,9 +9202,9 @@ impl Endpoint for RepoDeletePullReviewRequests<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10478,7 +9220,7 @@ pub struct RepoListPullReviews<'a> {
 
 impl Sealed for RepoListPullReviews<'_> {}
 impl Endpoint for RepoListPullReviews<'_> {
-    type Response = (PullReviewListHeaders, Vec<PullReview>);
+    type Response = WithHeaders<RJson<Vec<PullReview>>, PullReviewListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10494,15 +9236,9 @@ impl Endpoint for RepoListPullReviews<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10519,7 +9255,7 @@ pub struct RepoCreatePullReview<'a> {
 
 impl Sealed for RepoCreatePullReview<'_> {}
 impl Endpoint for RepoCreatePullReview<'_> {
-    type Response = PullReview;
+    type Response = RJson<PullReview>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10538,16 +9274,9 @@ impl Endpoint for RepoCreatePullReview<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10564,7 +9293,7 @@ pub struct RepoGetPullReview<'a> {
 
 impl Sealed for RepoGetPullReview<'_> {}
 impl Endpoint for RepoGetPullReview<'_> {
-    type Response = PullReview;
+    type Response = RJson<PullReview>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10580,16 +9309,9 @@ impl Endpoint for RepoGetPullReview<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10607,7 +9329,7 @@ pub struct RepoSubmitPullReview<'a> {
 
 impl Sealed for RepoSubmitPullReview<'_> {}
 impl Endpoint for RepoSubmitPullReview<'_> {
-    type Response = PullReview;
+    type Response = RJson<PullReview>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10626,16 +9348,9 @@ impl Endpoint for RepoSubmitPullReview<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10668,9 +9383,9 @@ impl Endpoint for RepoDeletePullReview<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10687,7 +9402,7 @@ pub struct RepoGetPullReviewComments<'a> {
 
 impl Sealed for RepoGetPullReviewComments<'_> {}
 impl Endpoint for RepoGetPullReviewComments<'_> {
-    type Response = Vec<PullReviewComment>;
+    type Response = RJson<Vec<PullReviewComment>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10703,16 +9418,9 @@ impl Endpoint for RepoGetPullReviewComments<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10730,7 +9438,7 @@ pub struct RepoCreatePullReviewComment<'a> {
 
 impl Sealed for RepoCreatePullReviewComment<'_> {}
 impl Endpoint for RepoCreatePullReviewComment<'_> {
-    type Response = PullReviewComment;
+    type Response = RJson<PullReviewComment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10749,16 +9457,9 @@ impl Endpoint for RepoCreatePullReviewComment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10776,7 +9477,7 @@ pub struct RepoGetPullReviewComment<'a> {
 
 impl Sealed for RepoGetPullReviewComment<'_> {}
 impl Endpoint for RepoGetPullReviewComment<'_> {
-    type Response = PullReviewComment;
+    type Response = RJson<PullReviewComment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10792,16 +9493,9 @@ impl Endpoint for RepoGetPullReviewComment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10835,9 +9529,9 @@ impl Endpoint for RepoDeletePullReviewComment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10855,7 +9549,7 @@ pub struct RepoDismissPullReview<'a> {
 
 impl Sealed for RepoDismissPullReview<'_> {}
 impl Endpoint for RepoDismissPullReview<'_> {
-    type Response = PullReview;
+    type Response = RJson<PullReview>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10874,16 +9568,9 @@ impl Endpoint for RepoDismissPullReview<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10900,7 +9587,7 @@ pub struct RepoUnDismissPullReview<'a> {
 
 impl Sealed for RepoUnDismissPullReview<'_> {}
 impl Endpoint for RepoUnDismissPullReview<'_> {
-    type Response = PullReview;
+    type Response = RJson<PullReview>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10916,16 +9603,9 @@ impl Endpoint for RepoUnDismissPullReview<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10958,9 +9638,9 @@ impl Endpoint for RepoUpdatePullRequest<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10975,7 +9655,7 @@ pub struct RepoListPushMirrors<'a> {
 
 impl Sealed for RepoListPushMirrors<'_> {}
 impl Endpoint for RepoListPushMirrors<'_> {
-    type Response = (PushMirrorListHeaders, Vec<PushMirror>);
+    type Response = WithHeaders<RJson<Vec<PushMirror>>, PushMirrorListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10987,15 +9667,9 @@ impl Endpoint for RepoListPushMirrors<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11011,7 +9685,7 @@ pub struct RepoAddPushMirror<'a> {
 
 impl Sealed for RepoAddPushMirror<'_> {}
 impl Endpoint for RepoAddPushMirror<'_> {
-    type Response = PushMirror;
+    type Response = RJson<PushMirror>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11026,16 +9700,9 @@ impl Endpoint for RepoAddPushMirror<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11066,9 +9733,9 @@ impl Endpoint for RepoPushMirrorSync<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11084,7 +9751,7 @@ pub struct RepoGetPushMirrorByRemoteName<'a> {
 
 impl Sealed for RepoGetPushMirrorByRemoteName<'_> {}
 impl Endpoint for RepoGetPushMirrorByRemoteName<'_> {
-    type Response = PushMirror;
+    type Response = RJson<PushMirror>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11100,16 +9767,9 @@ impl Endpoint for RepoGetPushMirrorByRemoteName<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11141,9 +9801,9 @@ impl Endpoint for RepoDeletePushMirror<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11160,7 +9820,7 @@ pub struct RepoGetRawFile<'a> {
 
 impl Sealed for RepoGetRawFile<'_> {}
 impl Endpoint for RepoGetRawFile<'_> {
-    type Response = Bytes;
+    type Response = RBytes;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11176,9 +9836,9 @@ impl Endpoint for RepoGetRawFile<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(response.body.clone()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11194,7 +9854,7 @@ pub struct RepoListReleases<'a> {
 
 impl Sealed for RepoListReleases<'_> {}
 impl Endpoint for RepoListReleases<'_> {
-    type Response = (ReleaseListHeaders, Vec<Release>);
+    type Response = WithHeaders<RJson<Vec<Release>>, ReleaseListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11206,15 +9866,9 @@ impl Endpoint for RepoListReleases<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11230,7 +9884,7 @@ pub struct RepoCreateRelease<'a> {
 
 impl Sealed for RepoCreateRelease<'_> {}
 impl Endpoint for RepoCreateRelease<'_> {
-    type Response = Release;
+    type Response = RJson<Release>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11245,16 +9899,9 @@ impl Endpoint for RepoCreateRelease<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11269,7 +9916,7 @@ pub struct RepoGetLatestRelease<'a> {
 
 impl Sealed for RepoGetLatestRelease<'_> {}
 impl Endpoint for RepoGetLatestRelease<'_> {
-    type Response = Release;
+    type Response = RJson<Release>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11281,16 +9928,9 @@ impl Endpoint for RepoGetLatestRelease<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11306,7 +9946,7 @@ pub struct RepoGetReleaseByTag<'a> {
 
 impl Sealed for RepoGetReleaseByTag<'_> {}
 impl Endpoint for RepoGetReleaseByTag<'_> {
-    type Response = Release;
+    type Response = RJson<Release>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11322,16 +9962,9 @@ impl Endpoint for RepoGetReleaseByTag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11363,9 +9996,9 @@ impl Endpoint for RepoDeleteReleaseByTag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11381,7 +10014,7 @@ pub struct RepoGetRelease<'a> {
 
 impl Sealed for RepoGetRelease<'_> {}
 impl Endpoint for RepoGetRelease<'_> {
-    type Response = Release;
+    type Response = RJson<Release>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11397,16 +10030,9 @@ impl Endpoint for RepoGetRelease<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11438,9 +10064,9 @@ impl Endpoint for RepoDeleteRelease<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11457,7 +10083,7 @@ pub struct RepoEditRelease<'a> {
 
 impl Sealed for RepoEditRelease<'_> {}
 impl Endpoint for RepoEditRelease<'_> {
-    type Response = Release;
+    type Response = RJson<Release>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -11476,16 +10102,9 @@ impl Endpoint for RepoEditRelease<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11501,7 +10120,7 @@ pub struct RepoListReleaseAttachments<'a> {
 
 impl Sealed for RepoListReleaseAttachments<'_> {}
 impl Endpoint for RepoListReleaseAttachments<'_> {
-    type Response = Vec<Attachment>;
+    type Response = RJson<Vec<Attachment>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11517,16 +10136,9 @@ impl Endpoint for RepoListReleaseAttachments<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11545,7 +10157,7 @@ pub struct RepoCreateReleaseAttachment<'a> {
 
 impl Sealed for RepoCreateReleaseAttachment<'_> {}
 impl Endpoint for RepoCreateReleaseAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11570,16 +10182,9 @@ impl Endpoint for RepoCreateReleaseAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11596,7 +10201,7 @@ pub struct RepoGetReleaseAttachment<'a> {
 
 impl Sealed for RepoGetReleaseAttachment<'_> {}
 impl Endpoint for RepoGetReleaseAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11612,16 +10217,9 @@ impl Endpoint for RepoGetReleaseAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11654,9 +10252,9 @@ impl Endpoint for RepoDeleteReleaseAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11674,7 +10272,7 @@ pub struct RepoEditReleaseAttachment<'a> {
 
 impl Sealed for RepoEditReleaseAttachment<'_> {}
 impl Endpoint for RepoEditReleaseAttachment<'_> {
-    type Response = Attachment;
+    type Response = RJson<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -11693,16 +10291,9 @@ impl Endpoint for RepoEditReleaseAttachment<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11717,7 +10308,7 @@ pub struct RepoGetReviewers<'a> {
 
 impl Sealed for RepoGetReviewers<'_> {}
 impl Endpoint for RepoGetReviewers<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11729,15 +10320,9 @@ impl Endpoint for RepoGetReviewers<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11752,7 +10337,7 @@ pub struct RepoSigningKey<'a> {
 
 impl Sealed for RepoSigningKey<'_> {}
 impl Endpoint for RepoSigningKey<'_> {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11764,9 +10349,9 @@ impl Endpoint for RepoSigningKey<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11781,7 +10366,7 @@ pub struct RepoListStargazers<'a> {
 
 impl Sealed for RepoListStargazers<'_> {}
 impl Endpoint for RepoListStargazers<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11793,15 +10378,9 @@ impl Endpoint for RepoListStargazers<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11818,7 +10397,7 @@ pub struct RepoListStatuses<'a> {
 
 impl Sealed for RepoListStatuses<'_> {}
 impl Endpoint for RepoListStatuses<'_> {
-    type Response = (CommitStatusListHeaders, Vec<CommitStatus>);
+    type Response = WithHeaders<RJson<Vec<CommitStatus>>, CommitStatusListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11834,15 +10413,9 @@ impl Endpoint for RepoListStatuses<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11859,7 +10432,7 @@ pub struct RepoCreateStatus<'a> {
 
 impl Sealed for RepoCreateStatus<'_> {}
 impl Endpoint for RepoCreateStatus<'_> {
-    type Response = CommitStatus;
+    type Response = RJson<CommitStatus>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11878,16 +10451,9 @@ impl Endpoint for RepoCreateStatus<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11902,7 +10468,7 @@ pub struct RepoListSubscribers<'a> {
 
 impl Sealed for RepoListSubscribers<'_> {}
 impl Endpoint for RepoListSubscribers<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11914,15 +10480,9 @@ impl Endpoint for RepoListSubscribers<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11937,7 +10497,7 @@ pub struct UserCurrentCheckSubscription<'a> {
 
 impl Sealed for UserCurrentCheckSubscription<'_> {}
 impl Endpoint for UserCurrentCheckSubscription<'_> {
-    type Response = WatchInfo;
+    type Response = RJson<WatchInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11949,16 +10509,9 @@ impl Endpoint for UserCurrentCheckSubscription<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11973,7 +10526,7 @@ pub struct UserCurrentPutSubscription<'a> {
 
 impl Sealed for UserCurrentPutSubscription<'_> {}
 impl Endpoint for UserCurrentPutSubscription<'_> {
-    type Response = WatchInfo;
+    type Response = RJson<WatchInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -11985,16 +10538,9 @@ impl Endpoint for UserCurrentPutSubscription<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12021,9 +10567,9 @@ impl Endpoint for UserCurrentDeleteSubscription<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12038,7 +10584,7 @@ pub struct RepoListTagProtection<'a> {
 
 impl Sealed for RepoListTagProtection<'_> {}
 impl Endpoint for RepoListTagProtection<'_> {
-    type Response = Vec<TagProtection>;
+    type Response = RJson<Vec<TagProtection>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12050,16 +10596,9 @@ impl Endpoint for RepoListTagProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12075,7 +10614,7 @@ pub struct RepoCreateTagProtection<'a> {
 
 impl Sealed for RepoCreateTagProtection<'_> {}
 impl Endpoint for RepoCreateTagProtection<'_> {
-    type Response = TagProtection;
+    type Response = RJson<TagProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12090,16 +10629,9 @@ impl Endpoint for RepoCreateTagProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12115,7 +10647,7 @@ pub struct RepoGetTagProtection<'a> {
 
 impl Sealed for RepoGetTagProtection<'_> {}
 impl Endpoint for RepoGetTagProtection<'_> {
-    type Response = TagProtection;
+    type Response = RJson<TagProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12131,16 +10663,9 @@ impl Endpoint for RepoGetTagProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12172,9 +10697,9 @@ impl Endpoint for RepoDeleteTagProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12191,7 +10716,7 @@ pub struct RepoEditTagProtection<'a> {
 
 impl Sealed for RepoEditTagProtection<'_> {}
 impl Endpoint for RepoEditTagProtection<'_> {
-    type Response = TagProtection;
+    type Response = RJson<TagProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -12210,16 +10735,9 @@ impl Endpoint for RepoEditTagProtection<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12234,7 +10752,7 @@ pub struct RepoListTags<'a> {
 
 impl Sealed for RepoListTags<'_> {}
 impl Endpoint for RepoListTags<'_> {
-    type Response = (TagListHeaders, Vec<Tag>);
+    type Response = WithHeaders<RJson<Vec<Tag>>, TagListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12246,15 +10764,9 @@ impl Endpoint for RepoListTags<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12270,7 +10782,7 @@ pub struct RepoCreateTag<'a> {
 
 impl Sealed for RepoCreateTag<'_> {}
 impl Endpoint for RepoCreateTag<'_> {
-    type Response = Tag;
+    type Response = RJson<Tag>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12285,16 +10797,9 @@ impl Endpoint for RepoCreateTag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12310,7 +10815,7 @@ pub struct RepoGetTag<'a> {
 
 impl Sealed for RepoGetTag<'_> {}
 impl Endpoint for RepoGetTag<'_> {
-    type Response = Tag;
+    type Response = RJson<Tag>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12326,16 +10831,9 @@ impl Endpoint for RepoGetTag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12367,9 +10865,9 @@ impl Endpoint for RepoDeleteTag<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12384,7 +10882,7 @@ pub struct RepoListTeams<'a> {
 
 impl Sealed for RepoListTeams<'_> {}
 impl Endpoint for RepoListTeams<'_> {
-    type Response = (TeamListHeaders, Vec<Team>);
+    type Response = WithHeaders<RJson<Vec<Team>>, TeamListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12396,15 +10894,9 @@ impl Endpoint for RepoListTeams<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12420,7 +10912,7 @@ pub struct RepoCheckTeam<'a> {
 
 impl Sealed for RepoCheckTeam<'_> {}
 impl Endpoint for RepoCheckTeam<'_> {
-    type Response = Team;
+    type Response = RJson<Team>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12436,16 +10928,9 @@ impl Endpoint for RepoCheckTeam<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12477,9 +10962,9 @@ impl Endpoint for RepoAddTeam<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12511,9 +10996,9 @@ impl Endpoint for RepoDeleteTeam<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12529,7 +11014,7 @@ pub struct RepoTrackedTimes<'a> {
 
 impl Sealed for RepoTrackedTimes<'_> {}
 impl Endpoint for RepoTrackedTimes<'_> {
-    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
+    type Response = WithHeaders<RJson<Vec<TrackedTime>>, TrackedTimeListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12541,15 +11026,9 @@ impl Endpoint for RepoTrackedTimes<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12565,7 +11044,7 @@ pub struct UserTrackedTimes<'a> {
 
 impl Sealed for UserTrackedTimes<'_> {}
 impl Endpoint for UserTrackedTimes<'_> {
-    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
+    type Response = WithHeaders<RJson<Vec<TrackedTime>>, TrackedTimeListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12581,15 +11060,9 @@ impl Endpoint for UserTrackedTimes<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12604,7 +11077,7 @@ pub struct RepoListTopics<'a> {
 
 impl Sealed for RepoListTopics<'_> {}
 impl Endpoint for RepoListTopics<'_> {
-    type Response = TopicName;
+    type Response = RJson<TopicName>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12616,16 +11089,9 @@ impl Endpoint for RepoListTopics<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12656,9 +11122,9 @@ impl Endpoint for RepoUpdateTopics<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12690,9 +11156,9 @@ impl Endpoint for RepoAddTopic<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12724,9 +11190,9 @@ impl Endpoint for RepoDeleteTopic<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12742,7 +11208,7 @@ pub struct RepoTransfer<'a> {
 
 impl Sealed for RepoTransfer<'_> {}
 impl Endpoint for RepoTransfer<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12757,16 +11223,9 @@ impl Endpoint for RepoTransfer<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            202 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            202 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12781,7 +11240,7 @@ pub struct AcceptRepoTransfer<'a> {
 
 impl Sealed for AcceptRepoTransfer<'_> {}
 impl Endpoint for AcceptRepoTransfer<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12793,16 +11252,9 @@ impl Endpoint for AcceptRepoTransfer<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            202 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            202 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12817,7 +11269,7 @@ pub struct RejectRepoTransfer<'a> {
 
 impl Sealed for RejectRepoTransfer<'_> {}
 impl Endpoint for RejectRepoTransfer<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12829,16 +11281,9 @@ impl Endpoint for RejectRepoTransfer<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12854,7 +11299,7 @@ pub struct RepoCreateWikiPage<'a> {
 
 impl Sealed for RepoCreateWikiPage<'_> {}
 impl Endpoint for RepoCreateWikiPage<'_> {
-    type Response = WikiPage;
+    type Response = RJson<WikiPage>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12869,16 +11314,9 @@ impl Endpoint for RepoCreateWikiPage<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12894,7 +11332,7 @@ pub struct RepoGetWikiPage<'a> {
 
 impl Sealed for RepoGetWikiPage<'_> {}
 impl Endpoint for RepoGetWikiPage<'_> {
-    type Response = WikiPage;
+    type Response = RJson<WikiPage>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12910,16 +11348,9 @@ impl Endpoint for RepoGetWikiPage<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12951,9 +11382,9 @@ impl Endpoint for RepoDeleteWikiPage<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12970,7 +11401,7 @@ pub struct RepoEditWikiPage<'a> {
 
 impl Sealed for RepoEditWikiPage<'_> {}
 impl Endpoint for RepoEditWikiPage<'_> {
-    type Response = WikiPage;
+    type Response = RJson<WikiPage>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -12989,16 +11420,9 @@ impl Endpoint for RepoEditWikiPage<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13013,7 +11437,7 @@ pub struct RepoGetWikiPages<'a> {
 
 impl Sealed for RepoGetWikiPages<'_> {}
 impl Endpoint for RepoGetWikiPages<'_> {
-    type Response = (WikiPageListHeaders, Vec<WikiPageMetaData>);
+    type Response = WithHeaders<RJson<Vec<WikiPageMetaData>>, WikiPageListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13025,15 +11449,9 @@ impl Endpoint for RepoGetWikiPages<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13049,7 +11467,7 @@ pub struct RepoGetWikiPageRevisions<'a> {
 
 impl Sealed for RepoGetWikiPageRevisions<'_> {}
 impl Endpoint for RepoGetWikiPageRevisions<'_> {
-    type Response = (WikiCommitListHeaders, WikiCommitList);
+    type Response = WithHeaders<RJson<WikiCommitList>, WikiCommitListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13065,15 +11483,9 @@ impl Endpoint for RepoGetWikiPageRevisions<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13089,7 +11501,7 @@ pub struct GenerateRepo<'a> {
 
 impl Sealed for GenerateRepo<'_> {}
 impl Endpoint for GenerateRepo<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -13108,16 +11520,9 @@ impl Endpoint for GenerateRepo<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13131,7 +11536,7 @@ pub struct RepoGetById {
 
 impl Sealed for RepoGetById {}
 impl Endpoint for RepoGetById {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13143,16 +11548,9 @@ impl Endpoint for RepoGetById {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13164,7 +11562,7 @@ pub struct GetGeneralApiSettings {}
 
 impl Sealed for GetGeneralApiSettings {}
 impl Endpoint for GetGeneralApiSettings {
-    type Response = GeneralAPISettings;
+    type Response = RJson<GeneralAPISettings>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13176,16 +11574,9 @@ impl Endpoint for GetGeneralApiSettings {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13197,7 +11588,7 @@ pub struct GetGeneralAttachmentSettings {}
 
 impl Sealed for GetGeneralAttachmentSettings {}
 impl Endpoint for GetGeneralAttachmentSettings {
-    type Response = GeneralAttachmentSettings;
+    type Response = RJson<GeneralAttachmentSettings>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13209,16 +11600,9 @@ impl Endpoint for GetGeneralAttachmentSettings {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13230,7 +11614,7 @@ pub struct GetGeneralRepositorySettings {}
 
 impl Sealed for GetGeneralRepositorySettings {}
 impl Endpoint for GetGeneralRepositorySettings {
-    type Response = GeneralRepoSettings;
+    type Response = RJson<GeneralRepoSettings>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13242,16 +11626,9 @@ impl Endpoint for GetGeneralRepositorySettings {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13263,7 +11640,7 @@ pub struct GetGeneralUiSettings {}
 
 impl Sealed for GetGeneralUiSettings {}
 impl Endpoint for GetGeneralUiSettings {
-    type Response = GeneralUISettings;
+    type Response = RJson<GeneralUISettings>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13275,16 +11652,9 @@ impl Endpoint for GetGeneralUiSettings {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13296,7 +11666,7 @@ pub struct GetSigningKey {}
 
 impl Sealed for GetSigningKey {}
 impl Endpoint for GetSigningKey {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13308,9 +11678,9 @@ impl Endpoint for GetSigningKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13324,7 +11694,7 @@ pub struct OrgGetTeam {
 
 impl Sealed for OrgGetTeam {}
 impl Endpoint for OrgGetTeam {
-    type Response = Team;
+    type Response = RJson<Team>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13336,16 +11706,9 @@ impl Endpoint for OrgGetTeam {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13371,9 +11734,9 @@ impl Endpoint for OrgDeleteTeam {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13388,7 +11751,7 @@ pub struct OrgEditTeam {
 
 impl Sealed for OrgEditTeam {}
 impl Endpoint for OrgEditTeam {
-    type Response = Team;
+    type Response = RJson<Team>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -13403,16 +11766,9 @@ impl Endpoint for OrgEditTeam {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13427,7 +11783,7 @@ pub struct OrgListTeamActivityFeeds {
 
 impl Sealed for OrgListTeamActivityFeeds {}
 impl Endpoint for OrgListTeamActivityFeeds {
-    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
+    type Response = WithHeaders<RJson<Vec<Activity>>, ActivityFeedsListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13439,15 +11795,9 @@ impl Endpoint for OrgListTeamActivityFeeds {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13461,7 +11811,7 @@ pub struct OrgListTeamMembers {
 
 impl Sealed for OrgListTeamMembers {}
 impl Endpoint for OrgListTeamMembers {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13473,15 +11823,9 @@ impl Endpoint for OrgListTeamMembers {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13496,7 +11840,7 @@ pub struct OrgListTeamMember<'a> {
 
 impl Sealed for OrgListTeamMember<'_> {}
 impl Endpoint for OrgListTeamMember<'_> {
-    type Response = User;
+    type Response = RJson<User>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13508,16 +11852,9 @@ impl Endpoint for OrgListTeamMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13544,9 +11881,9 @@ impl Endpoint for OrgAddTeamMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13573,9 +11910,9 @@ impl Endpoint for OrgRemoveTeamMember<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13589,7 +11926,7 @@ pub struct OrgListTeamRepos {
 
 impl Sealed for OrgListTeamRepos {}
 impl Endpoint for OrgListTeamRepos {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13601,15 +11938,9 @@ impl Endpoint for OrgListTeamRepos {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13625,7 +11956,7 @@ pub struct OrgListTeamRepo<'a> {
 
 impl Sealed for OrgListTeamRepo<'_> {}
 impl Endpoint for OrgListTeamRepo<'_> {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13637,16 +11968,9 @@ impl Endpoint for OrgListTeamRepo<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13674,9 +11998,9 @@ impl Endpoint for OrgAddTeamRepository<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13704,9 +12028,9 @@ impl Endpoint for OrgRemoveTeamRepository<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13720,7 +12044,7 @@ pub struct TopicSearch {
 
 impl Sealed for TopicSearch {}
 impl Endpoint for TopicSearch {
-    type Response = Vec<TopicResponse>;
+    type Response = RJson<Vec<TopicResponse>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13732,16 +12056,9 @@ impl Endpoint for TopicSearch {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13753,7 +12070,7 @@ pub struct UserGetCurrent {}
 
 impl Sealed for UserGetCurrent {}
 impl Endpoint for UserGetCurrent {
-    type Response = User;
+    type Response = RJson<User>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13765,16 +12082,9 @@ impl Endpoint for UserGetCurrent {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13786,7 +12096,7 @@ pub struct UserGetRunnerRegistrationToken {}
 
 impl Sealed for UserGetRunnerRegistrationToken {}
 impl Endpoint for UserGetRunnerRegistrationToken {
-    type Response = RegistrationTokenHeaders;
+    type Response = WithHeaders<(), RegistrationTokenHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13798,9 +12108,9 @@ impl Endpoint for UserGetRunnerRegistrationToken {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((&response.headers).try_into()?),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13830,10 +12140,10 @@ impl Endpoint for UpdateUserSecret<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13859,9 +12169,9 @@ impl Endpoint for DeleteUserSecret<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13873,7 +12183,7 @@ pub struct GetUserVariablesList {}
 
 impl Sealed for GetUserVariablesList {}
 impl Endpoint for GetUserVariablesList {
-    type Response = (VariableListHeaders, Vec<ActionVariable>);
+    type Response = WithHeaders<RJson<Vec<ActionVariable>>, VariableListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13885,15 +12195,9 @@ impl Endpoint for GetUserVariablesList {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13907,7 +12211,7 @@ pub struct GetUserVariable<'a> {
 
 impl Sealed for GetUserVariable<'_> {}
 impl Endpoint for GetUserVariable<'_> {
-    type Response = ActionVariable;
+    type Response = RJson<ActionVariable>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13919,16 +12223,9 @@ impl Endpoint for GetUserVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13958,10 +12255,10 @@ impl Endpoint for UpdateUserVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13991,10 +12288,10 @@ impl Endpoint for CreateUserVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14020,10 +12317,10 @@ impl Endpoint for DeleteUserVariable<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok(()),
-            204 => Ok(()),
+            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14035,7 +12332,7 @@ pub struct UserGetOAuth2Applications {}
 
 impl Sealed for UserGetOAuth2Applications {}
 impl Endpoint for UserGetOAuth2Applications {
-    type Response = (OAuth2ApplicationListHeaders, Vec<OAuth2Application>);
+    type Response = WithHeaders<RJson<Vec<OAuth2Application>>, OAuth2ApplicationListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14047,15 +12344,9 @@ impl Endpoint for UserGetOAuth2Applications {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14069,7 +12360,7 @@ pub struct UserCreateOAuth2Application {
 
 impl Sealed for UserCreateOAuth2Application {}
 impl Endpoint for UserCreateOAuth2Application {
-    type Response = OAuth2Application;
+    type Response = RJson<OAuth2Application>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14084,16 +12375,9 @@ impl Endpoint for UserCreateOAuth2Application {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14107,7 +12391,7 @@ pub struct UserGetOAuth2Application {
 
 impl Sealed for UserGetOAuth2Application {}
 impl Endpoint for UserGetOAuth2Application {
-    type Response = OAuth2Application;
+    type Response = RJson<OAuth2Application>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14119,16 +12403,9 @@ impl Endpoint for UserGetOAuth2Application {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14154,9 +12431,9 @@ impl Endpoint for UserDeleteOAuth2Application {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14171,7 +12448,7 @@ pub struct UserUpdateOAuth2Application {
 
 impl Sealed for UserUpdateOAuth2Application {}
 impl Endpoint for UserUpdateOAuth2Application {
-    type Response = OAuth2Application;
+    type Response = RJson<OAuth2Application>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -14186,16 +12463,9 @@ impl Endpoint for UserUpdateOAuth2Application {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14224,9 +12494,9 @@ impl Endpoint for UserUpdateAvatar {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14250,9 +12520,9 @@ impl Endpoint for UserDeleteAvatar {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14278,9 +12548,9 @@ impl Endpoint for UserBlockUser<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14292,7 +12562,7 @@ pub struct UserListEmails {}
 
 impl Sealed for UserListEmails {}
 impl Endpoint for UserListEmails {
-    type Response = Vec<Email>;
+    type Response = RJson<Vec<Email>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14304,16 +12574,9 @@ impl Endpoint for UserListEmails {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14327,7 +12590,7 @@ pub struct UserAddEmail {
 
 impl Sealed for UserAddEmail {}
 impl Endpoint for UserAddEmail {
-    type Response = Vec<Email>;
+    type Response = RJson<Vec<Email>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14342,16 +12605,9 @@ impl Endpoint for UserAddEmail {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14380,9 +12636,9 @@ impl Endpoint for UserDeleteEmail {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14394,7 +12650,7 @@ pub struct UserCurrentListFollowers {}
 
 impl Sealed for UserCurrentListFollowers {}
 impl Endpoint for UserCurrentListFollowers {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14406,15 +12662,9 @@ impl Endpoint for UserCurrentListFollowers {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14426,7 +12676,7 @@ pub struct UserCurrentListFollowing {}
 
 impl Sealed for UserCurrentListFollowing {}
 impl Endpoint for UserCurrentListFollowing {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14438,15 +12688,9 @@ impl Endpoint for UserCurrentListFollowing {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14472,9 +12716,9 @@ impl Endpoint for UserCurrentCheckFollowing<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14500,9 +12744,9 @@ impl Endpoint for UserCurrentPutFollow<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14528,9 +12772,9 @@ impl Endpoint for UserCurrentDeleteFollow<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14542,7 +12786,7 @@ pub struct GetVerificationToken {}
 
 impl Sealed for GetVerificationToken {}
 impl Endpoint for GetVerificationToken {
-    type Response = String;
+    type Response = RText;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14554,9 +12798,9 @@ impl Endpoint for GetVerificationToken {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(std::str::from_utf8(&*response.body)?.to_owned()),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14568,7 +12812,7 @@ pub struct UserVerifyGpgKey {}
 
 impl Sealed for UserVerifyGpgKey {}
 impl Endpoint for UserVerifyGpgKey {
-    type Response = GPGKey;
+    type Response = RJson<GPGKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14580,16 +12824,9 @@ impl Endpoint for UserVerifyGpgKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14601,7 +12838,7 @@ pub struct UserCurrentListGpgKeys {}
 
 impl Sealed for UserCurrentListGpgKeys {}
 impl Endpoint for UserCurrentListGpgKeys {
-    type Response = (GpgKeyListHeaders, Vec<GPGKey>);
+    type Response = WithHeaders<RJson<Vec<GPGKey>>, GpgKeyListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14613,15 +12850,9 @@ impl Endpoint for UserCurrentListGpgKeys {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14635,7 +12866,7 @@ pub struct UserCurrentPostGpgKey {
 
 impl Sealed for UserCurrentPostGpgKey {}
 impl Endpoint for UserCurrentPostGpgKey {
-    type Response = GPGKey;
+    type Response = RJson<GPGKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14650,16 +12881,9 @@ impl Endpoint for UserCurrentPostGpgKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14673,7 +12897,7 @@ pub struct UserCurrentGetGpgKey {
 
 impl Sealed for UserCurrentGetGpgKey {}
 impl Endpoint for UserCurrentGetGpgKey {
-    type Response = GPGKey;
+    type Response = RJson<GPGKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14685,16 +12909,9 @@ impl Endpoint for UserCurrentGetGpgKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14720,9 +12937,9 @@ impl Endpoint for UserCurrentDeleteGpgKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14734,7 +12951,7 @@ pub struct UserListHooks {}
 
 impl Sealed for UserListHooks {}
 impl Endpoint for UserListHooks {
-    type Response = (HookListHeaders, Vec<Hook>);
+    type Response = WithHeaders<RJson<Vec<Hook>>, HookListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14746,15 +12963,9 @@ impl Endpoint for UserListHooks {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14768,7 +12979,7 @@ pub struct UserCreateHook {
 
 impl Sealed for UserCreateHook {}
 impl Endpoint for UserCreateHook {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14783,16 +12994,9 @@ impl Endpoint for UserCreateHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14806,7 +13010,7 @@ pub struct UserGetHook {
 
 impl Sealed for UserGetHook {}
 impl Endpoint for UserGetHook {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14818,16 +13022,9 @@ impl Endpoint for UserGetHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14853,9 +13050,9 @@ impl Endpoint for UserDeleteHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14870,7 +13067,7 @@ pub struct UserEditHook {
 
 impl Sealed for UserEditHook {}
 impl Endpoint for UserEditHook {
-    type Response = Hook;
+    type Response = RJson<Hook>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -14885,16 +13082,9 @@ impl Endpoint for UserEditHook {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14908,7 +13098,7 @@ pub struct UserCurrentListKeys {
 
 impl Sealed for UserCurrentListKeys {}
 impl Endpoint for UserCurrentListKeys {
-    type Response = (PublicKeyListHeaders, Vec<PublicKey>);
+    type Response = WithHeaders<RJson<Vec<PublicKey>>, PublicKeyListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14920,15 +13110,9 @@ impl Endpoint for UserCurrentListKeys {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14942,7 +13126,7 @@ pub struct UserCurrentPostKey {
 
 impl Sealed for UserCurrentPostKey {}
 impl Endpoint for UserCurrentPostKey {
-    type Response = PublicKey;
+    type Response = RJson<PublicKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14957,16 +13141,9 @@ impl Endpoint for UserCurrentPostKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14980,7 +13157,7 @@ pub struct UserCurrentGetKey {
 
 impl Sealed for UserCurrentGetKey {}
 impl Endpoint for UserCurrentGetKey {
-    type Response = PublicKey;
+    type Response = RJson<PublicKey>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14992,16 +13169,9 @@ impl Endpoint for UserCurrentGetKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15027,9 +13197,9 @@ impl Endpoint for UserCurrentDeleteKey {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15041,7 +13211,7 @@ pub struct UserListBlockedUsers {}
 
 impl Sealed for UserListBlockedUsers {}
 impl Endpoint for UserListBlockedUsers {
-    type Response = (BlockedUserListHeaders, Vec<BlockedUser>);
+    type Response = WithHeaders<RJson<Vec<BlockedUser>>, BlockedUserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15053,15 +13223,9 @@ impl Endpoint for UserListBlockedUsers {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15073,7 +13237,7 @@ pub struct OrgListCurrentUserOrgs {}
 
 impl Sealed for OrgListCurrentUserOrgs {}
 impl Endpoint for OrgListCurrentUserOrgs {
-    type Response = (OrganizationListHeaders, Vec<Organization>);
+    type Response = WithHeaders<RJson<Vec<Organization>>, OrganizationListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15085,15 +13249,9 @@ impl Endpoint for OrgListCurrentUserOrgs {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15105,7 +13263,7 @@ pub struct UserGetQuota {}
 
 impl Sealed for UserGetQuota {}
 impl Endpoint for UserGetQuota {
-    type Response = QuotaInfo;
+    type Response = RJson<QuotaInfo>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15117,16 +13275,9 @@ impl Endpoint for UserGetQuota {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15138,7 +13289,7 @@ pub struct UserListQuotaArtifacts {}
 
 impl Sealed for UserListQuotaArtifacts {}
 impl Endpoint for UserListQuotaArtifacts {
-    type Response = (QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>);
+    type Response = WithHeaders<RJson<Vec<QuotaUsedArtifact>>, QuotaUsedArtifactListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15150,15 +13301,9 @@ impl Endpoint for UserListQuotaArtifacts {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15170,7 +13315,7 @@ pub struct UserListQuotaAttachments {}
 
 impl Sealed for UserListQuotaAttachments {}
 impl Endpoint for UserListQuotaAttachments {
-    type Response = (QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>);
+    type Response = WithHeaders<RJson<Vec<QuotaUsedAttachment>>, QuotaUsedAttachmentListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15182,15 +13327,9 @@ impl Endpoint for UserListQuotaAttachments {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15214,9 +13353,9 @@ impl Endpoint for UserCheckQuota {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok(()),
+            200 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15228,7 +13367,7 @@ pub struct UserListQuotaPackages {}
 
 impl Sealed for UserListQuotaPackages {}
 impl Endpoint for UserListQuotaPackages {
-    type Response = (QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>);
+    type Response = WithHeaders<RJson<Vec<QuotaUsedPackage>>, QuotaUsedPackageListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15240,15 +13379,9 @@ impl Endpoint for UserListQuotaPackages {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15262,7 +13395,7 @@ pub struct UserCurrentListRepos {
 
 impl Sealed for UserCurrentListRepos {}
 impl Endpoint for UserCurrentListRepos {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15274,15 +13407,9 @@ impl Endpoint for UserCurrentListRepos {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15296,7 +13423,7 @@ pub struct CreateCurrentUserRepo {
 
 impl Sealed for CreateCurrentUserRepo {}
 impl Endpoint for CreateCurrentUserRepo {
-    type Response = Repository;
+    type Response = RJson<Repository>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -15311,16 +13438,9 @@ impl Endpoint for CreateCurrentUserRepo {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15332,7 +13452,7 @@ pub struct GetUserSettings {}
 
 impl Sealed for GetUserSettings {}
 impl Endpoint for GetUserSettings {
-    type Response = UserSettings;
+    type Response = RJson<UserSettings>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15344,16 +13464,9 @@ impl Endpoint for GetUserSettings {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15367,7 +13480,7 @@ pub struct UpdateUserSettings {
 
 impl Sealed for UpdateUserSettings {}
 impl Endpoint for UpdateUserSettings {
-    type Response = UserSettings;
+    type Response = RJson<UserSettings>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -15382,16 +13495,9 @@ impl Endpoint for UpdateUserSettings {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15403,7 +13509,7 @@ pub struct UserCurrentListStarred {}
 
 impl Sealed for UserCurrentListStarred {}
 impl Endpoint for UserCurrentListStarred {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15415,15 +13521,9 @@ impl Endpoint for UserCurrentListStarred {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15450,9 +13550,9 @@ impl Endpoint for UserCurrentCheckStarring<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15479,9 +13579,9 @@ impl Endpoint for UserCurrentPutStar<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15508,9 +13608,9 @@ impl Endpoint for UserCurrentDeleteStar<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15522,7 +13622,7 @@ pub struct UserGetStopWatches {}
 
 impl Sealed for UserGetStopWatches {}
 impl Endpoint for UserGetStopWatches {
-    type Response = (StopWatchListHeaders, Vec<StopWatch>);
+    type Response = WithHeaders<RJson<Vec<StopWatch>>, StopWatchListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15534,15 +13634,9 @@ impl Endpoint for UserGetStopWatches {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15554,7 +13648,7 @@ pub struct UserCurrentListSubscriptions {}
 
 impl Sealed for UserCurrentListSubscriptions {}
 impl Endpoint for UserCurrentListSubscriptions {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15566,15 +13660,9 @@ impl Endpoint for UserCurrentListSubscriptions {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15586,7 +13674,7 @@ pub struct UserListTeams {}
 
 impl Sealed for UserListTeams {}
 impl Endpoint for UserListTeams {
-    type Response = (TeamListHeaders, Vec<Team>);
+    type Response = WithHeaders<RJson<Vec<Team>>, TeamListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15598,15 +13686,9 @@ impl Endpoint for UserListTeams {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15620,7 +13702,7 @@ pub struct UserCurrentTrackedTimes {
 
 impl Sealed for UserCurrentTrackedTimes {}
 impl Endpoint for UserCurrentTrackedTimes {
-    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
+    type Response = WithHeaders<RJson<Vec<TrackedTime>>, TrackedTimeListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15632,15 +13714,9 @@ impl Endpoint for UserCurrentTrackedTimes {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15666,9 +13742,9 @@ impl Endpoint for UserUnblockUser<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15682,7 +13758,7 @@ pub struct UserSearch {
 
 impl Sealed for UserSearch {}
 impl Endpoint for UserSearch {
-    type Response = UserSearchResponse;
+    type Response = RJson<UserSearchResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15694,16 +13770,9 @@ impl Endpoint for UserSearch {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15717,7 +13786,7 @@ pub struct UserGet<'a> {
 
 impl Sealed for UserGet<'_> {}
 impl Endpoint for UserGet<'_> {
-    type Response = User;
+    type Response = RJson<User>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15729,16 +13798,9 @@ impl Endpoint for UserGet<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15753,7 +13815,7 @@ pub struct UserListActivityFeeds<'a> {
 
 impl Sealed for UserListActivityFeeds<'_> {}
 impl Endpoint for UserListActivityFeeds<'_> {
-    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
+    type Response = WithHeaders<RJson<Vec<Activity>>, ActivityFeedsListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15765,15 +13827,9 @@ impl Endpoint for UserListActivityFeeds<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15787,7 +13843,7 @@ pub struct UserListFollowers<'a> {
 
 impl Sealed for UserListFollowers<'_> {}
 impl Endpoint for UserListFollowers<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15799,15 +13855,9 @@ impl Endpoint for UserListFollowers<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15821,7 +13871,7 @@ pub struct UserListFollowing<'a> {
 
 impl Sealed for UserListFollowing<'_> {}
 impl Endpoint for UserListFollowing<'_> {
-    type Response = (UserListHeaders, Vec<User>);
+    type Response = WithHeaders<RJson<Vec<User>>, UserListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15833,15 +13883,9 @@ impl Endpoint for UserListFollowing<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15868,9 +13912,9 @@ impl Endpoint for UserCheckFollowing<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15884,7 +13928,7 @@ pub struct UserListGpgKeys<'a> {
 
 impl Sealed for UserListGpgKeys<'_> {}
 impl Endpoint for UserListGpgKeys<'_> {
-    type Response = (GpgKeyListHeaders, Vec<GPGKey>);
+    type Response = WithHeaders<RJson<Vec<GPGKey>>, GpgKeyListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15896,15 +13940,9 @@ impl Endpoint for UserListGpgKeys<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15918,7 +13956,7 @@ pub struct UserGetHeatmapData<'a> {
 
 impl Sealed for UserGetHeatmapData<'_> {}
 impl Endpoint for UserGetHeatmapData<'_> {
-    type Response = Vec<UserHeatmapData>;
+    type Response = RJson<Vec<UserHeatmapData>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15930,16 +13968,9 @@ impl Endpoint for UserGetHeatmapData<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15954,7 +13985,7 @@ pub struct UserListKeys<'a> {
 
 impl Sealed for UserListKeys<'_> {}
 impl Endpoint for UserListKeys<'_> {
-    type Response = (PublicKeyListHeaders, Vec<PublicKey>);
+    type Response = WithHeaders<RJson<Vec<PublicKey>>, PublicKeyListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15966,15 +13997,9 @@ impl Endpoint for UserListKeys<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -15988,7 +14013,7 @@ pub struct OrgListUserOrgs<'a> {
 
 impl Sealed for OrgListUserOrgs<'_> {}
 impl Endpoint for OrgListUserOrgs<'_> {
-    type Response = (OrganizationListHeaders, Vec<Organization>);
+    type Response = WithHeaders<RJson<Vec<Organization>>, OrganizationListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -16000,15 +14025,9 @@ impl Endpoint for OrgListUserOrgs<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16023,7 +14042,7 @@ pub struct OrgGetUserPermissions<'a> {
 
 impl Sealed for OrgGetUserPermissions<'_> {}
 impl Endpoint for OrgGetUserPermissions<'_> {
-    type Response = OrganizationPermissions;
+    type Response = RJson<OrganizationPermissions>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -16039,16 +14058,9 @@ impl Endpoint for OrgGetUserPermissions<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16062,7 +14074,7 @@ pub struct UserListRepos<'a> {
 
 impl Sealed for UserListRepos<'_> {}
 impl Endpoint for UserListRepos<'_> {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -16074,15 +14086,9 @@ impl Endpoint for UserListRepos<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16096,7 +14102,7 @@ pub struct UserListStarred<'a> {
 
 impl Sealed for UserListStarred<'_> {}
 impl Endpoint for UserListStarred<'_> {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -16108,15 +14114,9 @@ impl Endpoint for UserListStarred<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16130,7 +14130,7 @@ pub struct UserListSubscriptions<'a> {
 
 impl Sealed for UserListSubscriptions<'_> {}
 impl Endpoint for UserListSubscriptions<'_> {
-    type Response = (RepositoryListHeaders, Vec<Repository>);
+    type Response = WithHeaders<RJson<Vec<Repository>>, RepositoryListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -16142,15 +14142,9 @@ impl Endpoint for UserListSubscriptions<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16164,7 +14158,7 @@ pub struct UserGetTokens<'a> {
 
 impl Sealed for UserGetTokens<'_> {}
 impl Endpoint for UserGetTokens<'_> {
-    type Response = (AccessTokenListHeaders, Vec<AccessToken>);
+    type Response = WithHeaders<RJson<Vec<AccessToken>>, AccessTokenListHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -16176,15 +14170,9 @@ impl Endpoint for UserGetTokens<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((
-                (&response.headers).try_into()?,
-                serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                    e,
-                    contents: response.body.clone(),
-                })?,
-            )),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16199,7 +14187,7 @@ pub struct UserCreateToken<'a> {
 
 impl Sealed for UserCreateToken<'_> {}
 impl Endpoint for UserCreateToken<'_> {
-    type Response = AccessToken;
+    type Response = RJson<AccessToken>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -16214,16 +14202,9 @@ impl Endpoint for UserCreateToken<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            201 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16250,9 +14231,9 @@ impl Endpoint for UserDeleteAccessToken<'_> {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok(()),
+            204 => Ok((response, false)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -16264,7 +14245,7 @@ pub struct GetVersion {}
 
 impl Sealed for GetVersion {}
 impl Endpoint for GetVersion {
-    type Response = ServerVersion;
+    type Response = RJson<ServerVersion>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -16276,16 +14257,9 @@ impl Endpoint for GetVersion {
         }
     }
 
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => {
-                Ok(
-                    serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde {
-                        e,
-                        contents: response.body.clone(),
-                    })?,
-                )
-            }
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),

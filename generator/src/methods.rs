@@ -115,13 +115,8 @@ fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation, sync: bool) -> eyre::R
         .ok_or_else(|| eyre::eyre!("operation did not have id"))?
         .to_pascal_case();
     let args = fn_args_from_op(spec, op)?;
-    let code = if sync {
-        format!(
-            "pub fn {name}({args}) -> crate::sync::WrappedRequest<'_, endpoints::{struct_name}>"
-        )
-    } else {
-        format!("pub fn {name}({args}) -> WrappedRequest<'_, endpoints::{struct_name}>")
-    };
+    let prefix = if sync { "crate::sync::" } else { "" };
+    let code = format!("pub fn {name}({args}) -> {prefix}WrappedRequest<'_, endpoints::{struct_name}, <endpoints::{struct_name} as Endpoint>::Response>");
     Ok(code)
 }
 
@@ -289,15 +284,9 @@ fn create_method_body(spec: &OpenApiV2, op: &Operation, sync: bool) -> eyre::Res
         }
     }
     if sync {
-        writeln!(
-            &mut s,
-            "}}.make_request().wrap_sync::<endpoints::{struct_name}>(self)"
-        )?;
+        writeln!(&mut s, "}}.make_request().wrap_sync::<_, _>(self)")?;
     } else {
-        writeln!(
-            &mut s,
-            "}}.make_request().wrap::<endpoints::{struct_name}>(self)"
-        )?;
+        writeln!(&mut s, "}}.make_request().wrap::<_, _>(self)")?;
     }
     Ok(s)
 }

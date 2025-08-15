@@ -15,6 +15,9 @@ pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use super::structs::*;\n");
     s.push_str("use crate::Endpoint;\n");
     s.push_str("use crate::{ApiRequest, RequestBody, ApiResponse};\n");
+    s.push_str(
+        "use crate::response_type::{Json as RJson, Text as RText, Bytes as RBytes, WithHeaders};\n",
+    );
     s.push_str("use reqwest::Method;\n");
     s.push_str("use crate::sealed::Sealed;\n");
     s.push_str("use bytes::Bytes;\n");
@@ -298,12 +301,28 @@ fn create_endpoint_impl(
         writeln!(&mut s, "impl Sealed for {struct_name} {{}}")?;
         writeln!(&mut s, "impl Endpoint for {struct_name} {{")?;
     }
-    let response_type = response_type_from_op(spec, op)?;
+    let response = response_type_from_op(spec, op)?;
+    let (mut response_type, optional) = if let Some(response_body) = response.body.as_ref() {
+        let response_type = match response.kind.ok_or_eyre("No response kind")? {
+            ResponseKind::Json => format!("RJson<{}>", response_body.ty),
+            ResponseKind::Text => "RText".into(),
+            ResponseKind::Bytes => "RBytes".into(),
+        };
+        (response_type, response_body.optional)
+    } else {
+        ("()".into(), false)
+    };
+    if optional {
+        response_type = format!("Option<{response_type}>");
+    };
+    if let Some(headers) = &response.headers {
+        response_type = format!("WithHeaders<{response_type}, {headers}>");
+    }
     writeln!(&mut s, "    type Response = {response_type};")?;
     let make_request = endpoint_make_request(spec, base_path, path, op, method)?;
     writeln!(&mut s, "{make_request}")?;
-    let handle_response = endpoint_handle_response(spec, op, &response_type)?;
-    writeln!(&mut s, "{handle_response}")?;
+    let handle_error = endpoint_handle_error(spec, op, &response)?;
+    writeln!(&mut s, "{handle_error}")?;
     Ok(s)
 }
 
@@ -401,7 +420,7 @@ fn endpoint_make_request(
     Ok(s)
 }
 
-fn endpoint_handle_response(
+fn endpoint_handle_error(
     spec: &OpenApiV2,
     op: &Operation,
     response_type: &ResponseType,
@@ -410,7 +429,7 @@ fn endpoint_handle_response(
 
     writeln!(
         &mut s,
-        "    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError> {{"
+        "    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {{"
     )?;
 
     let mut has_empty = false;
@@ -420,7 +439,7 @@ fn endpoint_handle_response(
         if !code.starts_with("2") {
             continue;
         }
-        if matches!(response.body.as_deref(), Some("()") | None) {
+        if response.body.is_none_or(|b| b.ty == "()") {
             has_empty = true;
         } else {
             only_empty = false;
@@ -435,75 +454,7 @@ fn endpoint_handle_response(
             continue;
         }
         write!(&mut s, "{code}")?;
-        write!(&mut s, " => Ok(")?;
-        let mut handlers = Vec::new();
-        let header_handler = match &res.headers {
-            Some(_) => {
-                if response_type
-                    .headers
-                    .as_ref()
-                    .map(|s| s.starts_with("Option<"))
-                    .unwrap()
-                {
-                    Some("Some((&response.headers).try_into()?)")
-                } else {
-                    Some("(&response.headers).try_into()?")
-                }
-            }
-            None => {
-                if response_type.headers.is_some() {
-                    Some("None")
-                } else {
-                    None
-                }
-            }
-        };
-        handlers.extend(header_handler);
-        let body_handler = match branch_ret.kind {
-            Some(ResponseKind::Text) => {
-                if optional {
-                    Some("Some(std::str::from_utf8(&*response.body)?.to_owned())")
-                } else {
-                    Some("std::str::from_utf8(&*response.body)?.to_owned()")
-                }
-            }
-            Some(ResponseKind::Json) => {
-                if optional {
-                    Some("Some(serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde { e, contents: response.body.clone() })?)")
-                } else {
-                    Some("serde_json::from_slice(&*response.body).map_err(|e| StructureError::Serde { e, contents: response.body.clone() })?")
-                }
-            }
-            Some(ResponseKind::Bytes) => {
-                if optional {
-                    Some("Some(response.body.clone())")
-                } else {
-                    Some("response.body.clone()")
-                }
-            }
-            None => {
-                if optional {
-                    Some("None")
-                } else {
-                    None
-                }
-            }
-        };
-        handlers.extend(body_handler);
-        match handlers[..] {
-            [single] => write!(&mut s, "{single}")?,
-            _ => {
-                write!(&mut s, "(")?;
-                for (i, item) in handlers.iter().copied().enumerate() {
-                    write!(&mut s, "{item}")?;
-                    if i + 1 < handlers.len() {
-                        write!(&mut s, ", ")?;
-                    }
-                }
-                write!(&mut s, ")")?;
-            }
-        }
-        writeln!(&mut s, "),")?;
+        writeln!(&mut s, " => Ok((response, {})),", branch_ret.body.is_some())?;
     }
     writeln!(
         &mut s,
@@ -520,7 +471,7 @@ fn endpoint_handle_response(
 #[derive(Debug, Default)]
 pub struct ResponseType {
     pub headers: Option<String>,
-    pub body: Option<String>,
+    pub body: Option<ResponseBodyType>,
     pub kind: Option<ResponseKind>,
 }
 
@@ -532,15 +483,25 @@ impl ResponseType {
             (None, Some(b)) if !b.starts_with("Option<") => Some(format!("Option<{b}>")),
             (a, b) => a.or(b),
         };
-        let body = match (self.body.as_deref(), other.body.as_deref()) {
+        let body = match (self.body, other.body) {
+            (Some(mut a), None) if !a.optional => {
+                a.optional = true;
+                Some(a)
+            }
+            (Some(mut a), Some(b)) if !a.optional && b.ty == "()" => {
+                a.optional = true;
+                Some(a)
+            }
+            (None, Some(mut b)) if !b.optional => {
+                b.optional = true;
+                Some(b)
+            }
+            (Some(a), Some(mut b)) if !b.optional && a.ty == "()" => {
+                b.optional = true;
+                Some(b)
+            }
             (Some(a), Some(b)) if a != b => eyre::bail!("incompatible header types in response"),
-            (Some(a), Some("()") | None) if !a.starts_with("Option<") => {
-                Some(format!("Option<{a}>"))
-            }
-            (Some("()") | None, Some(b)) if !b.starts_with("Option<") => {
-                Some(format!("Option<{b}>"))
-            }
-            (_, _) => self.body.or(other.body),
+            (a, b) => a.or(b),
         };
         use ResponseKind::*;
         let kind = match (self.kind, other.kind) {
@@ -562,6 +523,50 @@ impl ResponseType {
     }
 }
 
+#[derive(Debug, Default, PartialEq, Eq)]
+pub struct ResponseBodyType {
+    pub optional: bool,
+    pub ty: String,
+}
+
+impl From<String> for ResponseBodyType {
+    fn from(value: String) -> Self {
+        if let Some(inner) = value
+            .strip_prefix("Option<")
+            .and_then(|s| s.strip_suffix(">"))
+        {
+            Self {
+                optional: true,
+                ty: inner.to_owned(),
+            }
+        } else {
+            Self {
+                optional: false,
+                ty: value,
+            }
+        }
+    }
+}
+
+impl From<&str> for ResponseBodyType {
+    fn from(value: &str) -> Self {
+        if let Some(inner) = value
+            .strip_prefix("Option<")
+            .and_then(|s| s.strip_suffix(">"))
+        {
+            Self {
+                optional: true,
+                ty: inner.to_owned(),
+            }
+        } else {
+            Self {
+                optional: false,
+                ty: value.to_owned(),
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub enum ResponseKind {
     Json,
@@ -571,23 +576,15 @@ pub enum ResponseKind {
 
 impl std::fmt::Display for ResponseType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut tys = Vec::new();
-        tys.extend(self.headers.as_deref());
-        tys.extend(self.body.as_deref());
-        match tys[..] {
-            [single] => f.write_str(single),
-            _ => {
-                write!(f, "(")?;
-                for (i, item) in tys.iter().copied().enumerate() {
-                    f.write_str(item)?;
-                    if i + 1 < tys.len() {
-                        write!(f, ", ")?;
-                    }
-                }
-                write!(f, ")")?;
-                Ok(())
-            }
+        match (self.headers.as_deref(), self.body.as_ref()) {
+            (Some(h), Some(b)) if b.optional => write!(f, "({h}, Option<{}>", b.ty)?,
+            (Some(h), Some(b)) => write!(f, "({h}, {})", b.ty)?,
+            (None, Some(b)) if b.optional => write!(f, "Option<{}>", b.ty)?,
+            (None, Some(b)) => write!(f, "{}", b.ty)?,
+            (Some(h), None) => write!(f, "{h}")?,
+            (None, None) => write!(f, "()")?,
         }
+        Ok(())
     }
 }
 
@@ -650,7 +647,7 @@ pub fn response_ref_type_name(
                     let op_name = op.operation_id.as_deref().ok_or_else(|| eyre::eyre!("no operation id"))?.to_upper_camel_case();
                     crate::schema_subtype_name(spec, &op_name, "Response", value, &mut body)?;
                 }
-                ty.body = Some(body);
+                ty.body = Some(body.into());
             };
         }
         (false, _, true) => {

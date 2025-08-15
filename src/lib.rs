@@ -52,6 +52,8 @@ pub enum StructureError {
     HeaderNotAscii,
     #[error("failed to parse header")]
     HeaderParseFailed,
+    #[error("nothing was returned when a value was expected")]
+    EmptyResponse,
 }
 
 impl From<std::str::Utf8Error> for ForgejoError {
@@ -253,11 +255,13 @@ impl Forgejo {
         Ok(response)
     }
 
-    pub async fn hit_endpoint<E: Endpoint<Response = R>, R>(
+    pub async fn hit_endpoint<E: Endpoint, R: FromResponse>(
         &self,
         endpoint: E,
-    ) -> Result<R, ForgejoError> {
-        E::handle_response(self.send_request(&endpoint.make_request()).await?)
+    ) -> Result<R::Output, ForgejoError> {
+        let (response, has_body) =
+            E::handle_error(self.send_request(&endpoint.make_request()).await?)?;
+        Ok(R::from_response(response, has_body)?)
     }
 }
 
@@ -480,7 +484,7 @@ mod sealed {
 pub trait Endpoint: sealed::Sealed {
     type Response;
     fn make_request(self) -> ApiRequest;
-    fn handle_response(response: ApiResponse) -> Result<Self::Response, ForgejoError>;
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError>;
 }
 
 #[derive(Clone)]
@@ -494,27 +498,138 @@ pub struct ApiRequest {
 }
 
 impl ApiRequest {
-    pub(crate) fn wrap<E: Endpoint>(self, client: &Forgejo) -> WrappedRequest<'_, E> {
+    pub(crate) fn wrap<E: Endpoint<Response = R>, R>(
+        self,
+        client: &Forgejo,
+    ) -> WrappedRequest<'_, E, R> {
         WrappedRequest {
             inner: TypedRequest {
                 inner: self,
                 __endpoint: PhantomData,
+                __response: PhantomData,
             },
             client,
         }
     }
 
     #[cfg(feature = "sync")]
-    pub(crate) fn wrap_sync<E: Endpoint>(
+    pub(crate) fn wrap_sync<E: Endpoint<Response = R>, R>(
         self,
         client: &sync::Forgejo,
-    ) -> sync::WrappedRequest<'_, E> {
+    ) -> sync::WrappedRequest<'_, E, R> {
         sync::WrappedRequest {
             inner: TypedRequest {
                 inner: self,
                 __endpoint: PhantomData,
+                __response: PhantomData,
             },
             client,
+        }
+    }
+}
+
+pub trait FromResponse {
+    type Output;
+
+    fn from_response(response: ApiResponse, has_body: bool)
+        -> Result<Self::Output, StructureError>;
+}
+
+pub mod response_type {
+    use std::marker::PhantomData;
+
+    use crate::FromResponse;
+
+    struct Unconstructable;
+
+    pub struct Json<T>(Unconstructable, PhantomData<*const T>);
+    pub struct Text(Unconstructable);
+    pub struct Bytes(Unconstructable);
+    pub struct WithHeaders<T, H>(
+        Unconstructable,
+        PhantomData<*const T>,
+        PhantomData<*const H>,
+    );
+
+    impl<T: serde::de::DeserializeOwned> FromResponse for Json<T> {
+        type Output = T;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+            serde_json::from_slice(&response.body).map_err(|e| crate::StructureError::Serde {
+                e,
+                contents: response.body.clone(),
+            })
+        }
+    }
+
+    impl FromResponse for Text {
+        type Output = String;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+            Ok(std::str::from_utf8(&response.body)?.to_owned())
+        }
+    }
+
+    impl FromResponse for Bytes {
+        type Output = bytes::Bytes;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+            Ok(response.body.clone())
+        }
+    }
+
+    impl<
+            T: FromResponse,
+            H: for<'a> TryFrom<&'a reqwest::header::HeaderMap, Error = crate::StructureError>,
+        > FromResponse for WithHeaders<T, H>
+    {
+        type Output = (H, T::Output);
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            let headers = H::try_from(&response.headers)?;
+            let body = T::from_response(response, has_body)?;
+            Ok((headers, body))
+        }
+    }
+
+    impl<T: FromResponse> FromResponse for Option<T> {
+        type Output = Option<T::Output>;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            if has_body {
+                T::from_response(response, true).map(Some)
+            } else {
+                Ok(None)
+            }
+        }
+    }
+
+    impl FromResponse for () {
+        type Output = ();
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            Ok(())
         }
     }
 }
@@ -526,19 +641,22 @@ pub enum RequestBody {
     None,
 }
 
-pub struct TypedRequest<E> {
+pub struct TypedRequest<E, R> {
     inner: ApiRequest,
     __endpoint: PhantomData<*const E>,
+    __response: PhantomData<*const R>,
 }
 
-impl<E: Endpoint> TypedRequest<E> {
-    async fn send(&self, client: &Forgejo) -> Result<E::Response, ForgejoError> {
-        E::handle_response(client.send_request(&self.inner).await?)
+impl<E: Endpoint, R: FromResponse> TypedRequest<E, R> {
+    async fn send(&self, client: &Forgejo) -> Result<R::Output, ForgejoError> {
+        let (response, has_body) = E::handle_error(client.send_request(&self.inner).await?)?;
+        Ok(R::from_response(response, has_body)?)
     }
 
     #[cfg(feature = "sync")]
-    fn send_sync(&self, client: &sync::Forgejo) -> Result<E::Response, ForgejoError> {
-        E::handle_response(client.send_request(&self.inner)?)
+    fn send_sync(&self, client: &sync::Forgejo) -> Result<R::Output, ForgejoError> {
+        let (response, has_body) = E::handle_error(client.send_request(&self.inner)?)?;
+        Ok(R::from_response(response, has_body)?)
     }
 }
 
@@ -548,15 +666,73 @@ pub struct ApiResponse {
     body: bytes::Bytes,
 }
 
-pub struct WrappedRequest<'a, E> {
-    inner: TypedRequest<E>,
+pub struct WrappedRequest<'a, E, R> {
+    inner: TypedRequest<E, R>,
     client: &'a Forgejo,
 }
 
-impl<'a, E: Endpoint<Response = R>, R> WrappedRequest<'a, E> {
-    pub async fn send(self) -> Result<R, ForgejoError> {
+macro_rules! response_type_method_inner {
+    ($self:ident) => {
+        WrappedRequest {
+            inner: TypedRequest {
+                inner: $self.inner.inner,
+                __endpoint: PhantomData,
+                __response: PhantomData,
+            },
+            client: $self.client,
+        }
+    };
+}
+
+macro_rules! response_type_method {
+    ($name:ident -> $response:ty) => {
+        pub fn $name(self) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<T> -> $response:ty) => {
+        pub fn $name<T: serde::de::DeserializeOwned>(self) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<H> -> $response:ty) => {
+        pub fn $name<H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>>(
+            self,
+        ) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<T, H> -> $response:ty) => {
+        pub fn $name<
+            T: serde::de::DeserializeOwned,
+            H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>,
+        >(
+            self,
+        ) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+}
+
+use response_type::*;
+impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
+    pub async fn send(self) -> Result<R::Output, ForgejoError> {
         self.inner.send(&self.client).await
     }
+
+    response_type_method!(json<T> -> Json<T>);
+    response_type_method!(json_opt<T> -> Option<Json<T>>);
+    response_type_method!(text -> Text);
+    response_type_method!(bytes -> Bytes);
+    response_type_method!(text_opt -> Option<Text>);
+    response_type_method!(bytes_opt -> Option<Text>);
+
+    response_type_method!(headers_json<T, H> -> WithHeaders<Json<T>, H>);
+    response_type_method!(headers_json_opt<T, H> -> WithHeaders<Option<Json<T>>, H>);
+    response_type_method!(headers_text<H> -> WithHeaders<Text, H>);
+    response_type_method!(headers_bytes<H> -> WithHeaders<Bytes, H>);
+    response_type_method!(headers_text_opt<H> -> WithHeaders<Option<Text>, H>);
+    response_type_method!(headers_bytes_opt<H> -> WithHeaders<Option<Text>, H>);
 
     pub fn page(mut self, page: u32) -> Self {
         self.inner.inner.page = Some(page);
@@ -573,8 +749,10 @@ pub trait CountHeader: sealed::Sealed {
     fn count(&self) -> Option<usize>;
 }
 
-impl<'a, E: Endpoint<Response = (H, Vec<R>)>, R, H: CountHeader> WrappedRequest<'a, E> {
-    pub fn stream(self) -> ResponseStream<'a, E, R, H> {
+impl<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H: CountHeader>
+    WrappedRequest<'a, E, R>
+{
+    pub fn stream(self) -> ResponseStream<'a, E, R, T, H> {
         ResponseStream {
             request: self,
             total_seen: 0,
@@ -584,20 +762,22 @@ impl<'a, E: Endpoint<Response = (H, Vec<R>)>, R, H: CountHeader> WrappedRequest<
     }
 }
 
-impl<'a, E: Endpoint<Response = R>, R> std::future::IntoFuture for WrappedRequest<'a, E> {
-    type Output = Result<R, ForgejoError>;
+impl<'a, E: Endpoint, R: FromResponse> std::future::IntoFuture for WrappedRequest<'a, E, R> {
+    type Output = Result<R::Output, ForgejoError>;
 
     type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + 'a>>;
 
     fn into_future(self) -> Self::IntoFuture {
-        Box::pin(
-            async move { E::handle_response(self.client.send_request(&self.inner.inner).await?) },
-        )
+        Box::pin(async move {
+            let (response, has_body) =
+                E::handle_error(self.client.send_request(&self.inner.inner).await?)?;
+            Ok(R::from_response(response, has_body)?)
+        })
     }
 }
 
-pub struct ResponseStream<'a, E: Endpoint<Response = (H, Vec<T>)>, T, H> {
-    request: WrappedRequest<'a, E>,
+pub struct ResponseStream<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H> {
+    request: WrappedRequest<'a, E, R>,
     total_seen: usize,
     last_page: bool,
     state: StreamState<'a, T, H>,
@@ -609,8 +789,8 @@ enum StreamState<'a, T, H> {
     Finished,
 }
 
-impl<'a, E: Endpoint<Response = (H, Vec<T>)>, T, H: CountHeader> futures::stream::Stream
-    for ResponseStream<'a, E, T, H>
+impl<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H: CountHeader>
+    futures::stream::Stream for ResponseStream<'a, E, R, T, H>
 where
     Self: Unpin + 'a,
 {
@@ -637,7 +817,9 @@ where
                         let request = self.request.inner.inner.clone();
                         let client = self.request.client;
                         let fut = Box::pin(async move {
-                            E::handle_response(client.send_request(&request).await?)
+                            E::handle_error(client.send_request(&request).await?).and_then(
+                                |(res, body)| R::from_response(res, body).map_err(|e| e.into()),
+                            )
                         });
                         self.state = StreamState::Future(fut);
 

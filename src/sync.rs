@@ -1,8 +1,8 @@
 //! Blocking (non-async) API
 
 use super::{
-    structs, ApiRequest, ApiResponse, Auth, Endpoint, ErrorMessage, ForgejoError, RequestBody,
-    TypedRequest,
+    response_type::*, structs, ApiRequest, ApiResponse, Auth, Endpoint, ErrorMessage, ForgejoError,
+    FromResponse, RequestBody, TypedRequest,
 };
 use reqwest::blocking::{Client, Request};
 use soft_assert::soft_assert;
@@ -112,23 +112,81 @@ impl Forgejo {
         Ok(response)
     }
 
-    pub fn hit_endpoint<E: Endpoint<Response = R>, R>(
+    pub fn hit_endpoint<E: Endpoint, R: FromResponse>(
         &self,
         endpoint: E,
-    ) -> Result<R, ForgejoError> {
-        E::handle_response(self.send_request(&endpoint.make_request())?)
+    ) -> Result<R::Output, ForgejoError> {
+        let (response, has_body) = E::handle_error(self.send_request(&endpoint.make_request())?)?;
+        Ok(R::from_response(response, has_body)?)
     }
 }
 
-pub struct WrappedRequest<'a, E> {
-    pub(crate) inner: TypedRequest<E>,
+pub struct WrappedRequest<'a, E, R> {
+    pub(crate) inner: TypedRequest<E, R>,
     pub(crate) client: &'a Forgejo,
 }
 
-impl<'a, E: Endpoint<Response = R>, R> WrappedRequest<'a, E> {
-    pub fn send(self) -> Result<R, ForgejoError> {
+macro_rules! response_type_method_inner {
+    ($self:ident) => {
+        WrappedRequest {
+            inner: TypedRequest {
+                inner: $self.inner.inner,
+                __endpoint: std::marker::PhantomData,
+                __response: std::marker::PhantomData,
+            },
+            client: $self.client,
+        }
+    };
+}
+
+macro_rules! response_type_method {
+    ($name:ident -> $response:ty) => {
+        pub fn $name(self) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<T> -> $response:ty) => {
+        pub fn $name<T: serde::de::DeserializeOwned>(self) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<H> -> $response:ty) => {
+        pub fn $name<H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>>(
+            self,
+        ) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<T, H> -> $response:ty) => {
+        pub fn $name<
+            T: serde::de::DeserializeOwned,
+            H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>,
+        >(
+            self,
+        ) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+}
+
+impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
+    pub fn send(self) -> Result<R::Output, ForgejoError> {
         self.inner.send_sync(&self.client)
     }
+
+    response_type_method!(json<T> -> Json<T>);
+    response_type_method!(json_opt<T> -> Option<Json<T>>);
+    response_type_method!(text -> Text);
+    response_type_method!(bytes -> Bytes);
+    response_type_method!(text_opt -> Option<Text>);
+    response_type_method!(bytes_opt -> Option<Text>);
+
+    response_type_method!(headers_json<T, H> -> WithHeaders<Json<T>, H>);
+    response_type_method!(headers_json_opt<T, H> -> WithHeaders<Option<Json<T>>, H>);
+    response_type_method!(headers_text<H> -> WithHeaders<Text, H>);
+    response_type_method!(headers_bytes<H> -> WithHeaders<Bytes, H>);
+    response_type_method!(headers_text_opt<H> -> WithHeaders<Option<Text>, H>);
+    response_type_method!(headers_bytes_opt<H> -> WithHeaders<Option<Text>, H>);
 
     pub fn page(mut self, page: u32) -> Self {
         self.inner.inner.page = Some(page);

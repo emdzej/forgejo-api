@@ -21,6 +21,34 @@ async fn myself() {
     );
 }
 
+#[tokio::test]
+async fn myself_custom_type() {
+    let api = common::login();
+
+    #[derive(serde::Deserialize, PartialEq, Eq, Debug)]
+    struct CustomUser {
+        is_admin: bool,
+        login: String,
+    }
+
+    let myself = api.user_get_current().json::<CustomUser>().await.unwrap();
+    assert!(myself.is_admin, "user should be admin");
+    assert_eq!(
+        myself.login, "TestingAdmin",
+        "user should be named \"TestingAdmin\""
+    );
+
+    let myself_indirect = api
+        .user_get("TestingAdmin")
+        .json::<CustomUser>()
+        .await
+        .unwrap();
+    assert_eq!(
+        myself, myself_indirect,
+        "result of `myself` does not match result of `get_user`"
+    );
+}
+
 #[cfg(feature = "sync")]
 #[test]
 fn myself_sync() {
