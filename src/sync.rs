@@ -1,8 +1,8 @@
 //! Blocking (non-async) API
 
 use super::{
-    response_type::*, structs, ApiRequest, ApiResponse, Auth, Endpoint, ErrorMessage, ForgejoError,
-    FromResponse, RequestBody, TypedRequest,
+    response_type::*, structs, ApiError, ApiRequest, ApiResponse, Auth, Endpoint, ForgejoError,
+    FromResponse, OAuthError, RequestBody, TypedRequest,
 };
 use reqwest::blocking::{Client, Request};
 use soft_assert::soft_assert;
@@ -63,8 +63,8 @@ impl Forgejo {
         match response.status() {
             reqwest::StatusCode::OK => Ok(response.json()?),
             status if status.is_client_error() => {
-                let err_msg = response.json::<ErrorMessage>().ok().map(|e| e.message);
-                Err(ForgejoError::ApiError(status, err_msg))
+                let err = response.json::<OAuthError>()?;
+                Err(ApiError::from(err).into())
             }
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
