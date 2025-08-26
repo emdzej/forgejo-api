@@ -31,8 +31,8 @@ pub enum ForgejoError {
     BadStructure(#[from] StructureError),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
-    #[error("{} {}{}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1.as_ref().map(|s| format!(": {s}")).unwrap_or_default())]
-    ApiError(StatusCode, Option<String>),
+    #[error(transparent)]
+    ApiError(#[from] ApiError),
     #[error("the provided authorization was too long to accept")]
     AuthTooLong,
 }
@@ -59,6 +59,126 @@ pub enum StructureError {
 impl From<std::str::Utf8Error> for ForgejoError {
     fn from(error: std::str::Utf8Error) -> Self {
         Self::BadStructure(StructureError::Utf8(error))
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub struct ApiError {
+    message: Option<String>,
+    kind: ApiErrorKind,
+}
+
+impl ApiError {
+    fn new(message: Option<String>, kind: ApiErrorKind) -> Self {
+        Self { message, kind }
+    }
+
+    pub fn message(&self) -> Option<&str> {
+        self.message.as_deref()
+    }
+
+    pub fn error_kind(&self) -> &ApiErrorKind {
+        &self.kind
+    }
+}
+
+impl From<ApiErrorKind> for ApiError {
+    fn from(kind: ApiErrorKind) -> Self {
+        Self {
+            message: None,
+            kind,
+        }
+    }
+}
+
+impl std::fmt::Display for ApiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.message {
+            Some(message) => write!(f, "{}: {message}", self.kind),
+            None => write!(f, "{}", self.kind),
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum ApiErrorKind {
+    #[error("api error")]
+    Generic,
+    #[error("access denied")]
+    Forbidden,
+    #[error("invalid topics")]
+    InvalidTopics { invalid_topics: Option<Vec<String>> },
+    #[error("not found")]
+    NotFound { errors: Option<Vec<String>> },
+    #[error("repo archived")]
+    RepoArchived,
+    #[error("unauthorized")]
+    Unauthorized,
+    #[error("validation failed")]
+    ValidationFailed,
+    #[error("status code {0}")]
+    Other(reqwest::StatusCode),
+}
+
+impl From<structs::APIError> for ApiError {
+    fn from(value: structs::APIError) -> Self {
+        Self::new(value.message, ApiErrorKind::Generic)
+    }
+}
+impl From<structs::APIForbiddenError> for ApiError {
+    fn from(value: structs::APIForbiddenError) -> Self {
+        Self::new(value.message, ApiErrorKind::Forbidden)
+    }
+}
+impl From<structs::APIInvalidTopicsError> for ApiError {
+    fn from(value: structs::APIInvalidTopicsError) -> Self {
+        Self::new(
+            value.message,
+            ApiErrorKind::InvalidTopics {
+                invalid_topics: value.invalid_topics,
+            },
+        )
+    }
+}
+impl From<structs::APINotFound> for ApiError {
+    fn from(value: structs::APINotFound) -> Self {
+        Self::new(
+            value.message,
+            ApiErrorKind::NotFound {
+                errors: value.errors,
+            },
+        )
+    }
+}
+impl From<structs::APIRepoArchivedError> for ApiError {
+    fn from(value: structs::APIRepoArchivedError) -> Self {
+        Self::new(value.message, ApiErrorKind::RepoArchived)
+    }
+}
+impl From<structs::APIUnauthorizedError> for ApiError {
+    fn from(value: structs::APIUnauthorizedError) -> Self {
+        Self::new(value.message, ApiErrorKind::Unauthorized)
+    }
+}
+impl From<structs::APIValidationError> for ApiError {
+    fn from(value: structs::APIValidationError) -> Self {
+        Self::new(value.message, ApiErrorKind::ValidationFailed)
+    }
+}
+impl From<reqwest::StatusCode> for ApiError {
+    fn from(value: reqwest::StatusCode) -> Self {
+        match value {
+            reqwest::StatusCode::NOT_FOUND => ApiErrorKind::NotFound { errors: None },
+            reqwest::StatusCode::FORBIDDEN => ApiErrorKind::Forbidden,
+            reqwest::StatusCode::UNAUTHORIZED => ApiErrorKind::Unauthorized,
+            _ => ApiErrorKind::Other(value),
+        }
+        .into()
+    }
+}
+impl From<OAuthError> for ApiError {
+    fn from(value: OAuthError) -> Self {
+        Self::new(Some(value.error_description), ApiErrorKind::Generic)
     }
 }
 
@@ -202,12 +322,8 @@ impl Forgejo {
         match response.status() {
             reqwest::StatusCode::OK => Ok(response.json().await?),
             status if status.is_client_error() => {
-                let err_msg = response
-                    .json::<ErrorMessage>()
-                    .await
-                    .ok()
-                    .map(|e| e.message);
-                Err(ForgejoError::ApiError(status, err_msg))
+                let err = response.json::<OAuthError>().await?;
+                Err(ApiError::from(err).into())
             }
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
@@ -266,8 +382,8 @@ impl Forgejo {
 }
 
 #[derive(serde::Deserialize)]
-struct ErrorMessage {
-    message: String,
+struct OAuthError {
+    error_description: String,
     // intentionally ignored, no need for now
     // url: Url
 }

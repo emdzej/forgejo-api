@@ -10,7 +10,7 @@ use crate::{
 
 pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     let mut s = String::new();
-    s.push_str("use crate::{ForgejoError, StructureError};\n");
+    s.push_str("use crate::{ForgejoError, StructureError, ApiError};\n");
     s.push_str("use std::collections::BTreeMap;");
     s.push_str("use super::structs::*;\n");
     s.push_str("use crate::Endpoint;\n");
@@ -22,6 +22,18 @@ pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use crate::sealed::Sealed;\n");
     s.push_str("use bytes::Bytes;\n");
     s.push_str("\n");
+
+    writeln!(&mut s, "fn json_error<E: Into<crate::ApiError> + serde::de::DeserializeOwned>(response: &ApiResponse) -> ForgejoError {{")?;
+    writeln!(&mut s, "let error = serde_json::from_slice::<E>(&response.body[..]).map_err(|e| StructureError::Serde {{ e, contents: response.body.clone() }});")?;
+    writeln!(&mut s, "match error {{")?;
+    writeln!(
+        &mut s,
+        "    Ok(error) => ForgejoError::ApiError(error.into()),"
+    )?;
+    writeln!(&mut s, "    Err(error) => ForgejoError::from(error),")?;
+    writeln!(&mut s, "}}")?;
+    writeln!(&mut s, "}}")?;
+
     for (path, item) in &spec.paths {
         s.push_str(&create_endpoints_for_path(&spec, path, item).wrap_err_with(|| path.clone())?);
     }
@@ -450,11 +462,26 @@ fn endpoint_handle_error(
     for (code, res) in &op.responses.http_codes {
         let branch_ret = response_ref_type_name(spec, res, op)?;
         let res = res.deref(spec)?;
-        if !code.starts_with("2") {
-            continue;
+        if code.starts_with("2") {
+            writeln!(
+                &mut s,
+                "{code} => Ok((response, {})),",
+                branch_ret.body.is_some()
+            )?;
+        } else if code.starts_with("4") {
+            if let Some(err_schema) = res.schema.as_ref() {
+                let err_name = crate::schema_ref_type_name(spec, err_schema)?;
+                writeln!(
+                    &mut s,
+                    "{code} => Err(json_error::<{err_name}>(&response)),"
+                )?;
+            } else {
+                writeln!(
+                    &mut s,
+                    "{code} => Err(ForgejoError::from(ApiError::from(response.status_code))),"
+                )?;
+            }
         }
-        write!(&mut s, "{code}")?;
-        writeln!(&mut s, " => Ok((response, {})),", branch_ret.body.is_some())?;
     }
     writeln!(
         &mut s,

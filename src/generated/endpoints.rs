@@ -2,12 +2,25 @@ use super::structs::*;
 use crate::response_type::{Bytes as RBytes, Json as RJson, Text as RText, WithHeaders};
 use crate::sealed::Sealed;
 use crate::Endpoint;
+use crate::{ApiError, ForgejoError, StructureError};
 use crate::{ApiRequest, ApiResponse, RequestBody};
-use crate::{ForgejoError, StructureError};
 use bytes::Bytes;
 use reqwest::Method;
 use std::collections::BTreeMap;
 
+fn json_error<E: Into<crate::ApiError> + serde::de::DeserializeOwned>(
+    response: &ApiResponse,
+) -> ForgejoError {
+    let error =
+        serde_json::from_slice::<E>(&response.body[..]).map_err(|e| StructureError::Serde {
+            e,
+            contents: response.body.clone(),
+        });
+    match error {
+        Ok(error) => ForgejoError::ApiError(error.into()),
+        Err(error) => ForgejoError::from(error),
+    }
+}
 pub struct ActivitypubInstanceActor {}
 
 impl Sealed for ActivitypubInstanceActor {}
@@ -199,6 +212,7 @@ impl Endpoint for AdminCronList {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -227,6 +241,7 @@ impl Endpoint for AdminCronRun<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -253,6 +268,7 @@ impl Endpoint for AdminGetAllEmails {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -281,6 +297,7 @@ impl Endpoint for AdminSearchEmails {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -452,6 +469,7 @@ impl Endpoint for AdminGetAllOrgs {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -478,6 +496,7 @@ impl Endpoint for AdminListQuotaGroups {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -509,6 +528,10 @@ impl Endpoint for AdminCreateQuotaGroup {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -537,6 +560,9 @@ impl Endpoint for AdminGetQuotaGroup<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -565,6 +591,9 @@ impl Endpoint for AdminDeleteQuotaGroup<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -598,6 +627,11 @@ impl Endpoint for AdminAddRuleToQuotaGroup<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -631,6 +665,9 @@ impl Endpoint for AdminRemoveRuleFromQuotaGroup<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -659,6 +696,9 @@ impl Endpoint for AdminListUsersInQuotaGroup<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -692,6 +732,11 @@ impl Endpoint for AdminAddUserToQuotaGroup<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -725,6 +770,9 @@ impl Endpoint for AdminRemoveUserFromQuotaGroup<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -751,6 +799,7 @@ impl Endpoint for AdminListQuotaRules {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -782,6 +831,10 @@ impl Endpoint for AdminCreateQuotaRule {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -810,6 +863,9 @@ impl Endpoint for AdminGetQuotaRule<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -838,6 +894,9 @@ impl Endpoint for AdminDeleteQuotaRule<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -870,6 +929,10 @@ impl Endpoint for AdminEditQuotaRule<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -924,6 +987,7 @@ impl Endpoint for AdminUnadoptedList {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -953,6 +1017,8 @@ impl Endpoint for AdminAdoptRepository<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -982,6 +1048,7 @@ impl Endpoint for AdminDeleteUnadoptedRepository<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1010,6 +1077,7 @@ impl Endpoint for AdminSearchUsers {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1041,6 +1109,9 @@ impl Endpoint for AdminCreateUser {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1070,6 +1141,9 @@ impl Endpoint for AdminDeleteUser<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1102,6 +1176,9 @@ impl Endpoint for AdminEditUser<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1134,6 +1211,8 @@ impl Endpoint for AdminCreatePublicKey<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1163,6 +1242,8 @@ impl Endpoint for AdminDeleteUserPublicKey<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1195,6 +1276,8 @@ impl Endpoint for AdminCreateOrg<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1223,6 +1306,10 @@ impl Endpoint for AdminGetUserQuota<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1255,6 +1342,10 @@ impl Endpoint for AdminSetUserQuotaGroups<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1287,6 +1378,8 @@ impl Endpoint for AdminRenameUser<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1319,6 +1412,11 @@ impl Endpoint for AdminCreateRepo<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1373,6 +1471,7 @@ impl Endpoint for GetGitignoreTemplateInfo<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1427,6 +1526,7 @@ impl Endpoint for GetLabelTemplateInfo<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1481,6 +1581,7 @@ impl Endpoint for GetLicenseTemplateInfo<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1512,6 +1613,7 @@ impl Endpoint for RenderMarkdown {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1543,6 +1645,7 @@ impl Endpoint for RenderMarkdownRaw {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1574,6 +1677,7 @@ impl Endpoint for RenderMarkup {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1710,6 +1814,8 @@ impl Endpoint for NotifyGetThread<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1739,6 +1845,8 @@ impl Endpoint for NotifyReadThread<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             205 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1771,6 +1879,9 @@ impl Endpoint for CreateOrgRepoDeprecated<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1828,6 +1939,8 @@ impl Endpoint for OrgCreate {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1856,6 +1969,7 @@ impl Endpoint for OrgGet<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1884,6 +1998,7 @@ impl Endpoint for OrgDelete<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1916,6 +2031,8 @@ impl Endpoint for OrgEdit<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1976,6 +2093,7 @@ impl Endpoint for OrgListActionsSecrets<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2014,6 +2132,8 @@ impl Endpoint for UpdateOrgSecret<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2047,6 +2167,8 @@ impl Endpoint for DeleteOrgSecret<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2075,6 +2197,8 @@ impl Endpoint for GetOrgVariablesList<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2108,6 +2232,8 @@ impl Endpoint for GetOrgVariable<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2146,6 +2272,8 @@ impl Endpoint for UpdateOrgVariable<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2184,6 +2312,8 @@ impl Endpoint for CreateOrgVariable<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2219,6 +2349,8 @@ impl Endpoint for DeleteOrgVariable<'_> {
             200 => Ok((response, true)),
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2248,6 +2380,7 @@ impl Endpoint for OrgListActivityFeeds<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2280,6 +2413,7 @@ impl Endpoint for OrgUpdateAvatar<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2308,6 +2442,7 @@ impl Endpoint for OrgDeleteAvatar<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2337,6 +2472,8 @@ impl Endpoint for OrgBlockUser<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2365,6 +2502,7 @@ impl Endpoint for OrgListHooks<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2397,6 +2535,7 @@ impl Endpoint for OrgCreateHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2426,6 +2565,7 @@ impl Endpoint for OrgGetHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2455,6 +2595,7 @@ impl Endpoint for OrgDeleteHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2488,6 +2629,7 @@ impl Endpoint for OrgEditHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2516,6 +2658,7 @@ impl Endpoint for OrgListLabels<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2548,6 +2691,8 @@ impl Endpoint for OrgCreateLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2577,6 +2722,7 @@ impl Endpoint for OrgGetLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2606,6 +2752,7 @@ impl Endpoint for OrgDeleteLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2639,6 +2786,8 @@ impl Endpoint for OrgEditLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2695,6 +2844,7 @@ impl Endpoint for OrgListMembers<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2724,6 +2874,7 @@ impl Endpoint for OrgIsMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2753,6 +2904,7 @@ impl Endpoint for OrgDeleteMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2781,6 +2933,7 @@ impl Endpoint for OrgListPublicMembers<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2810,6 +2963,7 @@ impl Endpoint for OrgIsPublicMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2839,6 +2993,8 @@ impl Endpoint for OrgPublicizeMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2868,6 +3024,8 @@ impl Endpoint for OrgConcealMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2896,6 +3054,8 @@ impl Endpoint for OrgGetQuota<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2924,6 +3084,8 @@ impl Endpoint for OrgListQuotaArtifacts<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2952,6 +3114,8 @@ impl Endpoint for OrgListQuotaAttachments<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2980,6 +3144,9 @@ impl Endpoint for OrgCheckQuota<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3008,6 +3175,8 @@ impl Endpoint for OrgListQuotaPackages<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3036,6 +3205,7 @@ impl Endpoint for OrgListRepos<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3068,6 +3238,9 @@ impl Endpoint for CreateOrgRepo<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3096,6 +3269,7 @@ impl Endpoint for OrgListTeams<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3128,6 +3302,8 @@ impl Endpoint for OrgCreateTeam<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3157,6 +3333,7 @@ impl Endpoint for TeamSearch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3186,6 +3363,8 @@ impl Endpoint for OrgUnblockUser<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3215,6 +3394,7 @@ impl Endpoint for ListPackages<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3250,6 +3430,7 @@ impl Endpoint for GetPackage<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3285,6 +3466,7 @@ impl Endpoint for DeletePackage<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3320,6 +3502,7 @@ impl Endpoint for ListPackageFiles<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3348,6 +3531,8 @@ impl Endpoint for IssueSearchIssues {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3379,6 +3564,10 @@ impl Endpoint for RepoMigrate {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3407,6 +3596,7 @@ impl Endpoint for RepoSearch {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3436,6 +3626,7 @@ impl Endpoint for RepoGet<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3465,6 +3656,8 @@ impl Endpoint for RepoDelete<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3498,6 +3691,9 @@ impl Endpoint for RepoEdit<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3560,6 +3756,7 @@ impl Endpoint for RepoListActionsSecrets<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3599,6 +3796,8 @@ impl Endpoint for UpdateRepoSecret<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3633,6 +3832,8 @@ impl Endpoint for DeleteRepoSecret<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3662,6 +3863,11 @@ impl Endpoint for ListActionTasks<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3695,6 +3901,8 @@ impl Endpoint for GetRepoVariablesList<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3729,6 +3937,8 @@ impl Endpoint for GetRepoVariable<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3768,6 +3978,8 @@ impl Endpoint for UpdateRepoVariable<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3807,6 +4019,8 @@ impl Endpoint for CreateRepoVariable<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3843,6 +4057,8 @@ impl Endpoint for DeleteRepoVariable<'_> {
             200 => Ok((response, true)),
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3881,6 +4097,7 @@ impl Endpoint for DispatchWorkflow<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3915,6 +4132,7 @@ impl Endpoint for RepoListActivityFeeds<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3949,6 +4167,7 @@ impl Endpoint for RepoGetArchive<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3978,6 +4197,7 @@ impl Endpoint for RepoGetAssignees<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4011,6 +4231,7 @@ impl Endpoint for RepoUpdateAvatar<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4040,6 +4261,7 @@ impl Endpoint for RepoDeleteAvatar<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4110,6 +4332,10 @@ impl Endpoint for RepoCreateBranchProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4144,6 +4370,7 @@ impl Endpoint for RepoGetBranchProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4178,6 +4405,7 @@ impl Endpoint for RepoDeleteBranchProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4216,6 +4444,9 @@ impl Endpoint for RepoEditBranchProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4278,6 +4509,11 @@ impl Endpoint for RepoCreateBranch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            404 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4312,6 +4548,7 @@ impl Endpoint for RepoGetBranch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4346,6 +4583,9 @@ impl Endpoint for RepoDeleteBranch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4384,6 +4624,9 @@ impl Endpoint for RepoUpdateBranch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4413,6 +4656,7 @@ impl Endpoint for RepoListCollaborators<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4447,6 +4691,8 @@ impl Endpoint for RepoCheckCollaborator<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4485,6 +4731,9 @@ impl Endpoint for RepoAddCollaborator<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4519,6 +4768,8 @@ impl Endpoint for RepoDeleteCollaborator<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4553,6 +4804,8 @@ impl Endpoint for RepoGetRepoPermissions<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4583,6 +4836,8 @@ impl Endpoint for RepoGetAllCommits<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4617,6 +4872,8 @@ impl Endpoint for RepoGetCombinedStatusByRef<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4652,6 +4909,8 @@ impl Endpoint for RepoListStatusesByRef<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4686,6 +4945,7 @@ impl Endpoint for RepoGetCommitPullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4720,6 +4980,7 @@ impl Endpoint for RepoCompareDiff<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4750,6 +5011,7 @@ impl Endpoint for RepoGetContentsList<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4783,6 +5045,11 @@ impl Endpoint for RepoChangeFiles<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4818,6 +5085,7 @@ impl Endpoint for RepoGetContents<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4856,6 +5124,11 @@ impl Endpoint for RepoUpdateFile<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4894,6 +5167,11 @@ impl Endpoint for RepoCreateFile<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4932,6 +5210,11 @@ impl Endpoint for RepoDeleteFile<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4965,6 +5248,9 @@ impl Endpoint for RepoApplyDiffPatch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5000,6 +5286,7 @@ impl Endpoint for RepoGetEditorConfig<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5029,6 +5316,8 @@ impl Endpoint for RepoListFlags<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5062,6 +5351,8 @@ impl Endpoint for RepoReplaceAllFlags<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5091,6 +5382,8 @@ impl Endpoint for RepoDeleteAllFlags<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5125,6 +5418,8 @@ impl Endpoint for RepoCheckFlag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5159,6 +5454,8 @@ impl Endpoint for RepoAddFlag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5193,6 +5490,8 @@ impl Endpoint for RepoDeleteFlag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5222,6 +5521,7 @@ impl Endpoint for ListForks<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5255,6 +5555,11 @@ impl Endpoint for CreateFork<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             202 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5289,6 +5594,8 @@ impl Endpoint for GetBlob<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5324,6 +5631,8 @@ impl Endpoint for RepoGetSingleCommit<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5359,6 +5668,7 @@ impl Endpoint for RepoDownloadCommitDiffOrPatch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5394,6 +5704,8 @@ impl Endpoint for RepoGetNote<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5432,6 +5744,8 @@ impl Endpoint for RepoSetNote<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5466,6 +5780,8 @@ impl Endpoint for RepoRemoveNote<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5495,6 +5811,7 @@ impl Endpoint for RepoListAllGitRefs<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5529,6 +5846,7 @@ impl Endpoint for RepoListGitRefs<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5563,6 +5881,8 @@ impl Endpoint for GetAnnotatedTag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5598,6 +5918,8 @@ impl Endpoint for GetTree<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5627,6 +5949,7 @@ impl Endpoint for RepoListHooks<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5660,6 +5983,7 @@ impl Endpoint for RepoCreateHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5689,6 +6013,7 @@ impl Endpoint for RepoListGitHooks<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5723,6 +6048,7 @@ impl Endpoint for RepoGetGitHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5757,6 +6083,7 @@ impl Endpoint for RepoDeleteGitHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5795,6 +6122,7 @@ impl Endpoint for RepoEditGitHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5829,6 +6157,7 @@ impl Endpoint for RepoGetHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5863,6 +6192,7 @@ impl Endpoint for RepoDeleteHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5901,6 +6231,7 @@ impl Endpoint for RepoEditHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5936,6 +6267,7 @@ impl Endpoint for RepoTestHook<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5965,6 +6297,7 @@ impl Endpoint for RepoGetIssueConfig<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -5998,6 +6331,7 @@ impl Endpoint for RepoValidateIssueConfig<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6027,6 +6361,7 @@ impl Endpoint for RepoGetIssueTemplates<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6057,6 +6392,7 @@ impl Endpoint for IssueListIssues<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6090,6 +6426,11 @@ impl Endpoint for IssueCreateIssue<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            412 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6120,6 +6461,7 @@ impl Endpoint for IssueGetRepoComments<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6155,6 +6497,8 @@ impl Endpoint for IssueGetComment<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6189,6 +6533,8 @@ impl Endpoint for IssueDeleteComment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6228,6 +6574,9 @@ impl Endpoint for IssueEditComment<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6262,6 +6611,7 @@ impl Endpoint for IssueListIssueCommentAttachments<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6303,6 +6653,11 @@ impl Endpoint for IssueCreateIssueCommentAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6338,6 +6693,7 @@ impl Endpoint for IssueGetIssueCommentAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6373,6 +6729,8 @@ impl Endpoint for IssueDeleteIssueCommentAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APIError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6412,6 +6770,9 @@ impl Endpoint for IssueEditIssueCommentAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6446,6 +6807,8 @@ impl Endpoint for IssueGetCommentReactions<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6485,6 +6848,8 @@ impl Endpoint for IssuePostCommentReaction<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6523,6 +6888,8 @@ impl Endpoint for IssueDeleteCommentReaction<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6552,6 +6919,7 @@ impl Endpoint for RepoListPinnedIssues<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6586,6 +6954,7 @@ impl Endpoint for IssueGetIssue<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6620,6 +6989,8 @@ impl Endpoint for IssueDelete<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6658,6 +7029,9 @@ impl Endpoint for IssueEditIssue<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            412 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6692,6 +7066,7 @@ impl Endpoint for IssueListIssueAttachments<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6733,6 +7108,11 @@ impl Endpoint for IssueCreateIssueAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6768,6 +7148,7 @@ impl Endpoint for IssueGetIssueAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6803,6 +7184,8 @@ impl Endpoint for IssueDeleteIssueAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APIError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6842,6 +7225,9 @@ impl Endpoint for IssueEditIssueAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6876,6 +7262,7 @@ impl Endpoint for IssueListBlocks<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6914,6 +7301,7 @@ impl Endpoint for IssueCreateIssueBlocking<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6952,6 +7340,7 @@ impl Endpoint for IssueRemoveIssueBlocking<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6987,6 +7376,7 @@ impl Endpoint for IssueGetComments<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7025,6 +7415,9 @@ impl Endpoint for IssueCreateComment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7060,6 +7453,8 @@ impl Endpoint for IssueDeleteCommentDeprecated<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7100,6 +7495,8 @@ impl Endpoint for IssueEditCommentDeprecated<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7138,6 +7535,8 @@ impl Endpoint for IssueEditIssueDeadline<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7172,6 +7571,7 @@ impl Endpoint for IssueListIssueDependencies<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7210,6 +7610,8 @@ impl Endpoint for IssueCreateIssueDependencies<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7248,6 +7650,8 @@ impl Endpoint for IssueRemoveIssueDependencies<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7282,6 +7686,7 @@ impl Endpoint for IssueGetLabels<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7320,6 +7725,8 @@ impl Endpoint for IssueReplaceLabels<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7358,6 +7765,8 @@ impl Endpoint for IssueAddLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7396,6 +7805,8 @@ impl Endpoint for IssueClearLabels<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7435,6 +7846,9 @@ impl Endpoint for IssueRemoveLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7469,6 +7883,8 @@ impl Endpoint for PinIssue<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7503,6 +7919,8 @@ impl Endpoint for UnpinIssue<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7538,6 +7956,8 @@ impl Endpoint for MoveIssuePin<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7572,6 +7992,8 @@ impl Endpoint for IssueGetIssueReactions<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7611,6 +8033,8 @@ impl Endpoint for IssuePostIssueReaction<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7649,6 +8073,8 @@ impl Endpoint for IssueDeleteIssueReaction<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7683,6 +8109,9 @@ impl Endpoint for IssueDeleteStopWatch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7717,6 +8146,9 @@ impl Endpoint for IssueStartStopWatch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
+            403 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7751,6 +8183,9 @@ impl Endpoint for IssueStopStopWatch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
+            403 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7785,6 +8220,7 @@ impl Endpoint for IssueSubscriptions<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7819,6 +8255,7 @@ impl Endpoint for IssueCheckSubscription<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7855,6 +8292,7 @@ impl Endpoint for IssueAddSubscription<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
             201 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7891,6 +8329,7 @@ impl Endpoint for IssueDeleteSubscription<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
             201 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7926,6 +8365,7 @@ impl Endpoint for IssueGetCommentsAndTimeline<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7961,6 +8401,7 @@ impl Endpoint for IssueTrackedTimes<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7999,6 +8440,9 @@ impl Endpoint for IssueAddTime<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8033,6 +8477,9 @@ impl Endpoint for IssueResetTime<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8068,6 +8515,9 @@ impl Endpoint for IssueDeleteTime<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8098,6 +8548,7 @@ impl Endpoint for RepoListKeys<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8131,6 +8582,8 @@ impl Endpoint for RepoCreateKey<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8165,6 +8618,7 @@ impl Endpoint for RepoGetKey<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8199,6 +8653,8 @@ impl Endpoint for RepoDeleteKey<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8228,6 +8684,7 @@ impl Endpoint for IssueListLabels<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8261,6 +8718,8 @@ impl Endpoint for IssueCreateLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8295,6 +8754,7 @@ impl Endpoint for IssueGetLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8329,6 +8789,7 @@ impl Endpoint for IssueDeleteLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8367,6 +8828,8 @@ impl Endpoint for IssueEditLabel<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8396,6 +8859,7 @@ impl Endpoint for RepoGetLanguages<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8431,6 +8895,7 @@ impl Endpoint for RepoGetRawFileOrLfs<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8461,6 +8926,7 @@ impl Endpoint for IssueGetMilestonesList<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8494,6 +8960,7 @@ impl Endpoint for IssueCreateMilestone<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8528,6 +8995,7 @@ impl Endpoint for IssueGetMilestone<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8562,6 +9030,7 @@ impl Endpoint for IssueDeleteMilestone<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8600,6 +9069,7 @@ impl Endpoint for IssueEditMilestone<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8629,6 +9099,9 @@ impl Endpoint for RepoMirrorSync<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8658,6 +9131,7 @@ impl Endpoint for RepoNewPinAllowed<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8748,6 +9222,7 @@ impl Endpoint for RepoListPullRequests<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8781,6 +9256,11 @@ impl Endpoint for RepoCreatePullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8810,6 +9290,7 @@ impl Endpoint for RepoListPinnedPullRequests<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8845,6 +9326,7 @@ impl Endpoint for RepoGetPullRequestByBaseHead<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8879,6 +9361,7 @@ impl Endpoint for RepoGetPullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8917,6 +9400,11 @@ impl Endpoint for RepoEditPullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            412 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8953,6 +9441,7 @@ impl Endpoint for RepoDownloadPullDiffOrPatch<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8988,6 +9477,7 @@ impl Endpoint for RepoGetPullRequestCommits<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9023,6 +9513,7 @@ impl Endpoint for RepoGetPullRequestFiles<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9057,6 +9548,7 @@ impl Endpoint for RepoPullRequestIsMerged<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9095,6 +9587,11 @@ impl Endpoint for RepoMergePullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            405 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            409 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9129,6 +9626,9 @@ impl Endpoint for RepoCancelScheduledAutoMerge<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9167,6 +9667,8 @@ impl Endpoint for RepoCreatePullReviewRequests<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9205,6 +9707,9 @@ impl Endpoint for RepoDeletePullReviewRequests<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9239,6 +9744,7 @@ impl Endpoint for RepoListPullReviews<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9277,6 +9783,8 @@ impl Endpoint for RepoCreatePullReview<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9312,6 +9820,7 @@ impl Endpoint for RepoGetPullReview<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9351,6 +9860,8 @@ impl Endpoint for RepoSubmitPullReview<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9386,6 +9897,8 @@ impl Endpoint for RepoDeletePullReview<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9421,6 +9934,7 @@ impl Endpoint for RepoGetPullReviewComments<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9460,6 +9974,8 @@ impl Endpoint for RepoCreatePullReviewComment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9496,6 +10012,8 @@ impl Endpoint for RepoGetPullReviewComment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9532,6 +10050,8 @@ impl Endpoint for RepoDeletePullReviewComment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9571,6 +10091,9 @@ impl Endpoint for RepoDismissPullReview<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9606,6 +10129,9 @@ impl Endpoint for RepoUnDismissPullReview<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9641,6 +10167,11 @@ impl Endpoint for RepoUpdatePullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9670,6 +10201,9 @@ impl Endpoint for RepoListPushMirrors<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9703,6 +10237,10 @@ impl Endpoint for RepoAddPushMirror<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9736,6 +10274,10 @@ impl Endpoint for RepoPushMirrorSync<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9770,6 +10312,9 @@ impl Endpoint for RepoGetPushMirrorByRemoteName<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9804,6 +10349,8 @@ impl Endpoint for RepoDeletePushMirror<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9839,6 +10386,7 @@ impl Endpoint for RepoGetRawFile<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9869,6 +10417,7 @@ impl Endpoint for RepoListReleases<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9902,6 +10451,9 @@ impl Endpoint for RepoCreateRelease<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9931,6 +10483,7 @@ impl Endpoint for RepoGetLatestRelease<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9965,6 +10518,7 @@ impl Endpoint for RepoGetReleaseByTag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9999,6 +10553,8 @@ impl Endpoint for RepoDeleteReleaseByTag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10033,6 +10589,7 @@ impl Endpoint for RepoGetRelease<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10067,6 +10624,8 @@ impl Endpoint for RepoDeleteRelease<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10105,6 +10664,7 @@ impl Endpoint for RepoEditRelease<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10139,6 +10699,7 @@ impl Endpoint for RepoListReleaseAttachments<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10185,6 +10746,9 @@ impl Endpoint for RepoCreateReleaseAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10220,6 +10784,7 @@ impl Endpoint for RepoGetReleaseAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10255,6 +10820,7 @@ impl Endpoint for RepoDeleteReleaseAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10294,6 +10860,8 @@ impl Endpoint for RepoEditReleaseAttachment<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10323,6 +10891,7 @@ impl Endpoint for RepoGetReviewers<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10381,6 +10950,7 @@ impl Endpoint for RepoListStargazers<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10416,6 +10986,8 @@ impl Endpoint for RepoListStatuses<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10454,6 +11026,8 @@ impl Endpoint for RepoCreateStatus<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10483,6 +11057,7 @@ impl Endpoint for RepoListSubscribers<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10512,6 +11087,7 @@ impl Endpoint for UserCurrentCheckSubscription<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10541,6 +11117,7 @@ impl Endpoint for UserCurrentPutSubscription<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10570,6 +11147,7 @@ impl Endpoint for UserCurrentDeleteSubscription<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10632,6 +11210,10 @@ impl Endpoint for RepoCreateTagProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10666,6 +11248,7 @@ impl Endpoint for RepoGetTagProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10700,6 +11283,7 @@ impl Endpoint for RepoDeleteTagProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10738,6 +11322,9 @@ impl Endpoint for RepoEditTagProtection<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10767,6 +11354,7 @@ impl Endpoint for RepoListTags<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10800,6 +11388,12 @@ impl Endpoint for RepoCreateTag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            405 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10834,6 +11428,7 @@ impl Endpoint for RepoGetTag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10868,6 +11463,11 @@ impl Endpoint for RepoDeleteTag<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            405 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10897,6 +11497,7 @@ impl Endpoint for RepoListTeams<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10931,6 +11532,8 @@ impl Endpoint for RepoCheckTeam<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            405 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10965,6 +11568,9 @@ impl Endpoint for RepoAddTeam<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            405 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10999,6 +11605,9 @@ impl Endpoint for RepoDeleteTeam<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            405 => Err(json_error::<APIError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11029,6 +11638,9 @@ impl Endpoint for RepoTrackedTimes<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11063,6 +11675,9 @@ impl Endpoint for UserTrackedTimes<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11092,6 +11707,7 @@ impl Endpoint for RepoListTopics<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11125,6 +11741,8 @@ impl Endpoint for RepoUpdateTopics<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIInvalidTopicsError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11159,6 +11777,8 @@ impl Endpoint for RepoAddTopic<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIInvalidTopicsError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11193,6 +11813,8 @@ impl Endpoint for RepoDeleteTopic<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIInvalidTopicsError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11226,6 +11848,10 @@ impl Endpoint for RepoTransfer<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             202 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11255,6 +11881,9 @@ impl Endpoint for AcceptRepoTransfer<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             202 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11284,6 +11913,8 @@ impl Endpoint for RejectRepoTransfer<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11317,6 +11948,11 @@ impl Endpoint for RepoCreateWikiPage<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11351,6 +11987,7 @@ impl Endpoint for RepoGetWikiPage<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11385,6 +12022,9 @@ impl Endpoint for RepoDeleteWikiPage<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11423,6 +12063,11 @@ impl Endpoint for RepoEditWikiPage<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            423 => Err(json_error::<APIRepoArchivedError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11452,6 +12097,7 @@ impl Endpoint for RepoGetWikiPages<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11486,6 +12132,7 @@ impl Endpoint for RepoGetWikiPageRevisions<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11523,6 +12170,11 @@ impl Endpoint for GenerateRepo<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11551,6 +12203,7 @@ impl Endpoint for RepoGetById {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11709,6 +12362,7 @@ impl Endpoint for OrgGetTeam {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11737,6 +12391,7 @@ impl Endpoint for OrgDeleteTeam {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11769,6 +12424,7 @@ impl Endpoint for OrgEditTeam {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11798,6 +12454,7 @@ impl Endpoint for OrgListTeamActivityFeeds {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11826,6 +12483,7 @@ impl Endpoint for OrgListTeamMembers {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11855,6 +12513,7 @@ impl Endpoint for OrgListTeamMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11884,6 +12543,7 @@ impl Endpoint for OrgAddTeamMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11913,6 +12573,7 @@ impl Endpoint for OrgRemoveTeamMember<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11941,6 +12602,7 @@ impl Endpoint for OrgListTeamRepos {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -11971,6 +12633,7 @@ impl Endpoint for OrgListTeamRepo<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12001,6 +12664,8 @@ impl Endpoint for OrgAddTeamRepository<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12031,6 +12696,8 @@ impl Endpoint for OrgRemoveTeamRepository<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12059,6 +12726,8 @@ impl Endpoint for TopicSearch {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12085,6 +12754,8 @@ impl Endpoint for UserGetCurrent {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12111,6 +12782,8 @@ impl Endpoint for UserGetRunnerRegistrationToken {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12144,6 +12817,10 @@ impl Endpoint for UpdateUserSecret<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12172,6 +12849,10 @@ impl Endpoint for DeleteUserSecret<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12198,6 +12879,10 @@ impl Endpoint for GetUserVariablesList {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12226,6 +12911,10 @@ impl Endpoint for GetUserVariable<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12259,6 +12948,10 @@ impl Endpoint for UpdateUserVariable<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12292,6 +12985,10 @@ impl Endpoint for CreateUserVariable<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12321,6 +13018,10 @@ impl Endpoint for DeleteUserVariable<'_> {
         match response.status_code.as_u16() {
             201 => Ok((response, false)),
             204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12347,6 +13048,8 @@ impl Endpoint for UserGetOAuth2Applications {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12378,6 +13081,9 @@ impl Endpoint for UserCreateOAuth2Application {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12406,6 +13112,9 @@ impl Endpoint for UserGetOAuth2Application {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12434,6 +13143,9 @@ impl Endpoint for UserDeleteOAuth2Application {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12466,6 +13178,9 @@ impl Endpoint for UserUpdateOAuth2Application {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12497,6 +13212,8 @@ impl Endpoint for UserUpdateAvatar {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12523,6 +13240,8 @@ impl Endpoint for UserDeleteAvatar {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12551,6 +13270,10 @@ impl Endpoint for UserBlockUser<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12577,6 +13300,8 @@ impl Endpoint for UserListEmails {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12608,6 +13333,9 @@ impl Endpoint for UserAddEmail {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12639,6 +13367,9 @@ impl Endpoint for UserDeleteEmail {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12665,6 +13396,8 @@ impl Endpoint for UserCurrentListFollowers {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12691,6 +13424,8 @@ impl Endpoint for UserCurrentListFollowing {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12719,6 +13454,9 @@ impl Endpoint for UserCurrentCheckFollowing<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12747,6 +13485,9 @@ impl Endpoint for UserCurrentPutFollow<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12775,6 +13516,9 @@ impl Endpoint for UserCurrentDeleteFollow<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12801,6 +13545,9 @@ impl Endpoint for GetVerificationToken {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12827,6 +13574,10 @@ impl Endpoint for UserVerifyGpgKey {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12853,6 +13604,8 @@ impl Endpoint for UserCurrentListGpgKeys {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12884,6 +13637,10 @@ impl Endpoint for UserCurrentPostGpgKey {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12912,6 +13669,9 @@ impl Endpoint for UserCurrentGetGpgKey {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12940,6 +13700,9 @@ impl Endpoint for UserCurrentDeleteGpgKey {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12966,6 +13729,8 @@ impl Endpoint for UserListHooks {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -12997,6 +13762,8 @@ impl Endpoint for UserCreateHook {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13025,6 +13792,8 @@ impl Endpoint for UserGetHook {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13053,6 +13822,8 @@ impl Endpoint for UserDeleteHook {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13085,6 +13856,8 @@ impl Endpoint for UserEditHook {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13113,6 +13886,8 @@ impl Endpoint for UserCurrentListKeys {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13144,6 +13919,9 @@ impl Endpoint for UserCurrentPostKey {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13172,6 +13950,9 @@ impl Endpoint for UserCurrentGetKey {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13200,6 +13981,9 @@ impl Endpoint for UserCurrentDeleteKey {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13226,6 +14010,8 @@ impl Endpoint for UserListBlockedUsers {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13252,6 +14038,9 @@ impl Endpoint for OrgListCurrentUserOrgs {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13278,6 +14067,8 @@ impl Endpoint for UserGetQuota {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13304,6 +14095,8 @@ impl Endpoint for UserListQuotaArtifacts {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13330,6 +14123,8 @@ impl Endpoint for UserListQuotaAttachments {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13356,6 +14151,9 @@ impl Endpoint for UserCheckQuota {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13382,6 +14180,8 @@ impl Endpoint for UserListQuotaPackages {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13410,6 +14210,9 @@ impl Endpoint for UserCurrentListRepos {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13441,6 +14244,12 @@ impl Endpoint for CreateCurrentUserRepo {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13467,6 +14276,8 @@ impl Endpoint for GetUserSettings {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13498,6 +14309,8 @@ impl Endpoint for UpdateUserSettings {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13524,6 +14337,8 @@ impl Endpoint for UserCurrentListStarred {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13553,6 +14368,9 @@ impl Endpoint for UserCurrentCheckStarring<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13582,6 +14400,9 @@ impl Endpoint for UserCurrentPutStar<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13611,6 +14432,9 @@ impl Endpoint for UserCurrentDeleteStar<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13637,6 +14461,8 @@ impl Endpoint for UserGetStopWatches {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13663,6 +14489,8 @@ impl Endpoint for UserCurrentListSubscriptions {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13689,6 +14517,8 @@ impl Endpoint for UserListTeams {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13717,6 +14547,8 @@ impl Endpoint for UserCurrentTrackedTimes {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13745,6 +14577,10 @@ impl Endpoint for UserUnblockUser<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13801,6 +14637,7 @@ impl Endpoint for UserGet<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13830,6 +14667,7 @@ impl Endpoint for UserListActivityFeeds<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13858,6 +14696,7 @@ impl Endpoint for UserListFollowers<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13886,6 +14725,7 @@ impl Endpoint for UserListFollowing<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13915,6 +14755,7 @@ impl Endpoint for UserCheckFollowing<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13943,6 +14784,7 @@ impl Endpoint for UserListGpgKeys<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13971,6 +14813,7 @@ impl Endpoint for UserGetHeatmapData<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14000,6 +14843,7 @@ impl Endpoint for UserListKeys<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14028,6 +14872,7 @@ impl Endpoint for OrgListUserOrgs<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14061,6 +14906,8 @@ impl Endpoint for OrgGetUserPermissions<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14089,6 +14936,7 @@ impl Endpoint for UserListRepos<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14117,6 +14965,7 @@ impl Endpoint for UserListStarred<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14145,6 +14994,7 @@ impl Endpoint for UserListSubscriptions<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14173,6 +15023,8 @@ impl Endpoint for UserGetTokens<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14205,6 +15057,9 @@ impl Endpoint for UserCreateToken<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14234,6 +15089,9 @@ impl Endpoint for UserDeleteAccessToken<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
