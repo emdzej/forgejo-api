@@ -421,10 +421,7 @@ fn endpoint_make_request(
     Ok(s)
 }
 
-fn endpoint_handle_error(
-    spec: &OpenApiV2,
-    op: &Operation,
-) -> eyre::Result<String> {
+fn endpoint_handle_error(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let mut s = String::new();
 
     writeln!(
