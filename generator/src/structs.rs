@@ -557,9 +557,7 @@ fn create_header_struct(
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
         ",
             header_name.to_lowercase(),
-        )
-        .unwrap(); // TODO:
-                   // DOCUMENTME: Why are we unwrapping here? Explain why this is infallible or refactor
+        )?;
         match &header._type {
             ParameterType::String => match header.format.as_deref() {
                 Some("url" | "ssh-url") => imp.push_str(

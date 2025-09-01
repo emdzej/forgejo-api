@@ -385,8 +385,8 @@ fn endpoint_make_request(
     } else if has_form {
         write!(&mut s, "            body: {{")?;
         write!(&mut s, "                let mut list = Vec::new();")?;
-        //TODO
-        //DOCUMENTME: Why are we unwrapping here? Add comment on why it is ok or refactor
+        // `has_form` is only set to true if `op.parameters` is `Some` in the `if let` above so
+        // this won't ever fail
         for param in op.parameters.as_ref().unwrap() {
             let full_param = param.deref(spec)?;
             if let ParameterIn::FormData { param } = &full_param._in {
@@ -677,8 +677,7 @@ fn path_to_fmt_string(path: &mut &str) -> (String, Vec<String>) {
     let mut out = String::new();
     let mut fields = Vec::new();
     while let Some((head, tail)) = path.split_once("{") {
-        //TODO
-        //DOCUMENTME: Why are we using expect here? Explain why it is infallible or refactor
+        // If this fails, the OpenAPI file is malformed. I'm fine with panicking in that case.
         let (field, tail) = tail.split_once("}").expect("unterminated value in path");
         fields.push(field.to_snake_case());
         out.push_str(head);
