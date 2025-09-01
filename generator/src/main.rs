@@ -136,13 +136,6 @@ fn schema_type_name(
     }
 }
 
-// TODO: This function is currently unused; why?
-fn schema_is_string(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Result<bool> {
-    let schema = schema.deref(spec)?;
-    let is_str = matches!(schema._type, Some(SchemaType::One(Primitive::String)));
-    Ok(is_str)
-}
-
 fn sanitize_ident(s: &str) -> String {
     let mut s = s.to_snake_case();
     let keywords = [

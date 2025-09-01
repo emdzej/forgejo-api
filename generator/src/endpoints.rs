@@ -327,7 +327,7 @@ fn create_endpoint_impl(
     writeln!(&mut s, "    type Response = {response_type};")?;
     let make_request = endpoint_make_request(spec, base_path, path, op, method)?;
     writeln!(&mut s, "{make_request}")?;
-    let handle_error = endpoint_handle_error(spec, op, &response)?;
+    let handle_error = endpoint_handle_error(spec, op)?;
     writeln!(&mut s, "{handle_error}")?;
     Ok(s)
 }
@@ -424,10 +424,7 @@ fn endpoint_make_request(
 fn endpoint_handle_error(
     spec: &OpenApiV2,
     op: &Operation,
-    response_type: &ResponseType,
 ) -> eyre::Result<String> {
-    let _ = response_type; // In case `response_type` is supposed to be used in the future without
-                           // making a breaking change, so that the compiler doesn't complain
     let mut s = String::new();
 
     writeln!(

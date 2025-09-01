@@ -271,21 +271,6 @@ pub fn query_struct_name(op: &Operation) -> eyre::Result<String> {
     Ok(ty)
 }
 
-// TODO: This function is unused; why?
-pub fn query_true_params_len(
-    spec: &OpenApiV2,
-    params: &[MaybeRef<Parameter>],
-) -> eyre::Result<usize> {
-    let mut len = params.len();
-    for param in params {
-        let param = param.deref(spec)?;
-        if matches!(&*param.name, "page" | "limit") {
-            len -= 1;
-        }
-    }
-    Ok(len)
-}
-
 fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let params = match &op.parameters {
         Some(params) => params,
@@ -519,34 +504,6 @@ impl {op_name} {{
     };
 
     Ok(result)
-}
-
-// TODO: This function is unused; why?
-fn simple_query_array(
-    param: &Parameter,
-    item_pusher: &str,
-    name: &str,
-    sep: &str,
-) -> eyre::Result<String> {
-    let mut out = String::new();
-
-    writeln!(
-        &mut out,
-        "
-if !{name}.is_empty() {{
-    write!(f, \"{}=\")?;
-    for (item, i) in {name}.iter().enumerate() {{
-        {item_pusher}
-        if i < {name}.len() - 1 {{
-            write!(f, \"{sep}\")?;
-        }}
-    }}
-    write!(f, \"&\")?;
-}}",
-        param.name
-    )?;
-
-    Ok(out)
 }
 
 fn simple_query_array_as_list(
