@@ -481,7 +481,7 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
             }
             Url::parse(s)
                 .map_err(|err| {
-                    let err_s = format!("{}", err);
+                    let err_s = format!("{err}");
                     Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
                 })
                 .map(Some)
@@ -833,7 +833,7 @@ macro_rules! response_type_method {
 use response_type::*;
 impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
     pub async fn send(self) -> Result<R::Output, ForgejoError> {
-        self.inner.send(&self.client).await
+        self.inner.send(self.client).await
     }
 
     response_type_method!(json<T> -> Json<T>);

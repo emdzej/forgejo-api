@@ -9,7 +9,7 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use std::collections::BTreeMap;");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
-            let strukt = create_struct_for_definition(&spec, name, schema)?;
+            let strukt = create_struct_for_definition(spec, name, schema)?;
             s.push_str(&strukt);
         }
     }
@@ -24,7 +24,7 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
             s.push_str(&tys);
         }
     }
-    for (_, item) in &spec.paths {
+    for item in spec.paths.values() {
         let strukt = create_query_structs_for_path(spec, item)?;
         s.push_str(&strukt);
 
@@ -185,7 +185,7 @@ pub fn create_enum(
             x => eyre::bail!("cannot create enum variant. expected string, got {x:?}"),
         }
     }
-    imp.push_str("}");
+    imp.push('}');
 
     let strukt = format!(
         "
@@ -271,20 +271,6 @@ pub fn query_struct_name(op: &Operation) -> eyre::Result<String> {
     Ok(ty)
 }
 
-pub fn query_true_params_len(
-    spec: &OpenApiV2,
-    params: &[MaybeRef<Parameter>],
-) -> eyre::Result<usize> {
-    let mut len = params.len();
-    for param in params {
-        let param = param.deref(spec)?;
-        if matches!(&*param.name, "page" | "limit") {
-            len -= 1;
-        }
-    }
-    Ok(len)
-}
-
 fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
     let params = match &op.parameters {
         Some(params) => params,
@@ -351,7 +337,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
             } else {
                 fields.push_str("Option<");
                 fields.push_str(&ty);
-                fields.push_str(">");
+                fields.push('>');
             }
             fields.push_str(",\n");
 
@@ -520,33 +506,6 @@ impl {op_name} {{
     Ok(result)
 }
 
-fn simple_query_array(
-    param: &Parameter,
-    item_pusher: &str,
-    name: &str,
-    sep: &str,
-) -> eyre::Result<String> {
-    let mut out = String::new();
-
-    writeln!(
-        &mut out,
-        "
-if !{name}.is_empty() {{
-    write!(f, \"{}=\")?;
-    for (item, i) in {name}.iter().enumerate() {{
-        {item_pusher}
-        if i < {name}.len() - 1 {{
-            write!(f, \"{sep}\")?;
-        }}
-    }}
-    write!(f, \"&\")?;
-}}",
-        param.name
-    )?;
-
-    Ok(out)
-}
-
 fn simple_query_array_as_list(
     param: &Parameter,
     item_pusher: &str,
@@ -598,8 +557,7 @@ fn create_header_struct(
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
         ",
             header_name.to_lowercase(),
-        )
-        .unwrap();
+        )?;
         match &header._type {
             ParameterType::String => match header.format.as_deref() {
                 Some("url" | "ssh-url") => imp.push_str(
@@ -754,7 +712,7 @@ pub fn create_response_structs_for_op(spec: &OpenApiV2, op: &Operation) -> eyre:
         .as_deref()
         .ok_or_else(|| eyre::eyre!("no operation id"))?
         .to_pascal_case();
-    for (_, response) in &op.responses.http_codes {
+    for response in op.responses.http_codes.values() {
         let response = response.deref(spec)?;
         let tys = create_response_struct(spec, &op_name, response)?;
         out.push_str(&tys);
