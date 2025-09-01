@@ -569,9 +569,6 @@ fn create_header_struct(
                 Some("float") => {
                     imp.push_str("s.parse::<f32>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
-                // TODO:
-                // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
-                //      consider handling "_" separately.
                 Some("double") | _ => {
                     imp.push_str("s.parse::<f64>()).map_err(|_| StructureError::HeaderParseFailed)")
                 }
@@ -586,9 +583,6 @@ fn create_header_struct(
                 Some("int64") => {
                     imp.push_str("s.parse::<i64>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
-                // TODO:
-                // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
-                //      consider handling "_" separately.
                 Some("int32") | _ => {
                     imp.push_str("s.parse::<i32>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
@@ -620,18 +614,12 @@ fn create_header_struct(
                     ParameterType::String => "s.to_string()).collect::<Vec<_>>())",
                     ParameterType::Number => match items.format.as_deref() {
                         Some("float") => "s.parse::<f32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
-                        // TODO:
-                        // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
-                        //      consider handling "_" separately.
                         Some("double") | _ => "s.parse::<f64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                     },
                     ParameterType::Integer => match items.format.as_deref() {
                         Some("uint64") => "s.parse::<u64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                         Some("uint32") => "s.parse::<u32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                         Some("int64") => "s.parse::<i64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
-                        // TODO:
-                        // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
-                        //      consider handling "_" separately.
                         Some("int32") | _ => "s.parse::<i32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                     },
                     ParameterType::Boolean => "s.parse::<bool>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
