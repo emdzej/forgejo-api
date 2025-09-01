@@ -21,7 +21,7 @@ pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use reqwest::Method;\n");
     s.push_str("use crate::sealed::Sealed;\n");
     s.push_str("use bytes::Bytes;\n");
-    s.push_str("\n");
+    s.push('\n');
 
     writeln!(&mut s, "fn json_error<E: Into<crate::ApiError> + serde::de::DeserializeOwned>(response: &ApiResponse) -> ForgejoError {{")?;
     writeln!(&mut s, "let error = serde_json::from_slice::<E>(&response.body[..]).map_err(|e| StructureError::Serde {{ e, contents: response.body.clone() }});")?;
@@ -35,7 +35,7 @@ pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     writeln!(&mut s, "}}")?;
 
     for (path, item) in &spec.paths {
-        s.push_str(&create_endpoints_for_path(&spec, path, item).wrap_err_with(|| path.clone())?);
+        s.push_str(&create_endpoints_for_path(spec, path, item).wrap_err_with(|| path.clone())?);
     }
     Ok(s)
 }
@@ -127,13 +127,10 @@ fn has_references(spec: &OpenApiV2, op: &Operation) -> eyre::Result<bool> {
     if let Some(params) = &op.parameters {
         for param in params {
             let full_param = param.deref(spec)?;
-            match &full_param._in {
-                ParameterIn::Path { param } => {
-                    if param_is_reference(param) {
-                        return Ok(true);
-                    }
+            if let ParameterIn::Path { param } = &full_param._in {
+                if param_is_reference(param) {
+                    return Ok(true);
                 }
-                _ => (),
             }
         }
     }
@@ -144,11 +141,8 @@ fn has_path_params(spec: &OpenApiV2, op: &Operation) -> eyre::Result<bool> {
     if let Some(params) = &op.parameters {
         for param in params {
             let full_param = param.deref(spec)?;
-            match &full_param._in {
-                ParameterIn::Path { param: _ } => {
-                    return Ok(true);
-                }
-                _ => (),
+            if let ParameterIn::Path { param: _ } = &full_param._in {
+                return Ok(true);
             }
         }
     }
@@ -157,10 +151,10 @@ fn has_path_params(spec: &OpenApiV2, op: &Operation) -> eyre::Result<bool> {
 
 fn param_is_reference(param: &NonBodyParameter) -> bool {
     match &param._type {
-        ParameterType::String => match &param.format.as_deref() {
-            Some("date") | Some("date-time") | Some("url" | "ssh-url") => false,
-            _ => true,
-        },
+        ParameterType::String => !matches!(
+            &param.format.as_deref(),
+            Some("date") | Some("date-time") | Some("url" | "ssh-url")
+        ),
         ParameterType::Array => true,
         ParameterType::File => true,
         _ => false,
@@ -176,7 +170,7 @@ fn struct_fields_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Strin
             let full_param = param.deref(spec)?;
             match &full_param._in {
                 ParameterIn::Path { param } => {
-                    let type_name = param_type(&param, false)?;
+                    let type_name = param_type(param, false)?;
                     fields.push_str("pub ");
                     fields.push_str(&crate::sanitize_ident(&full_param.name));
                     fields.push_str(": ");
@@ -197,7 +191,7 @@ fn struct_fields_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Strin
                     fields.push_str(", ");
                 }
                 ParameterIn::FormData { param } => {
-                    let type_name = param_type(&param, false)?;
+                    let type_name = param_type(param, false)?;
                     fields.push_str("pub ");
                     fields.push_str(&crate::sanitize_ident(&full_param.name));
                     if param.required {
@@ -238,7 +232,7 @@ pub fn param_type_inner(
     owned: bool,
 ) -> eyre::Result<String> {
     let ty_name = match ty {
-        ParameterType::String => match format.as_deref() {
+        ParameterType::String => match format {
             Some("date") => "time::Date",
             Some("date-time") => "time::OffsetDateTime",
             Some("url" | "ssh-url") => "url::Url",
@@ -251,13 +245,13 @@ pub fn param_type_inner(
             }
         }
         .into(),
-        ParameterType::Number => match format.as_deref() {
+        ParameterType::Number => match format {
             Some("float") => "f32",
             Some("double") => "f64",
             _ => "f64",
         }
         .into(),
-        ParameterType::Integer => match format.as_deref() {
+        ParameterType::Integer => match format {
             Some("uint32") => "u32",
             Some("uint64") => "u64",
             Some("int32") => "i32",
@@ -284,9 +278,9 @@ pub fn param_type_inner(
         }
         ParameterType::File => {
             if owned {
-                format!("Vec<u8>")
+                "Vec<u8>".to_string()
             } else {
-                format!("&'a [u8]")
+                "&'a [u8]".to_string()
             }
         }
     };
@@ -351,11 +345,7 @@ fn endpoint_make_request(
     writeln!(&mut s, "            method: {},", method.code_string())?;
     if has_path_params(spec, op)? {
         let (fmt_str, path_fields) = path_to_fmt_string(&mut &*path);
-        write!(
-            &mut s,
-            "            path: format!(\"{base_path}{}\"",
-            fmt_str
-        )?;
+        write!(&mut s, "            path: format!(\"{base_path}{fmt_str}\"")?;
         for field in path_fields {
             write!(&mut s, ", self.{}", crate::sanitize_ident(&field))?;
         }
@@ -395,28 +385,27 @@ fn endpoint_make_request(
     } else if has_form {
         write!(&mut s, "            body: {{")?;
         write!(&mut s, "                let mut list = Vec::new();")?;
+        //TODO
+        //DOCUMENTME: Why are we unwrapping here? Add comment on why it is ok or refactor
         for param in op.parameters.as_ref().unwrap() {
             let full_param = param.deref(spec)?;
-            match &full_param._in {
-                ParameterIn::FormData { param } => {
-                    let field_name = &crate::sanitize_ident(&full_param.name);
-                    if param.required {
-                        writeln!(&mut s, "let {field_name} = self.{field_name};")?;
-                    } else {
-                        writeln!(&mut s, "if let Some({field_name}) = self.{field_name} {{")?;
-                    }
-                    write!(&mut s, "list.push((\"{}\", ", full_param.name)?;
-                    match param._type {
-                        ParameterType::String => write!(&mut s, "{field_name}.as_bytes().into()")?,
-                        ParameterType::File => write!(&mut s, "{field_name}.to_vec()")?,
-                        _ => eyre::bail!("unsupported form"),
-                    }
-                    writeln!(&mut s, "));")?;
-                    if !param.required {
-                        write!(&mut s, "}}")?;
-                    }
+            if let ParameterIn::FormData { param } = &full_param._in {
+                let field_name = &crate::sanitize_ident(&full_param.name);
+                if param.required {
+                    writeln!(&mut s, "let {field_name} = self.{field_name};")?;
+                } else {
+                    writeln!(&mut s, "if let Some({field_name}) = self.{field_name} {{")?;
                 }
-                _ => (),
+                write!(&mut s, "list.push((\"{}\", ", full_param.name)?;
+                match param._type {
+                    ParameterType::String => write!(&mut s, "{field_name}.as_bytes().into()")?,
+                    ParameterType::File => write!(&mut s, "{field_name}.to_vec()")?,
+                    _ => eyre::bail!("unsupported form"),
+                }
+                writeln!(&mut s, "));")?;
+                if !param.required {
+                    write!(&mut s, "}}")?;
+                }
             }
         }
         writeln!(&mut s, "RequestBody::Form(list)")?;
@@ -437,6 +426,8 @@ fn endpoint_handle_error(
     op: &Operation,
     response_type: &ResponseType,
 ) -> eyre::Result<String> {
+    let _ = response_type; // In case `response_type` is supposed to be used in the future without
+                           // making a breaking change, so that the compiler doesn't complain
     let mut s = String::new();
 
     writeln!(
@@ -444,20 +435,11 @@ fn endpoint_handle_error(
         "    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {{"
     )?;
 
-    let mut has_empty = false;
-    let mut only_empty = true;
-    for (code, res) in &op.responses.http_codes {
-        let response = response_ref_type_name(spec, res, op)?;
+    for code in op.responses.http_codes.keys() {
         if !code.starts_with("2") {
             continue;
         }
-        if response.body.is_none_or(|b| b.ty == "()") {
-            has_empty = true;
-        } else {
-            only_empty = false;
-        }
     }
-    let optional = has_empty && !only_empty;
     writeln!(&mut s, "match response.status_code.as_u16() {{")?;
     for (code, res) in &op.responses.http_codes {
         let branch_ret = response_ref_type_name(spec, res, op)?;
@@ -657,7 +639,7 @@ pub fn response_ref_type_name(
     let produces = op
         .produces
         .as_deref()
-        .or_else(|| spec.produces.as_deref())
+        .or(spec.produces.as_deref())
         .unwrap_or_default();
     // can't use .contains() because Strings
     let produces_json = produces.iter().any(|i| matches!(&**i, "application/json"));
@@ -694,10 +676,12 @@ pub fn response_ref_type_name(
     Ok(ty)
 }
 
-fn path_to_fmt_string<'a>(path: &mut &'a str) -> (String, Vec<String>) {
+fn path_to_fmt_string(path: &mut &str) -> (String, Vec<String>) {
     let mut out = String::new();
     let mut fields = Vec::new();
     while let Some((head, tail)) = path.split_once("{") {
+        //TODO
+        //DOCUMENTME: Why are we using expect here? Explain why it is infallible or refactor
         let (field, tail) = tail.split_once("}").expect("unterminated value in path");
         fields.push(field.to_snake_case());
         out.push_str(head);

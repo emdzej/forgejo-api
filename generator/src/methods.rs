@@ -12,14 +12,14 @@ pub fn create_methods(spec: &OpenApiV2, sync: bool) -> eyre::Result<String> {
     s.push_str("use std::collections::BTreeMap;");
     s.push_str("use super::structs::*;\n");
     s.push_str("use bytes::Bytes;\n");
-    s.push_str("\n");
+    s.push('\n');
     if sync {
         s.push_str("impl crate::sync::Forgejo {\n");
     } else {
         s.push_str("impl crate::Forgejo {\n");
     }
     for (path, item) in &spec.paths {
-        s.push_str(&create_methods_for_path(&spec, item, sync).wrap_err_with(|| path.clone())?);
+        s.push_str(&create_methods_for_path(spec, item, sync).wrap_err_with(|| path.clone())?);
     }
     s.push_str("}\n");
     Ok(s)
@@ -65,7 +65,7 @@ fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
         let summary = summary
             .replace("gitea", "Forgejo")
             .replace("Gitea", "Forgejo");
-        write!(&mut out, "/// {summary}\n")?;
+        writeln!(&mut out, "/// {summary}")?;
         prev = true;
     }
     if let Some(params) = &op.parameters {
@@ -78,17 +78,17 @@ fn method_docs(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                 ParameterIn::Path { param: _ } | ParameterIn::FormData { param: _ } => {
                     write!(&mut out, "/// - `{}`", param.name)?;
                     if let Some(description) = &param.description {
-                        write!(&mut out, ": {}", description)?;
+                        write!(&mut out, ": {description}")?;
                     }
                     writeln!(&mut out)?;
                 }
                 ParameterIn::Body { schema } => {
                     write!(&mut out, "/// - `{}`", param.name)?;
-                    let ty = schema_ref_type_name(spec, &schema)?;
+                    let ty = schema_ref_type_name(spec, schema)?;
                     if let Some(description) = &param.description {
-                        write!(&mut out, ": {}\n\n///   See [`{}`]", description, ty)?;
+                        write!(&mut out, ": {description}\n\n///   See [`{ty}`]")?;
                     } else {
-                        write!(&mut out, ": See [`{}`]", ty)?;
+                        write!(&mut out, ": See [`{ty}`]")?;
                     }
                     writeln!(&mut out)?;
                 }
@@ -129,7 +129,7 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
             let full_param = param.deref(spec)?;
             match &full_param._in {
                 ParameterIn::Path { param } => {
-                    let type_name = param_type(&param, false)?;
+                    let type_name = param_type(param, false)?;
                     args.push_str(", ");
                     args.push_str(&crate::sanitize_ident(&full_param.name));
                     args.push_str(": ");
@@ -149,7 +149,7 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                     args.push_str(&ty);
                 }
                 ParameterIn::FormData { param } => {
-                    let type_name = param_type(&param, false)?;
+                    let type_name = param_type(param, false)?;
                     args.push_str(", ");
                     args.push_str(&crate::sanitize_ident(&full_param.name));
                     if param.required {
@@ -158,7 +158,7 @@ fn fn_args_from_op(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String> {
                     } else {
                         args.push_str(": Option<");
                         args.push_str(&type_name);
-                        args.push_str(">");
+                        args.push('>');
                     }
                 }
             }
@@ -188,7 +188,7 @@ pub fn param_type_inner(
     owned: bool,
 ) -> eyre::Result<String> {
     let ty_name = match ty {
-        ParameterType::String => match format.as_deref() {
+        ParameterType::String => match format {
             Some("date") => "time::Date",
             Some("date-time") => "time::OffsetDateTime",
             Some("url" | "ssh-url") => "url::Url",
@@ -201,13 +201,13 @@ pub fn param_type_inner(
             }
         }
         .into(),
-        ParameterType::Number => match format.as_deref() {
+        ParameterType::Number => match format {
             Some("float") => "f32",
             Some("double") => "f64",
             _ => "f64",
         }
         .into(),
-        ParameterType::Integer => match format.as_deref() {
+        ParameterType::Integer => match format {
             Some("uint32") => "u32",
             Some("uint64") => "u64",
             Some("int32") => "i32",
@@ -234,9 +234,9 @@ pub fn param_type_inner(
         }
         ParameterType::File => {
             if owned {
-                format!("Vec<u8>")
+                "Vec<u8>".to_string()
             } else {
-                format!("&[u8]")
+                "&[u8]".to_string()
             }
         }
     };

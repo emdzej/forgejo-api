@@ -520,7 +520,7 @@ impl Parameter {
 #[serde(tag = "in")]
 pub enum ParameterIn {
     Body {
-        schema: MaybeRef<Schema>,
+        schema: Box<MaybeRef<Schema>>,
     },
     Path {
         #[serde(flatten)]
@@ -566,7 +566,7 @@ impl ParameterIn {
             ParameterIn::Query { param } => param.validate().wrap_err("query param"),
             ParameterIn::Header { param } => param.validate().wrap_err("header param"),
             ParameterIn::Body { schema } => {
-                if let MaybeRef::Value { value } = schema {
+                if let MaybeRef::Value { value } = &**schema {
                     value.validate().wrap_err("body param")
                 } else {
                     Ok(())
@@ -702,14 +702,14 @@ impl JsonDeref for ParameterType {
 
 impl ParameterType {
     fn matches_value(&self, value: &serde_json::Value) -> bool {
-        match (self, value) {
+        matches!(
+            (self, value),
             (ParameterType::String, serde_json::Value::String(_))
-            | (ParameterType::Number, serde_json::Value::Number(_))
-            | (ParameterType::Integer, serde_json::Value::Number(_))
-            | (ParameterType::Boolean, serde_json::Value::Bool(_))
-            | (ParameterType::Array, serde_json::Value::Array(_)) => true,
-            _ => false,
-        }
+                | (ParameterType::Number, serde_json::Value::Number(_))
+                | (ParameterType::Integer, serde_json::Value::Number(_))
+                | (ParameterType::Boolean, serde_json::Value::Bool(_))
+                | (ParameterType::Array, serde_json::Value::Array(_))
+        )
     }
 }
 
@@ -870,10 +870,7 @@ impl Responses {
         }
         for (code, response) in &self.http_codes {
             let code_int = code.parse::<u16>().wrap_err("http code must be a number")?;
-            eyre::ensure!(
-                code_int >= 100 && code_int < 1000,
-                "invalid http status code"
-            );
+            eyre::ensure!((100..1000).contains(&code_int), "invalid http status code");
             if let MaybeRef::Value { value } = response {
                 value.validate().wrap_err_with(|| code.to_string())?;
             }
@@ -910,7 +907,7 @@ impl JsonDeref for Response {
 impl Response {
     fn validate(&self) -> eyre::Result<()> {
         if let Some(headers) = &self.headers {
-            for (_, value) in headers {
+            for value in headers.values() {
                 value.validate().wrap_err("response header")?;
             }
         }
@@ -1177,7 +1174,7 @@ impl Schema {
             }
         }
         if let Some(properties) = &self.properties {
-            for (_, schema) in properties {
+            for schema in properties.values() {
                 if let MaybeRef::Value { value } = schema {
                     value.validate().wrap_err("schema properties")?;
                 }
@@ -1247,14 +1244,14 @@ impl JsonDeref for Primitive {
 
 impl Primitive {
     fn matches_value(&self, value: &serde_json::Value) -> bool {
-        match (self, value) {
+        matches!(
+            (self, value),
             (Primitive::String, serde_json::Value::String(_))
-            | (Primitive::Number, serde_json::Value::Number(_))
-            | (Primitive::Integer, serde_json::Value::Number(_))
-            | (Primitive::Boolean, serde_json::Value::Bool(_))
-            | (Primitive::Array, serde_json::Value::Array(_)) => true,
-            _ => false,
-        }
+                | (Primitive::Number, serde_json::Value::Number(_))
+                | (Primitive::Integer, serde_json::Value::Number(_))
+                | (Primitive::Boolean, serde_json::Value::Bool(_))
+                | (Primitive::Array, serde_json::Value::Array(_))
+        )
     }
 }
 

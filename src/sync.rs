@@ -4,7 +4,7 @@ use super::{
     response_type::*, structs, ApiError, ApiRequest, ApiResponse, Auth, Endpoint, ForgejoError,
     FromResponse, OAuthError, RequestBody, TypedRequest,
 };
-use reqwest::blocking::{Client, Request};
+use reqwest::blocking::Client;
 use soft_assert::soft_assert;
 use url::Url;
 
@@ -171,7 +171,7 @@ macro_rules! response_type_method {
 
 impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
     pub fn send(self) -> Result<R::Output, ForgejoError> {
-        self.inner.send_sync(&self.client)
+        self.inner.send_sync(self.client)
     }
 
     response_type_method!(json<T> -> Json<T>);

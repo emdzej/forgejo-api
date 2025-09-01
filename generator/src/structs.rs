@@ -9,7 +9,7 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use std::collections::BTreeMap;");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
-            let strukt = create_struct_for_definition(&spec, name, schema)?;
+            let strukt = create_struct_for_definition(spec, name, schema)?;
             s.push_str(&strukt);
         }
     }
@@ -24,7 +24,7 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
             s.push_str(&tys);
         }
     }
-    for (_, item) in &spec.paths {
+    for item in spec.paths.values() {
         let strukt = create_query_structs_for_path(spec, item)?;
         s.push_str(&strukt);
 
@@ -185,7 +185,7 @@ pub fn create_enum(
             x => eyre::bail!("cannot create enum variant. expected string, got {x:?}"),
         }
     }
-    imp.push_str("}");
+    imp.push('}');
 
     let strukt = format!(
         "
@@ -271,6 +271,7 @@ pub fn query_struct_name(op: &Operation) -> eyre::Result<String> {
     Ok(ty)
 }
 
+// TODO: This function is unused; why?
 pub fn query_true_params_len(
     spec: &OpenApiV2,
     params: &[MaybeRef<Parameter>],
@@ -351,7 +352,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
             } else {
                 fields.push_str("Option<");
                 fields.push_str(&ty);
-                fields.push_str(">");
+                fields.push('>');
             }
             fields.push_str(",\n");
 
@@ -520,6 +521,7 @@ impl {op_name} {{
     Ok(result)
 }
 
+// TODO: This function is unused; why?
 fn simple_query_array(
     param: &Parameter,
     item_pusher: &str,
@@ -599,7 +601,8 @@ fn create_header_struct(
         ",
             header_name.to_lowercase(),
         )
-        .unwrap();
+        .unwrap(); // TODO:
+                   // DOCUMENTME: Why are we unwrapping here? Explain why this is infallible or refactor
         match &header._type {
             ParameterType::String => match header.format.as_deref() {
                 Some("url" | "ssh-url") => imp.push_str(
@@ -611,6 +614,9 @@ fn create_header_struct(
                 Some("float") => {
                     imp.push_str("s.parse::<f32>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
+                // TODO:
+                // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
+                //      consider handling "_" separately.
                 Some("double") | _ => {
                     imp.push_str("s.parse::<f64>()).map_err(|_| StructureError::HeaderParseFailed)")
                 }
@@ -625,6 +631,9 @@ fn create_header_struct(
                 Some("int64") => {
                     imp.push_str("s.parse::<i64>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
+                // TODO:
+                // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
+                //      consider handling "_" separately.
                 Some("int32") | _ => {
                     imp.push_str("s.parse::<i32>().map_err(|_| StructureError::HeaderParseFailed)")
                 }
@@ -656,12 +665,18 @@ fn create_header_struct(
                     ParameterType::String => "s.to_string()).collect::<Vec<_>>())",
                     ParameterType::Number => match items.format.as_deref() {
                         Some("float") => "s.parse::<f32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        // TODO:
+                        // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
+                        //      consider handling "_" separately.
                         Some("double") | _ => "s.parse::<f64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                     },
                     ParameterType::Integer => match items.format.as_deref() {
                         Some("uint64") => "s.parse::<u64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                         Some("uint32") => "s.parse::<u32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                         Some("int64") => "s.parse::<i64>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
+                        // TODO:
+                        // BUG: This matching pattern contains a wildcard "_" and, as such, will always match.
+                        //      consider handling "_" separately.
                         Some("int32") | _ => "s.parse::<i32>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
                     },
                     ParameterType::Boolean => "s.parse::<bool>()).collect::<Result<Vec<_>, _>>().map_err(|_| StructureError::HeaderParseFailed)",
@@ -754,7 +769,7 @@ pub fn create_response_structs_for_op(spec: &OpenApiV2, op: &Operation) -> eyre:
         .as_deref()
         .ok_or_else(|| eyre::eyre!("no operation id"))?
         .to_pascal_case();
-    for (_, response) in &op.responses.http_codes {
+    for response in op.responses.http_codes.values() {
         let response = response.deref(spec)?;
         let tys = create_response_struct(spec, &op_name, response)?;
         out.push_str(&tys);

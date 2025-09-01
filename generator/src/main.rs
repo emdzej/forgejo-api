@@ -12,7 +12,7 @@ fn main() -> eyre::Result<()> {
     let spec = get_spec()?;
     let files = [
         (
-            "mod.rs".into(),
+            "mod.rs",
             "pub mod structs;\npub mod methods;\n#[cfg(feature = \"sync\")]\npub mod methods_sync;\npub mod endpoints;".into(),
         ),
         ("methods.rs", methods::create_methods(&spec, false)?),
@@ -136,12 +136,10 @@ fn schema_type_name(
     }
 }
 
+// TODO: This function is currently unused; why?
 fn schema_is_string(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Result<bool> {
     let schema = schema.deref(spec)?;
-    let is_str = match schema._type {
-        Some(SchemaType::One(Primitive::String)) => true,
-        _ => false,
-    };
+    let is_str = matches!(schema._type, Some(SchemaType::One(Primitive::String)));
     Ok(is_str)
 }
 
