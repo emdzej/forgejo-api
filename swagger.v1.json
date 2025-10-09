@@ -19526,8 +19526,9 @@
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
     "CommitStatusState": {
-      "description": "CommitStatusState holds the state of a CommitStatus\nIt can be \"pending\", \"success\", \"error\" and \"failure\"",
+      "description": "CommitStatusState holds the state of a CommitStatus\nIt can be \"pending\", \"success\", \"error\" or \"failure\"",
       "type": "string",
+      "enum": ["pending", "success", "error", "failure"],
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
     "CommitUser": {
