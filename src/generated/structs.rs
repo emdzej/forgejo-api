@@ -381,7 +381,7 @@ pub struct CombinedStatus {
     pub commit_url: Option<url::Url>,
     pub repository: Option<Repository>,
     pub sha: Option<String>,
-    pub state: Option<String>,
+    pub state: Option<CommitStatusState>,
     pub statuses: Option<Vec<CommitStatus>>,
     pub total_count: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -468,7 +468,7 @@ pub struct CommitStatus {
     pub creator: Option<User>,
     pub description: Option<String>,
     pub id: Option<i64>,
-    pub status: Option<String>,
+    pub status: Option<CommitStatusState>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub target_url: Option<url::Url>,
     #[serde(with = "time::serde::rfc3339::option")]
@@ -480,9 +480,18 @@ pub struct CommitStatus {
 /// CommitStatusState holds the state of a CommitStatus
 ///
 /// It can be "pending", "success", "error" and "failure"
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct CommitStatusState {}
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum CommitStatusState {
+    #[serde(rename = "pending")]
+    Pending,
+    #[serde(rename = "success")]
+    Success,
+    #[serde(rename = "error")]
+    Error,
+    #[serde(rename = "failure")]
+    Failure,
+}
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitUser {
     pub date: Option<String>,
@@ -937,7 +946,7 @@ pub enum CreateRepoOptionTrustModel {
 pub struct CreateStatusOption {
     pub context: Option<String>,
     pub description: Option<String>,
-    pub state: Option<String>,
+    pub state: Option<CommitStatusState>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub target_url: Option<url::Url>,
 }
