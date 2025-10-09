@@ -33,9 +33,8 @@ async fn user() {
         users.iter().any(|u| u.login.as_ref().unwrap() == "Pipis"),
         "could not find new user"
     );
-    let query = AdminGetAllEmailsQuery::default();
     let users = api
-        .admin_get_all_emails(query)
+        .admin_get_all_emails()
         .await
         .expect("failed to search emails");
     assert!(
@@ -82,9 +81,8 @@ async fn org() {
         .admin_create_org("OrgOwner", org_opt)
         .await
         .expect("failed to create org");
-    let query = AdminGetAllOrgsQuery::default();
     assert!(
-        !api.admin_get_all_orgs(query).await.unwrap().1.is_empty(),
+        !api.admin_get_all_orgs().await.unwrap().1.is_empty(),
         "org list empty"
     );
     let rename_opt = RenameUserOption {
@@ -144,9 +142,8 @@ async fn key() {
 async fn cron() {
     let api = common::login();
 
-    let query = AdminCronListQuery::default();
     let (_, crons) = api
-        .admin_cron_list(query)
+        .admin_cron_list()
         .await
         .expect("failed to get crons list");
     api.admin_cron_run(crons.first().expect("no crons").name.as_ref().unwrap())

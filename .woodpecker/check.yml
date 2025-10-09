@@ -5,7 +5,7 @@ steps:
   check:
     image: rust
     commands:
-      - cargo check
+      - cargo check -F sync
   check-fmt:
     image: rust
     commands:

@@ -22,21 +22,61 @@ async fn myself() {
 }
 
 #[tokio::test]
+async fn myself_custom_type() {
+    let api = common::login();
+
+    #[derive(serde::Deserialize, PartialEq, Eq, Debug)]
+    struct CustomUser {
+        is_admin: bool,
+        login: String,
+    }
+
+    let myself = api.user_get_current().json::<CustomUser>().await.unwrap();
+    assert!(myself.is_admin, "user should be admin");
+    assert_eq!(
+        myself.login, "TestingAdmin",
+        "user should be named \"TestingAdmin\""
+    );
+
+    let myself_indirect = api
+        .user_get("TestingAdmin")
+        .json::<CustomUser>()
+        .await
+        .unwrap();
+    assert_eq!(
+        myself, myself_indirect,
+        "result of `myself` does not match result of `get_user`"
+    );
+}
+
+#[cfg(feature = "sync")]
+#[test]
+fn myself_sync() {
+    let api = common::sync_login();
+
+    let myself = api.user_get_current().unwrap();
+    assert!(myself.is_admin.unwrap(), "user should be admin");
+    assert_eq!(
+        myself.login.as_ref().unwrap(),
+        "TestingAdmin",
+        "user should be named \"TestingAdmin\""
+    );
+
+    let myself_indirect = api.user_get("TestingAdmin").unwrap();
+    assert_eq!(
+        myself, myself_indirect,
+        "result of `myself` does not match result of `get_user`"
+    );
+}
+
+#[tokio::test]
 async fn follow() {
     let api = common::login();
 
-    let query = UserListFollowingQuery::default();
-    let (_, following) = api
-        .user_list_following("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, following) = api.user_list_following("TestingAdmin").await.unwrap();
     assert!(following.is_empty(), "following list not empty");
 
-    let query = UserListFollowersQuery::default();
-    let (_, followers) = api
-        .user_list_followers("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, followers) = api.user_list_followers("TestingAdmin").await.unwrap();
     assert!(followers.is_empty(), "follower list not empty");
 
     let option = CreateUserOption {
@@ -61,18 +101,10 @@ async fn follow() {
         .unwrap();
     api.user_current_put_follow("Follower").await.unwrap();
 
-    let query = UserListFollowingQuery::default();
-    let (_, following) = api
-        .user_list_following("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, following) = api.user_list_following("TestingAdmin").await.unwrap();
     assert!(!following.is_empty(), "following list empty");
 
-    let query = UserListFollowersQuery::default();
-    let (_, followers) = api
-        .user_list_followers("TestingAdmin", query)
-        .await
-        .unwrap();
+    let (_, followers) = api.user_list_followers("TestingAdmin").await.unwrap();
     assert!(!followers.is_empty(), "follower list empty");
 }
 
@@ -196,9 +228,8 @@ async fn oauth2_login() {
 async fn user_vars() {
     let api = common::login();
 
-    let query = GetUserVariablesListQuery::default();
     let (_, var_list) = api
-        .get_user_variables_list(query)
+        .get_user_variables_list()
         .await
         .expect("failed to list user vars");
     assert!(var_list.is_empty());

@@ -1,6 +1,7 @@
 use std::{ffi::OsString, path::PathBuf};
 
-mod methods;
+mod endpoints;
+pub mod methods;
 mod openapi;
 mod structs;
 
@@ -10,9 +11,14 @@ use openapi::*;
 fn main() -> eyre::Result<()> {
     let spec = get_spec()?;
     let files = [
-        ("mod.rs".into(), "pub mod structs;\npub mod methods;".into()),
-        ("methods.rs".into(), methods::create_methods(&spec)?),
-        ("structs.rs".into(), structs::create_structs(&spec)?),
+        (
+            "mod.rs",
+            "pub mod structs;\npub mod methods;\n#[cfg(feature = \"sync\")]\npub mod methods_sync;\npub mod endpoints;".into(),
+        ),
+        ("methods.rs", methods::create_methods(&spec, false)?),
+        ("methods_sync.rs", methods::create_methods(&spec, true)?),
+        ("structs.rs", structs::create_structs(&spec)?),
+        ("endpoints.rs", endpoints::create_endpoints(&spec)?),
     ];
     save_generated(&files)?;
     Ok(())
@@ -27,7 +33,7 @@ fn get_spec() -> eyre::Result<OpenApiV2> {
     Ok(spec)
 }
 
-fn save_generated(files: &[(String, String)]) -> eyre::Result<()> {
+fn save_generated(files: &[(&'static str, String)]) -> eyre::Result<()> {
     let root_path = PathBuf::from(
         std::env::var_os("FORGEJO_API_GENERATED_PATH")
             .unwrap_or_else(|| OsString::from("./src/generated/")),
@@ -128,15 +134,6 @@ fn schema_type_name(
     } else {
         Ok("serde_json::Value".into())
     }
-}
-
-fn schema_is_string(spec: &OpenApiV2, schema: &MaybeRef<Schema>) -> eyre::Result<bool> {
-    let schema = schema.deref(spec)?;
-    let is_str = match schema._type {
-        Some(SchemaType::One(Primitive::String)) => true,
-        _ => false,
-    };
-    Ok(is_str)
 }
 
 fn sanitize_ident(s: &str) -> String {

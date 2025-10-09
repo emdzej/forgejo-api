@@ -14,50 +14,29 @@ async fn total_count() {
     // password login needed for user_get_tokens
     let api = common::login_pass("TestingAdmin", "password");
 
-    test_header!(
-        api.user_get_tokens("TestingAdmin", UserGetTokensQuery::default()),
-        x_total_count
-    );
+    test_header!(api.user_get_tokens("TestingAdmin"), x_total_count);
     test_header!(
         api.user_list_activity_feeds("TestingAdmin", UserListActivityFeedsQuery::default()),
         x_total_count
     );
-    test_header!(
-        api.user_current_list_gpg_keys(UserCurrentListGpgKeysQuery::default()),
-        x_total_count
-    );
-    test_header!(
-        api.user_get_oauth2_applications(UserGetOAuth2ApplicationsQuery::default()),
-        x_total_count
-    );
-    test_header!(
-        api.user_get_oauth2_applications(UserGetOAuth2ApplicationsQuery::default()),
-        x_total_count
-    );
+    test_header!(api.user_current_list_gpg_keys(), x_total_count);
+    test_header!(api.user_get_oauth2_applications(), x_total_count);
+    test_header!(api.user_get_oauth2_applications(), x_total_count);
     test_header!(
         api.user_current_list_keys(UserCurrentListKeysQuery::default()),
         x_total_count
     );
-    test_header!(
-        api.user_list_blocked_users(UserListBlockedUsersQuery::default()),
-        x_total_count
-    );
+    test_header!(api.user_list_blocked_users(), x_total_count);
     test_header!(
         api.user_current_list_repos(UserCurrentListReposQuery::default()),
         x_total_count
     );
-    test_header!(
-        api.user_get_stop_watches(UserGetStopWatchesQuery::default()),
-        x_total_count
-    );
+    test_header!(api.user_get_stop_watches(), x_total_count);
     test_header!(
         api.user_current_tracked_times(UserCurrentTrackedTimesQuery::default()),
         x_total_count
     );
-    test_header!(
-        api.user_list_followers("TestingAdmin", UserListFollowersQuery::default()),
-        x_total_count
-    );
+    test_header!(api.user_list_followers("TestingAdmin"), x_total_count);
     test_header!(
         api.list_packages("TestingAdmin", ListPackagesQuery::default()),
         x_total_count
@@ -90,12 +69,7 @@ async fn total_count() {
         .await
         .unwrap();
     test_header!(
-        api.issue_get_issue_reactions(
-            "TestingAdmin",
-            "header_test",
-            1,
-            IssueGetIssueReactionsQuery::default()
-        ),
+        api.issue_get_issue_reactions("TestingAdmin", "header_test", 1,),
         x_total_count
     );
     test_header!(
@@ -107,11 +81,7 @@ async fn total_count() {
         x_total_count
     );
     test_header!(
-        api.issue_list_labels(
-            "TestingAdmin",
-            "header_test",
-            IssueListLabelsQuery::default()
-        ),
+        api.issue_list_labels("TestingAdmin", "header_test",),
         x_total_count
     );
     test_header!(
@@ -192,12 +162,7 @@ async fn total_count() {
         .await
         .unwrap();
     test_header!(
-        api.repo_list_pull_reviews(
-            "TestingAdmin",
-            "header_test",
-            2,
-            RepoListPullReviewsQuery::default()
-        ),
+        api.repo_list_pull_reviews("TestingAdmin", "header_test", 2,),
         x_total_count
     );
     test_header!(
@@ -211,28 +176,16 @@ async fn total_count() {
     );
 
     test_header!(
-        api.repo_list_push_mirrors(
-            "TestingAdmin",
-            "header_test",
-            RepoListPushMirrorsQuery::default()
-        ),
+        api.repo_list_push_mirrors("TestingAdmin", "header_test",),
         x_total_count
     );
     //tokio::time::sleep(std::time::Duration::from_secs(2)).await;
     test_header!(
-        api.repo_list_branches(
-            "TestingAdmin",
-            "header_test",
-            RepoListBranchesQuery::default()
-        ),
+        api.repo_list_branches("TestingAdmin", "header_test",),
         x_total_count
     );
     test_header!(
-        api.repo_list_branches(
-            "TestingAdmin",
-            "header_test",
-            RepoListBranchesQuery::default()
-        ),
+        api.repo_list_branches("TestingAdmin", "header_test",),
         x_total_count
     );
     test_header!(
@@ -249,7 +202,7 @@ async fn total_count() {
         x_total_count
     );
     test_header!(
-        api.repo_list_hooks("TestingAdmin", "header_test", RepoListHooksQuery::default()),
+        api.repo_list_hooks("TestingAdmin", "header_test"),
         x_total_count
     );
     test_header!(
@@ -261,23 +214,15 @@ async fn total_count() {
         x_total_count
     );
     test_header!(
-        api.repo_list_actions_secrets(
-            "TestingAdmin",
-            "header_test",
-            RepoListActionsSecretsQuery::default()
-        ),
+        api.repo_list_actions_secrets("TestingAdmin", "header_test",),
         x_total_count
     );
     test_header!(
-        api.repo_list_tags("TestingAdmin", "header_test", RepoListTagsQuery::default()),
+        api.repo_list_tags("TestingAdmin", "header_test"),
         x_total_count
     );
     test_header!(
-        api.get_repo_variables_list(
-            "TestingAdmin",
-            "header_test",
-            GetRepoVariablesListQuery::default()
-        ),
+        api.get_repo_variables_list("TestingAdmin", "header_test",),
         x_total_count
     );
     let body = CreateWikiPageOptions {
@@ -291,27 +236,15 @@ async fn total_count() {
         .await
         .unwrap();
     test_header!(
-        api.repo_get_wiki_page_revisions(
-            "TestingAdmin",
-            "header_test",
-            "Home",
-            RepoGetWikiPageRevisionsQuery::default()
-        ),
+        api.repo_get_wiki_page_revisions("TestingAdmin", "header_test", "Home",),
         x_total_count
     );
     test_header!(
-        api.repo_get_wiki_pages(
-            "TestingAdmin",
-            "header_test",
-            RepoGetWikiPagesQuery::default()
-        ),
+        api.repo_get_wiki_pages("TestingAdmin", "header_test",),
         x_total_count
     );
 
-    test_header!(
-        api.admin_cron_list(AdminCronListQuery::default()),
-        x_total_count
-    );
+    test_header!(api.admin_cron_list(), x_total_count);
     //test_header!(api.admin_list_quota_groups(), x_total_count);
     //test_header!(api.admin_list_quota_rules(), x_total_count);
     //test_header!(api.user_list_quota_artifacts(UserListQuotaArtifactsQuery::default()), x_total_count);
@@ -328,11 +261,8 @@ async fn total_count() {
         website: None,
     };
     api.org_create(body).await.unwrap();
-    test_header!(
-        api.org_list_teams("header-test-org", OrgListTeamsQuery::default()),
-        x_total_count
-    );
-    test_header!(api.org_get_all(OrgGetAllQuery::default()), x_total_count);
+    test_header!(api.org_list_teams("header-test-org"), x_total_count);
+    test_header!(api.org_get_all(), x_total_count);
 }
 
 #[tokio::test]

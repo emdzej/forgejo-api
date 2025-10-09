@@ -9,7 +9,7 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use std::collections::BTreeMap;");
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
-            let strukt = create_struct_for_definition(&spec, name, schema)?;
+            let strukt = create_struct_for_definition(spec, name, schema)?;
             s.push_str(&strukt);
         }
     }
@@ -24,7 +24,7 @@ pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
             s.push_str(&tys);
         }
     }
-    for (_, item) in &spec.paths {
+    for item in spec.paths.values() {
         let strukt = create_query_structs_for_path(spec, item)?;
         s.push_str(&strukt);
 
@@ -185,7 +185,7 @@ pub fn create_enum(
             x => eyre::bail!("cannot create enum variant. expected string, got {x:?}"),
         }
     }
-    imp.push_str("}");
+    imp.push('}');
 
     let strukt = format!(
         "
@@ -280,11 +280,14 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
     let op_name = query_struct_name(op)?;
     let mut enums = Vec::new();
     let mut fields = String::new();
-    let mut imp = String::new();
+    let mut to_list_imp = String::new();
     // only derive default if every field is optional
     let mut can_derive_default = true;
     for param in params {
         let param = param.deref(spec)?;
+        if matches!(&*param.name, "page" | "limit") {
+            continue;
+        }
         if let ParameterIn::Query { param: query_param } = &param._in {
             let field_name = crate::sanitize_ident(&param.name);
             let ty = match &query_param {
@@ -334,17 +337,17 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
             } else {
                 fields.push_str("Option<");
                 fields.push_str(&ty);
-                fields.push_str(">");
+                fields.push('>');
             }
             fields.push_str(",\n");
 
             let mut handler = String::new();
             if query_param.required {
-                writeln!(&mut handler, "let {field_name} = &self.{field_name};")?;
+                writeln!(&mut handler, "let {field_name} = self.{field_name};")?;
             } else {
                 writeln!(
                     &mut handler,
-                    "if let Some({field_name}) = &self.{field_name} {{"
+                    "if let Some({field_name}) = self.{field_name} {{"
                 )?;
             }
             match &query_param._type {
@@ -352,7 +355,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                     if let Some(_enum) = &query_param._enum {
                         writeln!(
                             &mut handler,
-                            "write!(f, \"{}={{}}&\", {}.as_str())?;",
+                            "list.push((\"{}\", {}.as_str().to_string()));",
                             param.name, field_name,
                         )?;
                     } else {
@@ -360,15 +363,14 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                             Some("date-time" | "date") => {
                                 writeln!(
                                     &mut handler,
-                                    "write!(f, \"{}={{field_name}}&\", field_name = {field_name}.format(&time::format_description::well_known::Rfc3339).unwrap())?;",
+                                    "list.push((\"{}\", {field_name}.format(&time::format_description::well_known::Rfc3339).unwrap()));",
                                     param.name)?;
                             }
                             _ => {
                                 writeln!(
                                     &mut handler,
-                                    "write!(f, \"{}={{{}}}&\")?;",
-                                    param.name,
-                                    field_name.strip_prefix("r#").unwrap_or(&field_name)
+                                    "list.push((\"{}\", {}));",
+                                    param.name, field_name,
                                 )?;
                             }
                         }
@@ -377,9 +379,8 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                 ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
                     writeln!(
                         &mut handler,
-                        "write!(f, \"{}={{{}}}&\")?;",
-                        param.name,
-                        field_name.strip_prefix("r#").unwrap_or(&field_name)
+                        "list.push((\"{}\", {}.to_string()));",
+                        param.name, field_name,
                     )?;
                 }
                 ParameterType::Array => {
@@ -390,23 +391,23 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                         .items
                         .as_ref()
                         .ok_or_else(|| eyre::eyre!("array must have item type defined"))?;
-                    let item_pusher = match item._type {
+                    let item_to_string = match item._type {
                         ParameterType::String => {
                             if let Some(_enum) = &item._enum {
-                                "write!(f, \"{}\", item.as_str())?;"
+                                "item.as_str().to_string()"
                             } else {
                                 match query_param.format.as_deref() {
                                     Some("date-time" | "date") => {
-                                        "write!(f, \"{{date}}\", item.format(&time::format_description::well_known::Rfc3339).unwrap())?;"
+                                        "item.format(&time::format_description::well_known::Rfc3339).unwrap()"
                                     },
                                     _ => {
-                                        "write!(f, \"{item}\")?;"
+                                        "item.to_string()"
                                     }
                                 }
                             }
                         }
                         ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
-                            "write!(f, \"{item}\")?;"
+                            "format!(\"{item}\")"
                         }
                         ParameterType::Array => {
                             eyre::bail!("nested arrays not supported in query");
@@ -415,33 +416,33 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                     };
                     match format {
                         CollectionFormat::Csv => {
-                            handler.push_str(&simple_query_array(
+                            handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_pusher,
+                                item_to_string,
                                 &field_name,
                                 ",",
                             )?);
                         }
                         CollectionFormat::Ssv => {
-                            handler.push_str(&simple_query_array(
+                            handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_pusher,
+                                item_to_string,
                                 &field_name,
                                 " ",
                             )?);
                         }
                         CollectionFormat::Tsv => {
-                            handler.push_str(&simple_query_array(
+                            handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_pusher,
+                                item_to_string,
                                 &field_name,
                                 "\\t",
                             )?);
                         }
                         CollectionFormat::Pipes => {
-                            handler.push_str(&simple_query_array(
+                            handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_pusher,
+                                item_to_string,
                                 &field_name,
                                 "|",
                             )?);
@@ -450,10 +451,11 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                             writeln!(&mut handler)?;
                             writeln!(&mut handler, "if !{field_name}.is_empty() {{")?;
                             writeln!(&mut handler, "for item in {field_name} {{")?;
-                            writeln!(&mut handler, "write!(f, \"{}=\")?;", param.name)?;
-                            handler.push_str(item_pusher);
-                            handler.push('\n');
-                            writeln!(&mut handler, "write!(f, \"&\")?;")?;
+                            writeln!(
+                                &mut handler,
+                                "list.push((\"{}\", {}));",
+                                param.name, item_to_string
+                            )?;
                             writeln!(&mut handler, "}}")?;
                             writeln!(&mut handler, "}}")?;
                         }
@@ -464,7 +466,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
             if !query_param.required {
                 writeln!(&mut handler, "}}")?;
             }
-            imp.push_str(&handler);
+            to_list_imp.push_str(&handler);
         }
     }
 
@@ -484,10 +486,11 @@ pub struct {op_name} {{
     {fields}
 }}
 
-impl std::fmt::Display for {op_name} {{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{
-        {imp}
-        Ok(())
+impl {op_name} {{
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {{
+        let mut list = Vec::new();
+        {to_list_imp}
+        list
     }}
 }}
 "
@@ -503,7 +506,7 @@ impl std::fmt::Display for {op_name} {{
     Ok(result)
 }
 
-fn simple_query_array(
+fn simple_query_array_as_list(
     param: &Parameter,
     item_pusher: &str,
     name: &str,
@@ -515,14 +518,14 @@ fn simple_query_array(
         &mut out,
         "
 if !{name}.is_empty() {{
-    write!(f, \"{}=\")?;
+    let mut s = String::new();
     for (item, i) in {name}.iter().enumerate() {{
         {item_pusher}
         if i < {name}.len() - 1 {{
             write!(f, \"{sep}\")?;
         }}
     }}
-    write!(f, \"&\")?;
+    list.push((\"{}\", s));
 }}",
         param.name
     )?;
@@ -554,14 +557,13 @@ fn create_header_struct(
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
         ",
             header_name.to_lowercase(),
-        )
-        .unwrap();
+        )?;
         match &header._type {
             ParameterType::String => match header.format.as_deref() {
                 Some("url" | "ssh-url") => imp.push_str(
                     "s.parse::<url::Url>().map_err(|_| StructureError::HeaderParseFailed)",
                 ),
-                _ => imp.push_str("Ok(s.to_string())"),
+                _ => imp.push_str("Ok::<_, StructureError>(s.to_string())"),
             },
             ParameterType::Number => match header.format.as_deref() {
                 Some("float") => {
@@ -633,6 +635,21 @@ fn create_header_struct(
         imp_ret.push_str(", ");
     }
 
+    let count_impl = if headers.contains_key("X-Total-Count") {
+        format!(
+            "
+impl crate::sealed::Sealed for {ty_name} {{}}
+impl crate::CountHeader for {ty_name} {{
+    fn count(&self) -> Option<usize> {{
+        self.x_total_count.map(|x| x as usize)
+    }}
+}}
+"
+        )
+    } else {
+        String::new()
+    };
+
     Ok(format!(
         "
 pub struct {ty_name} {{
@@ -647,6 +664,8 @@ impl TryFrom<&reqwest::header::HeaderMap> for {ty_name} {{
         Ok(Self {{ {imp_ret} }})
     }}
 }}
+
+{count_impl}
 "
     ))
 }
@@ -693,7 +712,7 @@ pub fn create_response_structs_for_op(spec: &OpenApiV2, op: &Operation) -> eyre:
         .as_deref()
         .ok_or_else(|| eyre::eyre!("no operation id"))?
         .to_pascal_case();
-    for (_, response) in &op.responses.http_codes {
+    for response in op.responses.http_codes.values() {
         let response = response.deref(spec)?;
         let tys = create_response_struct(spec, &op_name, response)?;
         out.push_str(&tys);

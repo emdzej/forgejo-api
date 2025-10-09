@@ -1,4 +1,8 @@
-use reqwest::{Client, Request, StatusCode};
+use std::{
+    borrow::Cow, collections::VecDeque, future::Future, marker::PhantomData, pin::Pin, task::Poll,
+};
+
+use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Deserializer};
 use soft_assert::*;
 use url::Url;
@@ -10,6 +14,8 @@ pub struct Forgejo {
 }
 
 mod generated;
+#[cfg(feature = "sync")]
+pub mod sync;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ForgejoError {
@@ -25,25 +31,155 @@ pub enum ForgejoError {
     BadStructure(#[from] StructureError),
     #[error("unexpected status code {} {}", .0.as_u16(), .0.canonical_reason().unwrap_or(""))]
     UnexpectedStatusCode(StatusCode),
-    #[error("{} {}{}", .0.as_u16(), .0.canonical_reason().unwrap_or(""), .1.as_ref().map(|s| format!(": {s}")).unwrap_or_default())]
-    ApiError(StatusCode, Option<String>),
+    #[error(transparent)]
+    ApiError(#[from] ApiError),
     #[error("the provided authorization was too long to accept")]
     AuthTooLong,
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum StructureError {
-    #[error("{contents}")]
+    #[error("{e}")]
     Serde {
         e: serde_json::Error,
-        contents: String,
+        contents: bytes::Bytes,
     },
+    #[error(transparent)]
+    Utf8(#[from] std::str::Utf8Error),
     #[error("failed to find header `{0}`")]
     HeaderMissing(&'static str),
     #[error("header was not ascii")]
     HeaderNotAscii,
     #[error("failed to parse header")]
     HeaderParseFailed,
+    #[error("nothing was returned when a value was expected")]
+    EmptyResponse,
+}
+
+impl From<std::str::Utf8Error> for ForgejoError {
+    fn from(error: std::str::Utf8Error) -> Self {
+        Self::BadStructure(StructureError::Utf8(error))
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub struct ApiError {
+    message: Option<String>,
+    kind: ApiErrorKind,
+}
+
+impl ApiError {
+    fn new(message: Option<String>, kind: ApiErrorKind) -> Self {
+        Self { message, kind }
+    }
+
+    pub fn message(&self) -> Option<&str> {
+        self.message.as_deref()
+    }
+
+    pub fn error_kind(&self) -> &ApiErrorKind {
+        &self.kind
+    }
+}
+
+impl From<ApiErrorKind> for ApiError {
+    fn from(kind: ApiErrorKind) -> Self {
+        Self {
+            message: None,
+            kind,
+        }
+    }
+}
+
+impl std::fmt::Display for ApiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.message {
+            Some(message) => write!(f, "{}: {message}", self.kind),
+            None => write!(f, "{}", self.kind),
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum ApiErrorKind {
+    #[error("api error")]
+    Generic,
+    #[error("access denied")]
+    Forbidden,
+    #[error("invalid topics")]
+    InvalidTopics { invalid_topics: Option<Vec<String>> },
+    #[error("not found")]
+    NotFound { errors: Option<Vec<String>> },
+    #[error("repo archived")]
+    RepoArchived,
+    #[error("unauthorized")]
+    Unauthorized,
+    #[error("validation failed")]
+    ValidationFailed,
+    #[error("status code {0}")]
+    Other(reqwest::StatusCode),
+}
+
+impl From<structs::APIError> for ApiError {
+    fn from(value: structs::APIError) -> Self {
+        Self::new(value.message, ApiErrorKind::Generic)
+    }
+}
+impl From<structs::APIForbiddenError> for ApiError {
+    fn from(value: structs::APIForbiddenError) -> Self {
+        Self::new(value.message, ApiErrorKind::Forbidden)
+    }
+}
+impl From<structs::APIInvalidTopicsError> for ApiError {
+    fn from(value: structs::APIInvalidTopicsError) -> Self {
+        Self::new(
+            value.message,
+            ApiErrorKind::InvalidTopics {
+                invalid_topics: value.invalid_topics,
+            },
+        )
+    }
+}
+impl From<structs::APINotFound> for ApiError {
+    fn from(value: structs::APINotFound) -> Self {
+        Self::new(
+            value.message,
+            ApiErrorKind::NotFound {
+                errors: value.errors,
+            },
+        )
+    }
+}
+impl From<structs::APIRepoArchivedError> for ApiError {
+    fn from(value: structs::APIRepoArchivedError) -> Self {
+        Self::new(value.message, ApiErrorKind::RepoArchived)
+    }
+}
+impl From<structs::APIUnauthorizedError> for ApiError {
+    fn from(value: structs::APIUnauthorizedError) -> Self {
+        Self::new(value.message, ApiErrorKind::Unauthorized)
+    }
+}
+impl From<structs::APIValidationError> for ApiError {
+    fn from(value: structs::APIValidationError) -> Self {
+        Self::new(value.message, ApiErrorKind::ValidationFailed)
+    }
+}
+impl From<reqwest::StatusCode> for ApiError {
+    fn from(value: reqwest::StatusCode) -> Self {
+        match value {
+            reqwest::StatusCode::NOT_FOUND => ApiErrorKind::NotFound { errors: None },
+            reqwest::StatusCode::FORBIDDEN => ApiErrorKind::Forbidden,
+            reqwest::StatusCode::UNAUTHORIZED => ApiErrorKind::Unauthorized,
+            _ => ApiErrorKind::Other(value),
+        }
+        .into()
+    }
+}
+impl From<OAuthError> for ApiError {
+    fn from(value: OAuthError) -> Self {
+        Self::new(Some(value.error_description), ApiErrorKind::Generic)
+    }
 }
 
 /// Method of authentication to connect to the Forgejo host with.
@@ -74,19 +210,10 @@ pub enum Auth<'a> {
     None,
 }
 
-impl Forgejo {
-    pub fn new(auth: Auth, url: Url) -> Result<Self, ForgejoError> {
-        Self::with_user_agent(auth, url, "forgejo-api-rs")
-    }
-
-    pub fn with_user_agent(auth: Auth, url: Url, user_agent: &str) -> Result<Self, ForgejoError> {
-        soft_assert!(
-            matches!(url.scheme(), "http" | "https"),
-            Err(ForgejoError::HttpRequired)
-        );
-
+impl Auth<'_> {
+    fn to_headers(&self) -> Result<reqwest::header::HeaderMap, ForgejoError> {
         let mut headers = reqwest::header::HeaderMap::new();
-        match auth {
+        match self {
             Auth::Token(token) => {
                 let mut header: reqwest::header::HeaderValue = format!("token {token}")
                     .try_into()
@@ -127,7 +254,7 @@ impl Forgejo {
 
                 if let Some(mfa) = mfa {
                     let mut key_header: reqwest::header::HeaderValue =
-                        mfa.try_into().map_err(|_| ForgejoError::KeyNotAscii)?;
+                        (*mfa).try_into().map_err(|_| ForgejoError::KeyNotAscii)?;
                     key_header.set_sensitive(true);
                     headers.insert("X-FORGEJO-OTP", key_header);
                 }
@@ -141,9 +268,24 @@ impl Forgejo {
             }
             Auth::None => (),
         }
+        Ok(headers)
+    }
+}
+
+impl Forgejo {
+    pub fn new(auth: Auth, url: Url) -> Result<Self, ForgejoError> {
+        Self::with_user_agent(auth, url, "forgejo-api-rs")
+    }
+
+    pub fn with_user_agent(auth: Auth, url: Url, user_agent: &str) -> Result<Self, ForgejoError> {
+        soft_assert!(
+            matches!(url.scheme(), "http" | "https"),
+            Err(ForgejoError::HttpRequired)
+        );
+
         let client = Client::builder()
             .user_agent(user_agent)
-            .default_headers(headers)
+            .default_headers(auth.to_headers()?)
             .build()?;
         Ok(Self { url, client })
     }
@@ -164,7 +306,7 @@ impl Forgejo {
             .pop_if_empty()
             .extend(["attachments", &release.uuid.unwrap().to_string()]);
         let request = self.client.get(url).build()?;
-        Ok(self.execute(request).await?.bytes().await?)
+        Ok(self.client.execute(request).await?.bytes().await?)
     }
 
     /// Requests a new OAuth2 access token
@@ -176,57 +318,72 @@ impl Forgejo {
     ) -> Result<structs::OAuthToken, ForgejoError> {
         let url = self.url.join("login/oauth/access_token").unwrap();
         let request = self.client.post(url).json(&body).build()?;
-        let response = self.execute(request).await?;
-        match response.status().as_u16() {
-            200 => Ok(response.json().await?),
+        let response = self.client.execute(request).await?;
+        match response.status() {
+            reqwest::StatusCode::OK => Ok(response.json().await?),
+            status if status.is_client_error() => {
+                let err = response.json::<OAuthError>().await?;
+                Err(ApiError::from(err).into())
+            }
             _ => Err(ForgejoError::UnexpectedStatusCode(response.status())),
         }
     }
 
-    fn get(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.get(url)
-    }
-
-    fn put(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.put(url)
-    }
-
-    fn post(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.post(url)
-    }
-
-    fn delete(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.delete(url)
-    }
-
-    fn patch(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = self.url.join("api/v1/").unwrap().join(path).unwrap();
-        self.client.patch(url)
-    }
-
-    async fn execute(&self, request: Request) -> Result<reqwest::Response, ForgejoError> {
-        let response = self.client.execute(request).await?;
-        match response.status() {
-            status if status.is_success() => Ok(response),
-            status if status.is_client_error() => {
-                Err(ForgejoError::ApiError(status, maybe_err(response).await))
-            }
-            status => Err(ForgejoError::UnexpectedStatusCode(status)),
+    pub async fn send_request(&self, request: &ApiRequest) -> Result<ApiResponse, ForgejoError> {
+        let mut url = self
+            .url
+            .join(&request.path)
+            .expect("url fail. bug in forgejo-api");
+        let mut query_pairs = url.query_pairs_mut();
+        if let Some(query) = &request.query {
+            query_pairs.extend_pairs(query.iter());
         }
+        if let Some(page) = request.page {
+            query_pairs.append_pair("page", &format!("{page}"));
+        }
+        if let Some(limit) = request.limit {
+            query_pairs.append_pair("limit", &format!("{limit}"));
+        }
+        drop(query_pairs);
+        let mut reqwest_request = self.client.request(request.method.clone(), url);
+        reqwest_request = match &request.body {
+            RequestBody::Json(bytes) => reqwest_request
+                .body(bytes.clone())
+                .header(reqwest::header::CONTENT_TYPE, "application/json"),
+            RequestBody::Form(list) => {
+                let mut form = reqwest::multipart::Form::new();
+                for (k, v) in list {
+                    form = form.part(
+                        *k,
+                        reqwest::multipart::Part::bytes(v.clone()).file_name("file"),
+                    );
+                }
+                reqwest_request.multipart(form)
+            }
+            RequestBody::None => reqwest_request,
+        };
+        let mut reqwest_response = reqwest_request.send().await?;
+        let response = ApiResponse {
+            status_code: reqwest_response.status(),
+            headers: std::mem::take(reqwest_response.headers_mut()),
+            body: reqwest_response.bytes().await?,
+        };
+        Ok(response)
     }
-}
 
-async fn maybe_err(res: reqwest::Response) -> Option<String> {
-    res.json::<ErrorMessage>().await.ok().map(|e| e.message)
+    pub async fn hit_endpoint<E: Endpoint, R: FromResponse>(
+        &self,
+        endpoint: E,
+    ) -> Result<R::Output, ForgejoError> {
+        let (response, has_body) =
+            E::handle_error(self.send_request(&endpoint.make_request()).await?)?;
+        Ok(R::from_response(response, has_body)?)
+    }
 }
 
 #[derive(serde::Deserialize)]
-struct ErrorMessage {
-    message: String,
+struct OAuthError {
+    error_description: String,
     // intentionally ignored, no need for now
     // url: Url
 }
@@ -341,7 +498,7 @@ fn none_if_blank_url<'de, D: serde::Deserializer<'de>>(
             }
             Url::parse(s)
                 .map_err(|err| {
-                    let err_s = format!("{}", err);
+                    let err_s = format!("{err}");
                     Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
                 })
                 .map(Some)
@@ -449,6 +606,391 @@ impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {
             structs::DefaultMergeStyle::FastForwardOnly => {
                 structs::MergePullRequestOptionDo::FastForwardOnly
             }
+        }
+    }
+}
+
+mod sealed {
+    pub trait Sealed {}
+}
+
+pub trait Endpoint: sealed::Sealed {
+    type Response;
+    fn make_request(self) -> ApiRequest;
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError>;
+}
+
+#[derive(Clone)]
+pub struct ApiRequest {
+    method: reqwest::Method,
+    path: Cow<'static, str>,
+    query: Option<Vec<(&'static str, String)>>,
+    body: RequestBody,
+    page: Option<u32>,
+    limit: Option<u32>,
+}
+
+impl ApiRequest {
+    pub(crate) fn wrap<E: Endpoint<Response = R>, R>(
+        self,
+        client: &Forgejo,
+    ) -> WrappedRequest<'_, E, R> {
+        WrappedRequest {
+            inner: TypedRequest {
+                inner: self,
+                __endpoint: PhantomData,
+                __response: PhantomData,
+            },
+            client,
+        }
+    }
+
+    #[cfg(feature = "sync")]
+    pub(crate) fn wrap_sync<E: Endpoint<Response = R>, R>(
+        self,
+        client: &sync::Forgejo,
+    ) -> sync::WrappedRequest<'_, E, R> {
+        sync::WrappedRequest {
+            inner: TypedRequest {
+                inner: self,
+                __endpoint: PhantomData,
+                __response: PhantomData,
+            },
+            client,
+        }
+    }
+}
+
+pub trait FromResponse {
+    type Output;
+
+    fn from_response(response: ApiResponse, has_body: bool)
+        -> Result<Self::Output, StructureError>;
+}
+
+pub mod response_type {
+    use std::marker::PhantomData;
+
+    use crate::FromResponse;
+
+    struct Unconstructable;
+
+    pub struct Json<T>(Unconstructable, PhantomData<*const T>);
+    pub struct Text(Unconstructable);
+    pub struct Bytes(Unconstructable);
+    pub struct WithHeaders<T, H>(
+        Unconstructable,
+        PhantomData<*const T>,
+        PhantomData<*const H>,
+    );
+
+    impl<T: serde::de::DeserializeOwned> FromResponse for Json<T> {
+        type Output = T;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+            serde_json::from_slice(&response.body).map_err(|e| crate::StructureError::Serde {
+                e,
+                contents: response.body.clone(),
+            })
+        }
+    }
+
+    impl FromResponse for Text {
+        type Output = String;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+            Ok(std::str::from_utf8(&response.body)?.to_owned())
+        }
+    }
+
+    impl FromResponse for Bytes {
+        type Output = bytes::Bytes;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+            Ok(response.body.clone())
+        }
+    }
+
+    impl<
+            T: FromResponse,
+            H: for<'a> TryFrom<&'a reqwest::header::HeaderMap, Error = crate::StructureError>,
+        > FromResponse for WithHeaders<T, H>
+    {
+        type Output = (H, T::Output);
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            let headers = H::try_from(&response.headers)?;
+            let body = T::from_response(response, has_body)?;
+            Ok((headers, body))
+        }
+    }
+
+    impl<T: FromResponse> FromResponse for Option<T> {
+        type Output = Option<T::Output>;
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            if has_body {
+                T::from_response(response, true).map(Some)
+            } else {
+                Ok(None)
+            }
+        }
+    }
+
+    impl FromResponse for () {
+        type Output = ();
+
+        fn from_response(
+            response: crate::ApiResponse,
+            has_body: bool,
+        ) -> Result<Self::Output, crate::StructureError> {
+            Ok(())
+        }
+    }
+}
+
+#[derive(Clone)]
+pub enum RequestBody {
+    Json(bytes::Bytes),
+    Form(Vec<(&'static str, Vec<u8>)>),
+    None,
+}
+
+pub struct TypedRequest<E, R> {
+    inner: ApiRequest,
+    __endpoint: PhantomData<*const E>,
+    __response: PhantomData<*const R>,
+}
+
+impl<E: Endpoint, R: FromResponse> TypedRequest<E, R> {
+    async fn send(&self, client: &Forgejo) -> Result<R::Output, ForgejoError> {
+        let (response, has_body) = E::handle_error(client.send_request(&self.inner).await?)?;
+        Ok(R::from_response(response, has_body)?)
+    }
+
+    #[cfg(feature = "sync")]
+    fn send_sync(&self, client: &sync::Forgejo) -> Result<R::Output, ForgejoError> {
+        let (response, has_body) = E::handle_error(client.send_request(&self.inner)?)?;
+        Ok(R::from_response(response, has_body)?)
+    }
+}
+
+pub struct ApiResponse {
+    status_code: StatusCode,
+    headers: reqwest::header::HeaderMap,
+    body: bytes::Bytes,
+}
+
+pub struct WrappedRequest<'a, E, R> {
+    inner: TypedRequest<E, R>,
+    client: &'a Forgejo,
+}
+
+macro_rules! response_type_method_inner {
+    ($self:ident) => {
+        WrappedRequest {
+            inner: TypedRequest {
+                inner: $self.inner.inner,
+                __endpoint: PhantomData,
+                __response: PhantomData,
+            },
+            client: $self.client,
+        }
+    };
+}
+
+macro_rules! response_type_method {
+    ($name:ident -> $response:ty) => {
+        pub fn $name(self) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<T> -> $response:ty) => {
+        pub fn $name<T: serde::de::DeserializeOwned>(self) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<H> -> $response:ty) => {
+        pub fn $name<H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>>(
+            self,
+        ) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+    ($name:ident<T, H> -> $response:ty) => {
+        pub fn $name<
+            T: serde::de::DeserializeOwned,
+            H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>,
+        >(
+            self,
+        ) -> WrappedRequest<'a, E, $response> {
+            response_type_method_inner!(self)
+        }
+    };
+}
+
+use response_type::*;
+impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
+    pub async fn send(self) -> Result<R::Output, ForgejoError> {
+        self.inner.send(self.client).await
+    }
+
+    response_type_method!(json<T> -> Json<T>);
+    response_type_method!(json_opt<T> -> Option<Json<T>>);
+    response_type_method!(text -> Text);
+    response_type_method!(bytes -> Bytes);
+    response_type_method!(text_opt -> Option<Text>);
+    response_type_method!(bytes_opt -> Option<Text>);
+
+    response_type_method!(headers_json<T, H> -> WithHeaders<Json<T>, H>);
+    response_type_method!(headers_json_opt<T, H> -> WithHeaders<Option<Json<T>>, H>);
+    response_type_method!(headers_text<H> -> WithHeaders<Text, H>);
+    response_type_method!(headers_bytes<H> -> WithHeaders<Bytes, H>);
+    response_type_method!(headers_text_opt<H> -> WithHeaders<Option<Text>, H>);
+    response_type_method!(headers_bytes_opt<H> -> WithHeaders<Option<Text>, H>);
+
+    pub fn page(mut self, page: u32) -> Self {
+        self.inner.inner.page = Some(page);
+        self
+    }
+
+    pub fn page_size(mut self, limit: u32) -> Self {
+        self.inner.inner.limit = Some(limit);
+        self
+    }
+}
+
+pub trait CountHeader: sealed::Sealed {
+    fn count(&self) -> Option<usize>;
+}
+
+impl<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H: CountHeader>
+    WrappedRequest<'a, E, R>
+{
+    pub fn stream(self) -> ResponseStream<'a, E, R, T, H> {
+        ResponseStream {
+            request: self,
+            total_seen: 0,
+            last_page: false,
+            state: StreamState::Results(Default::default()),
+        }
+    }
+}
+
+impl<'a, E: Endpoint, R: FromResponse> std::future::IntoFuture for WrappedRequest<'a, E, R> {
+    type Output = Result<R::Output, ForgejoError>;
+
+    type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + 'a>>;
+
+    fn into_future(self) -> Self::IntoFuture {
+        Box::pin(async move {
+            let (response, has_body) =
+                E::handle_error(self.client.send_request(&self.inner.inner).await?)?;
+            Ok(R::from_response(response, has_body)?)
+        })
+    }
+}
+
+pub struct ResponseStream<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H> {
+    request: WrappedRequest<'a, E, R>,
+    total_seen: usize,
+    last_page: bool,
+    state: StreamState<'a, T, H>,
+}
+
+enum StreamState<'a, T, H> {
+    Results(VecDeque<T>),
+    Future(Pin<Box<dyn Future<Output = Result<(H, Vec<T>), ForgejoError>> + 'a>>),
+    Finished,
+}
+
+impl<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H: CountHeader>
+    futures::stream::Stream for ResponseStream<'a, E, R, T, H>
+where
+    Self: Unpin + 'a,
+{
+    type Item = Result<T, ForgejoError>;
+
+    fn poll_next(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> Poll<Option<Self::Item>> {
+        match &mut self.state {
+            StreamState::Results(list) => match list.pop_front() {
+                Some(ret) => Poll::Ready(Some(Ok(ret))),
+                None => {
+                    if self.last_page {
+                        self.state = StreamState::Finished;
+                        Poll::Ready(None)
+                    } else {
+                        let page = match self.request.inner.inner.page {
+                            Some(n) => n + 1,
+                            None => 1,
+                        };
+                        self.request.inner.inner.page = Some(page);
+
+                        let request = self.request.inner.inner.clone();
+                        let client = self.request.client;
+                        let fut = Box::pin(async move {
+                            E::handle_error(client.send_request(&request).await?).and_then(
+                                |(res, body)| R::from_response(res, body).map_err(|e| e.into()),
+                            )
+                        });
+                        self.state = StreamState::Future(fut);
+
+                        cx.waker().wake_by_ref();
+
+                        Poll::Pending
+                    }
+                }
+            },
+            StreamState::Future(fut) => match fut.as_mut().poll(cx) {
+                Poll::Ready(res) => match res {
+                    Ok((headers, list)) => {
+                        let total_count = match headers.count() {
+                            Some(n) => n,
+                            None => {
+                                self.state = StreamState::Finished;
+                                return Poll::Ready(Some(Err(StructureError::HeaderMissing(
+                                    "x-total-count",
+                                )
+                                .into())));
+                            }
+                        };
+                        self.total_seen += list.len();
+                        if self.total_seen >= total_count {
+                            self.last_page = true;
+                        }
+                        self.state = StreamState::Results(list.into());
+                        cx.waker().wake_by_ref();
+                        Poll::Pending
+                    }
+                    Err(e) => {
+                        self.state = StreamState::Finished;
+                        Poll::Ready(Some(Err(e)))
+                    }
+                },
+                Poll::Pending => Poll::Pending,
+            },
+            StreamState::Finished => Poll::Ready(None),
         }
     }
 }
