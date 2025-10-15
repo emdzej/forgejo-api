@@ -1,0 +1,22 @@
+when:
+  - event: pull_request
+    path:
+      include: ["generator/**", "swagger.v1.json"]
+
+steps:
+  - name: codegen
+    image: rust:1.90
+    commands:
+      - rustup component add rustfmt
+      - cargo run -p generator
+
+  - name: check-diff
+    image: alpine/git
+    commands:
+      - diff=$$(git ls-files --modified --others --exclude-standard)
+      - echo "$diff"
+      - if [ -n "$diff" ]; then
+      - " printf \"Changes were made to the codegen or OpenAPI file, but the code has not been regenerated.\\\\n\
+                   Please run 'cargo run -p generator' and commit the changes it makes\\\\n\";"
+      -   exit 1;
+      - fi

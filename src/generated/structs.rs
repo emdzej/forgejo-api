@@ -479,7 +479,7 @@ pub struct CommitStatus {
 
 /// CommitStatusState holds the state of a CommitStatus
 ///
-/// It can be "pending", "success", "error" and "failure"
+/// It can be "pending", "success", "error" or "failure"
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CommitStatusState {
