@@ -812,10 +812,6 @@ pub struct CreatePullReviewComment {
     pub path: Option<String>,
 }
 
-/// CreatePullReviewCommentOptions are options to create a pull review comment
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct CreatePullReviewCommentOptions {}
-
 /// CreatePullReviewOptions are options to create a pull review
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreatePullReviewOptions {
@@ -1774,10 +1770,6 @@ pub struct IssueFormField {
     pub validations: Option<BTreeMap<String, serde_json::Value>>,
     pub visible: Option<Vec<String>>,
 }
-
-/// IssueFormFieldVisible defines issue form field visible
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct IssueFormFieldVisible {}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum IssueFormFieldType {
@@ -2769,10 +2761,6 @@ pub struct RepositoryMeta {
     pub owner: Option<String>,
 }
 
-/// ReviewStateType review state type
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct ReviewStateType {}
-
 /// SearchResults results of a successful search
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct SearchResults {
@@ -2892,10 +2880,6 @@ pub enum TeamPermission {
     #[serde(rename = "owner")]
     Owner,
 }
-/// TimeStamp defines a timestamp
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct TimeStamp {}
-
 /// TimelineComment represents a timeline comment (comment of any type) on a commit or issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TimelineComment {

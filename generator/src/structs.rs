@@ -39,16 +39,21 @@ pub fn create_struct_for_definition(
     name: &str,
     schema: &Schema,
 ) -> eyre::Result<String> {
-    if matches!(schema._type, Some(SchemaType::One(Primitive::Array))) {
-        return Ok(String::new());
+    match schema {
+        Schema {
+            _type: Some(SchemaType::One(Primitive::String)),
+            _enum: Some(_enum),
+            ..
+        } => create_enum(name, schema.description.as_deref(), _enum, false),
+        Schema {
+            _type: Some(SchemaType::One(Primitive::Object)),
+            ..
+        } => create_object_struct(spec, name, schema),
+        _ => Ok(String::new()),
     }
+}
 
-    if schema._type == Some(SchemaType::One(Primitive::String)) {
-        if let Some(_enum) = &schema._enum {
-            return create_enum(name, schema.description.as_deref(), _enum, false);
-        }
-    }
-
+pub fn create_object_struct(spec: &OpenApiV2, name: &str, schema: &Schema) -> eyre::Result<String> {
     let mut subtypes = Vec::new();
 
     let parse_with = schema
