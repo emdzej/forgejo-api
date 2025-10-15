@@ -812,10 +812,6 @@ pub struct CreatePullReviewComment {
     pub path: Option<String>,
 }
 
-/// CreatePullReviewCommentOptions are options to create a pull review comment
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct CreatePullReviewCommentOptions {}
-
 /// CreatePullReviewOptions are options to create a pull review
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreatePullReviewOptions {
@@ -1770,18 +1766,24 @@ pub struct IssueFormField {
     pub attributes: Option<BTreeMap<String, serde_json::Value>>,
     pub id: Option<String>,
     #[serde(rename = "type")]
-    pub r#type: Option<String>,
+    pub r#type: Option<IssueFormFieldType>,
     pub validations: Option<BTreeMap<String, serde_json::Value>>,
     pub visible: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct IssueFormFieldType {}
-
-/// IssueFormFieldVisible defines issue form field visible
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct IssueFormFieldVisible {}
-
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum IssueFormFieldType {
+    #[serde(rename = "markdown")]
+    Markdown,
+    #[serde(rename = "textarea")]
+    Textarea,
+    #[serde(rename = "input")]
+    Input,
+    #[serde(rename = "dropdown")]
+    Dropdown,
+    #[serde(rename = "checkboxes")]
+    Checkboxes,
+}
 /// IssueLabelsOption a collection of labels
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueLabelsOption {
@@ -2122,7 +2124,7 @@ pub struct NotificationSubject {
     pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(rename = "type")]
-    pub r#type: Option<String>,
+    pub r#type: Option<NotifySubjectType>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
 }
@@ -2142,9 +2144,18 @@ pub struct NotificationThread {
 }
 
 /// NotifySubjectType represent type of notification subject
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct NotifySubjectType {}
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum NotifySubjectType {
+    #[serde(rename = "Issue")]
+    Issue,
+    #[serde(rename = "Pull")]
+    Pull,
+    #[serde(rename = "Commit")]
+    Commit,
+    #[serde(rename = "Repository")]
+    Repository,
+}
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct OAuth2Application {
     pub client_id: Option<String>,
@@ -2750,10 +2761,6 @@ pub struct RepositoryMeta {
     pub owner: Option<String>,
 }
 
-/// ReviewStateType review state type
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct ReviewStateType {}
-
 /// SearchResults results of a successful search
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct SearchResults {
@@ -2873,10 +2880,6 @@ pub enum TeamPermission {
     #[serde(rename = "owner")]
     Owner,
 }
-/// TimeStamp defines a timestamp
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct TimeStamp {}
-
 /// TimelineComment represents a timeline comment (comment of any type) on a commit or issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TimelineComment {
