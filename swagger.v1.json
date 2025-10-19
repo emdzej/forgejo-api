@@ -26208,6 +26208,13 @@
       "description": "CombinedStatus",
       "schema": {
         "$ref": "#/definitions/CombinedStatus"
+      },
+      "headers": {
+        "X-Total-Count": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Total commit count"
+        }
       }
     },
     "Comment": {

@@ -3311,6 +3311,33 @@ impl crate::CountHeader for ChangedFileListHeaders {
     }
 }
 
+pub struct CombinedStatusHeaders {
+    pub x_total_count: Option<i64>,
+}
+
+impl TryFrom<&reqwest::header::HeaderMap> for CombinedStatusHeaders {
+    type Error = StructureError;
+
+    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+        let x_total_count = map
+            .get("x-total-count")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                s.parse::<i64>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
+            })
+            .transpose()?;
+        Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for CombinedStatusHeaders {}
+impl crate::CountHeader for CombinedStatusHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
 pub struct CommentListHeaders {
     pub x_total_count: Option<i64>,
 }

@@ -4853,7 +4853,7 @@ pub struct RepoGetCombinedStatusByRef<'a> {
 
 impl Sealed for RepoGetCombinedStatusByRef<'_> {}
 impl Endpoint for RepoGetCombinedStatusByRef<'_> {
-    type Response = RJson<CombinedStatus>;
+    type Response = WithHeaders<RJson<CombinedStatus>, CombinedStatusHeaders>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
