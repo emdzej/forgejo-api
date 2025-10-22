@@ -1,17 +1,27 @@
 when:
   - event: pull_request
+
+# The `path` condition can't be put on the workflow, because then the branch
+# protection is never fulfilled if it doesn't run. So it has to be on the steps
+
+variables:
+  - &when
     path:
       include: ["generator/**", "swagger.v1.json"]
 
 steps:
   - name: codegen
     image: rust:1.90
+    when: 
+      <<: *when
     commands:
       - rustup component add rustfmt
       - cargo run -p generator
 
   - name: check-diff
     image: alpine/git
+    when: 
+      <<: *when
     commands:
       - diff=$$(git ls-files --modified --others --exclude-standard)
       - echo "$diff"
