@@ -1,8 +1,20 @@
 when:
   - event: manual
+  - event: pull_request
+
+# The `path` condition can't be put on the workflow, because then the branch
+# protection is never fulfilled if it doesn't run. So it has to be on the steps
+
+variables:
+  - &when
+    path:
+      include: ["src/**", "tests/**"]
+
 steps:
   test:
     image: rust
+    when:
+      <<: *when
     environment:
       FORGEJO_API_CI_INSTANCE_URL: http://forgejo-testing:3000/
       FORGEJO_API_CI_TOKEN: 6d727f8db0df8a2852c9dfd38dca6b830741c079
@@ -13,3 +25,5 @@ services:
   forgejo-testing:
     pull: true
     image: code.cartoon-aa.xyz/cyborus/ci-forgejo:10.0.0
+    when:
+      <<: *when
