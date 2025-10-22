@@ -64,8 +64,8 @@ impl From<std::str::Utf8Error> for ForgejoError {
 
 #[derive(thiserror::Error, Debug)]
 pub struct ApiError {
-    message: Option<String>,
-    kind: ApiErrorKind,
+    pub message: Option<String>,
+    pub kind: ApiErrorKind,
 }
 
 impl ApiError {
@@ -882,16 +882,119 @@ pub trait CountHeader: sealed::Sealed {
     fn count(&self) -> Option<usize>;
 }
 
-impl<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H: CountHeader>
+pub trait PageSize: sealed::Sealed {
+    fn page_size(&self) -> usize;
+}
+
+impl<T> sealed::Sealed for Vec<T> {}
+impl<T> PageSize for Vec<T> {
+    fn page_size(&self) -> usize {
+        self.len()
+    }
+}
+
+impl<'a, E: Endpoint, R: FromResponse<Output = (H, T)>, T: PageSize, H: CountHeader>
     WrappedRequest<'a, E, R>
 {
-    pub fn stream(self) -> ResponseStream<'a, E, R, T, H> {
-        ResponseStream {
+    pub fn stream_pages(self) -> PageStream<'a, E, R, T, H> {
+        PageStream {
             request: self,
             total_seen: 0,
-            last_page: false,
-            state: StreamState::Results(Default::default()),
+            finished: false,
+            fut: None,
         }
+    }
+}
+
+pub struct PageStream<'a, E: Endpoint, R: FromResponse<Output = (H, T)>, T, H> {
+    request: WrappedRequest<'a, E, R>,
+    total_seen: usize,
+    finished: bool,
+    fut: Option<Pin<Box<dyn Future<Output = Result<(H, T), ForgejoError>> + 'a>>>,
+}
+
+impl<'a, E: Endpoint, R: FromResponse<Output = (H, T)>, T: PageSize, H: CountHeader>
+    futures::stream::Stream for PageStream<'a, E, R, T, H>
+where
+    Self: Unpin + 'a,
+{
+    type Item = Result<T, ForgejoError>;
+
+    fn poll_next(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> Poll<Option<Self::Item>> {
+        if self.finished {
+            return Poll::Ready(None);
+        }
+        match &mut self.fut {
+            None => {
+                let request = self.request.inner.inner.clone();
+                let client = self.request.client;
+                let fut = Box::pin(async move {
+                    E::handle_error(client.send_request(&request).await?)
+                        .and_then(|(res, body)| R::from_response(res, body).map_err(|e| e.into()))
+                });
+                self.fut = Some(fut);
+                cx.waker().wake_by_ref();
+                Poll::Pending
+            }
+            Some(fut) => {
+                let (headers, page_content) = match fut.as_mut().poll(cx) {
+                    Poll::Ready(Ok(response)) => response,
+                    Poll::Ready(Err(e)) => {
+                        self.finished = true;
+                        return Poll::Ready(Some(Err(e)));
+                    }
+                    Poll::Pending => return Poll::Pending,
+                };
+                self.total_seen += page_content.page_size();
+                let total_count = match headers.count() {
+                    Some(n) => n,
+                    None => {
+                        self.finished = true;
+                        return Poll::Ready(Some(Err(StructureError::HeaderMissing(
+                            "x-total-count",
+                        )
+                        .into())));
+                    }
+                };
+
+                if self.total_seen >= total_count {
+                    self.finished = true;
+                } else {
+                    self.request.inner.inner.page =
+                        Some(self.request.inner.inner.page.unwrap_or(1) + 1);
+                    self.fut = None;
+                }
+
+                Poll::Ready(Some(Ok(page_content)))
+            }
+        }
+    }
+}
+
+impl<
+        'a,
+        E: Endpoint + 'a,
+        R: FromResponse<Output = (H, Vec<T>)> + 'a,
+        T: 'a,
+        H: CountHeader + 'a,
+    > WrappedRequest<'a, E, R>
+{
+    pub fn stream(
+        self,
+    ) -> impl futures::Stream<Item = Result<T, ForgejoError>> + use<'a, E, R, T, H> {
+        use futures::TryStreamExt;
+        self.stream_pages()
+            .map_ok(|page| futures::stream::iter(page.into_iter().map(Ok)))
+            .try_flatten()
+    }
+
+    pub async fn all(self) -> Result<Vec<T>, ForgejoError> {
+        use futures::TryStreamExt;
+
+        self.stream().try_collect().await
     }
 }
 
@@ -906,91 +1009,5 @@ impl<'a, E: Endpoint, R: FromResponse> std::future::IntoFuture for WrappedReques
                 E::handle_error(self.client.send_request(&self.inner.inner).await?)?;
             Ok(R::from_response(response, has_body)?)
         })
-    }
-}
-
-pub struct ResponseStream<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H> {
-    request: WrappedRequest<'a, E, R>,
-    total_seen: usize,
-    last_page: bool,
-    state: StreamState<'a, T, H>,
-}
-
-enum StreamState<'a, T, H> {
-    Results(VecDeque<T>),
-    Future(Pin<Box<dyn Future<Output = Result<(H, Vec<T>), ForgejoError>> + 'a>>),
-    Finished,
-}
-
-impl<'a, E: Endpoint, R: FromResponse<Output = (H, Vec<T>)>, T, H: CountHeader>
-    futures::stream::Stream for ResponseStream<'a, E, R, T, H>
-where
-    Self: Unpin + 'a,
-{
-    type Item = Result<T, ForgejoError>;
-
-    fn poll_next(
-        mut self: Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> Poll<Option<Self::Item>> {
-        match &mut self.state {
-            StreamState::Results(list) => match list.pop_front() {
-                Some(ret) => Poll::Ready(Some(Ok(ret))),
-                None => {
-                    if self.last_page {
-                        self.state = StreamState::Finished;
-                        Poll::Ready(None)
-                    } else {
-                        let page = match self.request.inner.inner.page {
-                            Some(n) => n + 1,
-                            None => 1,
-                        };
-                        self.request.inner.inner.page = Some(page);
-
-                        let request = self.request.inner.inner.clone();
-                        let client = self.request.client;
-                        let fut = Box::pin(async move {
-                            E::handle_error(client.send_request(&request).await?).and_then(
-                                |(res, body)| R::from_response(res, body).map_err(|e| e.into()),
-                            )
-                        });
-                        self.state = StreamState::Future(fut);
-
-                        cx.waker().wake_by_ref();
-
-                        Poll::Pending
-                    }
-                }
-            },
-            StreamState::Future(fut) => match fut.as_mut().poll(cx) {
-                Poll::Ready(res) => match res {
-                    Ok((headers, list)) => {
-                        let total_count = match headers.count() {
-                            Some(n) => n,
-                            None => {
-                                self.state = StreamState::Finished;
-                                return Poll::Ready(Some(Err(StructureError::HeaderMissing(
-                                    "x-total-count",
-                                )
-                                .into())));
-                            }
-                        };
-                        self.total_seen += list.len();
-                        if self.total_seen >= total_count {
-                            self.last_page = true;
-                        }
-                        self.state = StreamState::Results(list.into());
-                        cx.waker().wake_by_ref();
-                        Poll::Pending
-                    }
-                    Err(e) => {
-                        self.state = StreamState::Finished;
-                        Poll::Ready(Some(Err(e)))
-                    }
-                },
-                Poll::Pending => Poll::Pending,
-            },
-            StreamState::Finished => Poll::Ready(None),
-        }
     }
 }

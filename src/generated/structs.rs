@@ -388,6 +388,13 @@ pub struct CombinedStatus {
     pub url: Option<url::Url>,
 }
 
+impl crate::sealed::Sealed for CombinedStatus {}
+impl crate::PageSize for CombinedStatus {
+    fn page_size(&self) -> usize {
+        self.statuses.as_ref().map(|x| x.page_size()).unwrap_or(0)
+    }
+}
+
 /// Comment represents a comment on a commit or issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Comment {

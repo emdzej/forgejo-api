@@ -159,6 +159,44 @@ pub fn create_object_struct(spec: &OpenApiV2, name: &str, schema: &Schema) -> ey
     }
 
     let mut out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
+
+    if let Some(pagination_field) = schema
+        .extensions
+        .get("x-pagination-field")
+        .and_then(|v| v.as_str())
+    {
+        writeln!(
+            &mut out,
+            "\
+impl crate::sealed::Sealed for {name} {{}}
+impl crate::PageSize for {name} {{
+    fn page_size(&self) -> usize {{
+        "
+        )?;
+        if required.iter().any(|field| field == pagination_field) {
+            writeln!(
+                &mut out,
+                "\
+        self.{pagination_field}.page_size()
+            "
+            )?;
+        } else {
+            writeln!(
+                &mut out,
+                "\
+        self.{pagination_field}.as_ref().map(|x| x.page_size()).unwrap_or(0)
+            "
+            )?;
+        }
+        writeln!(
+            &mut out,
+            "\
+    }}
+}}
+\
+        "
+        )?;
+    }
     for subtype in subtypes {
         out.push_str(&subtype);
     }

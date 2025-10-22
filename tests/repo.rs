@@ -3,6 +3,7 @@ use forgejo_api::structs::*;
 mod common;
 
 use common::{basic_org_repo, basic_repo, Git};
+use futures::{StreamExt, TryStreamExt};
 
 #[tokio::test]
 async fn pull_request() {
@@ -413,4 +414,44 @@ async fn many_repos() {
         let repo = repo.expect("failed to list repos");
         eprintln!("{}", repo.full_name.as_deref().unwrap_or("missing name"));
     }
+}
+
+#[tokio::test]
+async fn combined_status_list() {
+    let api = common::login();
+    let git = Git::new("./test_repos/combined-status-list");
+    let _ = basic_repo(&api, &git, "combined-status-list").await;
+    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+    let sha = api
+        .repo_get_branch("TestingAdmin", "combined-status-list", "main")
+        .await
+        .expect("failed to get main branch")
+        .commit
+        .expect("main branch does not have commit data")
+        .id
+        .expect("commit did not have id");
+
+    for i in 0..100 {
+        let opts = CreateStatusOption {
+            context: Some(format!("Status #{i}")),
+            description: Some(format!("This is commit status #{i}")),
+            state: Some(CommitStatusState::Success),
+            target_url: None,
+        };
+        api.repo_create_status("TestingAdmin", "combined-status-list", &sha, opts)
+            .await
+            .expect("failed to create commit status");
+    }
+
+    let statuses = api
+        .repo_get_combined_status_by_ref("TestingAdmin", "combined-status-list", &sha)
+        .stream_pages()
+        .map_ok(|page| page.statuses.expect("statuses missing from page"))
+        .map_ok(|page| futures::stream::iter(page).map(Result::<_, eyre::Report>::Ok))
+        .try_flatten()
+        .try_collect::<Vec<_>>()
+        .await
+        .expect("failed to get combined status list");
+
+    assert_eq!(statuses.len(), 100);
 }
