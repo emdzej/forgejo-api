@@ -19290,7 +19290,8 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "code.gitea.io/gitea/modules/structs",
+      "x-pagination-field": "statuses"
     },
     "Comment": {
       "description": "Comment represents a comment on a commit or issue",
