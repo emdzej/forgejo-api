@@ -54,7 +54,7 @@ async fn myself_custom_type() {
 fn myself_sync() {
     let api = common::sync_login();
 
-    let myself = api.user_get_current().unwrap();
+    let myself = api.user_get_current().send().unwrap();
     assert!(myself.is_admin.unwrap(), "user should be admin");
     assert_eq!(
         myself.login.as_ref().unwrap(),
@@ -62,7 +62,7 @@ fn myself_sync() {
         "user should be named \"TestingAdmin\""
     );
 
-    let myself_indirect = api.user_get("TestingAdmin").unwrap();
+    let myself_indirect = api.user_get("TestingAdmin").send().unwrap();
     assert_eq!(
         myself, myself_indirect,
         "result of `myself` does not match result of `get_user`"
