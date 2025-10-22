@@ -175,6 +175,7 @@ async fn oauth2_login() {
             ("scope", ""),
             ("nonce", ""),
             ("redirect_uri", "http://127.0.0.1:48879/"),
+            ("granted", "true"),
         ])
         .send()
         .await
