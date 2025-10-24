@@ -22487,13 +22487,7 @@
     "IssueFormFieldType": {
       "type": "string",
       "title": "IssueFormFieldType defines issue form field type, can be \"markdown\", \"textarea\", \"input\", \"dropdown\" or \"checkboxes\"",
-      "enum": [
-          "markdown",
-          "textarea",
-          "input",
-          "dropdown",
-          "checkboxes"
-      ],
+      "enum": ["markdown", "textarea", "input", "dropdown", "checkboxes"],
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
     "IssueFormFieldVisible": {
@@ -23201,12 +23195,7 @@
     "NotifySubjectType": {
       "description": "NotifySubjectType represent type of notification subject",
       "type": "string",
-      "enum": [
-        "Issue",
-        "Pull",
-        "Commit",
-        "Repository"
-      ],
+      "enum": ["Issue", "Pull", "Commit", "Repository"],
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
     "OAuth2Application": {
