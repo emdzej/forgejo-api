@@ -144,14 +144,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -201,14 +199,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -239,14 +235,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -271,14 +265,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -395,14 +387,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -891,14 +881,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1021,14 +1009,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1674,14 +1660,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -1861,14 +1845,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2030,14 +2012,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2149,14 +2129,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2360,14 +2338,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2489,14 +2465,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2663,14 +2637,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2841,14 +2813,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2877,14 +2847,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -2980,14 +2948,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3144,14 +3110,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3186,14 +3150,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3259,14 +3221,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3301,14 +3261,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3377,14 +3335,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3462,14 +3418,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3550,14 +3504,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -3854,7 +3806,6 @@
           {
             "minimum": 1,
             "type": "integer",
-            "format": "uint32",
             "default": 1,
             "description": "Page number of results to return (1-based)",
             "name": "page",
@@ -3863,7 +3814,6 @@
           {
             "minimum": 0,
             "type": "integer",
-            "format": "uint32",
             "description": "Number of items per page",
             "name": "limit",
             "in": "query"
@@ -4020,14 +3970,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -4204,14 +4152,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -4344,14 +4290,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results, default maximum page size is 50",
             "name": "limit",
             "in": "query"
@@ -4402,14 +4346,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -4692,14 +4634,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -5085,14 +5025,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -5311,14 +5249,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -5561,14 +5497,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results (ignored if used with 'path')",
             "name": "limit",
             "in": "query"
@@ -5623,14 +5557,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -5699,14 +5631,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -6456,14 +6386,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -6967,14 +6895,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number; the 'truncated' field in the response will be true if there are still more items after this page, false if the last page",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "number of items per page",
             "name": "per_page",
             "in": "query"
@@ -7016,14 +6942,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -7581,14 +7505,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -7691,14 +7613,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -8731,14 +8651,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -9139,14 +9057,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -9667,14 +9583,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -9967,14 +9881,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10175,14 +10087,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10256,14 +10166,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10466,14 +10374,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10633,14 +10539,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -10935,14 +10839,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -11251,14 +11153,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -11398,7 +11298,6 @@
           {
             "minimum": 1,
             "type": "integer",
-            "format": "uint32",
             "default": 1,
             "description": "Page number of results to return (1-based)",
             "name": "page",
@@ -11407,7 +11306,6 @@
           {
             "minimum": 0,
             "type": "integer",
-            "format": "uint32",
             "description": "Page size of results",
             "name": "limit",
             "in": "query"
@@ -11737,14 +11635,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -11816,14 +11712,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -12114,14 +12008,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -12759,14 +12651,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13047,14 +12937,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13691,14 +13579,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13764,14 +13650,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -13860,14 +13744,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14198,14 +14080,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results, default maximum page size is 50",
             "name": "limit",
             "in": "query"
@@ -14564,14 +14444,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -14662,14 +14540,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15141,14 +15017,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15194,7 +15068,6 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
@@ -15460,14 +15333,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15500,14 +15371,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15635,14 +15504,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15797,14 +15664,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -15948,14 +15813,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -16144,14 +16007,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -16465,14 +16326,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -16500,14 +16359,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -16669,14 +16526,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -16799,14 +16654,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -16959,14 +16812,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17086,14 +16937,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17121,14 +16970,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17178,14 +17025,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17213,14 +17058,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17270,14 +17113,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17305,14 +17146,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17433,14 +17272,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17576,14 +17413,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17611,14 +17446,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17646,14 +17479,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17681,14 +17512,12 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17777,14 +17606,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17865,14 +17692,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17904,14 +17729,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -17943,14 +17766,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -18013,14 +17834,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -18083,14 +17902,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -18122,14 +17939,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -18196,14 +18011,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -18235,14 +18048,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -18274,14 +18085,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
@@ -18313,14 +18122,12 @@
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page number of results to return (1-based)",
             "name": "page",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint32",
             "description": "page size of results",
             "name": "limit",
             "in": "query"
