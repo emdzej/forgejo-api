@@ -10,7 +10,7 @@
       "name": "This file is distributed under the MIT license for the purpose of interoperability",
       "url": "http://opensource.org/licenses/MIT"
     },
-    "version": "10.0.0-58-7e1df53+gitea-1.22.0"
+    "version": "13.0.1+gitea-1.22.0"
   },
   "basePath": "/api/v1",
   "paths": {
@@ -49,6 +49,7 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "int64",
             "description": "repository ID of the repo",
             "name": "repository-id",
             "in": "path",
@@ -71,6 +72,7 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "int64",
             "description": "repository ID of the repo",
             "name": "repository-id",
             "in": "path",
@@ -100,8 +102,67 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "int64",
             "description": "user ID of the user",
             "name": "user-id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActivityPub"
+          }
+        }
+      }
+    },
+    "/activitypub/user-id/{user-id}/activities/{activity-id}": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["activitypub"],
+        "summary": "Get a specific activity object of the user",
+        "operationId": "activitypubPersonActivityNote",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "user ID of the user",
+            "name": "user-id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "activity ID of the sought activity",
+            "name": "activity-id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActivityPub"
+          }
+        }
+      }
+    },
+    "/activitypub/user-id/{user-id}/activities/{activity-id}/activity": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["activitypub"],
+        "summary": "Get a specific activity of the user",
+        "operationId": "activitypubPersonActivity",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "user ID of the user",
+            "name": "user-id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "activity ID of the sought activity",
+            "name": "activity-id",
             "in": "path",
             "required": true
           }
@@ -122,6 +183,7 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "int64",
             "description": "user ID of the user",
             "name": "user-id",
             "in": "path",
@@ -129,8 +191,33 @@
           }
         ],
         "responses": {
-          "204": {
+          "202": {
             "$ref": "#/responses/empty"
+          }
+        }
+      }
+    },
+    "/activitypub/user-id/{user-id}/outbox": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["activitypub"],
+        "summary": "List the user's recorded activity",
+        "operationId": "activitypubPersonFeed",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "user ID of the user",
+            "name": "user-id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/PersonFeed"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
           }
         }
       }
@@ -194,7 +281,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "List all emails",
+        "summary": "List all users' email addresses",
         "operationId": "adminGetAllEmails",
         "parameters": [
           {
@@ -224,7 +311,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "Search all emails",
+        "summary": "Search users' email addresses",
         "operationId": "adminSearchEmails",
         "parameters": [
           {
@@ -260,7 +347,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "List system's webhooks",
+        "summary": "List global (system) webhooks",
         "operationId": "adminListHooks",
         "parameters": [
           {
@@ -314,7 +401,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -335,7 +422,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -357,7 +444,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to update",
             "name": "id",
             "in": "path",
@@ -583,7 +670,7 @@
           }
         ],
         "responses": {
-          "204": {
+          "201": {
             "$ref": "#/responses/empty"
           },
           "400": {
@@ -793,7 +880,7 @@
         "produces": ["application/json"],
         "tags": ["admin"],
         "summary": "Deletes a quota rule",
-        "operationId": "adminDeleteQuotaRule",
+        "operationId": "adminDEleteQuotaRule",
         "parameters": [
           {
             "type": "string",
@@ -855,6 +942,30 @@
           },
           "422": {
             "$ref": "#/responses/validationError"
+          }
+        }
+      }
+    },
+    "/admin/runners/jobs": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Search action jobs according filter conditions",
+        "operationId": "adminSearchRunJobs",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "a comma separated list of run job labels to search for",
+            "name": "labels",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RunJobList"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
           }
         }
       }
@@ -982,7 +1093,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "ID of the user's login source to search for",
             "name": "source_id",
             "in": "query"
@@ -1033,7 +1144,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "Create a user",
+        "summary": "Create a user account",
         "operationId": "adminCreateUser",
         "parameters": [
           {
@@ -1064,7 +1175,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "Delete a user",
+        "summary": "Delete user account",
         "operationId": "adminDeleteUser",
         "parameters": [
           {
@@ -1139,7 +1250,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "Add a public key on behalf of a user",
+        "summary": "Add an SSH public key to user's account",
         "operationId": "adminCreatePublicKey",
         "parameters": [
           {
@@ -1174,7 +1285,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "Delete a user's public key",
+        "summary": "Remove a public key from user's account",
         "operationId": "adminDeleteUserPublicKey",
         "parameters": [
           {
@@ -1186,7 +1297,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the key to delete",
             "name": "id",
             "in": "path",
@@ -1600,7 +1711,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["miscellaneous"],
-        "summary": "Returns the nodeinfo of the Gitea application",
+        "summary": "Returns the nodeinfo of the Forgejo application",
         "operationId": "getNodeInfo",
         "responses": {
           "200": {
@@ -1692,7 +1803,7 @@
             "in": "query"
           },
           {
-            "type": "string",
+            "type": "boolean",
             "description": "If true, mark all notifications on this repo. Default value is false",
             "name": "all",
             "in": "query"
@@ -1742,7 +1853,8 @@
         "operationId": "notifyGetThread",
         "parameters": [
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "id of notification thread",
             "name": "id",
             "in": "path",
@@ -1769,7 +1881,8 @@
         "operationId": "notifyReadThread",
         "parameters": [
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "id of notification thread",
             "name": "id",
             "in": "path",
@@ -1840,7 +1953,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Get list of organizations",
+        "summary": "List all organizations",
         "operationId": "orgGetAll",
         "parameters": [
           {
@@ -1974,6 +2087,37 @@
         }
       }
     },
+    "/orgs/{org}/actions/runners/jobs": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["organization"],
+        "summary": "Search for organization's action jobs according filter conditions",
+        "operationId": "orgSearchRunJobs",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "name of the organization",
+            "name": "org",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "a comma separated list of run job labels to search for",
+            "name": "labels",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RunJobList"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          }
+        }
+      }
+    },
     "/orgs/{org}/actions/runners/registration-token": {
       "get": {
         "produces": ["application/json"],
@@ -2000,7 +2144,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "List an organization's actions secrets",
+        "summary": "List actions secrets of an organization",
         "operationId": "orgListActionsSecrets",
         "parameters": [
           {
@@ -2117,7 +2261,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Get an org-level variables list",
+        "summary": "List variables of an organization",
         "operationId": "getOrgVariablesList",
         "parameters": [
           {
@@ -2157,7 +2301,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Get an org-level variable",
+        "summary": "Get organization's variable by name",
         "operationId": "getOrgVariable",
         "parameters": [
           {
@@ -2191,7 +2335,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Update an org-level variable",
+        "summary": "Update variable in organization",
         "operationId": "updateOrgVariable",
         "parameters": [
           {
@@ -2235,7 +2379,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Create an org-level variable",
+        "summary": "Create a new variable in organization",
         "operationId": "createOrgVariable",
         "parameters": [
           {
@@ -2278,7 +2422,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Delete an org-level variable",
+        "summary": "Delete organization's variable by name",
         "operationId": "deleteOrgVariable",
         "parameters": [
           {
@@ -2297,12 +2441,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "$ref": "#/responses/ActionVariable"
-          },
-          "201": {
-            "description": "response when deleting a variable"
-          },
           "204": {
             "description": "response when deleting a variable"
           },
@@ -2363,7 +2501,7 @@
       "post": {
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Update Avatar",
+        "summary": "Update an organization's avatar",
         "operationId": "orgUpdateAvatar",
         "parameters": [
           {
@@ -2393,7 +2531,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Delete Avatar",
+        "summary": "Delete an organization's avatar. It will be replaced by a default one",
         "operationId": "orgDeleteAvatar",
         "parameters": [
           {
@@ -2534,7 +2672,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -2565,7 +2703,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -2597,7 +2735,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to update",
             "name": "id",
             "in": "path",
@@ -2634,6 +2772,13 @@
             "name": "org",
             "in": "path",
             "required": true
+          },
+          {
+            "enum": ["mostissues", "leastissues", "reversealphabetically"],
+            "type": "string",
+            "description": "Specifies the sorting method: mostissues, leastissues, or reversealphabetically.",
+            "name": "sort",
+            "in": "query"
           },
           {
             "type": "integer",
@@ -2708,7 +2853,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the label to get",
             "name": "id",
             "in": "path",
@@ -2738,7 +2883,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the label to delete",
             "name": "id",
             "in": "path",
@@ -2770,7 +2915,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the label to edit",
             "name": "id",
             "in": "path",
@@ -3187,11 +3332,21 @@
             "name": "org",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "subject of the quota",
+            "name": "subject",
+            "in": "query",
+            "required": true
           }
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/boolean"
+            "description": "Returns true if the action is accepted.",
+            "schema": {
+              "type": "boolean"
+            }
           },
           "403": {
             "$ref": "#/responses/forbidden"
@@ -3241,6 +3396,42 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/orgs/{org}/rename": {
+      "post": {
+        "produces": ["application/json"],
+        "tags": ["organization"],
+        "summary": "Rename an organization",
+        "operationId": "renameOrg",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "existing org name",
+            "name": "org",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RenameOrgOption"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/empty"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
           }
         }
       }
@@ -3434,6 +3625,7 @@
             "description": "SearchResults of a successful search",
             "schema": {
               "type": "object",
+              "title": "TeamSearchResults",
               "properties": {
                 "data": {
                   "type": "array",
@@ -3553,6 +3745,89 @@
         "responses": {
           "200": {
             "$ref": "#/responses/PackageList"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/packages/{owner}/{type}/{name}/-/link/{repo_name}": {
+      "post": {
+        "tags": ["package"],
+        "summary": "Link a package to a repository",
+        "operationId": "linkPackage",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the package",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "type of the package",
+            "name": "type",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the package",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repository to link.",
+            "name": "repo_name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/empty"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/packages/{owner}/{type}/{name}/-/unlink": {
+      "post": {
+        "tags": ["package"],
+        "summary": "Unlink a package from a repository",
+        "operationId": "unlinkPackage",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the package",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "type of the package",
+            "name": "type",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the package",
+            "name": "name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/empty"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -3730,7 +4005,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "Repository ID to prioritize in the results",
             "name": "priority_repo_id",
             "in": "query"
@@ -3817,6 +4092,24 @@
             "description": "Number of items per page",
             "name": "limit",
             "in": "query"
+          },
+          {
+            "enum": [
+              "relevance",
+              "latest",
+              "oldest",
+              "recentupdate",
+              "leastupdate",
+              "mostcomment",
+              "leastcomment",
+              "nearduedate",
+              "farduedate"
+            ],
+            "type": "string",
+            "default": "latest",
+            "description": "Type of sort",
+            "name": "sort",
+            "in": "query"
           }
         ],
         "responses": {
@@ -3894,28 +4187,28 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "search only for repos that the user with the given id owns or contributes to",
             "name": "uid",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "repo owner to prioritize in the results",
             "name": "priority_owner_id",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "search only for repos that belong to the given team id",
             "name": "team_id",
             "in": "query"
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "search only for repos that the user with the given id has starred",
             "name": "starredBy",
             "in": "query"
@@ -3928,7 +4221,7 @@
           },
           {
             "type": "boolean",
-            "description": "show only pubic, private or all repositories (defaults to all)",
+            "description": "show only public, private or all repositories (defaults to all)",
             "name": "is_private",
             "in": "query"
           },
@@ -3957,12 +4250,24 @@
             "in": "query"
           },
           {
+            "enum": [
+              "alpha",
+              "created",
+              "updated",
+              "size",
+              "git_size",
+              "lfs_size",
+              "id",
+              "stars",
+              "forks"
+            ],
             "type": "string",
             "description": "sort repos by attribute. Supported values are \"alpha\", \"created\", \"updated\", \"size\", \"git_size\", \"lfs_size\", \"stars\", \"forks\" and \"id\". Default is \"alpha\"",
             "name": "sort",
             "in": "query"
           },
           {
+            "enum": ["asc", "desc"],
             "type": "string",
             "description": "sort order, either \"asc\" (ascending) or \"desc\" (descending). Default is \"asc\", ignored if \"sort\" is not specified.",
             "name": "order",
@@ -4100,6 +4405,44 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/actions/runners/jobs": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Search for repository's action jobs according filter conditions",
+        "operationId": "repoSearchRunJobs",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "a comma separated list of run job labels to search for",
+            "name": "labels",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RunJobList"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/actions/runners/registration-token": {
       "get": {
         "produces": ["application/json"],
@@ -4125,6 +4468,140 @@
         "responses": {
           "200": {
             "$ref": "#/responses/RegistrationToken"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/actions/runs": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "List a repository's action runs",
+        "operationId": "ListActionRuns",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "page number of results to return (1-based)",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page size of results, default maximum page size is 50",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Returns workflow run triggered by the specified events. For example, `push`, `pull_request` or `workflow_dispatch`.",
+            "name": "event",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "enum": [
+                "unknown",
+                "waiting",
+                "running",
+                "success",
+                "failure",
+                "cancelled",
+                "skipped",
+                "blocked"
+              ],
+              "type": "string"
+            },
+            "description": "Returns workflow runs with the check run status or conclusion that is specified. For example, a conclusion can be success or a status can be in_progress. Only Forgejo Actions can set a status of waiting, pending, or requested.\n",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "Returns the workflow run associated with the run number.\n",
+            "name": "run_number",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Only returns workflow runs that are associated with the specified head_sha.",
+            "name": "head_sha",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunList"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/actions/runs/{run_id}": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Get an action run",
+        "operationId": "ActionRun",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "id of the action run",
+            "name": "run_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRun"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
           }
         }
       }
@@ -4540,12 +5017,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "$ref": "#/responses/ActionVariable"
-          },
-          "201": {
-            "description": "response when deleting a variable"
-          },
           "204": {
             "description": "response when deleting a variable"
           },
@@ -4558,7 +5029,7 @@
         }
       }
     },
-    "/repos/{owner}/{repo}/actions/workflows/{workflowname}/dispatches": {
+    "/repos/{owner}/{repo}/actions/workflows/{workflowfilename}/dispatches": {
       "post": {
         "consumes": ["application/json"],
         "tags": ["repository"],
@@ -4582,7 +5053,7 @@
           {
             "type": "string",
             "description": "name of the workflow",
-            "name": "workflowname",
+            "name": "workflowfilename",
             "in": "path",
             "required": true
           },
@@ -4595,6 +5066,9 @@
           }
         ],
         "responses": {
+          "201": {
+            "$ref": "#/responses/DispatchWorkflowRun"
+          },
           "204": {
             "$ref": "#/responses/empty"
           },
@@ -4734,7 +5208,7 @@
       "post": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "Update avatar",
+        "summary": "Update a repository's avatar",
         "operationId": "repoUpdateAvatar",
         "parameters": [
           {
@@ -4771,7 +5245,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "Delete avatar",
+        "summary": "Delete a repository's avatar",
         "operationId": "repoDeleteAvatar",
         "parameters": [
           {
@@ -5272,6 +5746,7 @@
     },
     "/repos/{owner}/{repo}/collaborators/{collaborator}": {
       "get": {
+        "description": "If the user is a collaborator, return 204. If the user is not a collaborator, return 404.",
         "produces": ["application/json"],
         "tags": ["repository"],
         "summary": "Check if a user is a collaborator of a repository",
@@ -5810,6 +6285,9 @@
           "404": {
             "$ref": "#/responses/notFound"
           },
+          "409": {
+            "$ref": "#/responses/conflict"
+          },
           "413": {
             "$ref": "#/responses/quotaExceeded"
           },
@@ -5913,6 +6391,9 @@
           "404": {
             "$ref": "#/responses/notFound"
           },
+          "409": {
+            "$ref": "#/responses/conflict"
+          },
           "413": {
             "$ref": "#/responses/quotaExceeded"
           },
@@ -5970,6 +6451,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "409": {
+            "$ref": "#/responses/conflict"
           },
           "413": {
             "$ref": "#/responses/quotaExceeded"
@@ -6037,6 +6521,44 @@
           },
           "423": {
             "$ref": "#/responses/repoArchivedError"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/convert": {
+      "post": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Convert a mirror repo to a normal repo.",
+        "operationId": "repoConvert",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo to convert",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo to convert",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Repository"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
           }
         }
       }
@@ -6125,7 +6647,13 @@
         ],
         "responses": {
           "200": {
-            "description": "success"
+            "description": "definitions",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -6456,6 +6984,45 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/git/blobs": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Gets multiplbe blobs of a repository.",
+        "operationId": "GetBlobs",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "a comma separated list of blob-sha (mind the overall URL-length limit of ~2,083 chars)",
+            "name": "shas",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GitBlobList"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/git/blobs/{sha}": {
       "get": {
         "produces": ["application/json"],
@@ -6479,7 +7046,7 @@
           },
           {
             "type": "string",
-            "description": "sha of the commit",
+            "description": "sha of the blob to retrieve",
             "name": "sha",
             "in": "path",
             "required": true
@@ -6487,7 +7054,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/GitBlobResponse"
+            "$ref": "#/responses/GitBlob"
           },
           "400": {
             "$ref": "#/responses/error"
@@ -7176,7 +7743,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -7214,7 +7781,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -7252,7 +7819,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the hook",
             "name": "id",
             "in": "path",
@@ -7299,7 +7866,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to test",
             "name": "id",
             "in": "path",
@@ -7514,6 +8081,24 @@
             "description": "page size of results",
             "name": "limit",
             "in": "query"
+          },
+          {
+            "enum": [
+              "relevance",
+              "latest",
+              "oldest",
+              "recentupdate",
+              "leastupdate",
+              "mostcomment",
+              "leastcomment",
+              "nearduedate",
+              "farduedate"
+            ],
+            "type": "string",
+            "default": "latest",
+            "description": "Type of sort",
+            "name": "sort",
+            "in": "query"
           }
         ],
         "responses": {
@@ -7630,6 +8215,12 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
+          },
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       }
@@ -7658,7 +8249,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -7677,6 +8268,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       },
@@ -7701,7 +8295,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of comment to delete",
             "name": "id",
             "in": "path",
@@ -7715,8 +8309,8 @@
           "403": {
             "$ref": "#/responses/forbidden"
           },
-          "404": {
-            "$ref": "#/responses/notFound"
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       },
@@ -7743,7 +8337,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -7772,6 +8366,9 @@
           },
           "423": {
             "$ref": "#/responses/repoArchivedError"
+          },
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       }
@@ -7799,7 +8396,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -7838,7 +8435,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -7910,7 +8507,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -7918,7 +8515,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to get",
             "name": "attachment_id",
             "in": "path",
@@ -7956,7 +8553,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -7964,7 +8561,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to delete",
             "name": "attachment_id",
             "in": "path",
@@ -8006,7 +8603,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "id",
             "in": "path",
@@ -8014,7 +8611,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to edit",
             "name": "attachment_id",
             "in": "path",
@@ -8068,7 +8665,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -8110,7 +8707,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -8162,7 +8759,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -8244,7 +8841,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue to get",
             "name": "index",
             "in": "path",
@@ -8281,7 +8878,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of issue to delete",
             "name": "index",
             "in": "path",
@@ -8323,7 +8920,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue to edit",
             "name": "index",
             "in": "path",
@@ -8376,7 +8973,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8415,7 +9012,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8487,7 +9084,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8495,7 +9092,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to get",
             "name": "attachment_id",
             "in": "path",
@@ -8533,7 +9130,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8541,7 +9138,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to delete",
             "name": "attachment_id",
             "in": "path",
@@ -8583,7 +9180,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8591,7 +9188,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to edit",
             "name": "attachment_id",
             "in": "path",
@@ -8643,7 +9240,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8692,7 +9290,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8736,7 +9335,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8783,7 +9383,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8810,6 +9410,12 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
+          },
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       },
@@ -8836,7 +9442,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -8862,6 +9468,9 @@
           },
           "423": {
             "$ref": "#/responses/repoArchivedError"
+          },
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       }
@@ -8896,7 +9505,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of comment to delete",
             "name": "id",
             "in": "path",
@@ -8910,8 +9519,8 @@
           "403": {
             "$ref": "#/responses/forbidden"
           },
-          "404": {
-            "$ref": "#/responses/notFound"
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       },
@@ -8946,7 +9555,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment to edit",
             "name": "id",
             "in": "path",
@@ -8972,6 +9581,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       }
@@ -9000,7 +9612,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue to create or update a deadline on",
             "name": "index",
             "in": "path",
@@ -9049,7 +9661,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9098,7 +9711,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9145,7 +9759,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9195,7 +9810,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9234,7 +9849,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9283,7 +9898,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9331,7 +9946,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9358,7 +9973,7 @@
         }
       }
     },
-    "/repos/{owner}/{repo}/issues/{index}/labels/{id}": {
+    "/repos/{owner}/{repo}/issues/{index}/labels/{identifier}": {
       "delete": {
         "produces": ["application/json"],
         "tags": ["issue"],
@@ -9381,17 +9996,16 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
             "required": true
           },
           {
-            "type": "integer",
-            "format": "uint64",
-            "description": "id of the label to remove",
-            "name": "id",
+            "type": "string",
+            "description": "name or id of the label to remove",
+            "name": "identifier",
             "in": "path",
             "required": true
           },
@@ -9441,7 +10055,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of issue to pin",
             "name": "index",
             "in": "path",
@@ -9481,7 +10095,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of issue to unpin",
             "name": "index",
             "in": "path",
@@ -9523,7 +10137,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of issue",
             "name": "index",
             "in": "path",
@@ -9531,7 +10145,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "the new position",
             "name": "position",
             "in": "path",
@@ -9575,7 +10189,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9629,7 +10243,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9681,7 +10295,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9732,7 +10346,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue to stop the stopwatch on",
             "name": "index",
             "in": "path",
@@ -9779,7 +10393,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue to create the stopwatch on",
             "name": "index",
             "in": "path",
@@ -9826,7 +10440,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue to stop the stopwatch on",
             "name": "index",
             "in": "path",
@@ -9873,7 +10487,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9926,7 +10540,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -9967,7 +10581,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -10019,7 +10633,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -10072,7 +10686,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -10111,6 +10725,12 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
+          },
+          "500": {
+            "$ref": "#/responses/internalServerError"
           }
         }
       }
@@ -10138,7 +10758,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -10209,7 +10829,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -10261,7 +10881,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue to add tracked time to",
             "name": "index",
             "in": "path",
@@ -10308,7 +10928,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the issue",
             "name": "index",
             "in": "path",
@@ -10316,7 +10936,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of time to delete",
             "name": "id",
             "in": "path",
@@ -10459,7 +11079,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the key to get",
             "name": "id",
             "in": "path",
@@ -10496,7 +11116,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the key to delete",
             "name": "id",
             "in": "path",
@@ -10536,6 +11156,13 @@
             "name": "repo",
             "in": "path",
             "required": true
+          },
+          {
+            "enum": ["mostissues", "leastissues", "reversealphabetically"],
+            "type": "string",
+            "description": "Specifies the sorting method: mostissues, leastissues, or reversealphabetically.",
+            "name": "sort",
+            "in": "query"
           },
           {
             "type": "integer",
@@ -10624,7 +11251,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the label to get",
             "name": "id",
             "in": "path",
@@ -10661,7 +11288,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the label to delete",
             "name": "id",
             "in": "path",
@@ -10700,7 +11327,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the label to edit",
             "name": "id",
             "in": "path",
@@ -10796,7 +11423,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns raw file content."
+            "description": "Returns raw file content.",
+            "schema": {
+              "type": "file"
+            }
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -10920,7 +11550,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "the milestone to get, identified by ID and if not available by name",
             "name": "id",
             "in": "path",
@@ -10956,7 +11587,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "the milestone to delete, identified by ID and if not available by name",
             "name": "id",
             "in": "path",
@@ -10994,7 +11626,8 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "integer",
+            "format": "int64",
             "description": "the milestone to edit, identified by ID and if not available by name",
             "name": "id",
             "in": "path",
@@ -11192,7 +11825,7 @@
             "required": true
           },
           {
-            "type": "string",
+            "type": "boolean",
             "description": "If true, mark all notifications on this repo. Default value is false",
             "name": "all",
             "in": "query"
@@ -11232,7 +11865,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "List a repo's pull requests",
+        "summary": "List a repo's pull requests. If a pull request is selected but fails to be retrieved for any reason, it will be a null value in the list of results.",
         "operationId": "repoListPullRequests",
         "parameters": [
           {
@@ -11261,6 +11894,7 @@
             "enum": [
               "oldest",
               "recentupdate",
+              "recentclose",
               "leastupdate",
               "mostcomment",
               "leastcomment",
@@ -11273,7 +11907,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "ID of the milestone",
             "name": "milestone",
             "in": "query"
@@ -11282,7 +11916,7 @@
             "type": "array",
             "items": {
               "type": "integer",
-              "format": "uint64"
+              "format": "int64"
             },
             "collectionFormat": "multi",
             "description": "Label IDs",
@@ -11475,7 +12109,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -11514,7 +12148,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to edit",
             "name": "index",
             "in": "path",
@@ -11573,7 +12207,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -11627,7 +12261,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -11691,7 +12325,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -11756,7 +12390,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -11794,7 +12428,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to merge",
             "name": "index",
             "in": "path",
@@ -11851,7 +12485,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to merge",
             "name": "index",
             "in": "path",
@@ -11878,7 +12512,7 @@
       "post": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "create review requests for a pull request",
+        "summary": "Create review requests for a pull request",
         "operationId": "repoCreatePullReviewRequests",
         "parameters": [
           {
@@ -11897,7 +12531,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -11927,7 +12561,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "cancel review requests for a pull request",
+        "summary": "Cancel review requests for a pull request",
         "operationId": "repoDeletePullReviewRequests",
         "parameters": [
           {
@@ -11946,7 +12580,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12000,7 +12634,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12050,7 +12684,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12101,7 +12735,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12109,7 +12743,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12147,7 +12781,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12155,7 +12789,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12204,7 +12838,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12212,7 +12846,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12255,7 +12889,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12263,7 +12897,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12301,7 +12935,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12309,7 +12943,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12360,7 +12994,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12368,7 +13002,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12376,7 +13010,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "comment",
             "in": "path",
@@ -12417,7 +13051,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12425,7 +13059,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12433,7 +13067,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the comment",
             "name": "comment",
             "in": "path",
@@ -12476,7 +13110,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12484,7 +13118,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12538,7 +13172,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request",
             "name": "index",
             "in": "path",
@@ -12546,7 +13180,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the review",
             "name": "id",
             "in": "path",
@@ -12592,7 +13226,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "index of the pull request to get",
             "name": "index",
             "in": "path",
@@ -12681,7 +13315,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "add a push mirror to the repository",
+        "summary": "Set up a new push mirror in a repository",
         "operationId": "repoAddPushMirror",
         "parameters": [
           {
@@ -12813,7 +13447,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "deletes a push mirror from a repository by remoteName",
+        "summary": "Remove a push mirror from a repository by remoteName",
         "operationId": "repoDeletePushMirror",
         "parameters": [
           {
@@ -12888,7 +13522,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns raw file content."
+            "description": "Returns raw file content.",
+            "schema": {
+              "type": "file"
+            }
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -13135,7 +13772,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release to get",
             "name": "id",
             "in": "path",
@@ -13172,7 +13809,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release to delete",
             "name": "id",
             "in": "path",
@@ -13214,7 +13851,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release to edit",
             "name": "id",
             "in": "path",
@@ -13261,7 +13898,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -13300,7 +13937,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -13364,7 +14001,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -13372,7 +14009,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to get",
             "name": "attachment_id",
             "in": "path",
@@ -13410,7 +14047,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -13418,7 +14055,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to delete",
             "name": "attachment_id",
             "in": "path",
@@ -13457,7 +14094,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the release",
             "name": "id",
             "in": "path",
@@ -13465,7 +14102,7 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the attachment to edit",
             "name": "attachment_id",
             "in": "path",
@@ -13854,6 +14491,156 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/sync_fork": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Gets information about syncing the fork default branch with the base branch",
+        "operationId": "repoSyncForkDefaultInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SyncForkInfo"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "post": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Syncs the default branch of a fork with the base branch",
+        "operationId": "repoSyncForkDefault",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/empty"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/sync_fork/{branch}": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Gets information about syncing a fork branch with the base branch",
+        "operationId": "repoSyncForkBranchInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "The branch",
+            "name": "branch",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SyncForkInfo"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "post": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Syncs a fork branch with the base branch",
+        "operationId": "repoSyncForkBranch",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "The branch",
+            "name": "branch",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/empty"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/tag_protections": {
       "get": {
         "produces": ["application/json"],
@@ -13953,6 +14740,7 @@
           },
           {
             "type": "integer",
+            "format": "int64",
             "description": "id of the tag protect to get",
             "name": "id",
             "in": "path",
@@ -13990,6 +14778,7 @@
           },
           {
             "type": "integer",
+            "format": "int64",
             "description": "id of protected tag",
             "name": "id",
             "in": "path",
@@ -14028,6 +14817,7 @@
           },
           {
             "type": "integer",
+            "format": "int64",
             "description": "id of protected tag",
             "name": "id",
             "in": "path",
@@ -15144,7 +15934,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the repo to get",
             "name": "id",
             "in": "path",
@@ -15229,6 +16019,25 @@
         }
       }
     },
+    "/signing-key.ssh": {
+      "get": {
+        "produces": ["text/plain"],
+        "tags": ["miscellaneous"],
+        "summary": "Get default signing-key.ssh",
+        "operationId": "getSSHSigningKey",
+        "responses": {
+          "200": {
+            "description": "SSH public key in OpenSSH authorized key format",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/teams/{id}": {
       "get": {
         "produces": ["application/json"],
@@ -15238,7 +16047,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team to get",
             "name": "id",
             "in": "path",
@@ -15261,7 +16070,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team to delete",
             "name": "id",
             "in": "path",
@@ -15286,6 +16095,7 @@
         "parameters": [
           {
             "type": "integer",
+            "format": "int64",
             "description": "id of the team to edit",
             "name": "id",
             "in": "path",
@@ -15318,7 +16128,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15363,7 +16173,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15401,7 +16211,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15432,7 +16242,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15463,7 +16273,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15496,7 +16306,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15534,7 +16344,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15572,7 +16382,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15614,7 +16424,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the team",
             "name": "id",
             "in": "path",
@@ -15652,12 +16462,12 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "search topics via keyword",
+        "summary": "Search for topics by keyword",
         "operationId": "topicSearch",
         "parameters": [
           {
             "type": "string",
-            "description": "keywords to search",
+            "description": "keyword to search for",
             "name": "q",
             "in": "query",
             "required": true
@@ -15677,7 +16487,19 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/TopicListResponse"
+            "description": "SearchResults of a successful search",
+            "schema": {
+              "type": "object",
+              "title": "TopicSearchResults",
+              "properties": {
+                "topics": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/TopicResponse"
+                  }
+                }
+              }
+            }
           },
           "403": {
             "$ref": "#/responses/forbidden"
@@ -15697,6 +16519,33 @@
         "responses": {
           "200": {
             "$ref": "#/responses/User"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          }
+        }
+      }
+    },
+    "/user/actions/runners/jobs": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Search for user's action jobs according filter conditions",
+        "operationId": "userSearchRunJobs",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "a comma separated list of run job labels to search for",
+            "name": "labels",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RunJobList"
           },
           "401": {
             "$ref": "#/responses/unauthorized"
@@ -16033,7 +16882,7 @@
       "post": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "creates a new OAuth2 application",
+        "summary": "Creates a new OAuth2 application",
         "operationId": "userCreateOAuth2Application",
         "parameters": [
           {
@@ -16065,12 +16914,12 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "get an OAuth2 Application",
+        "summary": "Get an OAuth2 application",
         "operationId": "userGetOAuth2Application",
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "Application ID to be found",
             "name": "id",
             "in": "path",
@@ -16095,12 +16944,12 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "delete an OAuth2 Application",
+        "summary": "Delete an OAuth2 application",
         "operationId": "userDeleteOAuth2Application",
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "token to be deleted",
             "name": "id",
             "in": "path",
@@ -16125,12 +16974,12 @@
       "patch": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "update an OAuth2 Application, this includes regenerating the client secret",
+        "summary": "Update an OAuth2 application, this includes regenerating the client secret",
         "operationId": "userUpdateOAuth2Application",
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "application to be updated",
             "name": "id",
             "in": "path",
@@ -16165,7 +17014,7 @@
       "post": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Update Avatar",
+        "summary": "Update avatar of the current user",
         "operationId": "userUpdateAvatar",
         "parameters": [
           {
@@ -16191,7 +17040,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Delete Avatar",
+        "summary": "Delete avatar of the current user. It will be replaced by a default one",
         "operationId": "userDeleteAvatar",
         "responses": {
           "204": {
@@ -16210,7 +17059,7 @@
       "put": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Blocks a user from the doer.",
+        "summary": "Blocks a user from the doer",
         "operationId": "userBlockUser",
         "parameters": [
           {
@@ -16244,7 +17093,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "List the authenticated user's email addresses",
+        "summary": "List all email addresses of the current user",
         "operationId": "userListEmails",
         "responses": {
           "200": {
@@ -16261,7 +17110,7 @@
       "post": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Add email addresses",
+        "summary": "Add an email addresses to the current user's account",
         "operationId": "userAddEmail",
         "parameters": [
           {
@@ -16290,7 +17139,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Delete email addresses",
+        "summary": "Delete email addresses from the current user's account",
         "operationId": "userDeleteEmail",
         "parameters": [
           {
@@ -16498,6 +17347,15 @@
         "tags": ["user"],
         "summary": "Verify a GPG key",
         "operationId": "userVerifyGPGKey",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/VerifyGPGKeyOption"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "$ref": "#/responses/GPGKey"
@@ -16553,7 +17411,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Create a GPG key",
+        "summary": "Add a GPG public key to current user's account",
         "operationId": "userCurrentPostGPGKey",
         "parameters": [
           {
@@ -16592,7 +17450,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of key to get",
             "name": "id",
             "in": "path",
@@ -16617,12 +17475,12 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Remove a GPG key",
+        "summary": "Remove a GPG public key from current user's account",
         "operationId": "userCurrentDeleteGPGKey",
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of key to delete",
             "name": "id",
             "in": "path",
@@ -16715,7 +17573,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to get",
             "name": "id",
             "in": "path",
@@ -16742,7 +17600,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to delete",
             "name": "id",
             "in": "path",
@@ -16770,7 +17628,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of the hook to update",
             "name": "id",
             "in": "path",
@@ -16875,7 +17733,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of key to get",
             "name": "id",
             "in": "path",
@@ -16905,7 +17763,7 @@
         "parameters": [
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "id of key to delete",
             "name": "id",
             "in": "path",
@@ -17088,9 +17946,21 @@
         "tags": ["user"],
         "summary": "Check if the authenticated user is over quota for a given subject",
         "operationId": "userCheckQuota",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "subject of the quota",
+            "name": "subject",
+            "in": "query",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
-            "$ref": "#/responses/boolean"
+            "description": "Returns true if the action is accepted.",
+            "schema": {
+              "type": "boolean"
+            }
           },
           "401": {
             "$ref": "#/responses/unauthorized"
@@ -17157,8 +18027,28 @@
             "in": "query"
           },
           {
+            "enum": [
+              "name",
+              "id",
+              "newest",
+              "oldest",
+              "recentupdate",
+              "leastupdate",
+              "reversealphabetically",
+              "alphabetically",
+              "reversesize",
+              "size",
+              "reversegitsize",
+              "gitsize",
+              "reverselfssize",
+              "lfssize",
+              "moststars",
+              "feweststars",
+              "mostforks",
+              "fewestforks"
+            ],
             "type": "string",
-            "description": "order the repositories by name (default), id, or size",
+            "description": "order the repositories",
             "name": "order_by",
             "in": "query"
           }
@@ -17222,7 +18112,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Get user settings",
+        "summary": "Get current user's account settings",
         "operationId": "getUserSettings",
         "responses": {
           "200": {
@@ -17239,7 +18129,7 @@
       "patch": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Update user settings",
+        "summary": "Update settings in current user's account",
         "operationId": "updateUserSettings",
         "parameters": [
           {
@@ -17554,7 +18444,7 @@
       "put": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Unblocks a user from the doer.",
+        "summary": "Unblocks a user from the doer",
         "operationId": "userUnblockUser",
         "parameters": [
           {
@@ -17599,9 +18489,23 @@
           },
           {
             "type": "integer",
-            "format": "uint64",
+            "format": "int64",
             "description": "ID of the user to search for",
             "name": "uid",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "oldest",
+              "newest",
+              "alphabetically",
+              "reversealphabetically",
+              "recentupdate",
+              "leastupdate"
+            ],
+            "type": "string",
+            "description": "sort order of results",
+            "name": "sort",
             "in": "query"
           },
           {
@@ -17622,6 +18526,7 @@
             "description": "SearchResults of a successful search",
             "schema": {
               "type": "object",
+              "title": "UserSearchResults",
               "properties": {
                 "data": {
                   "type": "array",
@@ -18149,7 +19054,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Create an access token",
+        "summary": "Generate an access token for the current user",
         "operationId": "userCreateToken",
         "parameters": [
           {
@@ -18187,7 +19092,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "delete an access token",
+        "summary": "Delete an access token from current user's account",
         "operationId": "userDeleteAccessToken",
         "parameters": [
           {
@@ -18225,7 +19130,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["miscellaneous"],
-        "summary": "Returns the version of the Gitea application",
+        "summary": "Returns the version of the running application",
         "operationId": "getVersion",
         "responses": {
           "200": {
@@ -18250,7 +19155,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "APIForbiddenError": {
       "type": "object",
@@ -18264,7 +19169,21 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/services/context"
+      "x-go-package": "forgejo.org/services/context"
+    },
+    "APIInternalServerError": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "x-go-name": "Message"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "forgejo.org/services/context"
     },
     "APIInvalidTopicsError": {
       "type": "object",
@@ -18281,7 +19200,7 @@
           "x-go-name": "Message"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/services/context"
+      "x-go-package": "forgejo.org/services/context"
     },
     "APINotFound": {
       "type": "object",
@@ -18302,7 +19221,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/services/context"
+      "x-go-package": "forgejo.org/services/context"
     },
     "APIRepoArchivedError": {
       "type": "object",
@@ -18316,7 +19235,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/services/context"
+      "x-go-package": "forgejo.org/services/context"
     },
     "APIUnauthorizedError": {
       "type": "object",
@@ -18330,7 +19249,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/services/context"
+      "x-go-package": "forgejo.org/services/context"
     },
     "APIValidationError": {
       "type": "object",
@@ -18344,7 +19263,29 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/services/context"
+      "x-go-package": "forgejo.org/services/context"
+    },
+    "APPersonFollowItem": {
+      "type": "object",
+      "properties": {
+        "actor_id": {
+          "type": "string",
+          "x-go-name": "ActorID"
+        },
+        "note": {
+          "type": "string",
+          "x-go-name": "Note"
+        },
+        "original_item": {
+          "type": "string",
+          "x-go-name": "OriginalItem"
+        },
+        "original_url": {
+          "type": "string",
+          "x-go-name": "OriginalURL"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "AccessToken": {
       "type": "object",
@@ -18375,7 +19316,188 @@
           "x-go-name": "TokenLastEight"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "ActionRun": {
+      "description": "ActionRun represents an action run",
+      "type": "object",
+      "properties": {
+        "ScheduleID": {
+          "description": "the cron id for the schedule trigger",
+          "type": "integer",
+          "format": "int64"
+        },
+        "approved_by": {
+          "description": "who approved this action run",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ApprovedBy"
+        },
+        "commit_sha": {
+          "description": "the commit sha the action run ran on",
+          "type": "string",
+          "x-go-name": "CommitSHA"
+        },
+        "created": {
+          "description": "when the action run was created",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Created"
+        },
+        "duration": {
+          "$ref": "#/definitions/Duration"
+        },
+        "event": {
+          "description": "the webhook event that causes the workflow to run",
+          "type": "string",
+          "x-go-name": "Event"
+        },
+        "event_payload": {
+          "description": "the payload of the webhook event that causes the workflow to run",
+          "type": "string",
+          "x-go-name": "EventPayload"
+        },
+        "html_url": {
+          "description": "the url of this action run",
+          "format": "url",
+          "type": "string",
+          "x-go-name": "HTMLURL"
+        },
+        "id": {
+          "description": "the action run id",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "index_in_repo": {
+          "description": "a unique number for each run of a repository",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Index"
+        },
+        "is_fork_pull_request": {
+          "description": "If this is triggered by a PR from a forked repository or an untrusted user, we need to check if it is approved and limit permissions when running the workflow.",
+          "type": "boolean",
+          "x-go-name": "IsForkPullRequest"
+        },
+        "is_ref_deleted": {
+          "description": "has the commit/tag/… the action run ran on been deleted",
+          "type": "boolean",
+          "x-go-name": "IsRefDeleted"
+        },
+        "need_approval": {
+          "description": "may need approval if it's a fork pull request",
+          "type": "boolean",
+          "x-go-name": "NeedApproval"
+        },
+        "prettyref": {
+          "description": "the commit/tag/… the action run ran on",
+          "type": "string",
+          "x-go-name": "PrettyRef"
+        },
+        "repository": {
+          "$ref": "#/definitions/Repository"
+        },
+        "started": {
+          "description": "when the action run was started",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Started"
+        },
+        "status": {
+          "description": "the current status of this run",
+          "type": "string",
+          "x-go-name": "Status"
+        },
+        "stopped": {
+          "description": "when the action run was stopped",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Stopped"
+        },
+        "title": {
+          "description": "the action run's title",
+          "type": "string",
+          "x-go-name": "Title"
+        },
+        "trigger_event": {
+          "description": "the trigger event defined in the `on` configuration of the triggered workflow",
+          "type": "string",
+          "x-go-name": "TriggerEvent"
+        },
+        "trigger_user": {
+          "$ref": "#/definitions/User"
+        },
+        "updated": {
+          "description": "when the action run was last updated",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Updated"
+        },
+        "workflow_id": {
+          "description": "the name of workflow file",
+          "type": "string",
+          "x-go-name": "WorkflowID"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "ActionRunJob": {
+      "description": "ActionRunJob represents a job of a run",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "the action run job id",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "name": {
+          "description": "the action run job name",
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "needs": {
+          "description": "the action run job needed ids",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Needs"
+        },
+        "owner_id": {
+          "description": "the owner id",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "OwnerID"
+        },
+        "repo_id": {
+          "description": "the repository id",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "RepoID"
+        },
+        "runs_on": {
+          "description": "the action run job labels to run on",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "RunsOn"
+        },
+        "status": {
+          "description": "the action run job status",
+          "type": "string",
+          "x-go-name": "Status"
+        },
+        "task_id": {
+          "description": "the action run job latest task id",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TaskID"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ActionTask": {
       "description": "ActionTask represents a ActionTask",
@@ -18440,7 +19562,7 @@
           "x-go-name": "WorkflowID"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ActionTaskResponse": {
       "description": "ActionTaskResponse returns a ActionTask",
@@ -18459,7 +19581,7 @@
           "x-go-name": "Entries"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ActionVariable": {
       "description": "ActionVariable return value of the query API",
@@ -18488,7 +19610,7 @@
           "x-go-name": "RepoID"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Activity": {
       "type": "object",
@@ -18579,7 +19701,7 @@
           "x-go-name": "UserID"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ActivityPub": {
       "description": "ActivityPub type",
@@ -18590,7 +19712,7 @@
           "x-go-name": "Context"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "AddCollaboratorOption": {
       "description": "AddCollaboratorOption options when adding a user as a collaborator of a repository",
@@ -18602,7 +19724,7 @@
           "x-go-name": "Permission"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "AddTimeOption": {
       "description": "AddTimeOption options for adding time to an issue",
@@ -18626,7 +19748,7 @@
           "x-go-name": "User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "AnnotatedTag": {
       "description": "AnnotatedTag represents an annotated tag",
@@ -18662,7 +19784,7 @@
           "$ref": "#/definitions/PayloadCommitVerification"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "AnnotatedTagObject": {
       "description": "AnnotatedTagObject contains meta information of the tag object",
@@ -18682,7 +19804,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Attachment": {
       "description": "Attachment a generic attachment",
@@ -18727,7 +19849,7 @@
           "x-go-name": "UUID"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "BlockedUser": {
       "type": "object",
@@ -18744,7 +19866,7 @@
           "x-go-name": "Created"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Branch": {
       "description": "Branch represents a repository branch",
@@ -18790,7 +19912,7 @@
           "x-go-name": "UserCanPush"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "BranchProtection": {
       "description": "BranchProtection represents a branch protection for a repository",
@@ -18930,7 +20052,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ChangeFileOperation": {
       "description": "ChangeFileOperation for creating, updating or deleting a file",
@@ -18964,7 +20086,7 @@
           "x-go-name": "SHA"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ChangeFilesOptions": {
       "description": "ChangeFilesOptions options for creating, updating or deleting multiple files\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
@@ -19009,7 +20131,7 @@
           "x-go-name": "Signoff"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ChangedFile": {
       "description": "ChangedFile store information about files affected by the pull request",
@@ -19058,7 +20180,7 @@
           "x-go-name": "Status"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CombinedStatus": {
       "description": "CombinedStatus holds the combined state of several statuses for a single commit",
@@ -19097,7 +20219,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs",
+      "x-go-package": "forgejo.org/modules/structs",
       "x-pagination-field": "statuses"
     },
     "Comment": {
@@ -19158,7 +20280,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Commit": {
       "type": "object",
@@ -19210,7 +20332,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitAffectedFiles": {
       "description": "CommitAffectedFiles store information about files affected by the commit",
@@ -19225,7 +20347,7 @@
           "x-go-name": "Status"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitDateOptions": {
       "description": "CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE",
@@ -19242,7 +20364,7 @@
           "x-go-name": "Committer"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitMeta": {
       "type": "object",
@@ -19263,7 +20385,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitStats": {
       "description": "CommitStats is statistics for a RepoCommit",
@@ -19285,7 +20407,7 @@
           "x-go-name": "Total"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitStatus": {
       "description": "CommitStatus holds a single status of a single Commit",
@@ -19331,13 +20453,13 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitStatusState": {
       "description": "CommitStatusState holds the state of a CommitStatus\nIt can be \"pending\", \"success\", \"error\" or \"failure\"",
       "type": "string",
       "enum": ["pending", "success", "error", "failure"],
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitUser": {
       "type": "object",
@@ -19357,7 +20479,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Compare": {
       "type": "object",
@@ -19370,13 +20492,20 @@
           },
           "x-go-name": "Commits"
         },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommitAffectedFiles"
+          },
+          "x-go-name": "Files"
+        },
         "total_commits": {
           "type": "integer",
           "format": "int64",
           "x-go-name": "TotalCommits"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ContentsResponse": {
       "description": "ContentsResponse contains information about a repo's entry's (dir, file, symlink, submodule) metadata and content",
@@ -19413,6 +20542,11 @@
         "last_commit_sha": {
           "type": "string",
           "x-go-name": "LastCommitSHA"
+        },
+        "last_commit_when": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "LastCommitWhen"
         },
         "name": {
           "type": "string",
@@ -19453,7 +20587,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateAccessTokenOption": {
       "description": "CreateAccessTokenOption options when create access token",
@@ -19469,10 +20603,21 @@
           "items": {
             "type": "string"
           },
-          "x-go-name": "Scopes"
+          "x-go-name": "Scopes",
+          "example": [
+            "all",
+            "read:activitypub",
+            "read:issue",
+            "write:misc",
+            "read:notification",
+            "read:organization",
+            "read:package",
+            "read:repository",
+            "read:user"
+          ]
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateBranchProtectionOption": {
       "description": "CreateBranchProtectionOption options for creating a branch protection",
@@ -19602,7 +20747,7 @@
           "x-go-name": "UnprotectedFilePatterns"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateBranchRepoOption": {
       "description": "CreateBranchRepoOption options when creating a branch in a repository",
@@ -19628,7 +20773,7 @@
           "x-go-name": "OldRefName"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateEmailOption": {
       "description": "CreateEmailOption options when creating email addresses",
@@ -19643,7 +20788,7 @@
           "x-go-name": "Emails"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateFileOptions": {
       "description": "CreateFileOptions options for creating files\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
@@ -19685,7 +20830,7 @@
           "x-go-name": "Signoff"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateForkOption": {
       "description": "CreateForkOption options for creating a fork",
@@ -19702,7 +20847,7 @@
           "x-go-name": "Organization"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateGPGKeyOption": {
       "description": "CreateGPGKeyOption options create user GPG key",
@@ -19720,7 +20865,7 @@
           "x-go-name": "Signature"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateHookOption": {
       "description": "CreateHookOption options when create a hook",
@@ -19768,7 +20913,7 @@
           "x-go-name": "Type"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateHookOptionConfig": {
       "description": "CreateHookOptionConfig has all config options in it\nrequired are \"content_type\" and \"url\" Required",
@@ -19786,7 +20931,7 @@
           "format": "url"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateIssueCommentOption": {
       "description": "CreateIssueCommentOption options for creating a comment on an issue",
@@ -19803,7 +20948,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateIssueOption": {
       "description": "CreateIssueOption options to create one issue",
@@ -19859,7 +21004,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateKeyOption": {
       "description": "CreateKeyOption options when creating a key",
@@ -19884,7 +21029,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateLabelOption": {
       "description": "CreateLabelOption options for creating a label",
@@ -19915,7 +21060,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateMilestoneOption": {
       "description": "CreateMilestoneOption options for creating a milestone",
@@ -19940,7 +21085,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateOAuth2ApplicationOptions": {
       "description": "CreateOAuth2ApplicationOptions holds options to create an oauth2 application",
@@ -19962,7 +21107,7 @@
           "x-go-name": "RedirectURIs"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateOrUpdateSecretOption": {
       "description": "CreateOrUpdateSecretOption options when creating or updating secret",
@@ -19975,7 +21120,7 @@
           "x-go-name": "Data"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateOrgOption": {
       "description": "CreateOrgOption options for creating an organization",
@@ -20017,7 +21162,7 @@
           "x-go-name": "Website"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreatePullRequestOption": {
       "description": "CreatePullRequestOption options when creating a pull request",
@@ -20069,7 +21214,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreatePullReviewComment": {
       "description": "CreatePullReviewComment represent a review comment for creation api",
@@ -20126,12 +21271,16 @@
           "$ref": "#/definitions/ReviewStateType"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreatePushMirrorOption": {
       "type": "object",
       "title": "CreatePushMirrorOption represents need information to create a push mirror of a repository.",
       "properties": {
+        "branch_filter": {
+          "type": "string",
+          "x-go-name": "BranchFilter"
+        },
         "interval": {
           "type": "string",
           "x-go-name": "Interval"
@@ -20157,7 +21306,7 @@
           "x-go-name": "UseSSH"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateQuotaGroupOptions": {
       "description": "CreateQutaGroupOptions represents the options for creating a quota group",
@@ -20177,7 +21326,7 @@
           "x-go-name": "Rules"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateQuotaRuleOptions": {
       "description": "CreateQuotaRuleOptions represents the options for creating a quota rule",
@@ -20219,7 +21368,7 @@
           "x-go-name": "Subjects"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateReleaseOption": {
       "description": "CreateReleaseOption options when creating a release",
@@ -20255,7 +21404,7 @@
           "x-go-name": "Target"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateRepoOption": {
       "description": "CreateRepoOption options when creating repository",
@@ -20351,7 +21500,7 @@
           "x-go-name": "TargetURL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateTagOption": {
       "description": "CreateTagOption options when creating a tag",
@@ -20371,7 +21520,7 @@
           "x-go-name": "Target"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateTagProtectionOption": {
       "description": "CreateTagProtectionOption options for creating a tag protection",
@@ -20396,7 +21545,7 @@
           "x-go-name": "WhitelistUsernames"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateTeamOption": {
       "description": "CreateTeamOption options for creating a team",
@@ -20452,7 +21601,7 @@
           "example": "{\"repo.actions\",\"repo.packages\",\"repo.code\":\"read\",\"repo.issues\":\"write\",\"repo.ext_issues\":\"none\",\"repo.wiki\":\"admin\",\"repo.pulls\":\"owner\",\"repo.releases\":\"none\",\"repo.projects\":\"none\",\"repo.ext_wiki\":\"none\"}"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateUserOption": {
       "description": "CreateUserOption create user options",
@@ -20508,7 +21657,7 @@
           "x-go-name": "Visibility"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateVariableOption": {
       "description": "CreateVariableOption the option when creating variable",
@@ -20521,7 +21670,7 @@
           "x-go-name": "Value"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateWikiPageOptions": {
       "description": "CreateWikiPageOptions form for creating wiki",
@@ -20543,7 +21692,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Cron": {
       "description": "Cron represents a Cron task",
@@ -20573,7 +21722,7 @@
           "x-go-name": "Schedule"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "DefaultMergeStyle": {
       "type": "string",
@@ -20592,7 +21741,7 @@
           "x-go-name": "Emails"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "DeleteFileOptions": {
       "description": "DeleteFileOptions options for deleting files (used for other File structs below)\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
@@ -20634,7 +21783,7 @@
           "x-go-name": "Signoff"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "DeleteLabelsOption": {
       "description": "DeleteLabelOption options for deleting a label",
@@ -20646,7 +21795,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "DeployKey": {
       "description": "DeployKey a deploy key",
@@ -20692,7 +21841,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "DismissPullReviewOptions": {
       "description": "DismissPullReviewOptions are options to dismiss a pull review",
@@ -20707,7 +21856,7 @@
           "x-go-name": "Priors"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "DispatchWorkflowOption": {
       "description": "DispatchWorkflowOption options when dispatching a workflow",
@@ -20726,9 +21875,48 @@
           "description": "Git reference for the workflow",
           "type": "string",
           "x-go-name": "Ref"
+        },
+        "return_run_info": {
+          "description": "Flag to return the run info",
+          "type": "boolean",
+          "default": false,
+          "x-go-name": "ReturnRunInfo"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "DispatchWorkflowRun": {
+      "description": "DispatchWorkflowRun represents a workflow run",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "the workflow run id",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "jobs": {
+          "description": "the jobs name",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Jobs"
+        },
+        "run_number": {
+          "description": "a unique number for each run of a repository",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "RunNumber"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "Duration": {
+      "description": "A Duration represents the elapsed time between two instants\nas an int64 nanosecond count. The representation limits the\nlargest representable duration to approximately 290 years.",
+      "type": "integer",
+      "format": "int64",
+      "x-go-package": "time"
     },
     "EditAttachmentOptions": {
       "description": "EditAttachmentOptions options for editing attachments",
@@ -20745,7 +21933,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditBranchProtectionOption": {
       "description": "EditBranchProtectionOption options for editing a branch protection",
@@ -20866,7 +22054,7 @@
           "x-go-name": "UnprotectedFilePatterns"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditDeadlineOption": {
       "description": "EditDeadlineOption options for creating a deadline",
@@ -20879,7 +22067,7 @@
           "x-go-name": "Deadline"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditGitHookOption": {
       "description": "EditGitHookOption options when modifying one Git hook",
@@ -20890,7 +22078,7 @@
           "x-go-name": "Content"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditHookOption": {
       "description": "EditHookOption options when modify one hook",
@@ -20923,7 +22111,7 @@
           "x-go-name": "Events"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditIssueCommentOption": {
       "description": "EditIssueCommentOption options for editing a comment",
@@ -20940,7 +22128,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditIssueOption": {
       "description": "EditIssueOption options for editing an issue",
@@ -20994,7 +22182,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditLabelOption": {
       "description": "EditLabelOption options for editing a label",
@@ -21024,7 +22212,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditMilestoneOption": {
       "description": "EditMilestoneOption options for editing a milestone",
@@ -21048,7 +22236,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditOrgOption": {
       "description": "EditOrgOption options for editing an organization",
@@ -21085,7 +22273,7 @@
           "x-go-name": "Website"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditPullRequestOption": {
       "description": "EditPullRequestOption options when modify pull request",
@@ -21145,7 +22333,7 @@
           "x-go-name": "RemoveDeadline"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditQuotaRuleOptions": {
       "description": "EditQuotaRuleOptions represents the options for editing a quota rule",
@@ -21166,7 +22354,7 @@
           "x-go-name": "Subjects"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditReactionOption": {
       "description": "EditReactionOption contain the reaction type",
@@ -21177,7 +22365,7 @@
           "x-go-name": "Reaction"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditReleaseOption": {
       "description": "EditReleaseOption options when editing a release",
@@ -21212,7 +22400,7 @@
           "x-go-name": "Target"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditRepoOption": {
       "description": "EditRepoOption options when editing a repository's properties",
@@ -21382,7 +22570,7 @@
           "x-go-name": "WikiBranch"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditTagProtectionOption": {
       "description": "EditTagProtectionOption options for editing a tag protection",
@@ -21407,7 +22595,7 @@
           "x-go-name": "WhitelistUsernames"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditTeamOption": {
       "description": "EditTeamOption options for editing a team",
@@ -21470,7 +22658,7 @@
           }
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "EditUserOption": {
       "description": "EditUserOption edit user options",
@@ -21556,7 +22744,7 @@
           "x-go-name": "Website"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Email": {
       "description": "Email an email address belonging to a user",
@@ -21585,7 +22773,7 @@
           "x-go-name": "Verified"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ExternalTracker": {
       "description": "ExternalTracker represents settings for external tracker",
@@ -21613,7 +22801,7 @@
           "x-go-name": "ExternalTrackerURL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ExternalWiki": {
       "description": "ExternalWiki represents setting for external wiki",
@@ -21626,7 +22814,7 @@
           "x-go-name": "ExternalWikiURL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "FileCommitResponse": {
       "type": "object",
@@ -21672,7 +22860,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "FileDeleteResponse": {
       "description": "FileDeleteResponse contains information about a repo's file that was deleted",
@@ -21688,7 +22876,7 @@
           "$ref": "#/definitions/PayloadCommitVerification"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "FileLinksResponse": {
       "description": "FileLinksResponse contains the links for a repo's file",
@@ -21707,7 +22895,7 @@
           "x-go-name": "Self"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "FileResponse": {
       "description": "FileResponse contains information about a repo's file",
@@ -21723,7 +22911,7 @@
           "$ref": "#/definitions/PayloadCommitVerification"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "FilesResponse": {
       "description": "FilesResponse contains information about multiple files from a repo",
@@ -21743,12 +22931,12 @@
           "$ref": "#/definitions/PayloadCommitVerification"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ForgeLike": {
       "description": "ForgeLike activity data type",
       "type": "object",
-      "x-go-package": "code.gitea.io/gitea/modules/forgefed"
+      "x-go-package": "forgejo.org/modules/forgefed"
     },
     "GPGKey": {
       "description": "GPGKey a user GPG key to sign commit and tag in repository",
@@ -21816,7 +23004,7 @@
           "x-go-name": "Verified"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GPGKeyEmail": {
       "description": "GPGKeyEmail an email attached to a GPGKey",
@@ -21831,7 +23019,7 @@
           "x-go-name": "Verified"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GeneralAPISettings": {
       "description": "GeneralAPISettings contains global api settings exposed by it",
@@ -21858,7 +23046,7 @@
           "x-go-name": "MaxResponseItems"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GeneralAttachmentSettings": {
       "description": "GeneralAttachmentSettings contains global Attachment settings exposed by API",
@@ -21883,7 +23071,7 @@
           "x-go-name": "MaxSize"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GeneralRepoSettings": {
       "description": "GeneralRepoSettings contains global repository settings exposed by API",
@@ -21918,7 +23106,7 @@
           "x-go-name": "TimeTrackingDisabled"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GeneralUISettings": {
       "description": "GeneralUISettings contains global ui settings exposed by API",
@@ -21943,7 +23131,7 @@
           "x-go-name": "DefaultTheme"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GenerateRepoOption": {
       "description": "GenerateRepoOption options when creating repository using a template",
@@ -22012,10 +23200,10 @@
           "x-go-name": "Webhooks"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
-    "GitBlobResponse": {
-      "description": "GitBlobResponse represents a git blob",
+    "GitBlob": {
+      "description": "GitBlob represents a git blob",
       "type": "object",
       "properties": {
         "content": {
@@ -22041,7 +23229,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GitEntry": {
       "description": "GitEntry represents a git tree",
@@ -22074,7 +23262,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GitHook": {
       "description": "GitHook represents a Git repository hook",
@@ -22093,7 +23281,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GitObject": {
       "type": "object",
@@ -22113,7 +23301,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GitTreeResponse": {
       "description": "GitTreeResponse returns a git tree",
@@ -22150,7 +23338,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "GitignoreTemplateInfo": {
       "description": "GitignoreTemplateInfo name and text of a gitignore template",
@@ -22165,7 +23353,7 @@
           "x-go-name": "Source"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Hook": {
       "description": "Hook a hook is a web hook when one repository changed",
@@ -22230,7 +23418,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Identity": {
       "description": "Identity for a person's identity like an author or committer",
@@ -22246,7 +23434,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "InternalTracker": {
       "description": "InternalTracker represents settings for internal tracker",
@@ -22268,7 +23456,7 @@
           "x-go-name": "EnableTimeTracker"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Issue": {
       "description": "Issue represents an issue in a repository",
@@ -22389,7 +23577,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueConfig": {
       "type": "object",
@@ -22406,7 +23594,7 @@
           "x-go-name": "ContactLinks"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueConfigContactLink": {
       "type": "object",
@@ -22425,7 +23613,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueConfigValidation": {
       "type": "object",
@@ -22439,7 +23627,7 @@
           "x-go-name": "Valid"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueDeadline": {
       "description": "IssueDeadline represents an issue deadline",
@@ -22451,7 +23639,7 @@
           "x-go-name": "Deadline"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueFormField": {
       "description": "IssueFormField represents a form field",
@@ -22482,18 +23670,18 @@
           "x-go-name": "Visible"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueFormFieldType": {
       "type": "string",
       "title": "IssueFormFieldType defines issue form field type, can be \"markdown\", \"textarea\", \"input\", \"dropdown\" or \"checkboxes\"",
       "enum": ["markdown", "textarea", "input", "dropdown", "checkboxes"],
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueFormFieldVisible": {
       "description": "IssueFormFieldVisible defines issue form field visible",
       "type": "string",
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueLabelsOption": {
       "description": "IssueLabelsOption a collection of labels",
@@ -22511,7 +23699,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueMeta": {
       "description": "IssueMeta basic issue information",
@@ -22531,7 +23719,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueTemplate": {
       "description": "IssueTemplate represents an issue template for a repository",
@@ -22572,14 +23760,14 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "IssueTemplateLabels": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Label": {
       "description": "Label a label to an issue or a pr",
@@ -22619,7 +23807,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "LabelTemplate": {
       "description": "LabelTemplate info of a Label template",
@@ -22644,7 +23832,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "LicenseTemplateInfo": {
       "description": "LicensesInfo contains information about a License",
@@ -22672,7 +23860,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "LicensesTemplateListEntry": {
       "description": "LicensesListEntry is used for the API",
@@ -22692,7 +23880,26 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "ListActionRunResponse": {
+      "description": "ListActionRunResponse return a list of ActionRun",
+      "type": "object",
+      "properties": {
+        "total_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TotalCount"
+        },
+        "workflow_runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ActionRun"
+          },
+          "x-go-name": "Entries"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "MarkdownOption": {
       "description": "MarkdownOption markdown options",
@@ -22715,7 +23922,7 @@
           "type": "boolean"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "MarkupOption": {
       "description": "MarkupOption markup options",
@@ -22746,7 +23953,7 @@
           "type": "boolean"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "MergePullRequestOption": {
       "description": "MergePullRequestForm form for merging Pull Request",
@@ -22791,7 +23998,7 @@
         }
       },
       "x-go-name": "MergePullRequestForm",
-      "x-go-package": "code.gitea.io/gitea/services/forms"
+      "x-go-package": "forgejo.org/services/forms"
     },
     "MigrateRepoOptions": {
       "description": "MigrateRepoOptions options for migrating repository's\nthis is used to interact with api v1",
@@ -22892,7 +24099,7 @@
           "x-go-name": "Wiki"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Milestone": {
       "description": "Milestone milestone is a collection of issues on one repository",
@@ -22945,7 +24152,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NewIssuePinsAllowed": {
       "description": "NewIssuePinsAllowed represents an API response that says if new Issue Pins are allowed",
@@ -22960,7 +24167,7 @@
           "x-go-name": "PullRequests"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NodeInfo": {
       "description": "NodeInfo contains standardized way of exposing metadata about a server running one of the distributed social networks",
@@ -22995,7 +24202,7 @@
           "x-go-name": "Version"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NodeInfoServices": {
       "description": "NodeInfoServices contains the third party sites this server can connect to via their application API",
@@ -23016,7 +24223,7 @@
           "x-go-name": "Outbound"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NodeInfoSoftware": {
       "description": "NodeInfoSoftware contains Metadata about server software in use",
@@ -23039,7 +24246,7 @@
           "x-go-name": "Version"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NodeInfoUsage": {
       "description": "NodeInfoUsage contains usage statistics for this server",
@@ -23059,7 +24266,7 @@
           "$ref": "#/definitions/NodeInfoUsageUsers"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NodeInfoUsageUsers": {
       "description": "NodeInfoUsageUsers contains statistics about the users of this server",
@@ -23081,7 +24288,7 @@
           "x-go-name": "Total"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Note": {
       "description": "Note contains information related to a git note",
@@ -23095,7 +24302,7 @@
           "x-go-name": "Message"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NoteOptions": {
       "type": "object",
@@ -23105,7 +24312,7 @@
           "x-go-name": "Message"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NotificationCount": {
       "description": "NotificationCount number of unread notifications",
@@ -23117,7 +24324,7 @@
           "x-go-name": "New"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NotificationSubject": {
       "description": "NotificationSubject contains the notification subject (Issue/Pull/Commit)",
@@ -23154,7 +24361,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NotificationThread": {
       "description": "NotificationThread expose Notification on API",
@@ -23190,13 +24397,13 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "NotifySubjectType": {
       "description": "NotifySubjectType represent type of notification subject",
       "type": "string",
       "enum": ["Issue", "Pull", "Commit", "Repository"],
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "OAuth2Application": {
       "type": "object",
@@ -23236,7 +24443,7 @@
           "x-go-name": "RedirectURIs"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ObjectFormatName": {
       "description": "ObjectFormatName of the underlying git repository",
@@ -23295,7 +24502,7 @@
           "x-go-name": "Website"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "OrganizationPermissions": {
       "description": "OrganizationPermissions list different users permissions on an organization",
@@ -23322,7 +24529,7 @@
           "x-go-name": "IsOwner"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PRBranchInfo": {
       "description": "PRBranchInfo information about a branch",
@@ -23349,7 +24556,7 @@
           "x-go-name": "Sha"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Package": {
       "description": "Package represents a package",
@@ -23392,7 +24599,7 @@
           "x-go-name": "Version"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PackageFile": {
       "description": "PackageFile represents a package file",
@@ -23428,7 +24635,7 @@
           "x-go-name": "HashSHA512"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PayloadCommit": {
       "description": "PayloadCommit represents a commit",
@@ -23484,7 +24691,7 @@
           "$ref": "#/definitions/PayloadCommitVerification"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PayloadCommitVerification": {
       "description": "PayloadCommitVerification represents the GPG verification of a commit",
@@ -23510,7 +24717,7 @@
           "x-go-name": "Verified"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PayloadUser": {
       "description": "PayloadUser represents the author or committer of a commit",
@@ -23531,7 +24738,7 @@
           "x-go-name": "UserName"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Permission": {
       "description": "Permission represents a set of permissions",
@@ -23550,7 +24757,7 @@
           "x-go-name": "Push"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PublicKey": {
       "description": "PublicKey publickey is a user key to push code to repository",
@@ -23595,7 +24802,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PullRequest": {
       "description": "PullRequest represents a pull request",
@@ -23665,6 +24872,11 @@
           "type": "string",
           "format": "date-time",
           "x-go-name": "Deadline"
+        },
+        "flow": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Flow"
         },
         "head": {
           "$ref": "#/definitions/PRBranchInfo"
@@ -23773,7 +24985,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs",
+      "x-go-package": "forgejo.org/modules/structs",
       "x-parse-with": {
         "requested_reviewers": "requested_reviewers_ignore_null"
       }
@@ -23801,7 +25013,7 @@
           "x-go-name": "Merged"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PullReview": {
       "description": "PullReview represents a pull request review",
@@ -23867,7 +25079,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PullReviewComment": {
       "description": "PullReviewComment represents a comment on a pull request review",
@@ -23940,7 +25152,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PullReviewRequestOptions": {
       "description": "PullReviewRequestOptions are options to add or remove pull review requests",
@@ -23961,12 +25173,16 @@
           "x-go-name": "TeamReviewers"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "PushMirror": {
       "description": "PushMirror represents information of a push mirror",
       "type": "object",
       "properties": {
+        "branch_filter": {
+          "type": "string",
+          "x-go-name": "BranchFilter"
+        },
         "created": {
           "type": "string",
           "format": "date-time",
@@ -24006,7 +25222,7 @@
           "x-go-name": "SyncOnCommit"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaGroup": {
       "description": "QuotaGroup represents a quota group",
@@ -24026,7 +25242,7 @@
           "x-go-name": "Rules"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaGroupList": {
       "description": "QuotaGroupList represents a list of quota groups",
@@ -24034,7 +25250,7 @@
       "items": {
         "$ref": "#/definitions/QuotaGroup"
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaInfo": {
       "description": "QuotaInfo represents information about a user's quota",
@@ -24047,7 +25263,7 @@
           "$ref": "#/definitions/QuotaUsed"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaRuleInfo": {
       "description": "QuotaRuleInfo contains information about a quota rule",
@@ -24073,7 +25289,7 @@
           "x-go-name": "Subjects"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsed": {
       "description": "QuotaUsed represents the quota usage of a user",
@@ -24083,7 +25299,7 @@
           "$ref": "#/definitions/QuotaUsedSize"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedArtifact": {
       "description": "QuotaUsedArtifact represents an artifact counting towards a user's quota",
@@ -24107,7 +25323,7 @@
           "x-go-name": "Size"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedArtifactList": {
       "description": "QuotaUsedArtifactList represents a list of artifacts counting towards a user's quota",
@@ -24115,7 +25331,7 @@
       "items": {
         "$ref": "#/definitions/QuotaUsedArtifact"
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedAttachment": {
       "description": "QuotaUsedAttachment represents an attachment counting towards a user's quota",
@@ -24158,7 +25374,7 @@
           "x-go-name": "Size"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedAttachmentList": {
       "description": "QuotaUsedAttachmentList represents a list of attachment counting towards a user's quota",
@@ -24166,7 +25382,7 @@
       "items": {
         "$ref": "#/definitions/QuotaUsedAttachment"
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedPackage": {
       "description": "QuotaUsedPackage represents a package counting towards a user's quota",
@@ -24200,7 +25416,7 @@
           "x-go-name": "Version"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedPackageList": {
       "description": "QuotaUsedPackageList represents a list of packages counting towards a user's quota",
@@ -24208,7 +25424,7 @@
       "items": {
         "$ref": "#/definitions/QuotaUsedPackage"
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedSize": {
       "description": "QuotaUsedSize represents the size-based quota usage of a user",
@@ -24224,7 +25440,7 @@
           "$ref": "#/definitions/QuotaUsedSizeRepos"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedSizeAssets": {
       "description": "QuotaUsedSizeAssets represents the size-based asset usage of a user",
@@ -24243,7 +25459,7 @@
           "$ref": "#/definitions/QuotaUsedSizeAssetsPackages"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedSizeAssetsAttachments": {
       "description": "QuotaUsedSizeAssetsAttachments represents the size-based attachment quota usage of a user",
@@ -24262,7 +25478,7 @@
           "x-go-name": "Releases"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedSizeAssetsPackages": {
       "description": "QuotaUsedSizeAssetsPackages represents the size-based package quota usage of a user",
@@ -24275,7 +25491,7 @@
           "x-go-name": "All"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedSizeGit": {
       "description": "QuotaUsedSizeGit represents the size-based git (lfs) quota usage of a user",
@@ -24287,7 +25503,7 @@
           "format": "int64"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "QuotaUsedSizeRepos": {
       "description": "QuotaUsedSizeRepos represents the size-based repository quota usage of a user",
@@ -24306,7 +25522,7 @@
           "x-go-name": "Public"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Reaction": {
       "description": "Reaction contain one reaction",
@@ -24325,7 +25541,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Reference": {
       "type": "object",
@@ -24344,7 +25560,18 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "RegistrationToken": {
+      "description": "RegistrationToken is a string used to register a runner with a server",
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "x-go-name": "Token"
+        }
+      },
+      "x-go-package": "forgejo.org/routers/api/v1/shared"
     },
     "Release": {
       "description": "Release represents a repository release",
@@ -24432,7 +25659,21 @@
           "x-go-name": "ZipURL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "RenameOrgOption": {
+      "description": "RenameOrgOption options when renaming an organization",
+      "type": "object",
+      "required": ["new_name"],
+      "properties": {
+        "new_name": {
+          "description": "New username for this org. This name cannot be in use yet by any other user.",
+          "type": "string",
+          "uniqueItems": true,
+          "x-go-name": "NewName"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "RenameUserOption": {
       "description": "RenameUserOption options when renaming a user",
@@ -24460,7 +25701,7 @@
           "x-go-name": "Flags"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "RepoCollaboratorPermission": {
       "description": "RepoCollaboratorPermission to get repository permission for a collaborator",
@@ -24478,7 +25719,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "RepoCommit": {
       "type": "object",
@@ -24506,7 +25747,7 @@
           "$ref": "#/definitions/PayloadCommitVerification"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "RepoTopicOptions": {
       "description": "RepoTopicOptions a collection of repo topic names",
@@ -24521,7 +25762,7 @@
           "x-go-name": "Topics"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "RepoTransfer": {
       "description": "RepoTransfer represents a pending repo transfer",
@@ -24541,7 +25782,7 @@
           "x-go-name": "Teams"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Repository": {
       "description": "Repository represents a repository",
@@ -24813,7 +26054,7 @@
           "x-go-name": "WikiBranch"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "RepositoryMeta": {
       "description": "RepositoryMeta basic repository information",
@@ -24837,12 +26078,12 @@
           "x-go-name": "Owner"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ReviewStateType": {
       "description": "ReviewStateType review state type",
       "type": "string",
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "SearchResults": {
       "description": "SearchResults results of a successful search",
@@ -24860,7 +26101,7 @@
           "x-go-name": "OK"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Secret": {
       "description": "Secret represents a secret",
@@ -24877,7 +26118,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ServerVersion": {
       "description": "ServerVersion wraps the version of the server",
@@ -24888,7 +26129,7 @@
           "x-go-name": "Version"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "SetUserQuotaGroupsOptions": {
       "description": "SetUserQuotaGroupsOptions represents the quota groups of a user",
@@ -24904,13 +26145,13 @@
           "x-go-name": "Groups"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "StateType": {
       "description": "StateType issue state type",
       "type": "string",
       "enum": ["open", "closed"],
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "StopWatch": {
       "description": "StopWatch represent a running stopwatch",
@@ -24948,7 +26189,7 @@
           "x-go-name": "Seconds"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "SubmitPullReviewOptions": {
       "description": "SubmitPullReviewOptions are options to submit a pending pull review",
@@ -24962,7 +26203,31 @@
           "$ref": "#/definitions/ReviewStateType"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "SyncForkInfo": {
+      "description": "SyncForkInfo information about syncing a fork",
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "type": "boolean",
+          "x-go-name": "Allowed"
+        },
+        "base_commit": {
+          "type": "string",
+          "x-go-name": "BaseCommit"
+        },
+        "commits_behind": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CommitsBehind"
+        },
+        "fork_commit": {
+          "type": "string",
+          "x-go-name": "ForkCommit"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Tag": {
       "description": "Tag represents a repository tag",
@@ -24997,7 +26262,7 @@
           "x-go-name": "ZipballURL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "TagArchiveDownloadCount": {
       "description": "TagArchiveDownloadCount counts how many times a archive was downloaded",
@@ -25014,7 +26279,7 @@
           "x-go-name": "Zip"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "TagProtection": {
       "description": "TagProtection represents a tag protection",
@@ -25054,7 +26319,7 @@
           "x-go-name": "WhitelistUsernames"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "Team": {
       "description": "Team represents a team in an organization",
@@ -25124,13 +26389,13 @@
           }
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "TimeStamp": {
       "description": "TimeStamp defines a timestamp",
       "type": "integer",
       "format": "int64",
-      "x-go-package": "code.gitea.io/gitea/modules/timeutil"
+      "x-go-package": "forgejo.org/modules/timeutil"
     },
     "TimelineComment": {
       "description": "TimelineComment represents a timeline comment (comment of any type) on a commit or issue",
@@ -25253,7 +26518,7 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "TopicName": {
       "description": "TopicName a list of repo topic names",
@@ -25267,7 +26532,7 @@
           "x-go-name": "TopicNames"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "TopicResponse": {
       "description": "TopicResponse for returning topics",
@@ -25298,7 +26563,7 @@
           "x-go-name": "Updated"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "TrackedTime": {
       "description": "TrackedTime worked time for an issue / pr",
@@ -25340,7 +26605,7 @@
           "x-go-name": "UserName"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "TransferRepoOption": {
       "description": "TransferRepoOption options when transfer a repository's ownership",
@@ -25361,7 +26626,7 @@
           "x-go-name": "TeamIDs"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "UpdateBranchRepoOption": {
       "description": "UpdateBranchRepoOption options when updating a branch in a repository",
@@ -25375,7 +26640,7 @@
           "x-go-name": "Name"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "UpdateFileOptions": {
       "description": "UpdateFileOptions options for updating files\nNote: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)",
@@ -25427,7 +26692,7 @@
           "x-go-name": "Signoff"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "UpdateRepoAvatarOption": {
       "description": "UpdateRepoAvatarUserOption options when updating the repo avatar",
@@ -25439,7 +26704,7 @@
           "x-go-name": "Image"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "UpdateUserAvatarOption": {
       "description": "UpdateUserAvatarUserOption options when updating the user avatar",
@@ -25451,7 +26716,7 @@
           "x-go-name": "Image"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "UpdateVariableOption": {
       "description": "UpdateVariableOption the option when updating variable",
@@ -25469,7 +26734,7 @@
           "x-go-name": "Value"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "User": {
       "description": "User represents a user",
@@ -25518,7 +26783,7 @@
           "x-go-name": "FullName"
         },
         "html_url": {
-          "description": "URL to the user's gitea page",
+          "description": "URL to the user's profile page",
           "type": "string",
           "format": "url",
           "x-go-name": "HTMLURL"
@@ -25597,7 +26862,7 @@
           "x-go-name": "Website"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "UserHeatmapData": {
       "description": "UserHeatmapData represents the data needed to create a heatmap",
@@ -25612,7 +26877,7 @@
           "$ref": "#/definitions/TimeStamp"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/models/activities"
+      "x-go-package": "forgejo.org/models/activities"
     },
     "UserSettings": {
       "description": "UserSettings represents user settings",
@@ -25643,6 +26908,10 @@
           "type": "boolean",
           "x-go-name": "HideEmail"
         },
+        "hide_pronouns": {
+          "type": "boolean",
+          "x-go-name": "HidePronouns"
+        },
         "language": {
           "type": "string",
           "x-go-name": "Language"
@@ -25664,7 +26933,7 @@
           "x-go-name": "Website"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "UserSettingsOptions": {
       "description": "UserSettingsOptions represents options to change user settings",
@@ -25695,6 +26964,10 @@
           "type": "boolean",
           "x-go-name": "HideEmail"
         },
+        "hide_pronouns": {
+          "type": "boolean",
+          "x-go-name": "HidePronouns"
+        },
         "language": {
           "type": "string",
           "x-go-name": "Language"
@@ -25716,7 +26989,24 @@
           "x-go-name": "Website"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "VerifyGPGKeyOption": {
+      "description": "VerifyGPGKeyOption options verifies user GPG key",
+      "type": "object",
+      "required": ["key_id"],
+      "properties": {
+        "armored_signature": {
+          "type": "string",
+          "x-go-name": "Signature"
+        },
+        "key_id": {
+          "description": "An Signature for a GPG key token",
+          "type": "string",
+          "x-go-name": "KeyID"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "WatchInfo": {
       "description": "WatchInfo represents an API watch status of one repository",
@@ -25749,7 +27039,7 @@
           "x-go-name": "URL"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "WikiCommit": {
       "description": "WikiCommit page commit/revision",
@@ -25770,7 +27060,7 @@
           "x-go-name": "ID"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "WikiCommitList": {
       "description": "WikiCommitList commit/revision list",
@@ -25789,7 +27079,7 @@
           "x-go-name": "Count"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "WikiPage": {
       "description": "WikiPage a wiki page",
@@ -25830,7 +27120,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "WikiPageMetaData": {
       "description": "WikiPageMetaData wiki page meta information",
@@ -25853,7 +27143,7 @@
           "x-go-name": "Title"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     }
   },
   "responses": {
@@ -25877,6 +27167,18 @@
           "format": "int64",
           "description": "Total commit count"
         }
+      }
+    },
+    "ActionRun": {
+      "description": "ActionRun",
+      "schema": {
+        "$ref": "#/definitions/ActionRun"
+      }
+    },
+    "ActionRunList": {
+      "description": "ActionRunList",
+      "schema": {
+        "$ref": "#/definitions/ListActionRunResponse"
       }
     },
     "ActionVariable": {
@@ -26143,6 +27445,12 @@
         }
       }
     },
+    "DispatchWorkflowRun": {
+      "description": "DispatchWorkflowRun is a Workflow Run after dispatching",
+      "schema": {
+        "$ref": "#/definitions/DispatchWorkflowRun"
+      }
+    },
     "EmailList": {
       "description": "EmailList",
       "schema": {
@@ -26222,10 +27530,19 @@
         "$ref": "#/definitions/GeneralUISettings"
       }
     },
-    "GitBlobResponse": {
-      "description": "GitBlobResponse",
+    "GitBlob": {
+      "description": "GitBlob",
       "schema": {
-        "$ref": "#/definitions/GitBlobResponse"
+        "$ref": "#/definitions/GitBlob"
+      }
+    },
+    "GitBlobList": {
+      "description": "GitBlobList",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/GitBlob"
+        }
       }
     },
     "GitHook": {
@@ -26557,6 +27874,15 @@
         }
       }
     },
+    "PersonFeed": {
+      "description": "Personfeed",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/APPersonFollowItem"
+        }
+      }
+    },
     "PublicKey": {
       "description": "PublicKey",
       "schema": {
@@ -26785,10 +28111,8 @@
     },
     "RegistrationToken": {
       "description": "RegistrationToken is a string used to register a runner with a server",
-      "headers": {
-        "token": {
-          "type": "string"
-        }
+      "schema": {
+        "$ref": "#/definitions/RegistrationToken"
       }
     },
     "Release": {
@@ -26859,6 +28183,15 @@
         }
       }
     },
+    "RunJobList": {
+      "description": "RunJobList is a list of action run jobs",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/ActionRunJob"
+        }
+      }
+    },
     "SearchResults": {
       "description": "SearchResults",
       "schema": {
@@ -26922,6 +28255,12 @@
         "items": {
           "type": "string"
         }
+      }
+    },
+    "SyncForkInfo": {
+      "description": "SyncForkInfo",
+      "schema": {
+        "$ref": "#/definitions/SyncForkInfo"
       }
     },
     "Tag": {
@@ -27157,6 +28496,12 @@
         "$ref": "#/definitions/APIForbiddenError"
       }
     },
+    "internalServerError": {
+      "description": "APIInternalServerError is an error that is raised when an internal server error occurs",
+      "schema": {
+        "$ref": "#/definitions/APIInternalServerError"
+      }
+    },
     "invalidTopicsError": {
       "description": "APIInvalidTopicsError is error format response to invalid topics",
       "schema": {
@@ -27220,7 +28565,7 @@
   },
   "securityDefinitions": {
     "AccessToken": {
-      "description": "This authentication option is deprecated for removal in Gitea 1.23. Please use AuthorizationHeaderToken instead.",
+      "description": "This authentication option is deprecated for removal in Forgejo v13.0.0. Please use AuthorizationHeaderToken instead.",
       "type": "apiKey",
       "name": "access_token",
       "in": "query"
@@ -27253,7 +28598,7 @@
       "in": "header"
     },
     "Token": {
-      "description": "This authentication option is deprecated for removal in Gitea 1.23. Please use AuthorizationHeaderToken instead.",
+      "description": "This authentication option is deprecated for removal in Forgejo v13.0.0. Please use AuthorizationHeaderToken instead.",
       "type": "apiKey",
       "name": "token",
       "in": "query"
