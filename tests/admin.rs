@@ -43,6 +43,21 @@ async fn user() {
             .any(|u| u.email.as_ref().unwrap() == "pipis@noreply.example.org"),
         "could not find new user"
     );
+    let rename_opt = RenameUserOption {
+        new_username: "Bepis".into(),
+    };
+    api.admin_rename_user("Pipis", rename_opt)
+        .await
+        .expect("failed to rename user");
+    let query = AdminDeleteUserQuery { purge: Some(true) };
+    api.admin_delete_user("Bepis", query)
+        .await
+        .expect("failed to delete user");
+    let query = AdminDeleteUserQuery { purge: Some(true) };
+    assert!(
+        api.admin_delete_user("Ghost", query).await.is_err(),
+        "deleting fake user should fail"
+    );
 }
 
 #[tokio::test]
@@ -84,21 +99,6 @@ async fn org() {
     assert!(
         !api.admin_get_all_orgs().await.unwrap().1.is_empty(),
         "org list empty"
-    );
-    let rename_opt = RenameUserOption {
-        new_username: "Bepis".into(),
-    };
-    api.admin_rename_user("Pipis", rename_opt)
-        .await
-        .expect("failed to rename user");
-    let query = AdminDeleteUserQuery { purge: Some(true) };
-    api.admin_delete_user("Bepis", query)
-        .await
-        .expect("failed to delete user");
-    let query = AdminDeleteUserQuery { purge: Some(true) };
-    assert!(
-        api.admin_delete_user("Ghost", query).await.is_err(),
-        "deleting fake user should fail"
     );
 }
 
