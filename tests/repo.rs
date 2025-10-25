@@ -276,7 +276,20 @@ async fn team_pr_review_request() {
         .repo_get_pull_request("team-review-org", "team-pr-review", 1)
         .await
         .expect("couldn't get pr");
-    assert_eq!(pr.requested_reviewers, None);
+    assert_eq!(pr.requested_reviewers, Some(vec![]));
+
+    let team_name = api
+        .org_list_teams("team-review-org")
+        .all()
+        .await
+        .expect("failed to list teams")
+        .pop()
+        .and_then(|team| team.name);
+    assert_eq!(
+        pr.requested_reviewers_teams
+            .and_then(|mut teams| teams.pop()?.name),
+        team_name
+    );
 }
 
 #[tokio::test]
