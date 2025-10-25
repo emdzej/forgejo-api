@@ -4565,7 +4565,7 @@
         "produces": ["application/json"],
         "tags": ["repository"],
         "summary": "Get an action run",
-        "operationId": "ActionRun",
+        "operationId": "GetActionRun",
         "parameters": [
           {
             "type": "string",
