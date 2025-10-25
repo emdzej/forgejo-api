@@ -126,6 +126,7 @@ fn schema_type_name(
                             (_, None) => "BTreeMap<String, serde_json::Value>".to_string(),
                         }
                     }
+                    Primitive::File => "Vec<u8>".into(),
                 };
                 Ok(name.to_owned())
             }
