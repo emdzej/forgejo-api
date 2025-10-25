@@ -81,7 +81,11 @@ async fn total_count() {
         x_total_count
     );
     test_header!(
-        api.issue_list_labels("TestingAdmin", "header_test",),
+        api.issue_list_labels(
+            "TestingAdmin",
+            "header_test",
+            IssueListLabelsQuery::default()
+        ),
         x_total_count
     );
     test_header!(
@@ -99,7 +103,7 @@ async fn total_count() {
         .unwrap();
     git.run(&["add", "."]);
     git.run(&["commit", "-m", "\"We implemented pluey\""]);
-    git.run(&["push"]);
+    git.run(&["push", "--set-upstream", "origin", "pluey"]);
     let body = CreatePullRequestOption {
         assignee: None,
         assignees: None,
@@ -278,7 +282,7 @@ async fn has_more() {
         .unwrap();
     git.run(&["add", "."]);
     git.run(&["commit", "-m", "\"We implemented pluey\""]);
-    git.run(&["push"]);
+    git.run(&["push", "--set-upstream", "origin", "pluey"]);
     let body = CreatePullRequestOption {
         assignee: None,
         assignees: None,

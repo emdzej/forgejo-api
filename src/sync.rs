@@ -35,8 +35,8 @@ impl Forgejo {
         &self,
         owner: &str,
         repo: &str,
-        release: u64,
-        attach: u64,
+        release: i64,
+        attach: i64,
     ) -> Result<bytes::Bytes, ForgejoError> {
         let release = self
             .repo_get_release_attachment(owner, repo, release, attach)

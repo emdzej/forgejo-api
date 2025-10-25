@@ -434,23 +434,23 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                         .items
                         .as_ref()
                         .ok_or_else(|| eyre::eyre!("array must have item type defined"))?;
-                    let item_to_string = match item._type {
+                    let item_mapper = match item._type {
                         ParameterType::String => {
                             if let Some(_enum) = &item._enum {
-                                "item.as_str().to_string()"
+                                "item.as_str()"
                             } else {
                                 match query_param.format.as_deref() {
                                     Some("date-time" | "date") => {
-                                        "item.format(&time::format_description::well_known::Rfc3339).unwrap()"
+                                        "&item.format(&time::format_description::well_known::Rfc3339).unwrap()"
                                     },
                                     _ => {
-                                        "item.to_string()"
+                                        "item"
                                     }
                                 }
                             }
                         }
                         ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
-                            "format!(\"{item}\")"
+                            "&format!(\"{item}\")"
                         }
                         ParameterType::Array => {
                             eyre::bail!("nested arrays not supported in query");
@@ -461,7 +461,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                         CollectionFormat::Csv => {
                             handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_to_string,
+                                item_mapper,
                                 &field_name,
                                 ",",
                             )?);
@@ -469,7 +469,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                         CollectionFormat::Ssv => {
                             handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_to_string,
+                                item_mapper,
                                 &field_name,
                                 " ",
                             )?);
@@ -477,7 +477,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                         CollectionFormat::Tsv => {
                             handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_to_string,
+                                item_mapper,
                                 &field_name,
                                 "\\t",
                             )?);
@@ -485,12 +485,35 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                         CollectionFormat::Pipes => {
                             handler.push_str(&simple_query_array_as_list(
                                 param,
-                                item_to_string,
+                                item_mapper,
                                 &field_name,
                                 "|",
                             )?);
                         }
                         CollectionFormat::Multi => {
+                            let item_to_string = match item._type {
+                                ParameterType::String => {
+                                    if let Some(_enum) = &item._enum {
+                                        "item.as_str().to_string()"
+                                    } else {
+                                        match query_param.format.as_deref() {
+                                            Some("date-time" | "date") => {
+                                                "item.format(&time::format_description::well_known::Rfc3339).unwrap()"
+                                            },
+                                            _ => {
+                                                "item.to_string()"
+                                            }
+                                        }
+                                    }
+                                }
+                                ParameterType::Number
+                                | ParameterType::Integer
+                                | ParameterType::Boolean => "format!(\"{item}\")",
+                                ParameterType::Array => {
+                                    eyre::bail!("nested arrays not supported in query");
+                                }
+                                ParameterType::File => eyre::bail!("cannot send file in query"),
+                            };
                             writeln!(&mut handler)?;
                             writeln!(&mut handler, "if !{field_name}.is_empty() {{")?;
                             writeln!(&mut handler, "for item in {field_name} {{")?;
@@ -551,7 +574,7 @@ impl {op_name} {{
 
 fn simple_query_array_as_list(
     param: &Parameter,
-    item_pusher: &str,
+    item_mapper: &str,
     name: &str,
     sep: &str,
 ) -> eyre::Result<String> {
@@ -562,10 +585,10 @@ fn simple_query_array_as_list(
         "
 if !{name}.is_empty() {{
     let mut s = String::new();
-    for (item, i) in {name}.iter().enumerate() {{
-        {item_pusher}
+    for (i, item) in {name}.iter().enumerate() {{
+        s.push_str({item_mapper});
         if i < {name}.len() - 1 {{
-            write!(f, \"{sep}\")?;
+            s.push('{sep}')
         }}
     }}
     list.push((\"{}\", s));

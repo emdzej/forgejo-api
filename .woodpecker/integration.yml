@@ -11,19 +11,52 @@ variables:
       include: ["src/**", "tests/**"]
 
 steps:
+  get-token:
+    image: code.cartoon-aa.xyz/ci/ci-forgejo-token:13.0.1
+    pull: true
+    when:
+      <<: *when
+    settings:
+      timeout: 15
+      instance: http://forgejo-testing:3000/
+      user: TestingAdmin
+      password: password
+      output_file: .token
   test:
     image: rust
     when:
       <<: *when
     environment:
       FORGEJO_API_CI_INSTANCE_URL: http://forgejo-testing:3000/
-      FORGEJO_API_CI_TOKEN: 6d727f8db0df8a2852c9dfd38dca6b830741c079
     commands:
-      - cargo test -F sync
+      - export FORGEJO_API_CI_TOKEN=$(cat .token)
+      - cargo test -F sync --no-fail-fast --jobs 1
+  preserve:
+    image: code.cartoon-aa.xyz/ci/ci-forgejo-preserve:13.0.1
+    pull: true
+    when:
+      - status: [ failure ]
+    settings:
+      work_dir: ./forgejo
+      package: Cyborus/forgejo-api-test-failure-archive
+      instance: https://code.cartoon-aa.xyz/
+      token:
+        from_secret: preserve_token
+
 
 services:
   forgejo-testing:
+    image: code.cartoon-aa.xyz/ci/ci-forgejo:13.0.1
     pull: true
-    image: code.cartoon-aa.xyz/cyborus/ci-forgejo:10.0.0
     when:
       <<: *when
+    settings:
+      host: forgejo-testing
+      work_dir: ./forgejo
+      users:
+        - name: TestingAdmin
+          password: password
+          admin: true
+      config:
+        quota:
+          enabled: true

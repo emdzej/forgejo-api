@@ -1230,6 +1230,7 @@ pub enum Primitive {
     Null,
     Object,
     String,
+    File,
 }
 
 impl JsonDeref for Primitive {

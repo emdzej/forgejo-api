@@ -43,6 +43,21 @@ async fn user() {
             .any(|u| u.email.as_ref().unwrap() == "pipis@noreply.example.org"),
         "could not find new user"
     );
+    let rename_opt = RenameUserOption {
+        new_username: "Bepis".into(),
+    };
+    api.admin_rename_user("Pipis", rename_opt)
+        .await
+        .expect("failed to rename user");
+    let query = AdminDeleteUserQuery { purge: Some(true) };
+    api.admin_delete_user("Bepis", query)
+        .await
+        .expect("failed to delete user");
+    let query = AdminDeleteUserQuery { purge: Some(true) };
+    assert!(
+        api.admin_delete_user("Ghost", query).await.is_err(),
+        "deleting fake user should fail"
+    );
 }
 
 #[tokio::test]
@@ -85,21 +100,6 @@ async fn org() {
         !api.admin_get_all_orgs().await.unwrap().1.is_empty(),
         "org list empty"
     );
-    let rename_opt = RenameUserOption {
-        new_username: "Bepis".into(),
-    };
-    api.admin_rename_user("Pipis", rename_opt)
-        .await
-        .expect("failed to rename user");
-    let query = AdminDeleteUserQuery { purge: Some(true) };
-    api.admin_delete_user("Bepis", query)
-        .await
-        .expect("failed to delete user");
-    let query = AdminDeleteUserQuery { purge: Some(true) };
-    assert!(
-        api.admin_delete_user("Ghost", query).await.is_err(),
-        "deleting fake user should fail"
-    );
 }
 
 #[tokio::test]
@@ -133,7 +133,7 @@ async fn key() {
         .admin_create_public_key("KeyHolder", key_opt)
         .await
         .expect("failed to create key");
-    api.admin_delete_user_public_key("KeyHolder", key.id.unwrap() as u64)
+    api.admin_delete_user_public_key("KeyHolder", key.id.unwrap())
         .await
         .expect("failed to delete key");
 }
@@ -178,10 +178,10 @@ async fn hook() {
         config: None,
         events: None,
     };
-    api.admin_edit_hook(hook.id.unwrap() as u64, edit_hook)
+    api.admin_edit_hook(hook.id.unwrap(), edit_hook)
         .await
         .expect("failed to edit hook");
-    api.admin_delete_hook(hook.id.unwrap() as u64)
+    api.admin_delete_hook(hook.id.unwrap())
         .await
         .expect("failed to delete hook");
 }

@@ -74,7 +74,7 @@ impl Endpoint for ActivitypubInstanceActorInbox {
 }
 
 pub struct ActivitypubRepository {
-    pub repository_id: u32,
+    pub repository_id: i64,
 }
 
 impl Sealed for ActivitypubRepository {}
@@ -102,7 +102,7 @@ impl Endpoint for ActivitypubRepository {
 }
 
 pub struct ActivitypubRepositoryInbox {
-    pub repository_id: u32,
+    pub repository_id: i64,
     pub body: ForgeLike,
 }
 
@@ -138,7 +138,7 @@ impl Endpoint for ActivitypubRepositoryInbox {
 }
 
 pub struct ActivitypubPerson {
-    pub user_id: u32,
+    pub user_id: i64,
 }
 
 impl Sealed for ActivitypubPerson {}
@@ -165,8 +165,74 @@ impl Endpoint for ActivitypubPerson {
     }
 }
 
-pub struct ActivitypubPersonInbox {
+pub struct ActivitypubPersonActivityNote {
     pub user_id: u32,
+    pub activity_id: u32,
+}
+
+impl Sealed for ActivitypubPersonActivityNote {}
+impl Endpoint for ActivitypubPersonActivityNote {
+    type Response = RJson<ActivityPub>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/activitypub/user-id/{}/activities/{}",
+                self.user_id, self.activity_id
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct ActivitypubPersonActivity {
+    pub user_id: u32,
+    pub activity_id: u32,
+}
+
+impl Sealed for ActivitypubPersonActivity {}
+impl Endpoint for ActivitypubPersonActivity {
+    type Response = RJson<ActivityPub>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/activitypub/user-id/{}/activities/{}/activity",
+                self.user_id, self.activity_id
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct ActivitypubPersonInbox {
+    pub user_id: i64,
 }
 
 impl Sealed for ActivitypubPersonInbox {}
@@ -185,7 +251,36 @@ impl Endpoint for ActivitypubPersonInbox {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            204 => Ok((response, false)),
+            202 => Ok((response, false)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct ActivitypubPersonFeed {
+    pub user_id: u32,
+}
+
+impl Sealed for ActivitypubPersonFeed {}
+impl Endpoint for ActivitypubPersonFeed {
+    type Response = RJson<Vec<APPersonFollowItem>>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!("/api/v1/activitypub/user-id/{}/outbox", self.user_id).into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -363,7 +458,7 @@ impl Endpoint for AdminCreateHook {
 }
 
 pub struct AdminGetHook {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for AdminGetHook {}
@@ -391,7 +486,7 @@ impl Endpoint for AdminGetHook {
 }
 
 pub struct AdminDeleteHook {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for AdminDeleteHook {}
@@ -419,7 +514,7 @@ impl Endpoint for AdminDeleteHook {
 }
 
 pub struct AdminEditHook {
-    pub id: u64,
+    pub id: i64,
     pub body: EditHookOption,
 }
 
@@ -873,12 +968,12 @@ impl Endpoint for AdminGetQuotaRule<'_> {
     }
 }
 
-pub struct AdminDeleteQuotaRule<'a> {
+pub struct AdminDEleteQuotaRule<'a> {
     pub quotarule: &'a str,
 }
 
-impl Sealed for AdminDeleteQuotaRule<'_> {}
-impl Endpoint for AdminDeleteQuotaRule<'_> {
+impl Sealed for AdminDEleteQuotaRule<'_> {}
+impl Endpoint for AdminDEleteQuotaRule<'_> {
     type Response = ();
     fn make_request(self) -> ApiRequest {
         ApiRequest {
@@ -940,11 +1035,40 @@ impl Endpoint for AdminEditQuotaRule<'_> {
     }
 }
 
+pub struct AdminSearchRunJobs {
+    pub query: AdminSearchRunJobsQuery,
+}
+
+impl Sealed for AdminSearchRunJobs {}
+impl Endpoint for AdminSearchRunJobs {
+    type Response = RJson<Vec<ActionRunJob>>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: "/api/v1/admin/runners/jobs".into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct AdminGetRunnerRegistrationToken {}
 
 impl Sealed for AdminGetRunnerRegistrationToken {}
 impl Endpoint for AdminGetRunnerRegistrationToken {
-    type Response = WithHeaders<(), RegistrationTokenHeaders>;
+    type Response = RJson<RegistrationToken>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -958,7 +1082,7 @@ impl Endpoint for AdminGetRunnerRegistrationToken {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -1222,7 +1346,7 @@ impl Endpoint for AdminCreatePublicKey<'_> {
 
 pub struct AdminDeleteUserPublicKey<'a> {
     pub username: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for AdminDeleteUserPublicKey<'_> {}
@@ -1793,12 +1917,12 @@ impl Endpoint for NotifyNewAvailable {
     }
 }
 
-pub struct NotifyGetThread<'a> {
-    pub id: &'a str,
+pub struct NotifyGetThread {
+    pub id: i64,
 }
 
-impl Sealed for NotifyGetThread<'_> {}
-impl Endpoint for NotifyGetThread<'_> {
+impl Sealed for NotifyGetThread {}
+impl Endpoint for NotifyGetThread {
     type Response = RJson<NotificationThread>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
@@ -1823,13 +1947,13 @@ impl Endpoint for NotifyGetThread<'_> {
     }
 }
 
-pub struct NotifyReadThread<'a> {
-    pub id: &'a str,
+pub struct NotifyReadThread {
+    pub id: i64,
     pub query: NotifyReadThreadQuery,
 }
 
-impl Sealed for NotifyReadThread<'_> {}
-impl Endpoint for NotifyReadThread<'_> {
+impl Sealed for NotifyReadThread {}
+impl Endpoint for NotifyReadThread {
     type Response = RJson<NotificationThread>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
@@ -2040,13 +2164,43 @@ impl Endpoint for OrgEdit<'_> {
     }
 }
 
+pub struct OrgSearchRunJobs<'a> {
+    pub org: &'a str,
+    pub query: OrgSearchRunJobsQuery,
+}
+
+impl Sealed for OrgSearchRunJobs<'_> {}
+impl Endpoint for OrgSearchRunJobs<'_> {
+    type Response = RJson<Vec<ActionRunJob>>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!("/api/v1/orgs/{}/actions/runners/jobs", self.org).into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct OrgGetRunnerRegistrationToken<'a> {
     pub org: &'a str,
 }
 
 impl Sealed for OrgGetRunnerRegistrationToken<'_> {}
 impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
-    type Response = WithHeaders<(), RegistrationTokenHeaders>;
+    type Response = RJson<RegistrationToken>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2064,7 +2218,7 @@ impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -2328,7 +2482,7 @@ pub struct DeleteOrgVariable<'a> {
 
 impl Sealed for DeleteOrgVariable<'_> {}
 impl Endpoint for DeleteOrgVariable<'_> {
-    type Response = Option<RJson<ActionVariable>>;
+    type Response = ();
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -2346,8 +2500,6 @@ impl Endpoint for DeleteOrgVariable<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, true)),
-            201 => Ok((response, false)),
             204 => Ok((response, false)),
             400 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
@@ -2545,7 +2697,7 @@ impl Endpoint for OrgCreateHook<'_> {
 
 pub struct OrgGetHook<'a> {
     pub org: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgGetHook<'_> {}
@@ -2575,7 +2727,7 @@ impl Endpoint for OrgGetHook<'_> {
 
 pub struct OrgDeleteHook<'a> {
     pub org: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgDeleteHook<'_> {}
@@ -2605,7 +2757,7 @@ impl Endpoint for OrgDeleteHook<'_> {
 
 pub struct OrgEditHook<'a> {
     pub org: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditHookOption,
 }
 
@@ -2639,6 +2791,7 @@ impl Endpoint for OrgEditHook<'_> {
 
 pub struct OrgListLabels<'a> {
     pub org: &'a str,
+    pub query: OrgListLabelsQuery,
 }
 
 impl Sealed for OrgListLabels<'_> {}
@@ -2648,7 +2801,7 @@ impl Endpoint for OrgListLabels<'_> {
         ApiRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/labels", self.org).into(),
-            query: None,
+            query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
             limit: None,
@@ -2702,7 +2855,7 @@ impl Endpoint for OrgCreateLabel<'_> {
 
 pub struct OrgGetLabel<'a> {
     pub org: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgGetLabel<'_> {}
@@ -2732,7 +2885,7 @@ impl Endpoint for OrgGetLabel<'_> {
 
 pub struct OrgDeleteLabel<'a> {
     pub org: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgDeleteLabel<'_> {}
@@ -2762,7 +2915,7 @@ impl Endpoint for OrgDeleteLabel<'_> {
 
 pub struct OrgEditLabel<'a> {
     pub org: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditLabelOption,
 }
 
@@ -3125,16 +3278,17 @@ impl Endpoint for OrgListQuotaAttachments<'_> {
 
 pub struct OrgCheckQuota<'a> {
     pub org: &'a str,
+    pub query: OrgCheckQuotaQuery,
 }
 
 impl Sealed for OrgCheckQuota<'_> {}
 impl Endpoint for OrgCheckQuota<'_> {
-    type Response = ();
+    type Response = RJson<bool>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/quota/check", self.org).into(),
-            query: None,
+            query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
             limit: None,
@@ -3143,7 +3297,7 @@ impl Endpoint for OrgCheckQuota<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            200 => Ok((response, true)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             422 => Err(json_error::<APIValidationError>(&response)),
@@ -3177,6 +3331,40 @@ impl Endpoint for OrgListQuotaPackages<'_> {
             200 => Ok((response, true)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RenameOrg<'a> {
+    pub org: &'a str,
+    pub body: RenameOrgOption,
+}
+
+impl Sealed for RenameOrg<'_> {}
+impl Endpoint for RenameOrg<'_> {
+    type Response = ();
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::POST,
+            path: format!("/api/v1/orgs/{}/rename", self.org).into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -3394,6 +3582,77 @@ impl Endpoint for ListPackages<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct LinkPackage<'a> {
+    pub owner: &'a str,
+    pub r#type: &'a str,
+    pub name: &'a str,
+    pub repo_name: &'a str,
+}
+
+impl Sealed for LinkPackage<'_> {}
+impl Endpoint for LinkPackage<'_> {
+    type Response = ();
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/packages/{}/{}/{}/-/link/{}",
+                self.owner, self.r#type, self.name, self.repo_name
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, false)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct UnlinkPackage<'a> {
+    pub owner: &'a str,
+    pub r#type: &'a str,
+    pub name: &'a str,
+}
+
+impl Sealed for UnlinkPackage<'_> {}
+impl Endpoint for UnlinkPackage<'_> {
+    type Response = ();
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/packages/{}/{}/{}/-/unlink",
+                self.owner, self.r#type, self.name
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, false)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
@@ -3701,6 +3960,41 @@ impl Endpoint for RepoEdit<'_> {
     }
 }
 
+pub struct RepoSearchRunJobs<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub query: RepoSearchRunJobsQuery,
+}
+
+impl Sealed for RepoSearchRunJobs<'_> {}
+impl Endpoint for RepoSearchRunJobs<'_> {
+    type Response = RJson<Vec<ActionRunJob>>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/repos/{}/{}/actions/runners/jobs",
+                self.owner, self.repo
+            )
+            .into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct RepoGetRunnerRegistrationToken<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
@@ -3708,7 +4002,7 @@ pub struct RepoGetRunnerRegistrationToken<'a> {
 
 impl Sealed for RepoGetRunnerRegistrationToken<'_> {}
 impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
-    type Response = WithHeaders<(), RegistrationTokenHeaders>;
+    type Response = RJson<RegistrationToken>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3726,7 +4020,76 @@ impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            200 => Ok((response, true)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct ListActionRuns<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub query: ListActionRunsQuery,
+}
+
+impl Sealed for ListActionRuns<'_> {}
+impl Endpoint for ListActionRuns<'_> {
+    type Response = RJson<ListActionRunResponse>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!("/api/v1/repos/{}/{}/actions/runs", self.owner, self.repo).into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct GetActionRun<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub run_id: i64,
+}
+
+impl Sealed for GetActionRun<'_> {}
+impl Endpoint for GetActionRun<'_> {
+    type Response = RJson<ActionRun>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/repos/{}/{}/actions/runs/{}",
+                self.owner, self.repo, self.run_id
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4036,7 +4399,7 @@ pub struct DeleteRepoVariable<'a> {
 
 impl Sealed for DeleteRepoVariable<'_> {}
 impl Endpoint for DeleteRepoVariable<'_> {
-    type Response = Option<RJson<ActionVariable>>;
+    type Response = ();
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -4054,8 +4417,6 @@ impl Endpoint for DeleteRepoVariable<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, true)),
-            201 => Ok((response, false)),
             204 => Ok((response, false)),
             400 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
@@ -4069,19 +4430,19 @@ impl Endpoint for DeleteRepoVariable<'_> {
 pub struct DispatchWorkflow<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub workflowname: &'a str,
+    pub workflowfilename: &'a str,
     pub body: DispatchWorkflowOption,
 }
 
 impl Sealed for DispatchWorkflow<'_> {}
 impl Endpoint for DispatchWorkflow<'_> {
-    type Response = ();
+    type Response = Option<RJson<DispatchWorkflowRun>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/workflows/{}/dispatches",
-                self.owner, self.repo, self.workflowname
+                self.owner, self.repo, self.workflowfilename
             )
             .into(),
             query: None,
@@ -4096,6 +4457,7 @@ impl Endpoint for DispatchWorkflow<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
+            201 => Ok((response, true)),
             204 => Ok((response, false)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
@@ -5047,6 +5409,7 @@ impl Endpoint for RepoChangeFiles<'_> {
             201 => Ok((response, true)),
             403 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             422 => Err(json_error::<APIError>(&response)),
             423 => Err(json_error::<APIRepoArchivedError>(&response)),
@@ -5126,6 +5489,7 @@ impl Endpoint for RepoUpdateFile<'_> {
             200 => Ok((response, true)),
             403 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             422 => Err(json_error::<APIError>(&response)),
             423 => Err(json_error::<APIRepoArchivedError>(&response)),
@@ -5169,6 +5533,7 @@ impl Endpoint for RepoCreateFile<'_> {
             201 => Ok((response, true)),
             403 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
+            409 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             413 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             422 => Err(json_error::<APIError>(&response)),
             423 => Err(json_error::<APIRepoArchivedError>(&response)),
@@ -5222,6 +5587,38 @@ impl Endpoint for RepoDeleteFile<'_> {
     }
 }
 
+pub struct RepoConvert<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+}
+
+impl Sealed for RepoConvert<'_> {}
+impl Endpoint for RepoConvert<'_> {
+    type Response = RJson<Repository>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::POST,
+            path: format!("/api/v1/repos/{}/{}/convert", self.owner, self.repo).into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct RepoApplyDiffPatch<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
@@ -5267,7 +5664,7 @@ pub struct RepoGetEditorConfig<'a> {
 
 impl Sealed for RepoGetEditorConfig<'_> {}
 impl Endpoint for RepoGetEditorConfig<'_> {
-    type Response = ();
+    type Response = RJson<BTreeMap<String, String>>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5285,7 +5682,7 @@ impl Endpoint for RepoGetEditorConfig<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            200 => Ok((response, true)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
@@ -5567,6 +5964,37 @@ impl Endpoint for CreateFork<'_> {
     }
 }
 
+pub struct GetBlobs<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub query: GetBlobsQuery,
+}
+
+impl Sealed for GetBlobs<'_> {}
+impl Endpoint for GetBlobs<'_> {
+    type Response = RJson<Vec<GitBlob>>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!("/api/v1/repos/{}/{}/git/blobs", self.owner, self.repo).into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct GetBlob<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
@@ -5575,7 +6003,7 @@ pub struct GetBlob<'a> {
 
 impl Sealed for GetBlob<'_> {}
 impl Endpoint for GetBlob<'_> {
-    type Response = RJson<GitBlobResponse>;
+    type Response = RJson<GitBlob>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6133,7 +6561,7 @@ impl Endpoint for RepoEditGitHook<'_> {
 pub struct RepoGetHook<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoGetHook<'_> {}
@@ -6168,7 +6596,7 @@ impl Endpoint for RepoGetHook<'_> {
 pub struct RepoDeleteHook<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoDeleteHook<'_> {}
@@ -6203,7 +6631,7 @@ impl Endpoint for RepoDeleteHook<'_> {
 pub struct RepoEditHook<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditHookOption,
 }
 
@@ -6242,7 +6670,7 @@ impl Endpoint for RepoEditHook<'_> {
 pub struct RepoTestHook<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub query: RepoTestHookQuery,
 }
 
@@ -6462,6 +6890,7 @@ impl Endpoint for IssueGetRepoComments<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6472,7 +6901,7 @@ impl Endpoint for IssueGetRepoComments<'_> {
 pub struct IssueGetComment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for IssueGetComment<'_> {}
@@ -6509,7 +6938,7 @@ impl Endpoint for IssueGetComment<'_> {
 pub struct IssueDeleteComment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for IssueDeleteComment<'_> {}
@@ -6534,7 +6963,6 @@ impl Endpoint for IssueDeleteComment<'_> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
-            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -6545,7 +6973,7 @@ impl Endpoint for IssueDeleteComment<'_> {
 pub struct IssueEditComment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditIssueCommentOption,
 }
 
@@ -6587,7 +7015,7 @@ impl Endpoint for IssueEditComment<'_> {
 pub struct IssueListIssueCommentAttachments<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for IssueListIssueCommentAttachments<'_> {}
@@ -6622,7 +7050,7 @@ impl Endpoint for IssueListIssueCommentAttachments<'_> {
 pub struct IssueCreateIssueCommentAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub attachment: &'a [u8],
     pub query: IssueCreateIssueCommentAttachmentQuery,
 }
@@ -6668,8 +7096,8 @@ impl Endpoint for IssueCreateIssueCommentAttachment<'_> {
 pub struct IssueGetIssueCommentAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
-    pub attachment_id: u64,
+    pub id: i64,
+    pub attachment_id: i64,
 }
 
 impl Sealed for IssueGetIssueCommentAttachment<'_> {}
@@ -6704,8 +7132,8 @@ impl Endpoint for IssueGetIssueCommentAttachment<'_> {
 pub struct IssueDeleteIssueCommentAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
-    pub attachment_id: u64,
+    pub id: i64,
+    pub attachment_id: i64,
 }
 
 impl Sealed for IssueDeleteIssueCommentAttachment<'_> {}
@@ -6741,8 +7169,8 @@ impl Endpoint for IssueDeleteIssueCommentAttachment<'_> {
 pub struct IssueEditIssueCommentAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
-    pub attachment_id: u64,
+    pub id: i64,
+    pub attachment_id: i64,
     pub body: EditAttachmentOptions,
 }
 
@@ -6783,7 +7211,7 @@ impl Endpoint for IssueEditIssueCommentAttachment<'_> {
 pub struct IssueGetCommentReactions<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for IssueGetCommentReactions<'_> {}
@@ -6819,7 +7247,7 @@ impl Endpoint for IssueGetCommentReactions<'_> {
 pub struct IssuePostCommentReaction<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditReactionOption,
 }
 
@@ -6860,7 +7288,7 @@ impl Endpoint for IssuePostCommentReaction<'_> {
 pub struct IssueDeleteCommentReaction<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditReactionOption,
 }
 
@@ -6887,7 +7315,7 @@ impl Endpoint for IssueDeleteCommentReaction<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            204 => Ok((response, false)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
@@ -6930,7 +7358,7 @@ impl Endpoint for RepoListPinnedIssues<'_> {
 pub struct IssueGetIssue<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueGetIssue<'_> {}
@@ -6965,7 +7393,7 @@ impl Endpoint for IssueGetIssue<'_> {
 pub struct IssueDelete<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueDelete<'_> {}
@@ -7001,7 +7429,7 @@ impl Endpoint for IssueDelete<'_> {
 pub struct IssueEditIssue<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: EditIssueOption,
 }
 
@@ -7042,7 +7470,7 @@ impl Endpoint for IssueEditIssue<'_> {
 pub struct IssueListIssueAttachments<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueListIssueAttachments<'_> {}
@@ -7077,7 +7505,7 @@ impl Endpoint for IssueListIssueAttachments<'_> {
 pub struct IssueCreateIssueAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub attachment: &'a [u8],
     pub query: IssueCreateIssueAttachmentQuery,
 }
@@ -7123,8 +7551,8 @@ impl Endpoint for IssueCreateIssueAttachment<'_> {
 pub struct IssueGetIssueAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub attachment_id: u64,
+    pub index: i64,
+    pub attachment_id: i64,
 }
 
 impl Sealed for IssueGetIssueAttachment<'_> {}
@@ -7159,8 +7587,8 @@ impl Endpoint for IssueGetIssueAttachment<'_> {
 pub struct IssueDeleteIssueAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub attachment_id: u64,
+    pub index: i64,
+    pub attachment_id: i64,
 }
 
 impl Sealed for IssueDeleteIssueAttachment<'_> {}
@@ -7196,8 +7624,8 @@ impl Endpoint for IssueDeleteIssueAttachment<'_> {
 pub struct IssueEditIssueAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub attachment_id: u64,
+    pub index: i64,
+    pub attachment_id: i64,
     pub body: EditAttachmentOptions,
 }
 
@@ -7238,7 +7666,7 @@ impl Endpoint for IssueEditIssueAttachment<'_> {
 pub struct IssueListBlocks<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: &'a str,
+    pub index: i64,
 }
 
 impl Sealed for IssueListBlocks<'_> {}
@@ -7273,7 +7701,7 @@ impl Endpoint for IssueListBlocks<'_> {
 pub struct IssueCreateIssueBlocking<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: &'a str,
+    pub index: i64,
     pub body: IssueMeta,
 }
 
@@ -7312,7 +7740,7 @@ impl Endpoint for IssueCreateIssueBlocking<'_> {
 pub struct IssueRemoveIssueBlocking<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: &'a str,
+    pub index: i64,
     pub body: IssueMeta,
 }
 
@@ -7351,7 +7779,7 @@ impl Endpoint for IssueRemoveIssueBlocking<'_> {
 pub struct IssueGetComments<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub query: IssueGetCommentsQuery,
 }
 
@@ -7377,6 +7805,7 @@ impl Endpoint for IssueGetComments<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7387,7 +7816,7 @@ impl Endpoint for IssueGetComments<'_> {
 pub struct IssueCreateComment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: CreateIssueCommentOption,
 }
 
@@ -7429,7 +7858,7 @@ pub struct IssueDeleteCommentDeprecated<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
     pub index: u32,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for IssueDeleteCommentDeprecated<'_> {}
@@ -7454,7 +7883,6 @@ impl Endpoint for IssueDeleteCommentDeprecated<'_> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
-            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -7466,7 +7894,7 @@ pub struct IssueEditCommentDeprecated<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
     pub index: u32,
-    pub id: u64,
+    pub id: i64,
     pub body: EditIssueCommentOption,
 }
 
@@ -7507,7 +7935,7 @@ impl Endpoint for IssueEditCommentDeprecated<'_> {
 pub struct IssueEditIssueDeadline<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: EditDeadlineOption,
 }
 
@@ -7547,7 +7975,7 @@ impl Endpoint for IssueEditIssueDeadline<'_> {
 pub struct IssueListIssueDependencies<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: &'a str,
+    pub index: i64,
 }
 
 impl Sealed for IssueListIssueDependencies<'_> {}
@@ -7582,7 +8010,7 @@ impl Endpoint for IssueListIssueDependencies<'_> {
 pub struct IssueCreateIssueDependencies<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: &'a str,
+    pub index: i64,
     pub body: IssueMeta,
 }
 
@@ -7622,7 +8050,7 @@ impl Endpoint for IssueCreateIssueDependencies<'_> {
 pub struct IssueRemoveIssueDependencies<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: &'a str,
+    pub index: i64,
     pub body: IssueMeta,
 }
 
@@ -7662,7 +8090,7 @@ impl Endpoint for IssueRemoveIssueDependencies<'_> {
 pub struct IssueGetLabels<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueGetLabels<'_> {}
@@ -7697,7 +8125,7 @@ impl Endpoint for IssueGetLabels<'_> {
 pub struct IssueReplaceLabels<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: IssueLabelsOption,
 }
 
@@ -7737,7 +8165,7 @@ impl Endpoint for IssueReplaceLabels<'_> {
 pub struct IssueAddLabel<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: IssueLabelsOption,
 }
 
@@ -7777,7 +8205,7 @@ impl Endpoint for IssueAddLabel<'_> {
 pub struct IssueClearLabels<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: DeleteLabelsOption,
 }
 
@@ -7817,8 +8245,8 @@ impl Endpoint for IssueClearLabels<'_> {
 pub struct IssueRemoveLabel<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub identifier: &'a str,
     pub body: DeleteLabelsOption,
 }
 
@@ -7830,7 +8258,7 @@ impl Endpoint for IssueRemoveLabel<'_> {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/labels/{}",
-                self.owner, self.repo, self.index, self.id
+                self.owner, self.repo, self.index, self.identifier
             )
             .into(),
             query: None,
@@ -7859,7 +8287,7 @@ impl Endpoint for IssueRemoveLabel<'_> {
 pub struct PinIssue<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for PinIssue<'_> {}
@@ -7895,7 +8323,7 @@ impl Endpoint for PinIssue<'_> {
 pub struct UnpinIssue<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for UnpinIssue<'_> {}
@@ -7931,8 +8359,8 @@ impl Endpoint for UnpinIssue<'_> {
 pub struct MoveIssuePin<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub position: u64,
+    pub index: i64,
+    pub position: i64,
 }
 
 impl Sealed for MoveIssuePin<'_> {}
@@ -7968,7 +8396,7 @@ impl Endpoint for MoveIssuePin<'_> {
 pub struct IssueGetIssueReactions<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueGetIssueReactions<'_> {}
@@ -8004,7 +8432,7 @@ impl Endpoint for IssueGetIssueReactions<'_> {
 pub struct IssuePostIssueReaction<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: EditReactionOption,
 }
 
@@ -8045,7 +8473,7 @@ impl Endpoint for IssuePostIssueReaction<'_> {
 pub struct IssueDeleteIssueReaction<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: EditReactionOption,
 }
 
@@ -8072,7 +8500,7 @@ impl Endpoint for IssueDeleteIssueReaction<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            204 => Ok((response, false)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
@@ -8085,7 +8513,7 @@ impl Endpoint for IssueDeleteIssueReaction<'_> {
 pub struct IssueDeleteStopWatch<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueDeleteStopWatch<'_> {}
@@ -8122,7 +8550,7 @@ impl Endpoint for IssueDeleteStopWatch<'_> {
 pub struct IssueStartStopWatch<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueStartStopWatch<'_> {}
@@ -8159,7 +8587,7 @@ impl Endpoint for IssueStartStopWatch<'_> {
 pub struct IssueStopStopWatch<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueStopStopWatch<'_> {}
@@ -8196,7 +8624,7 @@ impl Endpoint for IssueStopStopWatch<'_> {
 pub struct IssueSubscriptions<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueSubscriptions<'_> {}
@@ -8231,7 +8659,7 @@ impl Endpoint for IssueSubscriptions<'_> {
 pub struct IssueCheckSubscription<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueCheckSubscription<'_> {}
@@ -8266,7 +8694,7 @@ impl Endpoint for IssueCheckSubscription<'_> {
 pub struct IssueAddSubscription<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub user: &'a str,
 }
 
@@ -8303,7 +8731,7 @@ impl Endpoint for IssueAddSubscription<'_> {
 pub struct IssueDeleteSubscription<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub user: &'a str,
 }
 
@@ -8340,7 +8768,7 @@ impl Endpoint for IssueDeleteSubscription<'_> {
 pub struct IssueGetCommentsAndTimeline<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub query: IssueGetCommentsAndTimelineQuery,
 }
 
@@ -8366,6 +8794,7 @@ impl Endpoint for IssueGetCommentsAndTimeline<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -8376,7 +8805,7 @@ impl Endpoint for IssueGetCommentsAndTimeline<'_> {
 pub struct IssueTrackedTimes<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub query: IssueTrackedTimesQuery,
 }
 
@@ -8412,7 +8841,7 @@ impl Endpoint for IssueTrackedTimes<'_> {
 pub struct IssueAddTime<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: AddTimeOption,
 }
 
@@ -8453,7 +8882,7 @@ impl Endpoint for IssueAddTime<'_> {
 pub struct IssueResetTime<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for IssueResetTime<'_> {}
@@ -8490,8 +8919,8 @@ impl Endpoint for IssueResetTime<'_> {
 pub struct IssueDeleteTime<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
 }
 
 impl Sealed for IssueDeleteTime<'_> {}
@@ -8594,7 +9023,7 @@ impl Endpoint for RepoCreateKey<'_> {
 pub struct RepoGetKey<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoGetKey<'_> {}
@@ -8629,7 +9058,7 @@ impl Endpoint for RepoGetKey<'_> {
 pub struct RepoDeleteKey<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoDeleteKey<'_> {}
@@ -8665,6 +9094,7 @@ impl Endpoint for RepoDeleteKey<'_> {
 pub struct IssueListLabels<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
+    pub query: IssueListLabelsQuery,
 }
 
 impl Sealed for IssueListLabels<'_> {}
@@ -8674,7 +9104,7 @@ impl Endpoint for IssueListLabels<'_> {
         ApiRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/labels", self.owner, self.repo).into(),
-            query: None,
+            query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
             limit: None,
@@ -8730,7 +9160,7 @@ impl Endpoint for IssueCreateLabel<'_> {
 pub struct IssueGetLabel<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for IssueGetLabel<'_> {}
@@ -8765,7 +9195,7 @@ impl Endpoint for IssueGetLabel<'_> {
 pub struct IssueDeleteLabel<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for IssueDeleteLabel<'_> {}
@@ -8800,7 +9230,7 @@ impl Endpoint for IssueDeleteLabel<'_> {
 pub struct IssueEditLabel<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditLabelOption,
 }
 
@@ -8971,7 +9401,7 @@ impl Endpoint for IssueCreateMilestone<'_> {
 pub struct IssueGetMilestone<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: &'a str,
+    pub id: i64,
 }
 
 impl Sealed for IssueGetMilestone<'_> {}
@@ -9006,7 +9436,7 @@ impl Endpoint for IssueGetMilestone<'_> {
 pub struct IssueDeleteMilestone<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: &'a str,
+    pub id: i64,
 }
 
 impl Sealed for IssueDeleteMilestone<'_> {}
@@ -9041,7 +9471,7 @@ impl Endpoint for IssueDeleteMilestone<'_> {
 pub struct IssueEditMilestone<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: &'a str,
+    pub id: i64,
     pub body: EditMilestoneOption,
 }
 
@@ -9337,7 +9767,7 @@ impl Endpoint for RepoGetPullRequestByBaseHead<'_> {
 pub struct RepoGetPullRequest<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for RepoGetPullRequest<'_> {}
@@ -9372,7 +9802,7 @@ impl Endpoint for RepoGetPullRequest<'_> {
 pub struct RepoEditPullRequest<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: EditPullRequestOption,
 }
 
@@ -9415,7 +9845,7 @@ impl Endpoint for RepoEditPullRequest<'_> {
 pub struct RepoDownloadPullDiffOrPatch<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub diff_type: &'a str,
     pub query: RepoDownloadPullDiffOrPatchQuery,
 }
@@ -9452,7 +9882,7 @@ impl Endpoint for RepoDownloadPullDiffOrPatch<'_> {
 pub struct RepoGetPullRequestCommits<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub query: RepoGetPullRequestCommitsQuery,
 }
 
@@ -9488,7 +9918,7 @@ impl Endpoint for RepoGetPullRequestCommits<'_> {
 pub struct RepoGetPullRequestFiles<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub query: RepoGetPullRequestFilesQuery,
 }
 
@@ -9524,7 +9954,7 @@ impl Endpoint for RepoGetPullRequestFiles<'_> {
 pub struct RepoPullRequestIsMerged<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for RepoPullRequestIsMerged<'_> {}
@@ -9559,7 +9989,7 @@ impl Endpoint for RepoPullRequestIsMerged<'_> {
 pub struct RepoMergePullRequest<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: MergePullRequestOption,
 }
 
@@ -9587,6 +10017,7 @@ impl Endpoint for RepoMergePullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            403 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             405 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             409 => Err(json_error::<APIError>(&response)),
@@ -9602,7 +10033,7 @@ impl Endpoint for RepoMergePullRequest<'_> {
 pub struct RepoCancelScheduledAutoMerge<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for RepoCancelScheduledAutoMerge<'_> {}
@@ -9639,7 +10070,7 @@ impl Endpoint for RepoCancelScheduledAutoMerge<'_> {
 pub struct RepoCreatePullReviewRequests<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: PullReviewRequestOptions,
 }
 
@@ -9679,7 +10110,7 @@ impl Endpoint for RepoCreatePullReviewRequests<'_> {
 pub struct RepoDeletePullReviewRequests<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: PullReviewRequestOptions,
 }
 
@@ -9720,7 +10151,7 @@ impl Endpoint for RepoDeletePullReviewRequests<'_> {
 pub struct RepoListPullReviews<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
 }
 
 impl Sealed for RepoListPullReviews<'_> {}
@@ -9755,7 +10186,7 @@ impl Endpoint for RepoListPullReviews<'_> {
 pub struct RepoCreatePullReview<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub body: CreatePullReviewOptions,
 }
 
@@ -9795,8 +10226,8 @@ impl Endpoint for RepoCreatePullReview<'_> {
 pub struct RepoGetPullReview<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
 }
 
 impl Sealed for RepoGetPullReview<'_> {}
@@ -9831,8 +10262,8 @@ impl Endpoint for RepoGetPullReview<'_> {
 pub struct RepoSubmitPullReview<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
     pub body: SubmitPullReviewOptions,
 }
 
@@ -9872,8 +10303,8 @@ impl Endpoint for RepoSubmitPullReview<'_> {
 pub struct RepoDeletePullReview<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
 }
 
 impl Sealed for RepoDeletePullReview<'_> {}
@@ -9909,8 +10340,8 @@ impl Endpoint for RepoDeletePullReview<'_> {
 pub struct RepoGetPullReviewComments<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
 }
 
 impl Sealed for RepoGetPullReviewComments<'_> {}
@@ -9945,8 +10376,8 @@ impl Endpoint for RepoGetPullReviewComments<'_> {
 pub struct RepoCreatePullReviewComment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
     pub body: serde_json::Value,
 }
 
@@ -9986,9 +10417,9 @@ impl Endpoint for RepoCreatePullReviewComment<'_> {
 pub struct RepoGetPullReviewComment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
-    pub comment: u64,
+    pub index: i64,
+    pub id: i64,
+    pub comment: i64,
 }
 
 impl Sealed for RepoGetPullReviewComment<'_> {}
@@ -10024,9 +10455,9 @@ impl Endpoint for RepoGetPullReviewComment<'_> {
 pub struct RepoDeletePullReviewComment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
-    pub comment: u64,
+    pub index: i64,
+    pub id: i64,
+    pub comment: i64,
 }
 
 impl Sealed for RepoDeletePullReviewComment<'_> {}
@@ -10062,8 +10493,8 @@ impl Endpoint for RepoDeletePullReviewComment<'_> {
 pub struct RepoDismissPullReview<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
     pub body: DismissPullReviewOptions,
 }
 
@@ -10104,8 +10535,8 @@ impl Endpoint for RepoDismissPullReview<'_> {
 pub struct RepoUnDismissPullReview<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
-    pub id: u64,
+    pub index: i64,
+    pub id: i64,
 }
 
 impl Sealed for RepoUnDismissPullReview<'_> {}
@@ -10142,7 +10573,7 @@ impl Endpoint for RepoUnDismissPullReview<'_> {
 pub struct RepoUpdatePullRequest<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub index: u64,
+    pub index: i64,
     pub query: RepoUpdatePullRequestQuery,
 }
 
@@ -10565,7 +10996,7 @@ impl Endpoint for RepoDeleteReleaseByTag<'_> {
 pub struct RepoGetRelease<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoGetRelease<'_> {}
@@ -10600,7 +11031,7 @@ impl Endpoint for RepoGetRelease<'_> {
 pub struct RepoDeleteRelease<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoDeleteRelease<'_> {}
@@ -10636,7 +11067,7 @@ impl Endpoint for RepoDeleteRelease<'_> {
 pub struct RepoEditRelease<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub body: EditReleaseOption,
 }
 
@@ -10675,7 +11106,7 @@ impl Endpoint for RepoEditRelease<'_> {
 pub struct RepoListReleaseAttachments<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoListReleaseAttachments<'_> {}
@@ -10710,7 +11141,7 @@ impl Endpoint for RepoListReleaseAttachments<'_> {
 pub struct RepoCreateReleaseAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
+    pub id: i64,
     pub attachment: Option<&'a [u8]>,
     pub external_url: Option<&'a str>,
     pub query: RepoCreateReleaseAttachmentQuery,
@@ -10759,8 +11190,8 @@ impl Endpoint for RepoCreateReleaseAttachment<'_> {
 pub struct RepoGetReleaseAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
-    pub attachment_id: u64,
+    pub id: i64,
+    pub attachment_id: i64,
 }
 
 impl Sealed for RepoGetReleaseAttachment<'_> {}
@@ -10795,8 +11226,8 @@ impl Endpoint for RepoGetReleaseAttachment<'_> {
 pub struct RepoDeleteReleaseAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
-    pub attachment_id: u64,
+    pub id: i64,
+    pub attachment_id: i64,
 }
 
 impl Sealed for RepoDeleteReleaseAttachment<'_> {}
@@ -10831,8 +11262,8 @@ impl Endpoint for RepoDeleteReleaseAttachment<'_> {
 pub struct RepoEditReleaseAttachment<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u64,
-    pub attachment_id: u64,
+    pub id: i64,
+    pub attachment_id: i64,
     pub body: EditAttachmentOptions,
 }
 
@@ -11155,6 +11586,140 @@ impl Endpoint for UserCurrentDeleteSubscription<'_> {
     }
 }
 
+pub struct RepoSyncForkDefaultInfo<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+}
+
+impl Sealed for RepoSyncForkDefaultInfo<'_> {}
+impl Endpoint for RepoSyncForkDefaultInfo<'_> {
+    type Response = RJson<SyncForkInfo>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!("/api/v1/repos/{}/{}/sync_fork", self.owner, self.repo).into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RepoSyncForkDefault<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+}
+
+impl Sealed for RepoSyncForkDefault<'_> {}
+impl Endpoint for RepoSyncForkDefault<'_> {
+    type Response = ();
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::POST,
+            path: format!("/api/v1/repos/{}/{}/sync_fork", self.owner, self.repo).into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RepoSyncForkBranchInfo<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub branch: &'a str,
+}
+
+impl Sealed for RepoSyncForkBranchInfo<'_> {}
+impl Endpoint for RepoSyncForkBranchInfo<'_> {
+    type Response = RJson<SyncForkInfo>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/repos/{}/{}/sync_fork/{}",
+                self.owner, self.repo, self.branch
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RepoSyncForkBranch<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub branch: &'a str,
+}
+
+impl Sealed for RepoSyncForkBranch<'_> {}
+impl Endpoint for RepoSyncForkBranch<'_> {
+    type Response = ();
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/repos/{}/{}/sync_fork/{}",
+                self.owner, self.repo, self.branch
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct RepoListTagProtection<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
@@ -11224,7 +11789,7 @@ impl Endpoint for RepoCreateTagProtection<'_> {
 pub struct RepoGetTagProtection<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u32,
+    pub id: i64,
 }
 
 impl Sealed for RepoGetTagProtection<'_> {}
@@ -11259,7 +11824,7 @@ impl Endpoint for RepoGetTagProtection<'_> {
 pub struct RepoDeleteTagProtection<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u32,
+    pub id: i64,
 }
 
 impl Sealed for RepoDeleteTagProtection<'_> {}
@@ -11294,7 +11859,7 @@ impl Endpoint for RepoDeleteTagProtection<'_> {
 pub struct RepoEditTagProtection<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
-    pub id: u32,
+    pub id: i64,
     pub body: EditTagProtectionOption,
 }
 
@@ -12183,7 +12748,7 @@ impl Endpoint for GenerateRepo<'_> {
 }
 
 pub struct RepoGetById {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for RepoGetById {}
@@ -12341,8 +12906,35 @@ impl Endpoint for GetSigningKey {
     }
 }
 
+pub struct GetSshSigningKey {}
+
+impl Sealed for GetSshSigningKey {}
+impl Endpoint for GetSshSigningKey {
+    type Response = RText;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: "/api/v1/signing-key.ssh".into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct OrgGetTeam {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgGetTeam {}
@@ -12371,7 +12963,7 @@ impl Endpoint for OrgGetTeam {
 }
 
 pub struct OrgDeleteTeam {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgDeleteTeam {}
@@ -12400,7 +12992,7 @@ impl Endpoint for OrgDeleteTeam {
 }
 
 pub struct OrgEditTeam {
-    pub id: u32,
+    pub id: i64,
     pub body: EditTeamOption,
 }
 
@@ -12433,7 +13025,7 @@ impl Endpoint for OrgEditTeam {
 }
 
 pub struct OrgListTeamActivityFeeds {
-    pub id: u64,
+    pub id: i64,
     pub query: OrgListTeamActivityFeedsQuery,
 }
 
@@ -12463,7 +13055,7 @@ impl Endpoint for OrgListTeamActivityFeeds {
 }
 
 pub struct OrgListTeamMembers {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgListTeamMembers {}
@@ -12492,7 +13084,7 @@ impl Endpoint for OrgListTeamMembers {
 }
 
 pub struct OrgListTeamMember<'a> {
-    pub id: u64,
+    pub id: i64,
     pub username: &'a str,
 }
 
@@ -12522,7 +13114,7 @@ impl Endpoint for OrgListTeamMember<'_> {
 }
 
 pub struct OrgAddTeamMember<'a> {
-    pub id: u64,
+    pub id: i64,
     pub username: &'a str,
 }
 
@@ -12552,7 +13144,7 @@ impl Endpoint for OrgAddTeamMember<'_> {
 }
 
 pub struct OrgRemoveTeamMember<'a> {
-    pub id: u64,
+    pub id: i64,
     pub username: &'a str,
 }
 
@@ -12582,7 +13174,7 @@ impl Endpoint for OrgRemoveTeamMember<'_> {
 }
 
 pub struct OrgListTeamRepos {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for OrgListTeamRepos {}
@@ -12611,7 +13203,7 @@ impl Endpoint for OrgListTeamRepos {
 }
 
 pub struct OrgListTeamRepo<'a> {
-    pub id: u64,
+    pub id: i64,
     pub org: &'a str,
     pub repo: &'a str,
 }
@@ -12642,7 +13234,7 @@ impl Endpoint for OrgListTeamRepo<'_> {
 }
 
 pub struct OrgAddTeamRepository<'a> {
-    pub id: u64,
+    pub id: i64,
     pub org: &'a str,
     pub repo: &'a str,
 }
@@ -12674,7 +13266,7 @@ impl Endpoint for OrgAddTeamRepository<'_> {
 }
 
 pub struct OrgRemoveTeamRepository<'a> {
-    pub id: u64,
+    pub id: i64,
     pub org: &'a str,
     pub repo: &'a str,
 }
@@ -12711,7 +13303,7 @@ pub struct TopicSearch {
 
 impl Sealed for TopicSearch {}
 impl Endpoint for TopicSearch {
-    type Response = RJson<Vec<TopicResponse>>;
+    type Response = RJson<TopicSearchResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12763,11 +13355,41 @@ impl Endpoint for UserGetCurrent {
     }
 }
 
+pub struct UserSearchRunJobs {
+    pub query: UserSearchRunJobsQuery,
+}
+
+impl Sealed for UserSearchRunJobs {}
+impl Endpoint for UserSearchRunJobs {
+    type Response = RJson<Vec<ActionRunJob>>;
+    fn make_request(self) -> ApiRequest {
+        ApiRequest {
+            method: Method::GET,
+            path: "/api/v1/user/actions/runners/jobs".into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct UserGetRunnerRegistrationToken {}
 
 impl Sealed for UserGetRunnerRegistrationToken {}
 impl Endpoint for UserGetRunnerRegistrationToken {
-    type Response = WithHeaders<(), RegistrationTokenHeaders>;
+    type Response = RJson<RegistrationToken>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12781,7 +13403,7 @@ impl Endpoint for UserGetRunnerRegistrationToken {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            200 => Ok((response, true)),
             401 => Err(json_error::<APIUnauthorizedError>(&response)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
@@ -13092,7 +13714,7 @@ impl Endpoint for UserCreateOAuth2Application {
 }
 
 pub struct UserGetOAuth2Application {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserGetOAuth2Application {}
@@ -13123,7 +13745,7 @@ impl Endpoint for UserGetOAuth2Application {
 }
 
 pub struct UserDeleteOAuth2Application {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserDeleteOAuth2Application {}
@@ -13154,7 +13776,7 @@ impl Endpoint for UserDeleteOAuth2Application {
 }
 
 pub struct UserUpdateOAuth2Application {
-    pub id: u64,
+    pub id: i64,
     pub body: CreateOAuth2ApplicationOptions,
 }
 
@@ -13555,7 +14177,9 @@ impl Endpoint for GetVerificationToken {
     }
 }
 
-pub struct UserVerifyGpgKey {}
+pub struct UserVerifyGpgKey {
+    pub body: VerifyGPGKeyOption,
+}
 
 impl Sealed for UserVerifyGpgKey {}
 impl Endpoint for UserVerifyGpgKey {
@@ -13565,7 +14189,10 @@ impl Endpoint for UserVerifyGpgKey {
             method: Method::POST,
             path: "/api/v1/user/gpg_key_verify".into(),
             query: None,
-            body: RequestBody::None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
             page: None,
             limit: None,
         }
@@ -13649,7 +14276,7 @@ impl Endpoint for UserCurrentPostGpgKey {
 }
 
 pub struct UserCurrentGetGpgKey {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserCurrentGetGpgKey {}
@@ -13680,7 +14307,7 @@ impl Endpoint for UserCurrentGetGpgKey {
 }
 
 pub struct UserCurrentDeleteGpgKey {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserCurrentDeleteGpgKey {}
@@ -13772,7 +14399,7 @@ impl Endpoint for UserCreateHook {
 }
 
 pub struct UserGetHook {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserGetHook {}
@@ -13802,7 +14429,7 @@ impl Endpoint for UserGetHook {
 }
 
 pub struct UserDeleteHook {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserDeleteHook {}
@@ -13832,7 +14459,7 @@ impl Endpoint for UserDeleteHook {
 }
 
 pub struct UserEditHook {
-    pub id: u64,
+    pub id: i64,
     pub body: EditHookOption,
 }
 
@@ -13930,7 +14557,7 @@ impl Endpoint for UserCurrentPostKey {
 }
 
 pub struct UserCurrentGetKey {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserCurrentGetKey {}
@@ -13961,7 +14588,7 @@ impl Endpoint for UserCurrentGetKey {
 }
 
 pub struct UserCurrentDeleteKey {
-    pub id: u64,
+    pub id: i64,
 }
 
 impl Sealed for UserCurrentDeleteKey {}
@@ -14132,16 +14759,18 @@ impl Endpoint for UserListQuotaAttachments {
     }
 }
 
-pub struct UserCheckQuota {}
+pub struct UserCheckQuota {
+    pub query: UserCheckQuotaQuery,
+}
 
 impl Sealed for UserCheckQuota {}
 impl Endpoint for UserCheckQuota {
-    type Response = ();
+    type Response = RJson<bool>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
             path: "/api/v1/user/quota/check".into(),
-            query: None,
+            query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
             limit: None,
@@ -14150,7 +14779,7 @@ impl Endpoint for UserCheckQuota {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            200 => Ok((response, true)),
             401 => Err(json_error::<APIUnauthorizedError>(&response)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             422 => Err(json_error::<APIValidationError>(&response)),

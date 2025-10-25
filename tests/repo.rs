@@ -43,7 +43,7 @@ async fn pull_request() {
         .expect("couldn't create pr");
 
     let is_merged = api
-        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap() as u64)
+        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap())
         .await
         .is_ok();
     assert!(!is_merged, "pr should not yet be merged");
@@ -53,7 +53,7 @@ async fn pull_request() {
         .repo_get_pull_request_files(
             "TestingAdmin",
             "pr-test",
-            pr.number.unwrap() as u64,
+            pr.number.unwrap(),
             pr_files_query,
         )
         .await
@@ -70,16 +70,11 @@ async fn pull_request() {
         merge_when_checks_succeed: None,
     };
 
-    api.repo_merge_pull_request(
-        "TestingAdmin",
-        "pr-test",
-        pr.number.unwrap() as u64,
-        merge_opt,
-    )
-    .await
-    .expect("couldn't merge pr");
+    api.repo_merge_pull_request("TestingAdmin", "pr-test", pr.number.unwrap(), merge_opt)
+        .await
+        .expect("couldn't merge pr");
     let is_merged = api
-        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap() as u64)
+        .repo_pull_request_is_merged("TestingAdmin", "pr-test", pr.number.unwrap())
         .await
         .is_ok();
     assert!(is_merged, "pr should be merged");
@@ -140,7 +135,7 @@ async fn release() {
     api.repo_edit_release(
         "TestingAdmin",
         "release-test",
-        release.id.unwrap() as u64,
+        release.id.unwrap(),
         edit_release,
     )
     .await
@@ -160,7 +155,7 @@ async fn release() {
         .repo_create_release_attachment(
             "TestingAdmin",
             "release-test",
-            release.id.unwrap() as u64,
+            release.id.unwrap(),
             Some(b"This is a file!"),
             None,
             RepoCreateReleaseAttachmentQuery {
@@ -174,8 +169,8 @@ async fn release() {
             .download_release_attachment(
                 "TestingAdmin",
                 "release-test",
-                release.id.unwrap() as u64,
-                attachment.id.unwrap() as u64
+                release.id.unwrap(),
+                attachment.id.unwrap()
             )
             .await
             .unwrap()
@@ -195,13 +190,13 @@ async fn release() {
     api.repo_delete_release_attachment(
         "TestingAdmin",
         "release-test",
-        release.id.unwrap() as u64,
-        attachment.id.unwrap() as u64,
+        release.id.unwrap(),
+        attachment.id.unwrap(),
     )
     .await
     .expect("failed to deleted attachment");
 
-    api.repo_delete_release("TestingAdmin", "release-test", release.id.unwrap() as u64)
+    api.repo_delete_release("TestingAdmin", "release-test", release.id.unwrap())
         .await
         .expect("failed to delete release");
 
@@ -281,7 +276,20 @@ async fn team_pr_review_request() {
         .repo_get_pull_request("team-review-org", "team-pr-review", 1)
         .await
         .expect("couldn't get pr");
-    assert_eq!(pr.requested_reviewers, None);
+    assert_eq!(pr.requested_reviewers, Some(vec![]));
+
+    let team_name = api
+        .org_list_teams("team-review-org")
+        .all()
+        .await
+        .expect("failed to list teams")
+        .pop()
+        .and_then(|team| team.name);
+    assert_eq!(
+        pr.requested_reviewers_teams
+            .and_then(|mut teams| teams.pop()?.name),
+        team_name
+    );
 }
 
 #[tokio::test]
@@ -310,7 +318,7 @@ async fn tag_protection() {
         .as_deref()
         .expect("protection does not have pattern");
     assert_eq!(pattern, "v*");
-    let id = new_protection.id.expect("protection does not have id") as u32;
+    let id = new_protection.id.expect("protection does not have id");
 
     let protection_get = api
         .repo_get_tag_protection("TestingAdmin", "tag-protect", id)

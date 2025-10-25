@@ -15,6 +15,12 @@ pub struct APIForbiddenError {
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APIInternalServerError {
+    pub message: Option<String>,
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIInvalidTopicsError {
     #[serde(rename = "invalidTopics")]
     pub invalid_topics: Option<Vec<String>>,
@@ -47,12 +53,95 @@ pub struct APIValidationError {
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APPersonFollowItem {
+    pub actor_id: Option<String>,
+    pub note: Option<String>,
+    pub original_item: Option<String>,
+    pub original_url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
     pub id: Option<i64>,
     pub name: Option<String>,
     pub scopes: Option<Vec<String>>,
     pub sha1: Option<String>,
     pub token_last_eight: Option<String>,
+}
+
+/// ActionRun represents an action run
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionRun {
+    /// the cron id for the schedule trigger
+    #[serde(rename = "ScheduleID")]
+    pub schedule_id: Option<i64>,
+    /// who approved this action run
+    pub approved_by: Option<i64>,
+    /// the commit sha the action run ran on
+    pub commit_sha: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    /// when the action run was created
+    pub created: Option<time::OffsetDateTime>,
+    pub duration: Option<i64>,
+    /// the webhook event that causes the workflow to run
+    pub event: Option<String>,
+    /// the payload of the webhook event that causes the workflow to run
+    pub event_payload: Option<String>,
+    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    /// the url of this action run
+    pub html_url: Option<url::Url>,
+    /// the action run id
+    pub id: Option<i64>,
+    /// a unique number for each run of a repository
+    pub index_in_repo: Option<i64>,
+    /// If this is triggered by a PR from a forked repository or an untrusted user, we need to check if it is approved and limit permissions when running the workflow.
+    pub is_fork_pull_request: Option<bool>,
+    /// has the commit/tag/… the action run ran on been deleted
+    pub is_ref_deleted: Option<bool>,
+    /// may need approval if it's a fork pull request
+    pub need_approval: Option<bool>,
+    /// the commit/tag/… the action run ran on
+    pub prettyref: Option<String>,
+    pub repository: Option<Repository>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    /// when the action run was started
+    pub started: Option<time::OffsetDateTime>,
+    /// the current status of this run
+    pub status: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    /// when the action run was stopped
+    pub stopped: Option<time::OffsetDateTime>,
+    /// the action run's title
+    pub title: Option<String>,
+    /// the trigger event defined in the `on` configuration of the triggered workflow
+    pub trigger_event: Option<String>,
+    pub trigger_user: Option<User>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    /// when the action run was last updated
+    pub updated: Option<time::OffsetDateTime>,
+    /// the name of workflow file
+    pub workflow_id: Option<String>,
+}
+
+/// ActionRunJob represents a job of a run
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionRunJob {
+    /// the action run job id
+    pub id: Option<i64>,
+    /// the action run job name
+    pub name: Option<String>,
+    /// the action run job needed ids
+    pub needs: Option<Vec<String>>,
+    /// the owner id
+    pub owner_id: Option<i64>,
+    /// the repository id
+    pub repo_id: Option<i64>,
+    /// the action run job labels to run on
+    pub runs_on: Option<Vec<String>>,
+    /// the action run job status
+    pub status: Option<String>,
+    /// the action run job latest task id
+    pub task_id: Option<i64>,
 }
 
 /// ActionTask represents a ActionTask
@@ -509,6 +598,7 @@ pub struct CommitUser {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Compare {
     pub commits: Option<Vec<Commit>>,
+    pub files: Option<Vec<CommitAffectedFiles>>,
     pub total_commits: Option<i64>,
 }
 
@@ -528,6 +618,8 @@ pub struct ContentsResponse {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
     pub last_commit_sha: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub last_commit_when: Option<time::OffsetDateTime>,
     pub name: Option<String>,
     pub path: Option<String>,
     pub sha: Option<String>,
@@ -830,6 +922,7 @@ pub struct CreatePullReviewOptions {
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreatePushMirrorOption {
+    pub branch_filter: Option<String>,
     pub interval: Option<String>,
     pub remote_address: Option<String>,
     pub remote_password: Option<String>,
@@ -1121,6 +1214,19 @@ pub struct DispatchWorkflowOption {
     /// Git reference for the workflow
     #[serde(rename = "ref")]
     pub r#ref: String,
+    /// Flag to return the run info
+    pub return_run_info: Option<bool>,
+}
+
+/// DispatchWorkflowRun represents a workflow run
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct DispatchWorkflowRun {
+    /// the workflow run id
+    pub id: Option<i64>,
+    /// the jobs name
+    pub jobs: Option<Vec<String>>,
+    /// a unique number for each run of a repository
+    pub run_number: Option<i64>,
 }
 
 /// EditAttachmentOptions options for editing attachments
@@ -1603,9 +1709,9 @@ pub struct GenerateRepoOption {
     pub webhooks: Option<bool>,
 }
 
-/// GitBlobResponse represents a git blob
+/// GitBlob represents a git blob
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct GitBlobResponse {
+pub struct GitBlob {
     pub content: Option<String>,
     pub encoding: Option<String>,
     pub sha: Option<String>,
@@ -1864,6 +1970,13 @@ pub struct LicensesTemplateListEntry {
     pub name: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
+}
+
+/// ListActionRunResponse return a list of ActionRun
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ListActionRunResponse {
+    pub total_count: Option<i64>,
+    pub workflow_runs: Option<Vec<ActionRun>>,
 }
 
 /// MarkdownOption markdown options
@@ -2335,6 +2448,7 @@ pub struct PullRequest {
     pub draft: Option<bool>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
+    pub flow: Option<i64>,
     pub head: Option<PRBranchInfo>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
@@ -2435,6 +2549,7 @@ pub struct PullReviewRequestOptions {
 /// PushMirror represents information of a push mirror
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PushMirror {
+    pub branch_filter: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub created: Option<time::OffsetDateTime>,
     pub interval: Option<String>,
@@ -2603,6 +2718,12 @@ pub struct Reference {
     pub url: Option<url::Url>,
 }
 
+/// RegistrationToken is a string used to register a runner with a server
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct RegistrationToken {
+    pub token: Option<String>,
+}
+
 /// Release represents a repository release
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Release {
@@ -2631,6 +2752,13 @@ pub struct Release {
     pub url: Option<url::Url>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub zipball_url: Option<url::Url>,
+}
+
+/// RenameOrgOption options when renaming an organization
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct RenameOrgOption {
+    /// New username for this org. This name cannot be in use yet by any other user.
+    pub new_name: String,
 }
 
 /// RenameUserOption options when renaming a user
@@ -2824,6 +2952,15 @@ pub struct StopWatch {
 pub struct SubmitPullReviewOptions {
     pub body: Option<String>,
     pub event: Option<String>,
+}
+
+/// SyncForkInfo information about syncing a fork
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct SyncForkInfo {
+    pub allowed: Option<bool>,
+    pub base_commit: Option<String>,
+    pub commits_behind: Option<i64>,
+    pub fork_commit: Option<String>,
 }
 
 /// Tag represents a repository tag
@@ -3044,7 +3181,7 @@ pub struct User {
     /// the user's full name
     pub full_name: Option<String>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
-    /// URL to the user's Forgejo page
+    /// URL to the user's profile page
     pub html_url: Option<url::Url>,
     /// the user's id
     pub id: Option<i64>,
@@ -3092,6 +3229,7 @@ pub struct UserSettings {
     pub hide_activity: Option<bool>,
     /// Privacy
     pub hide_email: Option<bool>,
+    pub hide_pronouns: Option<bool>,
     pub language: Option<String>,
     pub location: Option<String>,
     pub pronouns: Option<String>,
@@ -3109,11 +3247,20 @@ pub struct UserSettingsOptions {
     pub hide_activity: Option<bool>,
     /// Privacy
     pub hide_email: Option<bool>,
+    pub hide_pronouns: Option<bool>,
     pub language: Option<String>,
     pub location: Option<String>,
     pub pronouns: Option<String>,
     pub theme: Option<String>,
     pub website: Option<String>,
+}
+
+/// VerifyGPGKeyOption options verifies user GPG key
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct VerifyGPGKeyOption {
+    pub armored_signature: Option<String>,
+    /// An Signature for a GPG key token
+    pub key_id: String,
 }
 
 /// WatchInfo represents an API watch status of one repository
@@ -4059,25 +4206,6 @@ impl crate::CountHeader for ReactionListHeaders {
     }
 }
 
-pub struct RegistrationTokenHeaders {
-    pub token: Option<String>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for RegistrationTokenHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let token = map
-            .get("token")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                Ok::<_, StructureError>(s.to_string())
-            })
-            .transpose()?;
-        Ok(Self { token })
-    }
-}
-
 pub struct ReleaseListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -4460,6 +4588,23 @@ impl AdminSearchEmailsQuery {
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+pub struct AdminSearchRunJobsQuery {
+    /// a comma separated list of run job labels to search for
+    pub labels: Option<String>,
+}
+
+impl AdminSearchRunJobsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(labels) = self.labels {
+            list.push(("labels", labels));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminUnadoptedListQuery {
     /// pattern of repositories to search for
     pub pattern: Option<String>,
@@ -4479,7 +4624,7 @@ impl AdminUnadoptedListQuery {
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminSearchUsersQuery {
     /// ID of the user's login source to search for
-    pub source_id: Option<u64>,
+    pub source_id: Option<i64>,
     /// user's login name to search for
     pub login_name: Option<String>,
     /// sort order of results
@@ -4630,7 +4775,7 @@ pub struct NotifyReadListQuery {
     /// Describes the last point that notifications were checked. Anything updated since this time will not be updated.
     pub last_read_at: Option<time::OffsetDateTime>,
     /// If true, mark all notifications on this repo. Default value is false
-    pub all: Option<String>,
+    pub all: Option<bool>,
     /// Mark notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread.
     pub status_types: Option<Vec<String>>,
     /// Status to mark notifications as, Defaults to read.
@@ -4649,7 +4794,7 @@ impl NotifyReadListQuery {
             ));
         }
         if let Some(all) = self.all {
-            list.push(("all", all));
+            list.push(("all", all.to_string()));
         }
         if let Some(status_types) = self.status_types {
             if !status_types.is_empty() {
@@ -4684,6 +4829,23 @@ impl NotifyReadThreadQuery {
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+pub struct OrgSearchRunJobsQuery {
+    /// a comma separated list of run job labels to search for
+    pub labels: Option<String>,
+}
+
+impl OrgSearchRunJobsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(labels) = self.labels {
+            list.push(("labels", labels));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct OrgListActivityFeedsQuery {
     /// the date of the activities to be found
     pub date: Option<time::Date>,
@@ -4699,6 +4861,58 @@ impl OrgListActivityFeedsQuery {
                     .unwrap(),
             ));
         }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct OrgListLabelsQuery {
+    /// Specifies the sorting method: mostissues, leastissues, or reversealphabetically.
+    pub sort: Option<OrgListLabelsQuerySort>,
+}
+
+impl OrgListLabelsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum OrgListLabelsQuerySort {
+    #[serde(rename = "mostissues")]
+    Mostissues,
+    #[serde(rename = "leastissues")]
+    Leastissues,
+    #[serde(rename = "reversealphabetically")]
+    Reversealphabetically,
+}
+
+impl OrgListLabelsQuerySort {
+    fn as_str(&self) -> &'static str {
+        match self {
+            OrgListLabelsQuerySort::Mostissues => "mostissues",
+            OrgListLabelsQuerySort::Leastissues => "leastissues",
+            OrgListLabelsQuerySort::Reversealphabetically => "reversealphabetically",
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct OrgCheckQuotaQuery {
+    /// subject of the quota
+    pub subject: String,
+}
+
+impl OrgCheckQuotaQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        let subject = self.subject;
+        list.push(("subject", subject));
 
         list
     }
@@ -4837,7 +5051,7 @@ pub struct IssueSearchIssuesQuery {
     /// Search string
     pub q: Option<String>,
     /// Repository ID to prioritize in the results
-    pub priority_repo_id: Option<u64>,
+    pub priority_repo_id: Option<i64>,
     /// Filter by issue type
     pub r#type: Option<IssueSearchIssuesQueryType>,
     /// Only show issues updated after the given time (RFC 3339 format)
@@ -4858,6 +5072,8 @@ pub struct IssueSearchIssuesQuery {
     pub owner: Option<String>,
     /// Filter by team (requires organization owner parameter)
     pub team: Option<String>,
+    /// Type of sort
+    pub sort: Option<IssueSearchIssuesQuerySort>,
 }
 
 impl IssueSearchIssuesQuery {
@@ -4918,6 +5134,9 @@ impl IssueSearchIssuesQuery {
         if let Some(team) = self.team {
             list.push(("team", team));
         }
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
+        }
 
         list
     }
@@ -4959,6 +5178,44 @@ impl IssueSearchIssuesQueryType {
         }
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum IssueSearchIssuesQuerySort {
+    #[serde(rename = "relevance")]
+    Relevance,
+    #[serde(rename = "latest")]
+    Latest,
+    #[serde(rename = "oldest")]
+    Oldest,
+    #[serde(rename = "recentupdate")]
+    Recentupdate,
+    #[serde(rename = "leastupdate")]
+    Leastupdate,
+    #[serde(rename = "mostcomment")]
+    Mostcomment,
+    #[serde(rename = "leastcomment")]
+    Leastcomment,
+    #[serde(rename = "nearduedate")]
+    Nearduedate,
+    #[serde(rename = "farduedate")]
+    Farduedate,
+}
+
+impl IssueSearchIssuesQuerySort {
+    fn as_str(&self) -> &'static str {
+        match self {
+            IssueSearchIssuesQuerySort::Relevance => "relevance",
+            IssueSearchIssuesQuerySort::Latest => "latest",
+            IssueSearchIssuesQuerySort::Oldest => "oldest",
+            IssueSearchIssuesQuerySort::Recentupdate => "recentupdate",
+            IssueSearchIssuesQuerySort::Leastupdate => "leastupdate",
+            IssueSearchIssuesQuerySort::Mostcomment => "mostcomment",
+            IssueSearchIssuesQuerySort::Leastcomment => "leastcomment",
+            IssueSearchIssuesQuerySort::Nearduedate => "nearduedate",
+            IssueSearchIssuesQuerySort::Farduedate => "farduedate",
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoSearchQuery {
     /// keyword
@@ -4968,16 +5225,16 @@ pub struct RepoSearchQuery {
     /// include search of keyword within repository description
     pub include_desc: Option<bool>,
     /// search only for repos that the user with the given id owns or contributes to
-    pub uid: Option<u64>,
+    pub uid: Option<i64>,
     /// repo owner to prioritize in the results
-    pub priority_owner_id: Option<u64>,
+    pub priority_owner_id: Option<i64>,
     /// search only for repos that belong to the given team id
-    pub team_id: Option<u64>,
+    pub team_id: Option<i64>,
     /// search only for repos that the user with the given id has starred
-    pub starred_by: Option<u64>,
+    pub starred_by: Option<i64>,
     /// include private repositories this user has access to (defaults to true)
     pub private: Option<bool>,
-    /// show only pubic, private or all repositories (defaults to all)
+    /// show only public, private or all repositories (defaults to all)
     pub is_private: Option<bool>,
     /// include template repositories this user has access to (defaults to true)
     pub template: Option<bool>,
@@ -4988,9 +5245,9 @@ pub struct RepoSearchQuery {
     /// if `uid` is given, search only for repos that the user owns
     pub exclusive: Option<bool>,
     /// sort repos by attribute. Supported values are "alpha", "created", "updated", "size", "git_size", "lfs_size", "stars", "forks" and "id". Default is "alpha"
-    pub sort: Option<String>,
+    pub sort: Option<RepoSearchQuerySort>,
     /// sort order, either "asc" (ascending) or "desc" (descending). Default is "asc", ignored if "sort" is not specified.
-    pub order: Option<String>,
+    pub order: Option<RepoSearchQueryOrder>,
 }
 
 impl RepoSearchQuery {
@@ -5036,16 +5293,171 @@ impl RepoSearchQuery {
             list.push(("exclusive", exclusive.to_string()));
         }
         if let Some(sort) = self.sort {
-            list.push(("sort", sort));
+            list.push(("sort", sort.as_str().to_string()));
         }
         if let Some(order) = self.order {
-            list.push(("order", order));
+            list.push(("order", order.as_str().to_string()));
         }
 
         list
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum RepoSearchQuerySort {
+    #[serde(rename = "alpha")]
+    Alpha,
+    #[serde(rename = "created")]
+    Created,
+    #[serde(rename = "updated")]
+    Updated,
+    #[serde(rename = "size")]
+    Size,
+    #[serde(rename = "git_size")]
+    GitSize,
+    #[serde(rename = "lfs_size")]
+    LfsSize,
+    #[serde(rename = "id")]
+    Id,
+    #[serde(rename = "stars")]
+    Stars,
+    #[serde(rename = "forks")]
+    Forks,
+}
+
+impl RepoSearchQuerySort {
+    fn as_str(&self) -> &'static str {
+        match self {
+            RepoSearchQuerySort::Alpha => "alpha",
+            RepoSearchQuerySort::Created => "created",
+            RepoSearchQuerySort::Updated => "updated",
+            RepoSearchQuerySort::Size => "size",
+            RepoSearchQuerySort::GitSize => "git_size",
+            RepoSearchQuerySort::LfsSize => "lfs_size",
+            RepoSearchQuerySort::Id => "id",
+            RepoSearchQuerySort::Stars => "stars",
+            RepoSearchQuerySort::Forks => "forks",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum RepoSearchQueryOrder {
+    #[serde(rename = "asc")]
+    Asc,
+    #[serde(rename = "desc")]
+    Desc,
+}
+
+impl RepoSearchQueryOrder {
+    fn as_str(&self) -> &'static str {
+        match self {
+            RepoSearchQueryOrder::Asc => "asc",
+            RepoSearchQueryOrder::Desc => "desc",
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RepoSearchRunJobsQuery {
+    /// a comma separated list of run job labels to search for
+    pub labels: Option<String>,
+}
+
+impl RepoSearchRunJobsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(labels) = self.labels {
+            list.push(("labels", labels));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ListActionRunsQuery {
+    /// Returns workflow run triggered by the specified events. For example, `push`, `pull_request` or `workflow_dispatch`.
+    pub event: Option<Vec<String>>,
+    /// Returns workflow runs with the check run status or conclusion that is specified. For example, a conclusion can be success or a status can be in_progress. Only Forgejo Actions can set a status of waiting, pending, or requested.
+    pub status: Option<Vec<ListActionRunsQueryStatus>>,
+    /// Returns the workflow run associated with the run number.
+    pub run_number: Option<i64>,
+    /// Only returns workflow runs that are associated with the specified head_sha.
+    pub head_sha: Option<String>,
+}
+
+impl ListActionRunsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(event) = self.event {
+            if !event.is_empty() {
+                let mut s = String::new();
+                for (i, item) in event.iter().enumerate() {
+                    s.push_str(item);
+                    if i < event.len() - 1 {
+                        s.push(',')
+                    }
+                }
+                list.push(("event", s));
+            }
+        }
+        if let Some(status) = self.status {
+            if !status.is_empty() {
+                let mut s = String::new();
+                for (i, item) in status.iter().enumerate() {
+                    s.push_str(item.as_str());
+                    if i < status.len() - 1 {
+                        s.push(',')
+                    }
+                }
+                list.push(("status", s));
+            }
+        }
+        if let Some(run_number) = self.run_number {
+            list.push(("run_number", run_number.to_string()));
+        }
+        if let Some(head_sha) = self.head_sha {
+            list.push(("head_sha", head_sha));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ListActionRunsQueryStatus {
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(rename = "waiting")]
+    Waiting,
+    #[serde(rename = "running")]
+    Running,
+    #[serde(rename = "success")]
+    Success,
+    #[serde(rename = "failure")]
+    Failure,
+    #[serde(rename = "cancelled")]
+    Cancelled,
+    #[serde(rename = "skipped")]
+    Skipped,
+    #[serde(rename = "blocked")]
+    Blocked,
+}
+
+impl ListActionRunsQueryStatus {
+    fn as_str(&self) -> &'static str {
+        match self {
+            ListActionRunsQueryStatus::Unknown => "unknown",
+            ListActionRunsQueryStatus::Waiting => "waiting",
+            ListActionRunsQueryStatus::Running => "running",
+            ListActionRunsQueryStatus::Success => "success",
+            ListActionRunsQueryStatus::Failure => "failure",
+            ListActionRunsQueryStatus::Cancelled => "cancelled",
+            ListActionRunsQueryStatus::Skipped => "skipped",
+            ListActionRunsQueryStatus::Blocked => "blocked",
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoListActivityFeedsQuery {
     /// the date of the activities to be found
@@ -5233,6 +5645,22 @@ impl RepoGetEditorConfigQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct GetBlobsQuery {
+    /// a comma separated list of blob-sha (mind the overall URL-length limit of ~2,083 chars)
+    pub shas: String,
+}
+
+impl GetBlobsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        let shas = self.shas;
+        list.push(("shas", shas));
+
+        list
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetSingleCommitQuery {
     /// include diff stats for every commit (disable for speedup, default 'true')
@@ -5343,6 +5771,8 @@ pub struct IssueListIssuesQuery {
     pub assigned_by: Option<String>,
     /// Only show items in which the given user was mentioned
     pub mentioned_by: Option<String>,
+    /// Type of sort
+    pub sort: Option<IssueListIssuesQuerySort>,
 }
 
 impl IssueListIssuesQuery {
@@ -5388,6 +5818,9 @@ impl IssueListIssuesQuery {
         if let Some(mentioned_by) = self.mentioned_by {
             list.push(("mentioned_by", mentioned_by));
         }
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
+        }
 
         list
     }
@@ -5426,6 +5859,44 @@ impl IssueListIssuesQueryType {
         match self {
             IssueListIssuesQueryType::Issues => "issues",
             IssueListIssuesQueryType::Pulls => "pulls",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum IssueListIssuesQuerySort {
+    #[serde(rename = "relevance")]
+    Relevance,
+    #[serde(rename = "latest")]
+    Latest,
+    #[serde(rename = "oldest")]
+    Oldest,
+    #[serde(rename = "recentupdate")]
+    Recentupdate,
+    #[serde(rename = "leastupdate")]
+    Leastupdate,
+    #[serde(rename = "mostcomment")]
+    Mostcomment,
+    #[serde(rename = "leastcomment")]
+    Leastcomment,
+    #[serde(rename = "nearduedate")]
+    Nearduedate,
+    #[serde(rename = "farduedate")]
+    Farduedate,
+}
+
+impl IssueListIssuesQuerySort {
+    fn as_str(&self) -> &'static str {
+        match self {
+            IssueListIssuesQuerySort::Relevance => "relevance",
+            IssueListIssuesQuerySort::Latest => "latest",
+            IssueListIssuesQuerySort::Oldest => "oldest",
+            IssueListIssuesQuerySort::Recentupdate => "recentupdate",
+            IssueListIssuesQuerySort::Leastupdate => "leastupdate",
+            IssueListIssuesQuerySort::Mostcomment => "mostcomment",
+            IssueListIssuesQuerySort::Leastcomment => "leastcomment",
+            IssueListIssuesQuerySort::Nearduedate => "nearduedate",
+            IssueListIssuesQuerySort::Farduedate => "farduedate",
         }
     }
 }
@@ -5639,6 +6110,42 @@ impl RepoListKeysQuery {
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+pub struct IssueListLabelsQuery {
+    /// Specifies the sorting method: mostissues, leastissues, or reversealphabetically.
+    pub sort: Option<IssueListLabelsQuerySort>,
+}
+
+impl IssueListLabelsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum IssueListLabelsQuerySort {
+    #[serde(rename = "mostissues")]
+    Mostissues,
+    #[serde(rename = "leastissues")]
+    Leastissues,
+    #[serde(rename = "reversealphabetically")]
+    Reversealphabetically,
+}
+
+impl IssueListLabelsQuerySort {
+    fn as_str(&self) -> &'static str {
+        match self {
+            IssueListLabelsQuerySort::Mostissues => "mostissues",
+            IssueListLabelsQuerySort::Leastissues => "leastissues",
+            IssueListLabelsQuerySort::Reversealphabetically => "reversealphabetically",
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetRawFileOrLfsQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
     pub r#ref: Option<String>,
@@ -5757,7 +6264,7 @@ impl NotifyGetRepoListQuerySubjectType {
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct NotifyReadRepoListQuery {
     /// If true, mark all notifications on this repo. Default value is false
-    pub all: Option<String>,
+    pub all: Option<bool>,
     /// Mark notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread.
     pub status_types: Option<Vec<String>>,
     /// Status to mark notifications as. Defaults to read.
@@ -5770,7 +6277,7 @@ impl NotifyReadRepoListQuery {
     pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
         let mut list = Vec::new();
         if let Some(all) = self.all {
-            list.push(("all", all));
+            list.push(("all", all.to_string()));
         }
         if let Some(status_types) = self.status_types {
             if !status_types.is_empty() {
@@ -5802,9 +6309,9 @@ pub struct RepoListPullRequestsQuery {
     /// Type of sort
     pub sort: Option<RepoListPullRequestsQuerySort>,
     /// ID of the milestone
-    pub milestone: Option<u64>,
+    pub milestone: Option<i64>,
     /// Label IDs
-    pub labels: Option<Vec<u64>>,
+    pub labels: Option<Vec<i64>>,
     /// Filter by pull request author
     pub poster: Option<String>,
 }
@@ -5862,6 +6369,8 @@ pub enum RepoListPullRequestsQuerySort {
     Oldest,
     #[serde(rename = "recentupdate")]
     Recentupdate,
+    #[serde(rename = "recentclose")]
+    Recentclose,
     #[serde(rename = "leastupdate")]
     Leastupdate,
     #[serde(rename = "mostcomment")]
@@ -5877,6 +6386,7 @@ impl RepoListPullRequestsQuerySort {
         match self {
             RepoListPullRequestsQuerySort::Oldest => "oldest",
             RepoListPullRequestsQuerySort::Recentupdate => "recentupdate",
+            RepoListPullRequestsQuerySort::Recentclose => "recentclose",
             RepoListPullRequestsQuerySort::Leastupdate => "leastupdate",
             RepoListPullRequestsQuerySort::Mostcomment => "mostcomment",
             RepoListPullRequestsQuerySort::Leastcomment => "leastcomment",
@@ -6194,7 +6704,7 @@ impl OrgListTeamActivityFeedsQuery {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TopicSearchQuery {
-    /// keywords to search
+    /// keyword to search for
     pub q: String,
 }
 
@@ -6203,6 +6713,27 @@ impl TopicSearchQuery {
         let mut list = Vec::new();
         let q = self.q;
         list.push(("q", q));
+
+        list
+    }
+}
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct TopicSearchResponse {
+    pub topics: Option<Vec<TopicResponse>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct UserSearchRunJobsQuery {
+    /// a comma separated list of run job labels to search for
+    pub labels: Option<String>,
+}
+
+impl UserSearchRunJobsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(labels) = self.labels {
+            list.push(("labels", labels));
+        }
 
         list
     }
@@ -6225,23 +6756,103 @@ impl UserCurrentListKeysQuery {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct UserCheckQuotaQuery {
+    /// subject of the quota
+    pub subject: String,
+}
+
+impl UserCheckQuotaQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        let subject = self.subject;
+        list.push(("subject", subject));
+
+        list
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentListReposQuery {
-    /// order the repositories by name (default), id, or size
-    pub order_by: Option<String>,
+    /// order the repositories
+    pub order_by: Option<UserCurrentListReposQueryOrderBy>,
 }
 
 impl UserCurrentListReposQuery {
     pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
         let mut list = Vec::new();
         if let Some(order_by) = self.order_by {
-            list.push(("order_by", order_by));
+            list.push(("order_by", order_by.as_str().to_string()));
         }
 
         list
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum UserCurrentListReposQueryOrderBy {
+    #[serde(rename = "name")]
+    Name,
+    #[serde(rename = "id")]
+    Id,
+    #[serde(rename = "newest")]
+    Newest,
+    #[serde(rename = "oldest")]
+    Oldest,
+    #[serde(rename = "recentupdate")]
+    Recentupdate,
+    #[serde(rename = "leastupdate")]
+    Leastupdate,
+    #[serde(rename = "reversealphabetically")]
+    Reversealphabetically,
+    #[serde(rename = "alphabetically")]
+    Alphabetically,
+    #[serde(rename = "reversesize")]
+    Reversesize,
+    #[serde(rename = "size")]
+    Size,
+    #[serde(rename = "reversegitsize")]
+    Reversegitsize,
+    #[serde(rename = "gitsize")]
+    Gitsize,
+    #[serde(rename = "reverselfssize")]
+    Reverselfssize,
+    #[serde(rename = "lfssize")]
+    Lfssize,
+    #[serde(rename = "moststars")]
+    Moststars,
+    #[serde(rename = "feweststars")]
+    Feweststars,
+    #[serde(rename = "mostforks")]
+    Mostforks,
+    #[serde(rename = "fewestforks")]
+    Fewestforks,
+}
+
+impl UserCurrentListReposQueryOrderBy {
+    fn as_str(&self) -> &'static str {
+        match self {
+            UserCurrentListReposQueryOrderBy::Name => "name",
+            UserCurrentListReposQueryOrderBy::Id => "id",
+            UserCurrentListReposQueryOrderBy::Newest => "newest",
+            UserCurrentListReposQueryOrderBy::Oldest => "oldest",
+            UserCurrentListReposQueryOrderBy::Recentupdate => "recentupdate",
+            UserCurrentListReposQueryOrderBy::Leastupdate => "leastupdate",
+            UserCurrentListReposQueryOrderBy::Reversealphabetically => "reversealphabetically",
+            UserCurrentListReposQueryOrderBy::Alphabetically => "alphabetically",
+            UserCurrentListReposQueryOrderBy::Reversesize => "reversesize",
+            UserCurrentListReposQueryOrderBy::Size => "size",
+            UserCurrentListReposQueryOrderBy::Reversegitsize => "reversegitsize",
+            UserCurrentListReposQueryOrderBy::Gitsize => "gitsize",
+            UserCurrentListReposQueryOrderBy::Reverselfssize => "reverselfssize",
+            UserCurrentListReposQueryOrderBy::Lfssize => "lfssize",
+            UserCurrentListReposQueryOrderBy::Moststars => "moststars",
+            UserCurrentListReposQueryOrderBy::Feweststars => "feweststars",
+            UserCurrentListReposQueryOrderBy::Mostforks => "mostforks",
+            UserCurrentListReposQueryOrderBy::Fewestforks => "fewestforks",
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserCurrentTrackedTimesQuery {
     /// Only show times updated after the given time. This is a timestamp in RFC 3339 format
@@ -6279,7 +6890,9 @@ pub struct UserSearchQuery {
     /// keyword
     pub q: Option<String>,
     /// ID of the user to search for
-    pub uid: Option<u64>,
+    pub uid: Option<i64>,
+    /// sort order of results
+    pub sort: Option<UserSearchQuerySort>,
 }
 
 impl UserSearchQuery {
@@ -6291,8 +6904,40 @@ impl UserSearchQuery {
         if let Some(uid) = self.uid {
             list.push(("uid", uid.to_string()));
         }
+        if let Some(sort) = self.sort {
+            list.push(("sort", sort.as_str().to_string()));
+        }
 
         list
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum UserSearchQuerySort {
+    #[serde(rename = "oldest")]
+    Oldest,
+    #[serde(rename = "newest")]
+    Newest,
+    #[serde(rename = "alphabetically")]
+    Alphabetically,
+    #[serde(rename = "reversealphabetically")]
+    Reversealphabetically,
+    #[serde(rename = "recentupdate")]
+    Recentupdate,
+    #[serde(rename = "leastupdate")]
+    Leastupdate,
+}
+
+impl UserSearchQuerySort {
+    fn as_str(&self) -> &'static str {
+        match self {
+            UserSearchQuerySort::Oldest => "oldest",
+            UserSearchQuerySort::Newest => "newest",
+            UserSearchQuerySort::Alphabetically => "alphabetically",
+            UserSearchQuerySort::Reversealphabetically => "reversealphabetically",
+            UserSearchQuerySort::Recentupdate => "recentupdate",
+            UserSearchQuerySort::Leastupdate => "leastupdate",
+        }
     }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
