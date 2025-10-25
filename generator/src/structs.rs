@@ -506,9 +506,9 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                                         }
                                     }
                                 }
-                                ParameterType::Number | ParameterType::Integer | ParameterType::Boolean => {
-                                    "format!(\"{item}\")"
-                                }
+                                ParameterType::Number
+                                | ParameterType::Integer
+                                | ParameterType::Boolean => "format!(\"{item}\")",
                                 ParameterType::Array => {
                                     eyre::bail!("nested arrays not supported in query");
                                 }
