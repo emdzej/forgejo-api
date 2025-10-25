@@ -759,7 +759,7 @@ impl Endpoint for AdminRemoveRuleFromQuotaGroup<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            201 => Ok((response, false)),
+            204 => Ok((response, false)),
             400 => Err(json_error::<APIError>(&response)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
@@ -7315,7 +7315,7 @@ impl Endpoint for IssueDeleteCommentReaction<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            204 => Ok((response, false)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
@@ -8500,7 +8500,7 @@ impl Endpoint for IssueDeleteIssueReaction<'_> {
 
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
-            200 => Ok((response, false)),
+            204 => Ok((response, false)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
@@ -10017,6 +10017,7 @@ impl Endpoint for RepoMergePullRequest<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, false)),
+            403 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             405 => Err(ForgejoError::from(ApiError::from(response.status_code))),
             409 => Err(json_error::<APIError>(&response)),
