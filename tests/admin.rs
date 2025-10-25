@@ -133,7 +133,7 @@ async fn key() {
         .admin_create_public_key("KeyHolder", key_opt)
         .await
         .expect("failed to create key");
-    api.admin_delete_user_public_key("KeyHolder", key.id.unwrap() as u64)
+    api.admin_delete_user_public_key("KeyHolder", key.id.unwrap())
         .await
         .expect("failed to delete key");
 }
@@ -178,10 +178,10 @@ async fn hook() {
         config: None,
         events: None,
     };
-    api.admin_edit_hook(hook.id.unwrap() as u64, edit_hook)
+    api.admin_edit_hook(hook.id.unwrap(), edit_hook)
         .await
         .expect("failed to edit hook");
-    api.admin_delete_hook(hook.id.unwrap() as u64)
+    api.admin_delete_hook(hook.id.unwrap())
         .await
         .expect("failed to delete hook");
 }

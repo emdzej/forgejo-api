@@ -81,7 +81,11 @@ async fn total_count() {
         x_total_count
     );
     test_header!(
-        api.issue_list_labels("TestingAdmin", "header_test",),
+        api.issue_list_labels(
+            "TestingAdmin",
+            "header_test",
+            IssueListLabelsQuery::default()
+        ),
         x_total_count
     );
     test_header!(
