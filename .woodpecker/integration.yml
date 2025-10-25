@@ -30,7 +30,7 @@ steps:
       FORGEJO_API_CI_INSTANCE_URL: http://forgejo-testing:3000/
     commands:
       - export FORGEJO_API_CI_TOKEN=$(cat .token)
-      - cargo test -F sync --no-fail-fast
+      - cargo test -F sync --no-fail-fast --jobs 1
   preserve:
     image: code.cartoon-aa.xyz/ci/ci-forgejo-preserve:13.0.1
     pull: true
