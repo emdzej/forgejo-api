@@ -114,6 +114,11 @@ fn fn_signature_from_op(spec: &OpenApiV2, op: &Operation, sync: bool) -> eyre::R
         .as_deref()
         .ok_or_else(|| eyre::eyre!("operation did not have id"))?
         .to_pascal_case();
+    let struct_name = if crate::endpoints::has_references(spec, op)? {
+        format!("{struct_name}<'_>")
+    } else {
+        struct_name
+    };
     let args = fn_args_from_op(spec, op)?;
     let prefix = if sync { "crate::sync::" } else { "" };
     let code = format!("pub fn {name}({args}) -> {prefix}WrappedRequest<'_, endpoints::{struct_name}, <endpoints::{struct_name} as Endpoint>::Response>");
