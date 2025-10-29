@@ -757,8 +757,8 @@ pub mod response_type {
         type Output = ();
 
         fn from_response(
-            response: crate::ApiResponse,
-            has_body: bool,
+            _: crate::ApiResponse,
+            _: bool,
         ) -> Result<Self::Output, crate::StructureError> {
             Ok(())
         }
