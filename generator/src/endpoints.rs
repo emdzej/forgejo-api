@@ -123,7 +123,7 @@ fn create_endpoint_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<Stri
     Ok(s)
 }
 
-fn has_references(spec: &OpenApiV2, op: &Operation) -> eyre::Result<bool> {
+pub fn has_references(spec: &OpenApiV2, op: &Operation) -> eyre::Result<bool> {
     if let Some(params) = &op.parameters {
         for param in params {
             let full_param = param.deref(spec)?;

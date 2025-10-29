@@ -1,6 +1,4 @@
-use std::{
-    borrow::Cow, collections::VecDeque, future::Future, marker::PhantomData, pin::Pin, task::Poll,
-};
+use std::{borrow::Cow, future::Future, marker::PhantomData, pin::Pin, task::Poll};
 
 use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Deserializer};
@@ -759,8 +757,8 @@ pub mod response_type {
         type Output = ();
 
         fn from_response(
-            response: crate::ApiResponse,
-            has_body: bool,
+            _: crate::ApiResponse,
+            _: bool,
         ) -> Result<Self::Output, crate::StructureError> {
             Ok(())
         }
