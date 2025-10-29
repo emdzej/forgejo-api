@@ -1,6 +1,4 @@
-use std::{
-    borrow::Cow, collections::VecDeque, future::Future, marker::PhantomData, pin::Pin, task::Poll,
-};
+use std::{borrow::Cow, future::Future, marker::PhantomData, pin::Pin, task::Poll};
 
 use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Deserializer};

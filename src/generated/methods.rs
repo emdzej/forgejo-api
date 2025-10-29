@@ -1,10 +1,7 @@
 use super::structs::*;
 use crate::generated::endpoints;
 use crate::Endpoint;
-use crate::ForgejoError;
 use crate::WrappedRequest;
-use bytes::Bytes;
-use std::collections::BTreeMap;
 
 impl crate::Forgejo {
     /// Returns the instance's Actor

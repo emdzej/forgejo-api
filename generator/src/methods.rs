@@ -5,13 +5,10 @@ use std::fmt::Write;
 
 pub fn create_methods(spec: &OpenApiV2, sync: bool) -> eyre::Result<String> {
     let mut s = String::new();
-    s.push_str("use crate::ForgejoError;\n");
     s.push_str("use crate::Endpoint;\n");
     s.push_str("use crate::WrappedRequest;\n");
     s.push_str("use crate::generated::endpoints;\n");
-    s.push_str("use std::collections::BTreeMap;");
     s.push_str("use super::structs::*;\n");
-    s.push_str("use bytes::Bytes;\n");
     s.push('\n');
     if sync {
         s.push_str("impl crate::sync::Forgejo {\n");
