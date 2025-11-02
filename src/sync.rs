@@ -8,6 +8,27 @@ use reqwest::blocking::Client;
 use soft_assert::soft_assert;
 use url::Url;
 
+/// A blocking client for Forgejo's web API.
+///
+/// ## Differences from `async` version
+///
+/// This has largely the same interface as the [async version](crate::Forgejo),
+/// but isn't entirely identical.
+///
+/// ### `.send()` instead of `.await`
+///
+/// Calling an endpoint requires calling `.call()` instead of using `.await`.
+///
+/// ```no_run
+/// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// # let api = forgejo_api::Forgejo::new(forgejo_api::Auth::none, url::Url::parse("")?)?;
+/// // Instead of this
+/// let following = api.user_current_list_following().await;
+/// # let api = forgejo_api::sync::Forgejo::new(forgejo_api::Auth::none, url::Url::parse("")?)?;
+/// // Do this!
+/// let following = api.user_current_list_following().send();
+/// # }
+/// ```
 pub struct Forgejo {
     url: Url,
     client: Client,

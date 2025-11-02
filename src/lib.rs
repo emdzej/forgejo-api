@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 use std::{borrow::Cow, future::Future, marker::PhantomData, pin::Pin, task::Poll};
 
 use reqwest::{Client, StatusCode};
@@ -6,6 +7,106 @@ use soft_assert::*;
 use url::Url;
 use zeroize::Zeroize;
 
+/// An `async` client for Forgejo's web API. For a blocking client, see [`sync::Forgejo`]
+///
+/// Every endpoint that Forgejo exposes under `/api/v1/` is included here as a method on this
+/// struct. They are generated from [Forgejo's OpenAPI
+/// document](https://code.forgejo.org/api/swagger).
+///
+/// ## Authentication
+///
+/// Credentials are given in the [`Auth`] type when connecting to Forgejo, in 
+/// [`Forgejo::new`] or [`Forgejo::with_user_agent`]. Forgejo supports 
+/// authenticating via username & password, application tokens, or OAuth, and 
+/// those are all available here.
+///
+/// Provided credentials are always sent in the `Authorization` header. Sending 
+/// credentials in a query parameter is deprecated in Forgejo and so is not 
+/// supported here.
+///
+/// ```no_run
+/// # use forgejo_api::{Forgejo, Auth}
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// // No authentication
+/// // No credentials are sent, only public endpoints are available
+/// let api = Forgejo::new(
+///     Auth::None, 
+///     url::Url::new("https://forgejo.example.local")?,
+/// )?;
+///
+/// // Application Token
+/// // Provides access depending on the scopes set when the token is created
+/// let api = Forgejo::new(
+///     Auth::Token("2a3684d663cd9fdef3a9d759492c21844429e0f9"), 
+///     url::Url::new("https://forgejo.example.local")?,
+/// )?;
+///
+/// // OAuth2 Token
+/// // Provides complete access to the user's account
+/// let api = Forgejo::new(
+///     Auth::OAuth2("Pretend there's a token here (they're really long!)"), 
+///     url::Url::new("https://forgejo.example.local")?,
+/// )?;
+///
+/// // Username & password
+/// // Provides complete access to the user's account
+/// //
+/// // I recommended only using this to create a new application token with
+/// // `.user_create_token()`, and to use that token for further operations.
+/// // Storing passwords is tricky!
+/// let api = Forgejo::new(
+///     Auth::Password { 
+///         username: "ExampleUser",
+///         password: "password123", // I hope your password is more secure than this...
+///         mfa: None, // If the user has 2FA enable, it has to be included here.
+///     }, 
+///     url::Url::new("https://forgejo.example.local")?,
+/// )?;
+/// # }
+/// ```
+///
+/// ## Pagination
+///
+/// Endpoints that return lists of items send them one page of results at a 
+/// time. In Forgejo's API spec, the `path` and `limit` parameters are used to
+/// set what page to return and how many items should be included per page 
+/// (respectively). Since they're so common, these parameters aren't included
+/// in function args like most parameters. They are instead available as the
+/// `.page(n)` and `.page_size(n)` methods on requests.
+///
+/// For example:
+/// ```no_run
+/// # async fn foo() -> Result<(), Box<dyn std::error::Error>> {
+/// # let api = Forgejo::new(
+/// #    Auth::None, 
+/// #    url::Url::new("https://unimportant/")?,
+/// # )?;
+/// let following = api.user_current_list_following()
+///     // The third page (pages are 1-indexed)
+///     .page(3) 
+///     // Return 30 items per page. It's possible it will return fewer, if 
+///     // there aren't enough to fill the page
+///     .page_size(30) 
+///     .await?;
+/// # }
+/// ```
+///
+/// There are helper functions to make this easier as well:
+///
+/// - **`.stream()`**:
+///   
+///   Returns a `Stream` that yields one item at a time, automatically incrementing
+///   the page number as needed. (i.e. `.issue_list_issues().stream()` yields `Issue`)
+/// - **`.stream_pages()`**;
+///   
+///   Returns a `Stream` that yields one page of items at a 
+///   time. (i.e. `.issue_list_issues().stream_pages()` yields `Vec<Issue>`)
+///
+///   Useful for endpoints that return more than just a `Vec<T>` (such as `repo_search`)
+/// - **`.all()`**;
+///   
+///   Returns a `Vec` of every item requested. Equivalent to 
+///   `.stream().try_collect()`.
 pub struct Forgejo {
     url: Url,
     client: Client,
