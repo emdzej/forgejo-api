@@ -35,10 +35,16 @@ pub struct Forgejo {
 }
 
 impl Forgejo {
+    /// Creates a new client connected to the API of the specified Forgejo instance.
+    ///
+    /// The default user agent is "forgejo-api-rs". Use 
+    /// [`Forgejo::with_user_agent`] to set a custom one.
     pub fn new(auth: Auth, url: Url) -> Result<Self, ForgejoError> {
         Self::with_user_agent(auth, url, "forgejo-api-rs")
     }
 
+    /// Just like [`Forgejo::new`], but includes a custom user agent to be sent
+    /// with each request.
     pub fn with_user_agent(auth: Auth, url: Url, user_agent: &str) -> Result<Self, ForgejoError> {
         soft_assert!(
             matches!(url.scheme(), "http" | "https"),
