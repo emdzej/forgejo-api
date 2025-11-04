@@ -1,8 +1,8 @@
 //! Blocking (non-async) API
 
 use super::{
-    structs, ApiError, ApiRequest, ApiResponse, Auth, Endpoint, ForgejoError, FromResponse,
-    OAuthError, RequestBody, TypedRequest,
+    structs, ApiError, ApiResponse, Auth, Endpoint, ForgejoError, FromResponse, OAuthError,
+    RawRequest, RequestBody, TypedRequest,
 };
 use reqwest::blocking::Client;
 use soft_assert::soft_assert;
@@ -97,7 +97,7 @@ impl Forgejo {
         }
     }
 
-    pub fn send_request(&self, request: &ApiRequest) -> Result<ApiResponse, ForgejoError> {
+    pub fn send_request(&self, request: &RawRequest) -> Result<ApiResponse, ForgejoError> {
         let mut url = self
             .url
             .join(&request.path)
@@ -148,18 +148,18 @@ impl Forgejo {
     }
 }
 
-pub struct WrappedRequest<'a, E, R> {
+pub struct Request<'a, E, R> {
     pub(crate) inner: TypedRequest<E, R>,
     pub(crate) client: &'a Forgejo,
 }
 
-impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
+impl<'a, E: Endpoint, R: FromResponse> Request<'a, E, R> {
     pub fn send(self) -> Result<R, ForgejoError> {
         self.inner.send_sync(self.client)
     }
 
-    pub fn response_type<T: FromResponse>(self) -> WrappedRequest<'a, E, T> {
-        WrappedRequest {
+    pub fn response_type<T: FromResponse>(self) -> Request<'a, E, T> {
+        Request {
             inner: TypedRequest {
                 inner: self.inner.inner,
                 __endpoint: std::marker::PhantomData,

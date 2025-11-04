@@ -2,7 +2,7 @@ use super::structs::*;
 use crate::sealed::Sealed;
 use crate::Endpoint;
 use crate::{ApiError, ForgejoError, StructureError};
-use crate::{ApiRequest, ApiResponse, RequestBody};
+use crate::{ApiResponse, RawRequest, RequestBody};
 use bytes::Bytes;
 use reqwest::Method;
 use std::collections::BTreeMap;
@@ -25,8 +25,8 @@ pub struct ActivitypubInstanceActor {}
 impl Sealed for ActivitypubInstanceActor {}
 impl Endpoint for ActivitypubInstanceActor {
     type Response = ActivityPub;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/activitypub/actor".into(),
             query: None,
@@ -51,8 +51,8 @@ pub struct ActivitypubInstanceActorInbox {}
 impl Sealed for ActivitypubInstanceActorInbox {}
 impl Endpoint for ActivitypubInstanceActorInbox {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/activitypub/actor/inbox".into(),
             query: None,
@@ -79,8 +79,8 @@ pub struct ActivitypubRepository {
 impl Sealed for ActivitypubRepository {}
 impl Endpoint for ActivitypubRepository {
     type Response = ActivityPub;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/activitypub/repository-id/{}", self.repository_id).into(),
             query: None,
@@ -108,8 +108,8 @@ pub struct ActivitypubRepositoryInbox {
 impl Sealed for ActivitypubRepositoryInbox {}
 impl Endpoint for ActivitypubRepositoryInbox {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/activitypub/repository-id/{}/inbox",
@@ -143,8 +143,8 @@ pub struct ActivitypubPerson {
 impl Sealed for ActivitypubPerson {}
 impl Endpoint for ActivitypubPerson {
     type Response = ActivityPub;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/activitypub/user-id/{}", self.user_id).into(),
             query: None,
@@ -172,8 +172,8 @@ pub struct ActivitypubPersonActivityNote {
 impl Sealed for ActivitypubPersonActivityNote {}
 impl Endpoint for ActivitypubPersonActivityNote {
     type Response = ActivityPub;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/activitypub/user-id/{}/activities/{}",
@@ -205,8 +205,8 @@ pub struct ActivitypubPersonActivity {
 impl Sealed for ActivitypubPersonActivity {}
 impl Endpoint for ActivitypubPersonActivity {
     type Response = ActivityPub;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/activitypub/user-id/{}/activities/{}/activity",
@@ -237,8 +237,8 @@ pub struct ActivitypubPersonInbox {
 impl Sealed for ActivitypubPersonInbox {}
 impl Endpoint for ActivitypubPersonInbox {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/activitypub/user-id/{}/inbox", self.user_id).into(),
             query: None,
@@ -265,8 +265,8 @@ pub struct ActivitypubPersonFeed {
 impl Sealed for ActivitypubPersonFeed {}
 impl Endpoint for ActivitypubPersonFeed {
     type Response = Vec<APPersonFollowItem>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/activitypub/user-id/{}/outbox", self.user_id).into(),
             query: None,
@@ -292,8 +292,8 @@ pub struct AdminCronList {}
 impl Sealed for AdminCronList {}
 impl Endpoint for AdminCronList {
     type Response = (CronListHeaders, Vec<Cron>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/cron".into(),
             query: None,
@@ -321,8 +321,8 @@ pub struct AdminCronRun<'a> {
 impl Sealed for AdminCronRun<'_> {}
 impl Endpoint for AdminCronRun<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/admin/cron/{}", self.task).into(),
             query: None,
@@ -348,8 +348,8 @@ pub struct AdminGetAllEmails {}
 impl Sealed for AdminGetAllEmails {}
 impl Endpoint for AdminGetAllEmails {
     type Response = Vec<Email>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/emails".into(),
             query: None,
@@ -377,8 +377,8 @@ pub struct AdminSearchEmails {
 impl Sealed for AdminSearchEmails {}
 impl Endpoint for AdminSearchEmails {
     type Response = Vec<Email>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/emails/search".into(),
             query: Some(self.query.into_list()),
@@ -404,8 +404,8 @@ pub struct AdminListHooks {}
 impl Sealed for AdminListHooks {}
 impl Endpoint for AdminListHooks {
     type Response = (HookListHeaders, Vec<Hook>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/hooks".into(),
             query: None,
@@ -432,8 +432,8 @@ pub struct AdminCreateHook {
 impl Sealed for AdminCreateHook {}
 impl Endpoint for AdminCreateHook {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/admin/hooks".into(),
             query: None,
@@ -463,8 +463,8 @@ pub struct AdminGetHook {
 impl Sealed for AdminGetHook {}
 impl Endpoint for AdminGetHook {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/admin/hooks/{}", self.id).into(),
             query: None,
@@ -491,8 +491,8 @@ pub struct AdminDeleteHook {
 impl Sealed for AdminDeleteHook {}
 impl Endpoint for AdminDeleteHook {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/admin/hooks/{}", self.id).into(),
             query: None,
@@ -520,8 +520,8 @@ pub struct AdminEditHook {
 impl Sealed for AdminEditHook {}
 impl Endpoint for AdminEditHook {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/admin/hooks/{}", self.id).into(),
             query: None,
@@ -549,8 +549,8 @@ pub struct AdminGetAllOrgs {}
 impl Sealed for AdminGetAllOrgs {}
 impl Endpoint for AdminGetAllOrgs {
     type Response = (OrganizationListHeaders, Vec<Organization>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/orgs".into(),
             query: None,
@@ -576,8 +576,8 @@ pub struct AdminListQuotaGroups {}
 impl Sealed for AdminListQuotaGroups {}
 impl Endpoint for AdminListQuotaGroups {
     type Response = (QuotaGroupListHeaders, Vec<QuotaGroup>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/quota/groups".into(),
             query: None,
@@ -605,8 +605,8 @@ pub struct AdminCreateQuotaGroup {
 impl Sealed for AdminCreateQuotaGroup {}
 impl Endpoint for AdminCreateQuotaGroup {
     type Response = QuotaGroup;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/admin/quota/groups".into(),
             query: None,
@@ -640,8 +640,8 @@ pub struct AdminGetQuotaGroup<'a> {
 impl Sealed for AdminGetQuotaGroup<'_> {}
 impl Endpoint for AdminGetQuotaGroup<'_> {
     type Response = QuotaGroup;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/admin/quota/groups/{}", self.quotagroup).into(),
             query: None,
@@ -671,8 +671,8 @@ pub struct AdminDeleteQuotaGroup<'a> {
 impl Sealed for AdminDeleteQuotaGroup<'_> {}
 impl Endpoint for AdminDeleteQuotaGroup<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/admin/quota/groups/{}", self.quotagroup).into(),
             query: None,
@@ -703,8 +703,8 @@ pub struct AdminAddRuleToQuotaGroup<'a> {
 impl Sealed for AdminAddRuleToQuotaGroup<'_> {}
 impl Endpoint for AdminAddRuleToQuotaGroup<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/admin/quota/groups/{}/rules/{}",
@@ -741,8 +741,8 @@ pub struct AdminRemoveRuleFromQuotaGroup<'a> {
 impl Sealed for AdminRemoveRuleFromQuotaGroup<'_> {}
 impl Endpoint for AdminRemoveRuleFromQuotaGroup<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/admin/quota/groups/{}/rules/{}",
@@ -776,8 +776,8 @@ pub struct AdminListUsersInQuotaGroup<'a> {
 impl Sealed for AdminListUsersInQuotaGroup<'_> {}
 impl Endpoint for AdminListUsersInQuotaGroup<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/admin/quota/groups/{}/users", self.quotagroup).into(),
             query: None,
@@ -808,8 +808,8 @@ pub struct AdminAddUserToQuotaGroup<'a> {
 impl Sealed for AdminAddUserToQuotaGroup<'_> {}
 impl Endpoint for AdminAddUserToQuotaGroup<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/admin/quota/groups/{}/users/{}",
@@ -846,8 +846,8 @@ pub struct AdminRemoveUserFromQuotaGroup<'a> {
 impl Sealed for AdminRemoveUserFromQuotaGroup<'_> {}
 impl Endpoint for AdminRemoveUserFromQuotaGroup<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/admin/quota/groups/{}/users/{}",
@@ -879,8 +879,8 @@ pub struct AdminListQuotaRules {}
 impl Sealed for AdminListQuotaRules {}
 impl Endpoint for AdminListQuotaRules {
     type Response = (QuotaRuleInfoListHeaders, Vec<QuotaRuleInfo>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/quota/rules".into(),
             query: None,
@@ -908,8 +908,8 @@ pub struct AdminCreateQuotaRule {
 impl Sealed for AdminCreateQuotaRule {}
 impl Endpoint for AdminCreateQuotaRule {
     type Response = QuotaRuleInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/admin/quota/rules".into(),
             query: None,
@@ -943,8 +943,8 @@ pub struct AdminGetQuotaRule<'a> {
 impl Sealed for AdminGetQuotaRule<'_> {}
 impl Endpoint for AdminGetQuotaRule<'_> {
     type Response = QuotaRuleInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/admin/quota/rules/{}", self.quotarule).into(),
             query: None,
@@ -974,8 +974,8 @@ pub struct AdminDEleteQuotaRule<'a> {
 impl Sealed for AdminDEleteQuotaRule<'_> {}
 impl Endpoint for AdminDEleteQuotaRule<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/admin/quota/rules/{}", self.quotarule).into(),
             query: None,
@@ -1006,8 +1006,8 @@ pub struct AdminEditQuotaRule<'a> {
 impl Sealed for AdminEditQuotaRule<'_> {}
 impl Endpoint for AdminEditQuotaRule<'_> {
     type Response = QuotaRuleInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/admin/quota/rules/{}", self.quotarule).into(),
             query: None,
@@ -1041,8 +1041,8 @@ pub struct AdminSearchRunJobs {
 impl Sealed for AdminSearchRunJobs {}
 impl Endpoint for AdminSearchRunJobs {
     type Response = Vec<ActionRunJob>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/runners/jobs".into(),
             query: Some(self.query.into_list()),
@@ -1068,8 +1068,8 @@ pub struct AdminGetRunnerRegistrationToken {}
 impl Sealed for AdminGetRunnerRegistrationToken {}
 impl Endpoint for AdminGetRunnerRegistrationToken {
     type Response = RegistrationToken;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/runners/registration-token".into(),
             query: None,
@@ -1096,8 +1096,8 @@ pub struct AdminUnadoptedList {
 impl Sealed for AdminUnadoptedList {}
 impl Endpoint for AdminUnadoptedList {
     type Response = Vec<String>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/unadopted".into(),
             query: Some(self.query.into_list()),
@@ -1126,8 +1126,8 @@ pub struct AdminAdoptRepository<'a> {
 impl Sealed for AdminAdoptRepository<'_> {}
 impl Endpoint for AdminAdoptRepository<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/admin/unadopted/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -1157,8 +1157,8 @@ pub struct AdminDeleteUnadoptedRepository<'a> {
 impl Sealed for AdminDeleteUnadoptedRepository<'_> {}
 impl Endpoint for AdminDeleteUnadoptedRepository<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/admin/unadopted/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -1186,8 +1186,8 @@ pub struct AdminSearchUsers {
 impl Sealed for AdminSearchUsers {}
 impl Endpoint for AdminSearchUsers {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/admin/users".into(),
             query: Some(self.query.into_list()),
@@ -1215,8 +1215,8 @@ pub struct AdminCreateUser {
 impl Sealed for AdminCreateUser {}
 impl Endpoint for AdminCreateUser {
     type Response = User;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/admin/users".into(),
             query: None,
@@ -1250,8 +1250,8 @@ pub struct AdminDeleteUser<'a> {
 impl Sealed for AdminDeleteUser<'_> {}
 impl Endpoint for AdminDeleteUser<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/admin/users/{}", self.username).into(),
             query: Some(self.query.into_list()),
@@ -1282,8 +1282,8 @@ pub struct AdminEditUser<'a> {
 impl Sealed for AdminEditUser<'_> {}
 impl Endpoint for AdminEditUser<'_> {
     type Response = User;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/admin/users/{}", self.username).into(),
             query: None,
@@ -1317,8 +1317,8 @@ pub struct AdminCreatePublicKey<'a> {
 impl Sealed for AdminCreatePublicKey<'_> {}
 impl Endpoint for AdminCreatePublicKey<'_> {
     type Response = PublicKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/admin/users/{}/keys", self.username).into(),
             query: None,
@@ -1351,8 +1351,8 @@ pub struct AdminDeleteUserPublicKey<'a> {
 impl Sealed for AdminDeleteUserPublicKey<'_> {}
 impl Endpoint for AdminDeleteUserPublicKey<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/admin/users/{}/keys/{}", self.username, self.id).into(),
             query: None,
@@ -1382,8 +1382,8 @@ pub struct AdminCreateOrg<'a> {
 impl Sealed for AdminCreateOrg<'_> {}
 impl Endpoint for AdminCreateOrg<'_> {
     type Response = Organization;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/admin/users/{}/orgs", self.username).into(),
             query: None,
@@ -1415,8 +1415,8 @@ pub struct AdminGetUserQuota<'a> {
 impl Sealed for AdminGetUserQuota<'_> {}
 impl Endpoint for AdminGetUserQuota<'_> {
     type Response = QuotaInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/admin/users/{}/quota", self.username).into(),
             query: None,
@@ -1448,8 +1448,8 @@ pub struct AdminSetUserQuotaGroups<'a> {
 impl Sealed for AdminSetUserQuotaGroups<'_> {}
 impl Endpoint for AdminSetUserQuotaGroups<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/admin/users/{}/quota/groups", self.username).into(),
             query: None,
@@ -1484,8 +1484,8 @@ pub struct AdminRenameUser<'a> {
 impl Sealed for AdminRenameUser<'_> {}
 impl Endpoint for AdminRenameUser<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/admin/users/{}/rename", self.username).into(),
             query: None,
@@ -1518,8 +1518,8 @@ pub struct AdminCreateRepo<'a> {
 impl Sealed for AdminCreateRepo<'_> {}
 impl Endpoint for AdminCreateRepo<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/admin/users/{}/repos", self.username).into(),
             query: None,
@@ -1552,8 +1552,8 @@ pub struct ListGitignoresTemplates {}
 impl Sealed for ListGitignoresTemplates {}
 impl Endpoint for ListGitignoresTemplates {
     type Response = Vec<String>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/gitignore/templates".into(),
             query: None,
@@ -1580,8 +1580,8 @@ pub struct GetGitignoreTemplateInfo<'a> {
 impl Sealed for GetGitignoreTemplateInfo<'_> {}
 impl Endpoint for GetGitignoreTemplateInfo<'_> {
     type Response = GitignoreTemplateInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/gitignore/templates/{}", self.name).into(),
             query: None,
@@ -1607,8 +1607,8 @@ pub struct ListLabelTemplates {}
 impl Sealed for ListLabelTemplates {}
 impl Endpoint for ListLabelTemplates {
     type Response = Vec<String>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/label/templates".into(),
             query: None,
@@ -1635,8 +1635,8 @@ pub struct GetLabelTemplateInfo<'a> {
 impl Sealed for GetLabelTemplateInfo<'_> {}
 impl Endpoint for GetLabelTemplateInfo<'_> {
     type Response = Vec<LabelTemplate>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/label/templates/{}", self.name).into(),
             query: None,
@@ -1662,8 +1662,8 @@ pub struct ListLicenseTemplates {}
 impl Sealed for ListLicenseTemplates {}
 impl Endpoint for ListLicenseTemplates {
     type Response = Vec<LicensesTemplateListEntry>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/licenses".into(),
             query: None,
@@ -1690,8 +1690,8 @@ pub struct GetLicenseTemplateInfo<'a> {
 impl Sealed for GetLicenseTemplateInfo<'_> {}
 impl Endpoint for GetLicenseTemplateInfo<'_> {
     type Response = LicenseTemplateInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/licenses/{}", self.name).into(),
             query: None,
@@ -1719,8 +1719,8 @@ pub struct RenderMarkdown {
 impl Sealed for RenderMarkdown {}
 impl Endpoint for RenderMarkdown {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/markdown".into(),
             query: None,
@@ -1751,8 +1751,8 @@ pub struct RenderMarkdownRaw {
 impl Sealed for RenderMarkdownRaw {}
 impl Endpoint for RenderMarkdownRaw {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/markdown/raw".into(),
             query: None,
@@ -1783,8 +1783,8 @@ pub struct RenderMarkup {
 impl Sealed for RenderMarkup {}
 impl Endpoint for RenderMarkup {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/markup".into(),
             query: None,
@@ -1813,8 +1813,8 @@ pub struct GetNodeInfo {}
 impl Sealed for GetNodeInfo {}
 impl Endpoint for GetNodeInfo {
     type Response = NodeInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/nodeinfo".into(),
             query: None,
@@ -1841,8 +1841,8 @@ pub struct NotifyGetList {
 impl Sealed for NotifyGetList {}
 impl Endpoint for NotifyGetList {
     type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/notifications".into(),
             query: Some(self.query.into_list()),
@@ -1869,8 +1869,8 @@ pub struct NotifyReadList {
 impl Sealed for NotifyReadList {}
 impl Endpoint for NotifyReadList {
     type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: "/api/v1/notifications".into(),
             query: Some(self.query.into_list()),
@@ -1895,8 +1895,8 @@ pub struct NotifyNewAvailable {}
 impl Sealed for NotifyNewAvailable {}
 impl Endpoint for NotifyNewAvailable {
     type Response = NotificationCount;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/notifications/new".into(),
             query: None,
@@ -1923,8 +1923,8 @@ pub struct NotifyGetThread {
 impl Sealed for NotifyGetThread {}
 impl Endpoint for NotifyGetThread {
     type Response = NotificationThread;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/notifications/threads/{}", self.id).into(),
             query: None,
@@ -1954,8 +1954,8 @@ pub struct NotifyReadThread {
 impl Sealed for NotifyReadThread {}
 impl Endpoint for NotifyReadThread {
     type Response = NotificationThread;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/notifications/threads/{}", self.id).into(),
             query: Some(self.query.into_list()),
@@ -1985,8 +1985,8 @@ pub struct CreateOrgRepoDeprecated<'a> {
 impl Sealed for CreateOrgRepoDeprecated<'_> {}
 impl Endpoint for CreateOrgRepoDeprecated<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/org/{}/repos", self.org).into(),
             query: None,
@@ -2017,8 +2017,8 @@ pub struct OrgGetAll {}
 impl Sealed for OrgGetAll {}
 impl Endpoint for OrgGetAll {
     type Response = (OrganizationListHeaders, Vec<Organization>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/orgs".into(),
             query: None,
@@ -2045,8 +2045,8 @@ pub struct OrgCreate {
 impl Sealed for OrgCreate {}
 impl Endpoint for OrgCreate {
     type Response = Organization;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/orgs".into(),
             query: None,
@@ -2078,8 +2078,8 @@ pub struct OrgGet<'a> {
 impl Sealed for OrgGet<'_> {}
 impl Endpoint for OrgGet<'_> {
     type Response = Organization;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}", self.org).into(),
             query: None,
@@ -2107,8 +2107,8 @@ pub struct OrgDelete<'a> {
 impl Sealed for OrgDelete<'_> {}
 impl Endpoint for OrgDelete<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/orgs/{}", self.org).into(),
             query: None,
@@ -2137,8 +2137,8 @@ pub struct OrgEdit<'a> {
 impl Sealed for OrgEdit<'_> {}
 impl Endpoint for OrgEdit<'_> {
     type Response = Organization;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/orgs/{}", self.org).into(),
             query: None,
@@ -2171,8 +2171,8 @@ pub struct OrgSearchRunJobs<'a> {
 impl Sealed for OrgSearchRunJobs<'_> {}
 impl Endpoint for OrgSearchRunJobs<'_> {
     type Response = Vec<ActionRunJob>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/actions/runners/jobs", self.org).into(),
             query: Some(self.query.into_list()),
@@ -2200,8 +2200,8 @@ pub struct OrgGetRunnerRegistrationToken<'a> {
 impl Sealed for OrgGetRunnerRegistrationToken<'_> {}
 impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
     type Response = RegistrationToken;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/orgs/{}/actions/runners/registration-token",
@@ -2232,8 +2232,8 @@ pub struct OrgListActionsSecrets<'a> {
 impl Sealed for OrgListActionsSecrets<'_> {}
 impl Endpoint for OrgListActionsSecrets<'_> {
     type Response = (SecretListHeaders, Vec<Secret>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/actions/secrets", self.org).into(),
             query: None,
@@ -2263,8 +2263,8 @@ pub struct UpdateOrgSecret<'a> {
 impl Sealed for UpdateOrgSecret<'_> {}
 impl Endpoint for UpdateOrgSecret<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/orgs/{}/actions/secrets/{}",
@@ -2302,8 +2302,8 @@ pub struct DeleteOrgSecret<'a> {
 impl Sealed for DeleteOrgSecret<'_> {}
 impl Endpoint for DeleteOrgSecret<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/orgs/{}/actions/secrets/{}",
@@ -2336,8 +2336,8 @@ pub struct GetOrgVariablesList<'a> {
 impl Sealed for GetOrgVariablesList<'_> {}
 impl Endpoint for GetOrgVariablesList<'_> {
     type Response = (VariableListHeaders, Vec<ActionVariable>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/actions/variables", self.org).into(),
             query: None,
@@ -2367,8 +2367,8 @@ pub struct GetOrgVariable<'a> {
 impl Sealed for GetOrgVariable<'_> {}
 impl Endpoint for GetOrgVariable<'_> {
     type Response = ActionVariable;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/orgs/{}/actions/variables/{}",
@@ -2403,8 +2403,8 @@ pub struct UpdateOrgVariable<'a> {
 impl Sealed for UpdateOrgVariable<'_> {}
 impl Endpoint for UpdateOrgVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/orgs/{}/actions/variables/{}",
@@ -2443,8 +2443,8 @@ pub struct CreateOrgVariable<'a> {
 impl Sealed for CreateOrgVariable<'_> {}
 impl Endpoint for CreateOrgVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/orgs/{}/actions/variables/{}",
@@ -2482,8 +2482,8 @@ pub struct DeleteOrgVariable<'a> {
 impl Sealed for DeleteOrgVariable<'_> {}
 impl Endpoint for DeleteOrgVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/orgs/{}/actions/variables/{}",
@@ -2517,8 +2517,8 @@ pub struct OrgListActivityFeeds<'a> {
 impl Sealed for OrgListActivityFeeds<'_> {}
 impl Endpoint for OrgListActivityFeeds<'_> {
     type Response = (ActivityFeedsListHeaders, Vec<Activity>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/activities/feeds", self.org).into(),
             query: Some(self.query.into_list()),
@@ -2547,8 +2547,8 @@ pub struct OrgUpdateAvatar<'a> {
 impl Sealed for OrgUpdateAvatar<'_> {}
 impl Endpoint for OrgUpdateAvatar<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/orgs/{}/avatar", self.org).into(),
             query: None,
@@ -2579,8 +2579,8 @@ pub struct OrgDeleteAvatar<'a> {
 impl Sealed for OrgDeleteAvatar<'_> {}
 impl Endpoint for OrgDeleteAvatar<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/orgs/{}/avatar", self.org).into(),
             query: None,
@@ -2609,8 +2609,8 @@ pub struct OrgBlockUser<'a> {
 impl Sealed for OrgBlockUser<'_> {}
 impl Endpoint for OrgBlockUser<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/orgs/{}/block/{}", self.org, self.username).into(),
             query: None,
@@ -2639,8 +2639,8 @@ pub struct OrgListHooks<'a> {
 impl Sealed for OrgListHooks<'_> {}
 impl Endpoint for OrgListHooks<'_> {
     type Response = (HookListHeaders, Vec<Hook>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/hooks", self.org).into(),
             query: None,
@@ -2669,8 +2669,8 @@ pub struct OrgCreateHook<'a> {
 impl Sealed for OrgCreateHook<'_> {}
 impl Endpoint for OrgCreateHook<'_> {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/orgs/{}/hooks", self.org).into(),
             query: None,
@@ -2702,8 +2702,8 @@ pub struct OrgGetHook<'a> {
 impl Sealed for OrgGetHook<'_> {}
 impl Endpoint for OrgGetHook<'_> {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/hooks/{}", self.org, self.id).into(),
             query: None,
@@ -2732,8 +2732,8 @@ pub struct OrgDeleteHook<'a> {
 impl Sealed for OrgDeleteHook<'_> {}
 impl Endpoint for OrgDeleteHook<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/orgs/{}/hooks/{}", self.org, self.id).into(),
             query: None,
@@ -2763,8 +2763,8 @@ pub struct OrgEditHook<'a> {
 impl Sealed for OrgEditHook<'_> {}
 impl Endpoint for OrgEditHook<'_> {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/orgs/{}/hooks/{}", self.org, self.id).into(),
             query: None,
@@ -2796,8 +2796,8 @@ pub struct OrgListLabels<'a> {
 impl Sealed for OrgListLabels<'_> {}
 impl Endpoint for OrgListLabels<'_> {
     type Response = (LabelListHeaders, Vec<Label>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/labels", self.org).into(),
             query: Some(self.query.into_list()),
@@ -2826,8 +2826,8 @@ pub struct OrgCreateLabel<'a> {
 impl Sealed for OrgCreateLabel<'_> {}
 impl Endpoint for OrgCreateLabel<'_> {
     type Response = Label;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/orgs/{}/labels", self.org).into(),
             query: None,
@@ -2860,8 +2860,8 @@ pub struct OrgGetLabel<'a> {
 impl Sealed for OrgGetLabel<'_> {}
 impl Endpoint for OrgGetLabel<'_> {
     type Response = Label;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/labels/{}", self.org, self.id).into(),
             query: None,
@@ -2890,8 +2890,8 @@ pub struct OrgDeleteLabel<'a> {
 impl Sealed for OrgDeleteLabel<'_> {}
 impl Endpoint for OrgDeleteLabel<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/orgs/{}/labels/{}", self.org, self.id).into(),
             query: None,
@@ -2921,8 +2921,8 @@ pub struct OrgEditLabel<'a> {
 impl Sealed for OrgEditLabel<'_> {}
 impl Endpoint for OrgEditLabel<'_> {
     type Response = Label;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/orgs/{}/labels/{}", self.org, self.id).into(),
             query: None,
@@ -2954,8 +2954,8 @@ pub struct OrgListBlockedUsers<'a> {
 impl Sealed for OrgListBlockedUsers<'_> {}
 impl Endpoint for OrgListBlockedUsers<'_> {
     type Response = (BlockedUserListHeaders, Vec<BlockedUser>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/list_blocked", self.org).into(),
             query: None,
@@ -2982,8 +2982,8 @@ pub struct OrgListMembers<'a> {
 impl Sealed for OrgListMembers<'_> {}
 impl Endpoint for OrgListMembers<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/members", self.org).into(),
             query: None,
@@ -3012,8 +3012,8 @@ pub struct OrgIsMember<'a> {
 impl Sealed for OrgIsMember<'_> {}
 impl Endpoint for OrgIsMember<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/members/{}", self.org, self.username).into(),
             query: None,
@@ -3042,8 +3042,8 @@ pub struct OrgDeleteMember<'a> {
 impl Sealed for OrgDeleteMember<'_> {}
 impl Endpoint for OrgDeleteMember<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/orgs/{}/members/{}", self.org, self.username).into(),
             query: None,
@@ -3071,8 +3071,8 @@ pub struct OrgListPublicMembers<'a> {
 impl Sealed for OrgListPublicMembers<'_> {}
 impl Endpoint for OrgListPublicMembers<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/public_members", self.org).into(),
             query: None,
@@ -3101,8 +3101,8 @@ pub struct OrgIsPublicMember<'a> {
 impl Sealed for OrgIsPublicMember<'_> {}
 impl Endpoint for OrgIsPublicMember<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/public_members/{}", self.org, self.username).into(),
             query: None,
@@ -3131,8 +3131,8 @@ pub struct OrgPublicizeMember<'a> {
 impl Sealed for OrgPublicizeMember<'_> {}
 impl Endpoint for OrgPublicizeMember<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/orgs/{}/public_members/{}", self.org, self.username).into(),
             query: None,
@@ -3162,8 +3162,8 @@ pub struct OrgConcealMember<'a> {
 impl Sealed for OrgConcealMember<'_> {}
 impl Endpoint for OrgConcealMember<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/orgs/{}/public_members/{}", self.org, self.username).into(),
             query: None,
@@ -3192,8 +3192,8 @@ pub struct OrgGetQuota<'a> {
 impl Sealed for OrgGetQuota<'_> {}
 impl Endpoint for OrgGetQuota<'_> {
     type Response = QuotaInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/quota", self.org).into(),
             query: None,
@@ -3222,8 +3222,8 @@ pub struct OrgListQuotaArtifacts<'a> {
 impl Sealed for OrgListQuotaArtifacts<'_> {}
 impl Endpoint for OrgListQuotaArtifacts<'_> {
     type Response = (QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/quota/artifacts", self.org).into(),
             query: None,
@@ -3252,8 +3252,8 @@ pub struct OrgListQuotaAttachments<'a> {
 impl Sealed for OrgListQuotaAttachments<'_> {}
 impl Endpoint for OrgListQuotaAttachments<'_> {
     type Response = (QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/quota/attachments", self.org).into(),
             query: None,
@@ -3283,8 +3283,8 @@ pub struct OrgCheckQuota<'a> {
 impl Sealed for OrgCheckQuota<'_> {}
 impl Endpoint for OrgCheckQuota<'_> {
     type Response = bool;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/quota/check", self.org).into(),
             query: Some(self.query.into_list()),
@@ -3314,8 +3314,8 @@ pub struct OrgListQuotaPackages<'a> {
 impl Sealed for OrgListQuotaPackages<'_> {}
 impl Endpoint for OrgListQuotaPackages<'_> {
     type Response = (QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/quota/packages", self.org).into(),
             query: None,
@@ -3345,8 +3345,8 @@ pub struct RenameOrg<'a> {
 impl Sealed for RenameOrg<'_> {}
 impl Endpoint for RenameOrg<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/orgs/{}/rename", self.org).into(),
             query: None,
@@ -3378,8 +3378,8 @@ pub struct OrgListRepos<'a> {
 impl Sealed for OrgListRepos<'_> {}
 impl Endpoint for OrgListRepos<'_> {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/repos", self.org).into(),
             query: None,
@@ -3408,8 +3408,8 @@ pub struct CreateOrgRepo<'a> {
 impl Sealed for CreateOrgRepo<'_> {}
 impl Endpoint for CreateOrgRepo<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/orgs/{}/repos", self.org).into(),
             query: None,
@@ -3442,8 +3442,8 @@ pub struct OrgListTeams<'a> {
 impl Sealed for OrgListTeams<'_> {}
 impl Endpoint for OrgListTeams<'_> {
     type Response = (TeamListHeaders, Vec<Team>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/teams", self.org).into(),
             query: None,
@@ -3472,8 +3472,8 @@ pub struct OrgCreateTeam<'a> {
 impl Sealed for OrgCreateTeam<'_> {}
 impl Endpoint for OrgCreateTeam<'_> {
     type Response = Team;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/orgs/{}/teams", self.org).into(),
             query: None,
@@ -3506,8 +3506,8 @@ pub struct TeamSearch<'a> {
 impl Sealed for TeamSearch<'_> {}
 impl Endpoint for TeamSearch<'_> {
     type Response = TeamSearchResults;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/orgs/{}/teams/search", self.org).into(),
             query: Some(self.query.into_list()),
@@ -3536,8 +3536,8 @@ pub struct OrgUnblockUser<'a> {
 impl Sealed for OrgUnblockUser<'_> {}
 impl Endpoint for OrgUnblockUser<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/orgs/{}/unblock/{}", self.org, self.username).into(),
             query: None,
@@ -3567,8 +3567,8 @@ pub struct ListPackages<'a> {
 impl Sealed for ListPackages<'_> {}
 impl Endpoint for ListPackages<'_> {
     type Response = (PackageListHeaders, Vec<Package>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/packages/{}", self.owner).into(),
             query: Some(self.query.into_list()),
@@ -3599,8 +3599,8 @@ pub struct LinkPackage<'a> {
 impl Sealed for LinkPackage<'_> {}
 impl Endpoint for LinkPackage<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/packages/{}/{}/{}/-/link/{}",
@@ -3634,8 +3634,8 @@ pub struct UnlinkPackage<'a> {
 impl Sealed for UnlinkPackage<'_> {}
 impl Endpoint for UnlinkPackage<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/packages/{}/{}/{}/-/unlink",
@@ -3670,8 +3670,8 @@ pub struct GetPackage<'a> {
 impl Sealed for GetPackage<'_> {}
 impl Endpoint for GetPackage<'_> {
     type Response = Package;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/packages/{}/{}/{}/{}",
@@ -3706,8 +3706,8 @@ pub struct DeletePackage<'a> {
 impl Sealed for DeletePackage<'_> {}
 impl Endpoint for DeletePackage<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/packages/{}/{}/{}/{}",
@@ -3742,8 +3742,8 @@ pub struct ListPackageFiles<'a> {
 impl Sealed for ListPackageFiles<'_> {}
 impl Endpoint for ListPackageFiles<'_> {
     type Response = (PackageFileListHeaders, Vec<PackageFile>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/packages/{}/{}/{}/{}/files",
@@ -3775,8 +3775,8 @@ pub struct IssueSearchIssues {
 impl Sealed for IssueSearchIssues {}
 impl Endpoint for IssueSearchIssues {
     type Response = (IssueListHeaders, Vec<Issue>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/repos/issues/search".into(),
             query: Some(self.query.into_list()),
@@ -3805,8 +3805,8 @@ pub struct RepoMigrate {
 impl Sealed for RepoMigrate {}
 impl Endpoint for RepoMigrate {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/repos/migrate".into(),
             query: None,
@@ -3840,8 +3840,8 @@ pub struct RepoSearch {
 impl Sealed for RepoSearch {}
 impl Endpoint for RepoSearch {
     type Response = SearchResults;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/repos/search".into(),
             query: Some(self.query.into_list()),
@@ -3870,8 +3870,8 @@ pub struct RepoGet<'a> {
 impl Sealed for RepoGet<'_> {}
 impl Endpoint for RepoGet<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -3900,8 +3900,8 @@ pub struct RepoDelete<'a> {
 impl Sealed for RepoDelete<'_> {}
 impl Endpoint for RepoDelete<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/repos/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -3932,8 +3932,8 @@ pub struct RepoEdit<'a> {
 impl Sealed for RepoEdit<'_> {}
 impl Endpoint for RepoEdit<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/repos/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -3968,8 +3968,8 @@ pub struct RepoSearchRunJobs<'a> {
 impl Sealed for RepoSearchRunJobs<'_> {}
 impl Endpoint for RepoSearchRunJobs<'_> {
     type Response = Vec<ActionRunJob>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/runners/jobs",
@@ -4002,8 +4002,8 @@ pub struct RepoGetRunnerRegistrationToken<'a> {
 impl Sealed for RepoGetRunnerRegistrationToken<'_> {}
 impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
     type Response = RegistrationToken;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/runners/registration-token",
@@ -4036,8 +4036,8 @@ pub struct ListActionRuns<'a> {
 impl Sealed for ListActionRuns<'_> {}
 impl Endpoint for ListActionRuns<'_> {
     type Response = ListActionRunResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/actions/runs", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -4068,8 +4068,8 @@ pub struct GetActionRun<'a> {
 impl Sealed for GetActionRun<'_> {}
 impl Endpoint for GetActionRun<'_> {
     type Response = ActionRun;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/runs/{}",
@@ -4104,8 +4104,8 @@ pub struct RepoListActionsSecrets<'a> {
 impl Sealed for RepoListActionsSecrets<'_> {}
 impl Endpoint for RepoListActionsSecrets<'_> {
     type Response = (SecretListHeaders, Vec<Secret>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/actions/secrets", self.owner, self.repo).into(),
             query: None,
@@ -4136,8 +4136,8 @@ pub struct UpdateRepoSecret<'a> {
 impl Sealed for UpdateRepoSecret<'_> {}
 impl Endpoint for UpdateRepoSecret<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/secrets/{}",
@@ -4176,8 +4176,8 @@ pub struct DeleteRepoSecret<'a> {
 impl Sealed for DeleteRepoSecret<'_> {}
 impl Endpoint for DeleteRepoSecret<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/secrets/{}",
@@ -4211,8 +4211,8 @@ pub struct ListActionTasks<'a> {
 impl Sealed for ListActionTasks<'_> {}
 impl Endpoint for ListActionTasks<'_> {
     type Response = ActionTaskResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/actions/tasks", self.owner, self.repo).into(),
             query: None,
@@ -4245,8 +4245,8 @@ pub struct GetRepoVariablesList<'a> {
 impl Sealed for GetRepoVariablesList<'_> {}
 impl Endpoint for GetRepoVariablesList<'_> {
     type Response = (VariableListHeaders, Vec<ActionVariable>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/variables",
@@ -4281,8 +4281,8 @@ pub struct GetRepoVariable<'a> {
 impl Sealed for GetRepoVariable<'_> {}
 impl Endpoint for GetRepoVariable<'_> {
     type Response = ActionVariable;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/variables/{}",
@@ -4318,8 +4318,8 @@ pub struct UpdateRepoVariable<'a> {
 impl Sealed for UpdateRepoVariable<'_> {}
 impl Endpoint for UpdateRepoVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/variables/{}",
@@ -4359,8 +4359,8 @@ pub struct CreateRepoVariable<'a> {
 impl Sealed for CreateRepoVariable<'_> {}
 impl Endpoint for CreateRepoVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/variables/{}",
@@ -4399,8 +4399,8 @@ pub struct DeleteRepoVariable<'a> {
 impl Sealed for DeleteRepoVariable<'_> {}
 impl Endpoint for DeleteRepoVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/variables/{}",
@@ -4436,8 +4436,8 @@ pub struct DispatchWorkflow<'a> {
 impl Sealed for DispatchWorkflow<'_> {}
 impl Endpoint for DispatchWorkflow<'_> {
     type Response = Option<DispatchWorkflowRun>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/actions/workflows/{}/dispatches",
@@ -4475,8 +4475,8 @@ pub struct RepoListActivityFeeds<'a> {
 impl Sealed for RepoListActivityFeeds<'_> {}
 impl Endpoint for RepoListActivityFeeds<'_> {
     type Response = (ActivityFeedsListHeaders, Vec<Activity>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/activities/feeds",
@@ -4510,8 +4510,8 @@ pub struct RepoGetArchive<'a> {
 impl Sealed for RepoGetArchive<'_> {}
 impl Endpoint for RepoGetArchive<'_> {
     type Response = Bytes;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/archive/{}",
@@ -4544,8 +4544,8 @@ pub struct RepoGetAssignees<'a> {
 impl Sealed for RepoGetAssignees<'_> {}
 impl Endpoint for RepoGetAssignees<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/assignees", self.owner, self.repo).into(),
             query: None,
@@ -4575,8 +4575,8 @@ pub struct RepoUpdateAvatar<'a> {
 impl Sealed for RepoUpdateAvatar<'_> {}
 impl Endpoint for RepoUpdateAvatar<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/avatar", self.owner, self.repo).into(),
             query: None,
@@ -4608,8 +4608,8 @@ pub struct RepoDeleteAvatar<'a> {
 impl Sealed for RepoDeleteAvatar<'_> {}
 impl Endpoint for RepoDeleteAvatar<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/repos/{}/{}/avatar", self.owner, self.repo).into(),
             query: None,
@@ -4638,8 +4638,8 @@ pub struct RepoListBranchProtection<'a> {
 impl Sealed for RepoListBranchProtection<'_> {}
 impl Endpoint for RepoListBranchProtection<'_> {
     type Response = Vec<BranchProtection>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/branch_protections",
@@ -4672,8 +4672,8 @@ pub struct RepoCreateBranchProtection<'a> {
 impl Sealed for RepoCreateBranchProtection<'_> {}
 impl Endpoint for RepoCreateBranchProtection<'_> {
     type Response = BranchProtection;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/branch_protections",
@@ -4713,8 +4713,8 @@ pub struct RepoGetBranchProtection<'a> {
 impl Sealed for RepoGetBranchProtection<'_> {}
 impl Endpoint for RepoGetBranchProtection<'_> {
     type Response = BranchProtection;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/branch_protections/{}",
@@ -4748,8 +4748,8 @@ pub struct RepoDeleteBranchProtection<'a> {
 impl Sealed for RepoDeleteBranchProtection<'_> {}
 impl Endpoint for RepoDeleteBranchProtection<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/branch_protections/{}",
@@ -4784,8 +4784,8 @@ pub struct RepoEditBranchProtection<'a> {
 impl Sealed for RepoEditBranchProtection<'_> {}
 impl Endpoint for RepoEditBranchProtection<'_> {
     type Response = BranchProtection;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/branch_protections/{}",
@@ -4823,8 +4823,8 @@ pub struct RepoListBranches<'a> {
 impl Sealed for RepoListBranches<'_> {}
 impl Endpoint for RepoListBranches<'_> {
     type Response = (BranchListHeaders, Vec<Branch>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/branches", self.owner, self.repo).into(),
             query: None,
@@ -4853,8 +4853,8 @@ pub struct RepoCreateBranch<'a> {
 impl Sealed for RepoCreateBranch<'_> {}
 impl Endpoint for RepoCreateBranch<'_> {
     type Response = Branch;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/branches", self.owner, self.repo).into(),
             query: None,
@@ -4891,8 +4891,8 @@ pub struct RepoGetBranch<'a> {
 impl Sealed for RepoGetBranch<'_> {}
 impl Endpoint for RepoGetBranch<'_> {
     type Response = Branch;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/branches/{}",
@@ -4926,8 +4926,8 @@ pub struct RepoDeleteBranch<'a> {
 impl Sealed for RepoDeleteBranch<'_> {}
 impl Endpoint for RepoDeleteBranch<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/branches/{}",
@@ -4964,8 +4964,8 @@ pub struct RepoUpdateBranch<'a> {
 impl Sealed for RepoUpdateBranch<'_> {}
 impl Endpoint for RepoUpdateBranch<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/branches/{}",
@@ -5003,8 +5003,8 @@ pub struct RepoListCollaborators<'a> {
 impl Sealed for RepoListCollaborators<'_> {}
 impl Endpoint for RepoListCollaborators<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/collaborators", self.owner, self.repo).into(),
             query: None,
@@ -5034,8 +5034,8 @@ pub struct RepoCheckCollaborator<'a> {
 impl Sealed for RepoCheckCollaborator<'_> {}
 impl Endpoint for RepoCheckCollaborator<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/collaborators/{}",
@@ -5071,8 +5071,8 @@ pub struct RepoAddCollaborator<'a> {
 impl Sealed for RepoAddCollaborator<'_> {}
 impl Endpoint for RepoAddCollaborator<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/collaborators/{}",
@@ -5111,8 +5111,8 @@ pub struct RepoDeleteCollaborator<'a> {
 impl Sealed for RepoDeleteCollaborator<'_> {}
 impl Endpoint for RepoDeleteCollaborator<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/collaborators/{}",
@@ -5147,8 +5147,8 @@ pub struct RepoGetRepoPermissions<'a> {
 impl Sealed for RepoGetRepoPermissions<'_> {}
 impl Endpoint for RepoGetRepoPermissions<'_> {
     type Response = RepoCollaboratorPermission;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/collaborators/{}/permission",
@@ -5183,8 +5183,8 @@ pub struct RepoGetAllCommits<'a> {
 impl Sealed for RepoGetAllCommits<'_> {}
 impl Endpoint for RepoGetAllCommits<'_> {
     type Response = (CommitListHeaders, Vec<Commit>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/commits", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -5215,8 +5215,8 @@ pub struct RepoGetCombinedStatusByRef<'a> {
 impl Sealed for RepoGetCombinedStatusByRef<'_> {}
 impl Endpoint for RepoGetCombinedStatusByRef<'_> {
     type Response = (CombinedStatusHeaders, CombinedStatus);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/commits/{}/status",
@@ -5252,8 +5252,8 @@ pub struct RepoListStatusesByRef<'a> {
 impl Sealed for RepoListStatusesByRef<'_> {}
 impl Endpoint for RepoListStatusesByRef<'_> {
     type Response = (CommitStatusListHeaders, Vec<CommitStatus>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/commits/{}/statuses",
@@ -5288,8 +5288,8 @@ pub struct RepoGetCommitPullRequest<'a> {
 impl Sealed for RepoGetCommitPullRequest<'_> {}
 impl Endpoint for RepoGetCommitPullRequest<'_> {
     type Response = PullRequest;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/commits/{}/pull",
@@ -5323,8 +5323,8 @@ pub struct RepoCompareDiff<'a> {
 impl Sealed for RepoCompareDiff<'_> {}
 impl Endpoint for RepoCompareDiff<'_> {
     type Response = Compare;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/compare/{}",
@@ -5358,8 +5358,8 @@ pub struct RepoGetContentsList<'a> {
 impl Sealed for RepoGetContentsList<'_> {}
 impl Endpoint for RepoGetContentsList<'_> {
     type Response = Vec<ContentsResponse>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/contents", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -5389,8 +5389,8 @@ pub struct RepoChangeFiles<'a> {
 impl Sealed for RepoChangeFiles<'_> {}
 impl Endpoint for RepoChangeFiles<'_> {
     type Response = FilesResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/contents", self.owner, self.repo).into(),
             query: None,
@@ -5429,8 +5429,8 @@ pub struct RepoGetContents<'a> {
 impl Sealed for RepoGetContents<'_> {}
 impl Endpoint for RepoGetContents<'_> {
     type Response = ContentsResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/contents/{}",
@@ -5465,8 +5465,8 @@ pub struct RepoUpdateFile<'a> {
 impl Sealed for RepoUpdateFile<'_> {}
 impl Endpoint for RepoUpdateFile<'_> {
     type Response = FileResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/contents/{}",
@@ -5509,8 +5509,8 @@ pub struct RepoCreateFile<'a> {
 impl Sealed for RepoCreateFile<'_> {}
 impl Endpoint for RepoCreateFile<'_> {
     type Response = FileResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/contents/{}",
@@ -5553,8 +5553,8 @@ pub struct RepoDeleteFile<'a> {
 impl Sealed for RepoDeleteFile<'_> {}
 impl Endpoint for RepoDeleteFile<'_> {
     type Response = FileDeleteResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/contents/{}",
@@ -5594,8 +5594,8 @@ pub struct RepoConvert<'a> {
 impl Sealed for RepoConvert<'_> {}
 impl Endpoint for RepoConvert<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/convert", self.owner, self.repo).into(),
             query: None,
@@ -5627,8 +5627,8 @@ pub struct RepoApplyDiffPatch<'a> {
 impl Sealed for RepoApplyDiffPatch<'_> {}
 impl Endpoint for RepoApplyDiffPatch<'_> {
     type Response = FileResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/diffpatch", self.owner, self.repo).into(),
             query: None,
@@ -5664,8 +5664,8 @@ pub struct RepoGetEditorConfig<'a> {
 impl Sealed for RepoGetEditorConfig<'_> {}
 impl Endpoint for RepoGetEditorConfig<'_> {
     type Response = BTreeMap<String, String>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/editorconfig/{}",
@@ -5698,8 +5698,8 @@ pub struct RepoListFlags<'a> {
 impl Sealed for RepoListFlags<'_> {}
 impl Endpoint for RepoListFlags<'_> {
     type Response = Vec<String>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/flags", self.owner, self.repo).into(),
             query: None,
@@ -5730,8 +5730,8 @@ pub struct RepoReplaceAllFlags<'a> {
 impl Sealed for RepoReplaceAllFlags<'_> {}
 impl Endpoint for RepoReplaceAllFlags<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/repos/{}/{}/flags", self.owner, self.repo).into(),
             query: None,
@@ -5764,8 +5764,8 @@ pub struct RepoDeleteAllFlags<'a> {
 impl Sealed for RepoDeleteAllFlags<'_> {}
 impl Endpoint for RepoDeleteAllFlags<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/repos/{}/{}/flags", self.owner, self.repo).into(),
             query: None,
@@ -5796,8 +5796,8 @@ pub struct RepoCheckFlag<'a> {
 impl Sealed for RepoCheckFlag<'_> {}
 impl Endpoint for RepoCheckFlag<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/flags/{}",
@@ -5832,8 +5832,8 @@ pub struct RepoAddFlag<'a> {
 impl Sealed for RepoAddFlag<'_> {}
 impl Endpoint for RepoAddFlag<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/flags/{}",
@@ -5868,8 +5868,8 @@ pub struct RepoDeleteFlag<'a> {
 impl Sealed for RepoDeleteFlag<'_> {}
 impl Endpoint for RepoDeleteFlag<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/flags/{}",
@@ -5903,8 +5903,8 @@ pub struct ListForks<'a> {
 impl Sealed for ListForks<'_> {}
 impl Endpoint for ListForks<'_> {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/forks", self.owner, self.repo).into(),
             query: None,
@@ -5934,8 +5934,8 @@ pub struct CreateFork<'a> {
 impl Sealed for CreateFork<'_> {}
 impl Endpoint for CreateFork<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/forks", self.owner, self.repo).into(),
             query: None,
@@ -5972,8 +5972,8 @@ pub struct GetBlobs<'a> {
 impl Sealed for GetBlobs<'_> {}
 impl Endpoint for GetBlobs<'_> {
     type Response = Vec<GitBlob>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/git/blobs", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -6003,8 +6003,8 @@ pub struct GetBlob<'a> {
 impl Sealed for GetBlob<'_> {}
 impl Endpoint for GetBlob<'_> {
     type Response = GitBlob;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/git/blobs/{}",
@@ -6040,8 +6040,8 @@ pub struct RepoGetSingleCommit<'a> {
 impl Sealed for RepoGetSingleCommit<'_> {}
 impl Endpoint for RepoGetSingleCommit<'_> {
     type Response = Commit;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/git/commits/{}",
@@ -6077,8 +6077,8 @@ pub struct RepoDownloadCommitDiffOrPatch<'a> {
 impl Sealed for RepoDownloadCommitDiffOrPatch<'_> {}
 impl Endpoint for RepoDownloadCommitDiffOrPatch<'_> {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/git/commits/{}.{}",
@@ -6113,8 +6113,8 @@ pub struct RepoGetNote<'a> {
 impl Sealed for RepoGetNote<'_> {}
 impl Endpoint for RepoGetNote<'_> {
     type Response = Note;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/git/notes/{}",
@@ -6150,8 +6150,8 @@ pub struct RepoSetNote<'a> {
 impl Sealed for RepoSetNote<'_> {}
 impl Endpoint for RepoSetNote<'_> {
     type Response = Note;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/git/notes/{}",
@@ -6189,8 +6189,8 @@ pub struct RepoRemoveNote<'a> {
 impl Sealed for RepoRemoveNote<'_> {}
 impl Endpoint for RepoRemoveNote<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/git/notes/{}",
@@ -6224,8 +6224,8 @@ pub struct RepoListAllGitRefs<'a> {
 impl Sealed for RepoListAllGitRefs<'_> {}
 impl Endpoint for RepoListAllGitRefs<'_> {
     type Response = Vec<Reference>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/git/refs", self.owner, self.repo).into(),
             query: None,
@@ -6255,8 +6255,8 @@ pub struct RepoListGitRefs<'a> {
 impl Sealed for RepoListGitRefs<'_> {}
 impl Endpoint for RepoListGitRefs<'_> {
     type Response = Vec<Reference>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/git/refs/{}",
@@ -6290,8 +6290,8 @@ pub struct GetAnnotatedTag<'a> {
 impl Sealed for GetAnnotatedTag<'_> {}
 impl Endpoint for GetAnnotatedTag<'_> {
     type Response = AnnotatedTag;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/git/tags/{}",
@@ -6327,8 +6327,8 @@ pub struct GetTree<'a> {
 impl Sealed for GetTree<'_> {}
 impl Endpoint for GetTree<'_> {
     type Response = GitTreeResponse;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/git/trees/{}",
@@ -6362,8 +6362,8 @@ pub struct RepoListHooks<'a> {
 impl Sealed for RepoListHooks<'_> {}
 impl Endpoint for RepoListHooks<'_> {
     type Response = (HookListHeaders, Vec<Hook>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/hooks", self.owner, self.repo).into(),
             query: None,
@@ -6393,8 +6393,8 @@ pub struct RepoCreateHook<'a> {
 impl Sealed for RepoCreateHook<'_> {}
 impl Endpoint for RepoCreateHook<'_> {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/hooks", self.owner, self.repo).into(),
             query: None,
@@ -6426,8 +6426,8 @@ pub struct RepoListGitHooks<'a> {
 impl Sealed for RepoListGitHooks<'_> {}
 impl Endpoint for RepoListGitHooks<'_> {
     type Response = (GitHookListHeaders, Vec<GitHook>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/hooks/git", self.owner, self.repo).into(),
             query: None,
@@ -6457,8 +6457,8 @@ pub struct RepoGetGitHook<'a> {
 impl Sealed for RepoGetGitHook<'_> {}
 impl Endpoint for RepoGetGitHook<'_> {
     type Response = GitHook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/hooks/git/{}",
@@ -6492,8 +6492,8 @@ pub struct RepoDeleteGitHook<'a> {
 impl Sealed for RepoDeleteGitHook<'_> {}
 impl Endpoint for RepoDeleteGitHook<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/hooks/git/{}",
@@ -6528,8 +6528,8 @@ pub struct RepoEditGitHook<'a> {
 impl Sealed for RepoEditGitHook<'_> {}
 impl Endpoint for RepoEditGitHook<'_> {
     type Response = GitHook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/hooks/git/{}",
@@ -6566,8 +6566,8 @@ pub struct RepoGetHook<'a> {
 impl Sealed for RepoGetHook<'_> {}
 impl Endpoint for RepoGetHook<'_> {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/hooks/{}",
@@ -6601,8 +6601,8 @@ pub struct RepoDeleteHook<'a> {
 impl Sealed for RepoDeleteHook<'_> {}
 impl Endpoint for RepoDeleteHook<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/hooks/{}",
@@ -6637,8 +6637,8 @@ pub struct RepoEditHook<'a> {
 impl Sealed for RepoEditHook<'_> {}
 impl Endpoint for RepoEditHook<'_> {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/hooks/{}",
@@ -6676,8 +6676,8 @@ pub struct RepoTestHook<'a> {
 impl Sealed for RepoTestHook<'_> {}
 impl Endpoint for RepoTestHook<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/hooks/{}/tests",
@@ -6710,8 +6710,8 @@ pub struct RepoGetIssueConfig<'a> {
 impl Sealed for RepoGetIssueConfig<'_> {}
 impl Endpoint for RepoGetIssueConfig<'_> {
     type Response = IssueConfig;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/issue_config", self.owner, self.repo).into(),
             query: None,
@@ -6740,8 +6740,8 @@ pub struct RepoValidateIssueConfig<'a> {
 impl Sealed for RepoValidateIssueConfig<'_> {}
 impl Endpoint for RepoValidateIssueConfig<'_> {
     type Response = IssueConfigValidation;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issue_config/validate",
@@ -6774,8 +6774,8 @@ pub struct RepoGetIssueTemplates<'a> {
 impl Sealed for RepoGetIssueTemplates<'_> {}
 impl Endpoint for RepoGetIssueTemplates<'_> {
     type Response = Vec<IssueTemplate>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/issue_templates", self.owner, self.repo).into(),
             query: None,
@@ -6805,8 +6805,8 @@ pub struct IssueListIssues<'a> {
 impl Sealed for IssueListIssues<'_> {}
 impl Endpoint for IssueListIssues<'_> {
     type Response = (IssueListHeaders, Vec<Issue>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/issues", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -6836,8 +6836,8 @@ pub struct IssueCreateIssue<'a> {
 impl Sealed for IssueCreateIssue<'_> {}
 impl Endpoint for IssueCreateIssue<'_> {
     type Response = Issue;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/issues", self.owner, self.repo).into(),
             query: None,
@@ -6874,8 +6874,8 @@ pub struct IssueGetRepoComments<'a> {
 impl Sealed for IssueGetRepoComments<'_> {}
 impl Endpoint for IssueGetRepoComments<'_> {
     type Response = (CommentListHeaders, Vec<Comment>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/issues/comments", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -6906,8 +6906,8 @@ pub struct IssueGetComment<'a> {
 impl Sealed for IssueGetComment<'_> {}
 impl Endpoint for IssueGetComment<'_> {
     type Response = Option<Comment>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}",
@@ -6943,8 +6943,8 @@ pub struct IssueDeleteComment<'a> {
 impl Sealed for IssueDeleteComment<'_> {}
 impl Endpoint for IssueDeleteComment<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}",
@@ -6979,8 +6979,8 @@ pub struct IssueEditComment<'a> {
 impl Sealed for IssueEditComment<'_> {}
 impl Endpoint for IssueEditComment<'_> {
     type Response = Option<Comment>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}",
@@ -7020,8 +7020,8 @@ pub struct IssueListIssueCommentAttachments<'a> {
 impl Sealed for IssueListIssueCommentAttachments<'_> {}
 impl Endpoint for IssueListIssueCommentAttachments<'_> {
     type Response = Vec<Attachment>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/assets",
@@ -7057,8 +7057,8 @@ pub struct IssueCreateIssueCommentAttachment<'a> {
 impl Sealed for IssueCreateIssueCommentAttachment<'_> {}
 impl Endpoint for IssueCreateIssueCommentAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/assets",
@@ -7102,8 +7102,8 @@ pub struct IssueGetIssueCommentAttachment<'a> {
 impl Sealed for IssueGetIssueCommentAttachment<'_> {}
 impl Endpoint for IssueGetIssueCommentAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/assets/{}",
@@ -7138,8 +7138,8 @@ pub struct IssueDeleteIssueCommentAttachment<'a> {
 impl Sealed for IssueDeleteIssueCommentAttachment<'_> {}
 impl Endpoint for IssueDeleteIssueCommentAttachment<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/assets/{}",
@@ -7176,8 +7176,8 @@ pub struct IssueEditIssueCommentAttachment<'a> {
 impl Sealed for IssueEditIssueCommentAttachment<'_> {}
 impl Endpoint for IssueEditIssueCommentAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/assets/{}",
@@ -7216,8 +7216,8 @@ pub struct IssueGetCommentReactions<'a> {
 impl Sealed for IssueGetCommentReactions<'_> {}
 impl Endpoint for IssueGetCommentReactions<'_> {
     type Response = (ReactionListHeaders, Vec<Reaction>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/reactions",
@@ -7253,8 +7253,8 @@ pub struct IssuePostCommentReaction<'a> {
 impl Sealed for IssuePostCommentReaction<'_> {}
 impl Endpoint for IssuePostCommentReaction<'_> {
     type Response = Reaction;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/reactions",
@@ -7294,8 +7294,8 @@ pub struct IssueDeleteCommentReaction<'a> {
 impl Sealed for IssueDeleteCommentReaction<'_> {}
 impl Endpoint for IssueDeleteCommentReaction<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/comments/{}/reactions",
@@ -7332,8 +7332,8 @@ pub struct RepoListPinnedIssues<'a> {
 impl Sealed for RepoListPinnedIssues<'_> {}
 impl Endpoint for RepoListPinnedIssues<'_> {
     type Response = (IssueListHeaders, Vec<Issue>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/issues/pinned", self.owner, self.repo).into(),
             query: None,
@@ -7363,8 +7363,8 @@ pub struct IssueGetIssue<'a> {
 impl Sealed for IssueGetIssue<'_> {}
 impl Endpoint for IssueGetIssue<'_> {
     type Response = Issue;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}",
@@ -7398,8 +7398,8 @@ pub struct IssueDelete<'a> {
 impl Sealed for IssueDelete<'_> {}
 impl Endpoint for IssueDelete<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}",
@@ -7435,8 +7435,8 @@ pub struct IssueEditIssue<'a> {
 impl Sealed for IssueEditIssue<'_> {}
 impl Endpoint for IssueEditIssue<'_> {
     type Response = Issue;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}",
@@ -7475,8 +7475,8 @@ pub struct IssueListIssueAttachments<'a> {
 impl Sealed for IssueListIssueAttachments<'_> {}
 impl Endpoint for IssueListIssueAttachments<'_> {
     type Response = Vec<Attachment>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/assets",
@@ -7512,8 +7512,8 @@ pub struct IssueCreateIssueAttachment<'a> {
 impl Sealed for IssueCreateIssueAttachment<'_> {}
 impl Endpoint for IssueCreateIssueAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/assets",
@@ -7557,8 +7557,8 @@ pub struct IssueGetIssueAttachment<'a> {
 impl Sealed for IssueGetIssueAttachment<'_> {}
 impl Endpoint for IssueGetIssueAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/assets/{}",
@@ -7593,8 +7593,8 @@ pub struct IssueDeleteIssueAttachment<'a> {
 impl Sealed for IssueDeleteIssueAttachment<'_> {}
 impl Endpoint for IssueDeleteIssueAttachment<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/assets/{}",
@@ -7631,8 +7631,8 @@ pub struct IssueEditIssueAttachment<'a> {
 impl Sealed for IssueEditIssueAttachment<'_> {}
 impl Endpoint for IssueEditIssueAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/assets/{}",
@@ -7671,8 +7671,8 @@ pub struct IssueListBlocks<'a> {
 impl Sealed for IssueListBlocks<'_> {}
 impl Endpoint for IssueListBlocks<'_> {
     type Response = (IssueListHeaders, Vec<Issue>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/blocks",
@@ -7707,8 +7707,8 @@ pub struct IssueCreateIssueBlocking<'a> {
 impl Sealed for IssueCreateIssueBlocking<'_> {}
 impl Endpoint for IssueCreateIssueBlocking<'_> {
     type Response = Issue;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/blocks",
@@ -7746,8 +7746,8 @@ pub struct IssueRemoveIssueBlocking<'a> {
 impl Sealed for IssueRemoveIssueBlocking<'_> {}
 impl Endpoint for IssueRemoveIssueBlocking<'_> {
     type Response = Issue;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/blocks",
@@ -7785,8 +7785,8 @@ pub struct IssueGetComments<'a> {
 impl Sealed for IssueGetComments<'_> {}
 impl Endpoint for IssueGetComments<'_> {
     type Response = (CommentListHeaders, Vec<Comment>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/comments",
@@ -7822,8 +7822,8 @@ pub struct IssueCreateComment<'a> {
 impl Sealed for IssueCreateComment<'_> {}
 impl Endpoint for IssueCreateComment<'_> {
     type Response = Comment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/comments",
@@ -7863,8 +7863,8 @@ pub struct IssueDeleteCommentDeprecated<'a> {
 impl Sealed for IssueDeleteCommentDeprecated<'_> {}
 impl Endpoint for IssueDeleteCommentDeprecated<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/comments/{}",
@@ -7900,8 +7900,8 @@ pub struct IssueEditCommentDeprecated<'a> {
 impl Sealed for IssueEditCommentDeprecated<'_> {}
 impl Endpoint for IssueEditCommentDeprecated<'_> {
     type Response = Option<Comment>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/comments/{}",
@@ -7941,8 +7941,8 @@ pub struct IssueEditIssueDeadline<'a> {
 impl Sealed for IssueEditIssueDeadline<'_> {}
 impl Endpoint for IssueEditIssueDeadline<'_> {
     type Response = IssueDeadline;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/deadline",
@@ -7980,8 +7980,8 @@ pub struct IssueListIssueDependencies<'a> {
 impl Sealed for IssueListIssueDependencies<'_> {}
 impl Endpoint for IssueListIssueDependencies<'_> {
     type Response = (IssueListHeaders, Vec<Issue>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/dependencies",
@@ -8016,8 +8016,8 @@ pub struct IssueCreateIssueDependencies<'a> {
 impl Sealed for IssueCreateIssueDependencies<'_> {}
 impl Endpoint for IssueCreateIssueDependencies<'_> {
     type Response = Issue;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/dependencies",
@@ -8056,8 +8056,8 @@ pub struct IssueRemoveIssueDependencies<'a> {
 impl Sealed for IssueRemoveIssueDependencies<'_> {}
 impl Endpoint for IssueRemoveIssueDependencies<'_> {
     type Response = Issue;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/dependencies",
@@ -8095,8 +8095,8 @@ pub struct IssueGetLabels<'a> {
 impl Sealed for IssueGetLabels<'_> {}
 impl Endpoint for IssueGetLabels<'_> {
     type Response = (LabelListHeaders, Vec<Label>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/labels",
@@ -8131,8 +8131,8 @@ pub struct IssueReplaceLabels<'a> {
 impl Sealed for IssueReplaceLabels<'_> {}
 impl Endpoint for IssueReplaceLabels<'_> {
     type Response = (LabelListHeaders, Vec<Label>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/labels",
@@ -8171,8 +8171,8 @@ pub struct IssueAddLabel<'a> {
 impl Sealed for IssueAddLabel<'_> {}
 impl Endpoint for IssueAddLabel<'_> {
     type Response = (LabelListHeaders, Vec<Label>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/labels",
@@ -8211,8 +8211,8 @@ pub struct IssueClearLabels<'a> {
 impl Sealed for IssueClearLabels<'_> {}
 impl Endpoint for IssueClearLabels<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/labels",
@@ -8252,8 +8252,8 @@ pub struct IssueRemoveLabel<'a> {
 impl Sealed for IssueRemoveLabel<'_> {}
 impl Endpoint for IssueRemoveLabel<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/labels/{}",
@@ -8292,8 +8292,8 @@ pub struct PinIssue<'a> {
 impl Sealed for PinIssue<'_> {}
 impl Endpoint for PinIssue<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/pin",
@@ -8328,8 +8328,8 @@ pub struct UnpinIssue<'a> {
 impl Sealed for UnpinIssue<'_> {}
 impl Endpoint for UnpinIssue<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/pin",
@@ -8365,8 +8365,8 @@ pub struct MoveIssuePin<'a> {
 impl Sealed for MoveIssuePin<'_> {}
 impl Endpoint for MoveIssuePin<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/pin/{}",
@@ -8401,8 +8401,8 @@ pub struct IssueGetIssueReactions<'a> {
 impl Sealed for IssueGetIssueReactions<'_> {}
 impl Endpoint for IssueGetIssueReactions<'_> {
     type Response = (ReactionListHeaders, Vec<Reaction>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/reactions",
@@ -8438,8 +8438,8 @@ pub struct IssuePostIssueReaction<'a> {
 impl Sealed for IssuePostIssueReaction<'_> {}
 impl Endpoint for IssuePostIssueReaction<'_> {
     type Response = Reaction;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/reactions",
@@ -8479,8 +8479,8 @@ pub struct IssueDeleteIssueReaction<'a> {
 impl Sealed for IssueDeleteIssueReaction<'_> {}
 impl Endpoint for IssueDeleteIssueReaction<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/reactions",
@@ -8518,8 +8518,8 @@ pub struct IssueDeleteStopWatch<'a> {
 impl Sealed for IssueDeleteStopWatch<'_> {}
 impl Endpoint for IssueDeleteStopWatch<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/stopwatch/delete",
@@ -8555,8 +8555,8 @@ pub struct IssueStartStopWatch<'a> {
 impl Sealed for IssueStartStopWatch<'_> {}
 impl Endpoint for IssueStartStopWatch<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/stopwatch/start",
@@ -8592,8 +8592,8 @@ pub struct IssueStopStopWatch<'a> {
 impl Sealed for IssueStopStopWatch<'_> {}
 impl Endpoint for IssueStopStopWatch<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/stopwatch/stop",
@@ -8629,8 +8629,8 @@ pub struct IssueSubscriptions<'a> {
 impl Sealed for IssueSubscriptions<'_> {}
 impl Endpoint for IssueSubscriptions<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/subscriptions",
@@ -8664,8 +8664,8 @@ pub struct IssueCheckSubscription<'a> {
 impl Sealed for IssueCheckSubscription<'_> {}
 impl Endpoint for IssueCheckSubscription<'_> {
     type Response = WatchInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/subscriptions/check",
@@ -8700,8 +8700,8 @@ pub struct IssueAddSubscription<'a> {
 impl Sealed for IssueAddSubscription<'_> {}
 impl Endpoint for IssueAddSubscription<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/subscriptions/{}",
@@ -8737,8 +8737,8 @@ pub struct IssueDeleteSubscription<'a> {
 impl Sealed for IssueDeleteSubscription<'_> {}
 impl Endpoint for IssueDeleteSubscription<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/subscriptions/{}",
@@ -8774,8 +8774,8 @@ pub struct IssueGetCommentsAndTimeline<'a> {
 impl Sealed for IssueGetCommentsAndTimeline<'_> {}
 impl Endpoint for IssueGetCommentsAndTimeline<'_> {
     type Response = (TimelineListHeaders, Vec<TimelineComment>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/timeline",
@@ -8811,8 +8811,8 @@ pub struct IssueTrackedTimes<'a> {
 impl Sealed for IssueTrackedTimes<'_> {}
 impl Endpoint for IssueTrackedTimes<'_> {
     type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/times",
@@ -8847,8 +8847,8 @@ pub struct IssueAddTime<'a> {
 impl Sealed for IssueAddTime<'_> {}
 impl Endpoint for IssueAddTime<'_> {
     type Response = TrackedTime;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/times",
@@ -8887,8 +8887,8 @@ pub struct IssueResetTime<'a> {
 impl Sealed for IssueResetTime<'_> {}
 impl Endpoint for IssueResetTime<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/times",
@@ -8925,8 +8925,8 @@ pub struct IssueDeleteTime<'a> {
 impl Sealed for IssueDeleteTime<'_> {}
 impl Endpoint for IssueDeleteTime<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/issues/{}/times/{}",
@@ -8962,8 +8962,8 @@ pub struct RepoListKeys<'a> {
 impl Sealed for RepoListKeys<'_> {}
 impl Endpoint for RepoListKeys<'_> {
     type Response = (DeployKeyListHeaders, Vec<DeployKey>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/keys", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -8993,8 +8993,8 @@ pub struct RepoCreateKey<'a> {
 impl Sealed for RepoCreateKey<'_> {}
 impl Endpoint for RepoCreateKey<'_> {
     type Response = DeployKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/keys", self.owner, self.repo).into(),
             query: None,
@@ -9028,8 +9028,8 @@ pub struct RepoGetKey<'a> {
 impl Sealed for RepoGetKey<'_> {}
 impl Endpoint for RepoGetKey<'_> {
     type Response = DeployKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/keys/{}",
@@ -9063,8 +9063,8 @@ pub struct RepoDeleteKey<'a> {
 impl Sealed for RepoDeleteKey<'_> {}
 impl Endpoint for RepoDeleteKey<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/keys/{}",
@@ -9099,8 +9099,8 @@ pub struct IssueListLabels<'a> {
 impl Sealed for IssueListLabels<'_> {}
 impl Endpoint for IssueListLabels<'_> {
     type Response = (LabelListHeaders, Vec<Label>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/labels", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -9130,8 +9130,8 @@ pub struct IssueCreateLabel<'a> {
 impl Sealed for IssueCreateLabel<'_> {}
 impl Endpoint for IssueCreateLabel<'_> {
     type Response = Label;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/labels", self.owner, self.repo).into(),
             query: None,
@@ -9165,8 +9165,8 @@ pub struct IssueGetLabel<'a> {
 impl Sealed for IssueGetLabel<'_> {}
 impl Endpoint for IssueGetLabel<'_> {
     type Response = Label;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/labels/{}",
@@ -9200,8 +9200,8 @@ pub struct IssueDeleteLabel<'a> {
 impl Sealed for IssueDeleteLabel<'_> {}
 impl Endpoint for IssueDeleteLabel<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/labels/{}",
@@ -9236,8 +9236,8 @@ pub struct IssueEditLabel<'a> {
 impl Sealed for IssueEditLabel<'_> {}
 impl Endpoint for IssueEditLabel<'_> {
     type Response = Label;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/labels/{}",
@@ -9274,8 +9274,8 @@ pub struct RepoGetLanguages<'a> {
 impl Sealed for RepoGetLanguages<'_> {}
 impl Endpoint for RepoGetLanguages<'_> {
     type Response = BTreeMap<String, i64>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/languages", self.owner, self.repo).into(),
             query: None,
@@ -9306,8 +9306,8 @@ pub struct RepoGetRawFileOrLfs<'a> {
 impl Sealed for RepoGetRawFileOrLfs<'_> {}
 impl Endpoint for RepoGetRawFileOrLfs<'_> {
     type Response = Bytes;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/media/{}",
@@ -9341,8 +9341,8 @@ pub struct IssueGetMilestonesList<'a> {
 impl Sealed for IssueGetMilestonesList<'_> {}
 impl Endpoint for IssueGetMilestonesList<'_> {
     type Response = (MilestoneListHeaders, Vec<Milestone>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/milestones", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -9372,8 +9372,8 @@ pub struct IssueCreateMilestone<'a> {
 impl Sealed for IssueCreateMilestone<'_> {}
 impl Endpoint for IssueCreateMilestone<'_> {
     type Response = Milestone;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/milestones", self.owner, self.repo).into(),
             query: None,
@@ -9406,8 +9406,8 @@ pub struct IssueGetMilestone<'a> {
 impl Sealed for IssueGetMilestone<'_> {}
 impl Endpoint for IssueGetMilestone<'_> {
     type Response = Milestone;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/milestones/{}",
@@ -9441,8 +9441,8 @@ pub struct IssueDeleteMilestone<'a> {
 impl Sealed for IssueDeleteMilestone<'_> {}
 impl Endpoint for IssueDeleteMilestone<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/milestones/{}",
@@ -9477,8 +9477,8 @@ pub struct IssueEditMilestone<'a> {
 impl Sealed for IssueEditMilestone<'_> {}
 impl Endpoint for IssueEditMilestone<'_> {
     type Response = Milestone;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/milestones/{}",
@@ -9514,8 +9514,8 @@ pub struct RepoMirrorSync<'a> {
 impl Sealed for RepoMirrorSync<'_> {}
 impl Endpoint for RepoMirrorSync<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/mirror-sync", self.owner, self.repo).into(),
             query: None,
@@ -9546,8 +9546,8 @@ pub struct RepoNewPinAllowed<'a> {
 impl Sealed for RepoNewPinAllowed<'_> {}
 impl Endpoint for RepoNewPinAllowed<'_> {
     type Response = NewIssuePinsAllowed;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/new_pin_allowed", self.owner, self.repo).into(),
             query: None,
@@ -9577,8 +9577,8 @@ pub struct NotifyGetRepoList<'a> {
 impl Sealed for NotifyGetRepoList<'_> {}
 impl Endpoint for NotifyGetRepoList<'_> {
     type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/notifications", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -9607,8 +9607,8 @@ pub struct NotifyReadRepoList<'a> {
 impl Sealed for NotifyReadRepoList<'_> {}
 impl Endpoint for NotifyReadRepoList<'_> {
     type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/repos/{}/{}/notifications", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -9637,8 +9637,8 @@ pub struct RepoListPullRequests<'a> {
 impl Sealed for RepoListPullRequests<'_> {}
 impl Endpoint for RepoListPullRequests<'_> {
     type Response = (PullRequestListHeaders, Vec<PullRequest>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/pulls", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -9668,8 +9668,8 @@ pub struct RepoCreatePullRequest<'a> {
 impl Sealed for RepoCreatePullRequest<'_> {}
 impl Endpoint for RepoCreatePullRequest<'_> {
     type Response = PullRequest;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/pulls", self.owner, self.repo).into(),
             query: None,
@@ -9705,8 +9705,8 @@ pub struct RepoListPinnedPullRequests<'a> {
 impl Sealed for RepoListPinnedPullRequests<'_> {}
 impl Endpoint for RepoListPinnedPullRequests<'_> {
     type Response = (PullRequestListHeaders, Vec<PullRequest>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/pulls/pinned", self.owner, self.repo).into(),
             query: None,
@@ -9737,8 +9737,8 @@ pub struct RepoGetPullRequestByBaseHead<'a> {
 impl Sealed for RepoGetPullRequestByBaseHead<'_> {}
 impl Endpoint for RepoGetPullRequestByBaseHead<'_> {
     type Response = PullRequest;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/{}",
@@ -9772,8 +9772,8 @@ pub struct RepoGetPullRequest<'a> {
 impl Sealed for RepoGetPullRequest<'_> {}
 impl Endpoint for RepoGetPullRequest<'_> {
     type Response = PullRequest;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}",
@@ -9808,8 +9808,8 @@ pub struct RepoEditPullRequest<'a> {
 impl Sealed for RepoEditPullRequest<'_> {}
 impl Endpoint for RepoEditPullRequest<'_> {
     type Response = PullRequest;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}",
@@ -9852,8 +9852,8 @@ pub struct RepoDownloadPullDiffOrPatch<'a> {
 impl Sealed for RepoDownloadPullDiffOrPatch<'_> {}
 impl Endpoint for RepoDownloadPullDiffOrPatch<'_> {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}.{}",
@@ -9888,8 +9888,8 @@ pub struct RepoGetPullRequestCommits<'a> {
 impl Sealed for RepoGetPullRequestCommits<'_> {}
 impl Endpoint for RepoGetPullRequestCommits<'_> {
     type Response = (CommitListHeaders, Vec<Commit>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/commits",
@@ -9924,8 +9924,8 @@ pub struct RepoGetPullRequestFiles<'a> {
 impl Sealed for RepoGetPullRequestFiles<'_> {}
 impl Endpoint for RepoGetPullRequestFiles<'_> {
     type Response = (ChangedFileListHeaders, Vec<ChangedFile>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/files",
@@ -9959,8 +9959,8 @@ pub struct RepoPullRequestIsMerged<'a> {
 impl Sealed for RepoPullRequestIsMerged<'_> {}
 impl Endpoint for RepoPullRequestIsMerged<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/merge",
@@ -9995,8 +9995,8 @@ pub struct RepoMergePullRequest<'a> {
 impl Sealed for RepoMergePullRequest<'_> {}
 impl Endpoint for RepoMergePullRequest<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/merge",
@@ -10038,8 +10038,8 @@ pub struct RepoCancelScheduledAutoMerge<'a> {
 impl Sealed for RepoCancelScheduledAutoMerge<'_> {}
 impl Endpoint for RepoCancelScheduledAutoMerge<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/merge",
@@ -10076,8 +10076,8 @@ pub struct RepoCreatePullReviewRequests<'a> {
 impl Sealed for RepoCreatePullReviewRequests<'_> {}
 impl Endpoint for RepoCreatePullReviewRequests<'_> {
     type Response = (PullReviewListHeaders, Vec<PullReview>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/requested_reviewers",
@@ -10116,8 +10116,8 @@ pub struct RepoDeletePullReviewRequests<'a> {
 impl Sealed for RepoDeletePullReviewRequests<'_> {}
 impl Endpoint for RepoDeletePullReviewRequests<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/requested_reviewers",
@@ -10156,8 +10156,8 @@ pub struct RepoListPullReviews<'a> {
 impl Sealed for RepoListPullReviews<'_> {}
 impl Endpoint for RepoListPullReviews<'_> {
     type Response = (PullReviewListHeaders, Vec<PullReview>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews",
@@ -10192,8 +10192,8 @@ pub struct RepoCreatePullReview<'a> {
 impl Sealed for RepoCreatePullReview<'_> {}
 impl Endpoint for RepoCreatePullReview<'_> {
     type Response = PullReview;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews",
@@ -10232,8 +10232,8 @@ pub struct RepoGetPullReview<'a> {
 impl Sealed for RepoGetPullReview<'_> {}
 impl Endpoint for RepoGetPullReview<'_> {
     type Response = PullReview;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}",
@@ -10269,8 +10269,8 @@ pub struct RepoSubmitPullReview<'a> {
 impl Sealed for RepoSubmitPullReview<'_> {}
 impl Endpoint for RepoSubmitPullReview<'_> {
     type Response = PullReview;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}",
@@ -10309,8 +10309,8 @@ pub struct RepoDeletePullReview<'a> {
 impl Sealed for RepoDeletePullReview<'_> {}
 impl Endpoint for RepoDeletePullReview<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}",
@@ -10346,8 +10346,8 @@ pub struct RepoGetPullReviewComments<'a> {
 impl Sealed for RepoGetPullReviewComments<'_> {}
 impl Endpoint for RepoGetPullReviewComments<'_> {
     type Response = Vec<PullReviewComment>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments",
@@ -10383,8 +10383,8 @@ pub struct RepoCreatePullReviewComment<'a> {
 impl Sealed for RepoCreatePullReviewComment<'_> {}
 impl Endpoint for RepoCreatePullReviewComment<'_> {
     type Response = PullReviewComment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments",
@@ -10424,8 +10424,8 @@ pub struct RepoGetPullReviewComment<'a> {
 impl Sealed for RepoGetPullReviewComment<'_> {}
 impl Endpoint for RepoGetPullReviewComment<'_> {
     type Response = PullReviewComment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments/{}",
@@ -10462,8 +10462,8 @@ pub struct RepoDeletePullReviewComment<'a> {
 impl Sealed for RepoDeletePullReviewComment<'_> {}
 impl Endpoint for RepoDeletePullReviewComment<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments/{}",
@@ -10500,8 +10500,8 @@ pub struct RepoDismissPullReview<'a> {
 impl Sealed for RepoDismissPullReview<'_> {}
 impl Endpoint for RepoDismissPullReview<'_> {
     type Response = PullReview;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/dismissals",
@@ -10541,8 +10541,8 @@ pub struct RepoUnDismissPullReview<'a> {
 impl Sealed for RepoUnDismissPullReview<'_> {}
 impl Endpoint for RepoUnDismissPullReview<'_> {
     type Response = PullReview;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/undismissals",
@@ -10579,8 +10579,8 @@ pub struct RepoUpdatePullRequest<'a> {
 impl Sealed for RepoUpdatePullRequest<'_> {}
 impl Endpoint for RepoUpdatePullRequest<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/pulls/{}/update",
@@ -10617,8 +10617,8 @@ pub struct RepoListPushMirrors<'a> {
 impl Sealed for RepoListPushMirrors<'_> {}
 impl Endpoint for RepoListPushMirrors<'_> {
     type Response = (PushMirrorListHeaders, Vec<PushMirror>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/push_mirrors", self.owner, self.repo).into(),
             query: None,
@@ -10650,8 +10650,8 @@ pub struct RepoAddPushMirror<'a> {
 impl Sealed for RepoAddPushMirror<'_> {}
 impl Endpoint for RepoAddPushMirror<'_> {
     type Response = PushMirror;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/push_mirrors", self.owner, self.repo).into(),
             query: None,
@@ -10686,8 +10686,8 @@ pub struct RepoPushMirrorSync<'a> {
 impl Sealed for RepoPushMirrorSync<'_> {}
 impl Endpoint for RepoPushMirrorSync<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/push_mirrors-sync",
@@ -10724,8 +10724,8 @@ pub struct RepoGetPushMirrorByRemoteName<'a> {
 impl Sealed for RepoGetPushMirrorByRemoteName<'_> {}
 impl Endpoint for RepoGetPushMirrorByRemoteName<'_> {
     type Response = PushMirror;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/push_mirrors/{}",
@@ -10761,8 +10761,8 @@ pub struct RepoDeletePushMirror<'a> {
 impl Sealed for RepoDeletePushMirror<'_> {}
 impl Endpoint for RepoDeletePushMirror<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/push_mirrors/{}",
@@ -10798,8 +10798,8 @@ pub struct RepoGetRawFile<'a> {
 impl Sealed for RepoGetRawFile<'_> {}
 impl Endpoint for RepoGetRawFile<'_> {
     type Response = Bytes;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/raw/{}",
@@ -10833,8 +10833,8 @@ pub struct RepoListReleases<'a> {
 impl Sealed for RepoListReleases<'_> {}
 impl Endpoint for RepoListReleases<'_> {
     type Response = (ReleaseListHeaders, Vec<Release>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/releases", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -10864,8 +10864,8 @@ pub struct RepoCreateRelease<'a> {
 impl Sealed for RepoCreateRelease<'_> {}
 impl Endpoint for RepoCreateRelease<'_> {
     type Response = Release;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/releases", self.owner, self.repo).into(),
             query: None,
@@ -10899,8 +10899,8 @@ pub struct RepoGetLatestRelease<'a> {
 impl Sealed for RepoGetLatestRelease<'_> {}
 impl Endpoint for RepoGetLatestRelease<'_> {
     type Response = Release;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/releases/latest", self.owner, self.repo).into(),
             query: None,
@@ -10930,8 +10930,8 @@ pub struct RepoGetReleaseByTag<'a> {
 impl Sealed for RepoGetReleaseByTag<'_> {}
 impl Endpoint for RepoGetReleaseByTag<'_> {
     type Response = Release;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/tags/{}",
@@ -10965,8 +10965,8 @@ pub struct RepoDeleteReleaseByTag<'a> {
 impl Sealed for RepoDeleteReleaseByTag<'_> {}
 impl Endpoint for RepoDeleteReleaseByTag<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/tags/{}",
@@ -11001,8 +11001,8 @@ pub struct RepoGetRelease<'a> {
 impl Sealed for RepoGetRelease<'_> {}
 impl Endpoint for RepoGetRelease<'_> {
     type Response = Release;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}",
@@ -11036,8 +11036,8 @@ pub struct RepoDeleteRelease<'a> {
 impl Sealed for RepoDeleteRelease<'_> {}
 impl Endpoint for RepoDeleteRelease<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}",
@@ -11073,8 +11073,8 @@ pub struct RepoEditRelease<'a> {
 impl Sealed for RepoEditRelease<'_> {}
 impl Endpoint for RepoEditRelease<'_> {
     type Response = Release;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}",
@@ -11111,8 +11111,8 @@ pub struct RepoListReleaseAttachments<'a> {
 impl Sealed for RepoListReleaseAttachments<'_> {}
 impl Endpoint for RepoListReleaseAttachments<'_> {
     type Response = Vec<Attachment>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}/assets",
@@ -11149,8 +11149,8 @@ pub struct RepoCreateReleaseAttachment<'a> {
 impl Sealed for RepoCreateReleaseAttachment<'_> {}
 impl Endpoint for RepoCreateReleaseAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}/assets",
@@ -11196,8 +11196,8 @@ pub struct RepoGetReleaseAttachment<'a> {
 impl Sealed for RepoGetReleaseAttachment<'_> {}
 impl Endpoint for RepoGetReleaseAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}/assets/{}",
@@ -11232,8 +11232,8 @@ pub struct RepoDeleteReleaseAttachment<'a> {
 impl Sealed for RepoDeleteReleaseAttachment<'_> {}
 impl Endpoint for RepoDeleteReleaseAttachment<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}/assets/{}",
@@ -11269,8 +11269,8 @@ pub struct RepoEditReleaseAttachment<'a> {
 impl Sealed for RepoEditReleaseAttachment<'_> {}
 impl Endpoint for RepoEditReleaseAttachment<'_> {
     type Response = Attachment;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/releases/{}/assets/{}",
@@ -11307,8 +11307,8 @@ pub struct RepoGetReviewers<'a> {
 impl Sealed for RepoGetReviewers<'_> {}
 impl Endpoint for RepoGetReviewers<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/reviewers", self.owner, self.repo).into(),
             query: None,
@@ -11337,8 +11337,8 @@ pub struct RepoSigningKey<'a> {
 impl Sealed for RepoSigningKey<'_> {}
 impl Endpoint for RepoSigningKey<'_> {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/signing-key.gpg", self.owner, self.repo).into(),
             query: None,
@@ -11366,8 +11366,8 @@ pub struct RepoListStargazers<'a> {
 impl Sealed for RepoListStargazers<'_> {}
 impl Endpoint for RepoListStargazers<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/stargazers", self.owner, self.repo).into(),
             query: None,
@@ -11398,8 +11398,8 @@ pub struct RepoListStatuses<'a> {
 impl Sealed for RepoListStatuses<'_> {}
 impl Endpoint for RepoListStatuses<'_> {
     type Response = (CommitStatusListHeaders, Vec<CommitStatus>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/statuses/{}",
@@ -11435,8 +11435,8 @@ pub struct RepoCreateStatus<'a> {
 impl Sealed for RepoCreateStatus<'_> {}
 impl Endpoint for RepoCreateStatus<'_> {
     type Response = CommitStatus;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/statuses/{}",
@@ -11473,8 +11473,8 @@ pub struct RepoListSubscribers<'a> {
 impl Sealed for RepoListSubscribers<'_> {}
 impl Endpoint for RepoListSubscribers<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/subscribers", self.owner, self.repo).into(),
             query: None,
@@ -11503,8 +11503,8 @@ pub struct UserCurrentCheckSubscription<'a> {
 impl Sealed for UserCurrentCheckSubscription<'_> {}
 impl Endpoint for UserCurrentCheckSubscription<'_> {
     type Response = WatchInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/subscription", self.owner, self.repo).into(),
             query: None,
@@ -11533,8 +11533,8 @@ pub struct UserCurrentPutSubscription<'a> {
 impl Sealed for UserCurrentPutSubscription<'_> {}
 impl Endpoint for UserCurrentPutSubscription<'_> {
     type Response = WatchInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/repos/{}/{}/subscription", self.owner, self.repo).into(),
             query: None,
@@ -11563,8 +11563,8 @@ pub struct UserCurrentDeleteSubscription<'a> {
 impl Sealed for UserCurrentDeleteSubscription<'_> {}
 impl Endpoint for UserCurrentDeleteSubscription<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/repos/{}/{}/subscription", self.owner, self.repo).into(),
             query: None,
@@ -11593,8 +11593,8 @@ pub struct RepoSyncForkDefaultInfo<'a> {
 impl Sealed for RepoSyncForkDefaultInfo<'_> {}
 impl Endpoint for RepoSyncForkDefaultInfo<'_> {
     type Response = SyncForkInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/sync_fork", self.owner, self.repo).into(),
             query: None,
@@ -11624,8 +11624,8 @@ pub struct RepoSyncForkDefault<'a> {
 impl Sealed for RepoSyncForkDefault<'_> {}
 impl Endpoint for RepoSyncForkDefault<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/sync_fork", self.owner, self.repo).into(),
             query: None,
@@ -11656,8 +11656,8 @@ pub struct RepoSyncForkBranchInfo<'a> {
 impl Sealed for RepoSyncForkBranchInfo<'_> {}
 impl Endpoint for RepoSyncForkBranchInfo<'_> {
     type Response = SyncForkInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/sync_fork/{}",
@@ -11692,8 +11692,8 @@ pub struct RepoSyncForkBranch<'a> {
 impl Sealed for RepoSyncForkBranch<'_> {}
 impl Endpoint for RepoSyncForkBranch<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/sync_fork/{}",
@@ -11727,8 +11727,8 @@ pub struct RepoListTagProtection<'a> {
 impl Sealed for RepoListTagProtection<'_> {}
 impl Endpoint for RepoListTagProtection<'_> {
     type Response = Vec<TagProtection>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/tag_protections", self.owner, self.repo).into(),
             query: None,
@@ -11757,8 +11757,8 @@ pub struct RepoCreateTagProtection<'a> {
 impl Sealed for RepoCreateTagProtection<'_> {}
 impl Endpoint for RepoCreateTagProtection<'_> {
     type Response = TagProtection;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/tag_protections", self.owner, self.repo).into(),
             query: None,
@@ -11794,8 +11794,8 @@ pub struct RepoGetTagProtection<'a> {
 impl Sealed for RepoGetTagProtection<'_> {}
 impl Endpoint for RepoGetTagProtection<'_> {
     type Response = TagProtection;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/tag_protections/{}",
@@ -11829,8 +11829,8 @@ pub struct RepoDeleteTagProtection<'a> {
 impl Sealed for RepoDeleteTagProtection<'_> {}
 impl Endpoint for RepoDeleteTagProtection<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/tag_protections/{}",
@@ -11865,8 +11865,8 @@ pub struct RepoEditTagProtection<'a> {
 impl Sealed for RepoEditTagProtection<'_> {}
 impl Endpoint for RepoEditTagProtection<'_> {
     type Response = TagProtection;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/tag_protections/{}",
@@ -11904,8 +11904,8 @@ pub struct RepoListTags<'a> {
 impl Sealed for RepoListTags<'_> {}
 impl Endpoint for RepoListTags<'_> {
     type Response = (TagListHeaders, Vec<Tag>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/tags", self.owner, self.repo).into(),
             query: None,
@@ -11935,8 +11935,8 @@ pub struct RepoCreateTag<'a> {
 impl Sealed for RepoCreateTag<'_> {}
 impl Endpoint for RepoCreateTag<'_> {
     type Response = Tag;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/tags", self.owner, self.repo).into(),
             query: None,
@@ -11974,8 +11974,8 @@ pub struct RepoGetTag<'a> {
 impl Sealed for RepoGetTag<'_> {}
 impl Endpoint for RepoGetTag<'_> {
     type Response = Tag;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/tags/{}",
@@ -12009,8 +12009,8 @@ pub struct RepoDeleteTag<'a> {
 impl Sealed for RepoDeleteTag<'_> {}
 impl Endpoint for RepoDeleteTag<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/tags/{}",
@@ -12047,8 +12047,8 @@ pub struct RepoListTeams<'a> {
 impl Sealed for RepoListTeams<'_> {}
 impl Endpoint for RepoListTeams<'_> {
     type Response = (TeamListHeaders, Vec<Team>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/teams", self.owner, self.repo).into(),
             query: None,
@@ -12078,8 +12078,8 @@ pub struct RepoCheckTeam<'a> {
 impl Sealed for RepoCheckTeam<'_> {}
 impl Endpoint for RepoCheckTeam<'_> {
     type Response = Team;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/teams/{}",
@@ -12114,8 +12114,8 @@ pub struct RepoAddTeam<'a> {
 impl Sealed for RepoAddTeam<'_> {}
 impl Endpoint for RepoAddTeam<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/teams/{}",
@@ -12151,8 +12151,8 @@ pub struct RepoDeleteTeam<'a> {
 impl Sealed for RepoDeleteTeam<'_> {}
 impl Endpoint for RepoDeleteTeam<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/teams/{}",
@@ -12188,8 +12188,8 @@ pub struct RepoTrackedTimes<'a> {
 impl Sealed for RepoTrackedTimes<'_> {}
 impl Endpoint for RepoTrackedTimes<'_> {
     type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/times", self.owner, self.repo).into(),
             query: Some(self.query.into_list()),
@@ -12221,8 +12221,8 @@ pub struct UserTrackedTimes<'a> {
 impl Sealed for UserTrackedTimes<'_> {}
 impl Endpoint for UserTrackedTimes<'_> {
     type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/times/{}",
@@ -12257,8 +12257,8 @@ pub struct RepoListTopics<'a> {
 impl Sealed for RepoListTopics<'_> {}
 impl Endpoint for RepoListTopics<'_> {
     type Response = TopicName;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/topics", self.owner, self.repo).into(),
             query: None,
@@ -12288,8 +12288,8 @@ pub struct RepoUpdateTopics<'a> {
 impl Sealed for RepoUpdateTopics<'_> {}
 impl Endpoint for RepoUpdateTopics<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/repos/{}/{}/topics", self.owner, self.repo).into(),
             query: None,
@@ -12323,8 +12323,8 @@ pub struct RepoAddTopic<'a> {
 impl Sealed for RepoAddTopic<'_> {}
 impl Endpoint for RepoAddTopic<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!(
                 "/api/v1/repos/{}/{}/topics/{}",
@@ -12359,8 +12359,8 @@ pub struct RepoDeleteTopic<'a> {
 impl Sealed for RepoDeleteTopic<'_> {}
 impl Endpoint for RepoDeleteTopic<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/topics/{}",
@@ -12395,8 +12395,8 @@ pub struct RepoTransfer<'a> {
 impl Sealed for RepoTransfer<'_> {}
 impl Endpoint for RepoTransfer<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/transfer", self.owner, self.repo).into(),
             query: None,
@@ -12431,8 +12431,8 @@ pub struct AcceptRepoTransfer<'a> {
 impl Sealed for AcceptRepoTransfer<'_> {}
 impl Endpoint for AcceptRepoTransfer<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/transfer/accept", self.owner, self.repo).into(),
             query: None,
@@ -12463,8 +12463,8 @@ pub struct RejectRepoTransfer<'a> {
 impl Sealed for RejectRepoTransfer<'_> {}
 impl Endpoint for RejectRepoTransfer<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/transfer/reject", self.owner, self.repo).into(),
             query: None,
@@ -12495,8 +12495,8 @@ pub struct RepoCreateWikiPage<'a> {
 impl Sealed for RepoCreateWikiPage<'_> {}
 impl Endpoint for RepoCreateWikiPage<'_> {
     type Response = WikiPage;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/repos/{}/{}/wiki/new", self.owner, self.repo).into(),
             query: None,
@@ -12533,8 +12533,8 @@ pub struct RepoGetWikiPage<'a> {
 impl Sealed for RepoGetWikiPage<'_> {}
 impl Endpoint for RepoGetWikiPage<'_> {
     type Response = WikiPage;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/wiki/page/{}",
@@ -12568,8 +12568,8 @@ pub struct RepoDeleteWikiPage<'a> {
 impl Sealed for RepoDeleteWikiPage<'_> {}
 impl Endpoint for RepoDeleteWikiPage<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!(
                 "/api/v1/repos/{}/{}/wiki/page/{}",
@@ -12606,8 +12606,8 @@ pub struct RepoEditWikiPage<'a> {
 impl Sealed for RepoEditWikiPage<'_> {}
 impl Endpoint for RepoEditWikiPage<'_> {
     type Response = WikiPage;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!(
                 "/api/v1/repos/{}/{}/wiki/page/{}",
@@ -12647,8 +12647,8 @@ pub struct RepoGetWikiPages<'a> {
 impl Sealed for RepoGetWikiPages<'_> {}
 impl Endpoint for RepoGetWikiPages<'_> {
     type Response = (WikiPageListHeaders, Vec<WikiPageMetaData>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repos/{}/{}/wiki/pages", self.owner, self.repo).into(),
             query: None,
@@ -12678,8 +12678,8 @@ pub struct RepoGetWikiPageRevisions<'a> {
 impl Sealed for RepoGetWikiPageRevisions<'_> {}
 impl Endpoint for RepoGetWikiPageRevisions<'_> {
     type Response = (WikiCommitListHeaders, WikiCommitList);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/repos/{}/{}/wiki/revisions/{}",
@@ -12713,8 +12713,8 @@ pub struct GenerateRepo<'a> {
 impl Sealed for GenerateRepo<'_> {}
 impl Endpoint for GenerateRepo<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!(
                 "/api/v1/repos/{}/{}/generate",
@@ -12753,8 +12753,8 @@ pub struct RepoGetById {
 impl Sealed for RepoGetById {}
 impl Endpoint for RepoGetById {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/repositories/{}", self.id).into(),
             query: None,
@@ -12780,8 +12780,8 @@ pub struct GetGeneralApiSettings {}
 impl Sealed for GetGeneralApiSettings {}
 impl Endpoint for GetGeneralApiSettings {
     type Response = GeneralAPISettings;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/settings/api".into(),
             query: None,
@@ -12806,8 +12806,8 @@ pub struct GetGeneralAttachmentSettings {}
 impl Sealed for GetGeneralAttachmentSettings {}
 impl Endpoint for GetGeneralAttachmentSettings {
     type Response = GeneralAttachmentSettings;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/settings/attachment".into(),
             query: None,
@@ -12832,8 +12832,8 @@ pub struct GetGeneralRepositorySettings {}
 impl Sealed for GetGeneralRepositorySettings {}
 impl Endpoint for GetGeneralRepositorySettings {
     type Response = GeneralRepoSettings;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/settings/repository".into(),
             query: None,
@@ -12858,8 +12858,8 @@ pub struct GetGeneralUiSettings {}
 impl Sealed for GetGeneralUiSettings {}
 impl Endpoint for GetGeneralUiSettings {
     type Response = GeneralUISettings;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/settings/ui".into(),
             query: None,
@@ -12884,8 +12884,8 @@ pub struct GetSigningKey {}
 impl Sealed for GetSigningKey {}
 impl Endpoint for GetSigningKey {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/signing-key.gpg".into(),
             query: None,
@@ -12910,8 +12910,8 @@ pub struct GetSshSigningKey {}
 impl Sealed for GetSshSigningKey {}
 impl Endpoint for GetSshSigningKey {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/signing-key.ssh".into(),
             query: None,
@@ -12939,8 +12939,8 @@ pub struct OrgGetTeam {
 impl Sealed for OrgGetTeam {}
 impl Endpoint for OrgGetTeam {
     type Response = Team;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/teams/{}", self.id).into(),
             query: None,
@@ -12968,8 +12968,8 @@ pub struct OrgDeleteTeam {
 impl Sealed for OrgDeleteTeam {}
 impl Endpoint for OrgDeleteTeam {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/teams/{}", self.id).into(),
             query: None,
@@ -12998,8 +12998,8 @@ pub struct OrgEditTeam {
 impl Sealed for OrgEditTeam {}
 impl Endpoint for OrgEditTeam {
     type Response = Team;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/teams/{}", self.id).into(),
             query: None,
@@ -13031,8 +13031,8 @@ pub struct OrgListTeamActivityFeeds {
 impl Sealed for OrgListTeamActivityFeeds {}
 impl Endpoint for OrgListTeamActivityFeeds {
     type Response = (ActivityFeedsListHeaders, Vec<Activity>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/teams/{}/activities/feeds", self.id).into(),
             query: Some(self.query.into_list()),
@@ -13060,8 +13060,8 @@ pub struct OrgListTeamMembers {
 impl Sealed for OrgListTeamMembers {}
 impl Endpoint for OrgListTeamMembers {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/teams/{}/members", self.id).into(),
             query: None,
@@ -13090,8 +13090,8 @@ pub struct OrgListTeamMember<'a> {
 impl Sealed for OrgListTeamMember<'_> {}
 impl Endpoint for OrgListTeamMember<'_> {
     type Response = User;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/teams/{}/members/{}", self.id, self.username).into(),
             query: None,
@@ -13120,8 +13120,8 @@ pub struct OrgAddTeamMember<'a> {
 impl Sealed for OrgAddTeamMember<'_> {}
 impl Endpoint for OrgAddTeamMember<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/teams/{}/members/{}", self.id, self.username).into(),
             query: None,
@@ -13150,8 +13150,8 @@ pub struct OrgRemoveTeamMember<'a> {
 impl Sealed for OrgRemoveTeamMember<'_> {}
 impl Endpoint for OrgRemoveTeamMember<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/teams/{}/members/{}", self.id, self.username).into(),
             query: None,
@@ -13179,8 +13179,8 @@ pub struct OrgListTeamRepos {
 impl Sealed for OrgListTeamRepos {}
 impl Endpoint for OrgListTeamRepos {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/teams/{}/repos", self.id).into(),
             query: None,
@@ -13210,8 +13210,8 @@ pub struct OrgListTeamRepo<'a> {
 impl Sealed for OrgListTeamRepo<'_> {}
 impl Endpoint for OrgListTeamRepo<'_> {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/teams/{}/repos/{}/{}", self.id, self.org, self.repo).into(),
             query: None,
@@ -13241,8 +13241,8 @@ pub struct OrgAddTeamRepository<'a> {
 impl Sealed for OrgAddTeamRepository<'_> {}
 impl Endpoint for OrgAddTeamRepository<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/teams/{}/repos/{}/{}", self.id, self.org, self.repo).into(),
             query: None,
@@ -13273,8 +13273,8 @@ pub struct OrgRemoveTeamRepository<'a> {
 impl Sealed for OrgRemoveTeamRepository<'_> {}
 impl Endpoint for OrgRemoveTeamRepository<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/teams/{}/repos/{}/{}", self.id, self.org, self.repo).into(),
             query: None,
@@ -13303,8 +13303,8 @@ pub struct TopicSearch {
 impl Sealed for TopicSearch {}
 impl Endpoint for TopicSearch {
     type Response = TopicSearchResults;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/topics/search".into(),
             query: Some(self.query.into_list()),
@@ -13331,8 +13331,8 @@ pub struct UserGetCurrent {}
 impl Sealed for UserGetCurrent {}
 impl Endpoint for UserGetCurrent {
     type Response = User;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user".into(),
             query: None,
@@ -13361,8 +13361,8 @@ pub struct UserSearchRunJobs {
 impl Sealed for UserSearchRunJobs {}
 impl Endpoint for UserSearchRunJobs {
     type Response = Vec<ActionRunJob>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/actions/runners/jobs".into(),
             query: Some(self.query.into_list()),
@@ -13389,8 +13389,8 @@ pub struct UserGetRunnerRegistrationToken {}
 impl Sealed for UserGetRunnerRegistrationToken {}
 impl Endpoint for UserGetRunnerRegistrationToken {
     type Response = RegistrationToken;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/actions/runners/registration-token".into(),
             query: None,
@@ -13420,8 +13420,8 @@ pub struct UpdateUserSecret<'a> {
 impl Sealed for UpdateUserSecret<'_> {}
 impl Endpoint for UpdateUserSecret<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/user/actions/secrets/{}", self.secretname).into(),
             query: None,
@@ -13456,8 +13456,8 @@ pub struct DeleteUserSecret<'a> {
 impl Sealed for DeleteUserSecret<'_> {}
 impl Endpoint for DeleteUserSecret<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/actions/secrets/{}", self.secretname).into(),
             query: None,
@@ -13486,8 +13486,8 @@ pub struct GetUserVariablesList {}
 impl Sealed for GetUserVariablesList {}
 impl Endpoint for GetUserVariablesList {
     type Response = (VariableListHeaders, Vec<ActionVariable>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/actions/variables".into(),
             query: None,
@@ -13518,8 +13518,8 @@ pub struct GetUserVariable<'a> {
 impl Sealed for GetUserVariable<'_> {}
 impl Endpoint for GetUserVariable<'_> {
     type Response = ActionVariable;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
             query: None,
@@ -13551,8 +13551,8 @@ pub struct UpdateUserVariable<'a> {
 impl Sealed for UpdateUserVariable<'_> {}
 impl Endpoint for UpdateUserVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
             query: None,
@@ -13588,8 +13588,8 @@ pub struct CreateUserVariable<'a> {
 impl Sealed for CreateUserVariable<'_> {}
 impl Endpoint for CreateUserVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
             query: None,
@@ -13624,8 +13624,8 @@ pub struct DeleteUserVariable<'a> {
 impl Sealed for DeleteUserVariable<'_> {}
 impl Endpoint for DeleteUserVariable<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
             query: None,
@@ -13655,8 +13655,8 @@ pub struct UserGetOAuth2Applications {}
 impl Sealed for UserGetOAuth2Applications {}
 impl Endpoint for UserGetOAuth2Applications {
     type Response = (OAuth2ApplicationListHeaders, Vec<OAuth2Application>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/applications/oauth2".into(),
             query: None,
@@ -13685,8 +13685,8 @@ pub struct UserCreateOAuth2Application {
 impl Sealed for UserCreateOAuth2Application {}
 impl Endpoint for UserCreateOAuth2Application {
     type Response = OAuth2Application;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/applications/oauth2".into(),
             query: None,
@@ -13719,8 +13719,8 @@ pub struct UserGetOAuth2Application {
 impl Sealed for UserGetOAuth2Application {}
 impl Endpoint for UserGetOAuth2Application {
     type Response = OAuth2Application;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/user/applications/oauth2/{}", self.id).into(),
             query: None,
@@ -13750,8 +13750,8 @@ pub struct UserDeleteOAuth2Application {
 impl Sealed for UserDeleteOAuth2Application {}
 impl Endpoint for UserDeleteOAuth2Application {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/applications/oauth2/{}", self.id).into(),
             query: None,
@@ -13782,8 +13782,8 @@ pub struct UserUpdateOAuth2Application {
 impl Sealed for UserUpdateOAuth2Application {}
 impl Endpoint for UserUpdateOAuth2Application {
     type Response = OAuth2Application;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/user/applications/oauth2/{}", self.id).into(),
             query: None,
@@ -13816,8 +13816,8 @@ pub struct UserUpdateAvatar {
 impl Sealed for UserUpdateAvatar {}
 impl Endpoint for UserUpdateAvatar {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/avatar".into(),
             query: None,
@@ -13847,8 +13847,8 @@ pub struct UserDeleteAvatar {}
 impl Sealed for UserDeleteAvatar {}
 impl Endpoint for UserDeleteAvatar {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: "/api/v1/user/avatar".into(),
             query: None,
@@ -13877,8 +13877,8 @@ pub struct UserBlockUser<'a> {
 impl Sealed for UserBlockUser<'_> {}
 impl Endpoint for UserBlockUser<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/user/block/{}", self.username).into(),
             query: None,
@@ -13907,8 +13907,8 @@ pub struct UserListEmails {}
 impl Sealed for UserListEmails {}
 impl Endpoint for UserListEmails {
     type Response = Vec<Email>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/emails".into(),
             query: None,
@@ -13937,8 +13937,8 @@ pub struct UserAddEmail {
 impl Sealed for UserAddEmail {}
 impl Endpoint for UserAddEmail {
     type Response = Vec<Email>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/emails".into(),
             query: None,
@@ -13971,8 +13971,8 @@ pub struct UserDeleteEmail {
 impl Sealed for UserDeleteEmail {}
 impl Endpoint for UserDeleteEmail {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: "/api/v1/user/emails".into(),
             query: None,
@@ -14003,8 +14003,8 @@ pub struct UserCurrentListFollowers {}
 impl Sealed for UserCurrentListFollowers {}
 impl Endpoint for UserCurrentListFollowers {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/followers".into(),
             query: None,
@@ -14031,8 +14031,8 @@ pub struct UserCurrentListFollowing {}
 impl Sealed for UserCurrentListFollowing {}
 impl Endpoint for UserCurrentListFollowing {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/following".into(),
             query: None,
@@ -14061,8 +14061,8 @@ pub struct UserCurrentCheckFollowing<'a> {
 impl Sealed for UserCurrentCheckFollowing<'_> {}
 impl Endpoint for UserCurrentCheckFollowing<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/user/following/{}", self.username).into(),
             query: None,
@@ -14092,8 +14092,8 @@ pub struct UserCurrentPutFollow<'a> {
 impl Sealed for UserCurrentPutFollow<'_> {}
 impl Endpoint for UserCurrentPutFollow<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/user/following/{}", self.username).into(),
             query: None,
@@ -14123,8 +14123,8 @@ pub struct UserCurrentDeleteFollow<'a> {
 impl Sealed for UserCurrentDeleteFollow<'_> {}
 impl Endpoint for UserCurrentDeleteFollow<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/following/{}", self.username).into(),
             query: None,
@@ -14152,8 +14152,8 @@ pub struct GetVerificationToken {}
 impl Sealed for GetVerificationToken {}
 impl Endpoint for GetVerificationToken {
     type Response = String;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/gpg_key_token".into(),
             query: None,
@@ -14183,8 +14183,8 @@ pub struct UserVerifyGpgKey {
 impl Sealed for UserVerifyGpgKey {}
 impl Endpoint for UserVerifyGpgKey {
     type Response = GPGKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/gpg_key_verify".into(),
             query: None,
@@ -14216,8 +14216,8 @@ pub struct UserCurrentListGpgKeys {}
 impl Sealed for UserCurrentListGpgKeys {}
 impl Endpoint for UserCurrentListGpgKeys {
     type Response = (GpgKeyListHeaders, Vec<GPGKey>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/gpg_keys".into(),
             query: None,
@@ -14246,8 +14246,8 @@ pub struct UserCurrentPostGpgKey {
 impl Sealed for UserCurrentPostGpgKey {}
 impl Endpoint for UserCurrentPostGpgKey {
     type Response = GPGKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/gpg_keys".into(),
             query: None,
@@ -14281,8 +14281,8 @@ pub struct UserCurrentGetGpgKey {
 impl Sealed for UserCurrentGetGpgKey {}
 impl Endpoint for UserCurrentGetGpgKey {
     type Response = GPGKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/user/gpg_keys/{}", self.id).into(),
             query: None,
@@ -14312,8 +14312,8 @@ pub struct UserCurrentDeleteGpgKey {
 impl Sealed for UserCurrentDeleteGpgKey {}
 impl Endpoint for UserCurrentDeleteGpgKey {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/gpg_keys/{}", self.id).into(),
             query: None,
@@ -14341,8 +14341,8 @@ pub struct UserListHooks {}
 impl Sealed for UserListHooks {}
 impl Endpoint for UserListHooks {
     type Response = (HookListHeaders, Vec<Hook>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/hooks".into(),
             query: None,
@@ -14371,8 +14371,8 @@ pub struct UserCreateHook {
 impl Sealed for UserCreateHook {}
 impl Endpoint for UserCreateHook {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/hooks".into(),
             query: None,
@@ -14404,8 +14404,8 @@ pub struct UserGetHook {
 impl Sealed for UserGetHook {}
 impl Endpoint for UserGetHook {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/user/hooks/{}", self.id).into(),
             query: None,
@@ -14434,8 +14434,8 @@ pub struct UserDeleteHook {
 impl Sealed for UserDeleteHook {}
 impl Endpoint for UserDeleteHook {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/hooks/{}", self.id).into(),
             query: None,
@@ -14465,8 +14465,8 @@ pub struct UserEditHook {
 impl Sealed for UserEditHook {}
 impl Endpoint for UserEditHook {
     type Response = Hook;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: format!("/api/v1/user/hooks/{}", self.id).into(),
             query: None,
@@ -14498,8 +14498,8 @@ pub struct UserCurrentListKeys {
 impl Sealed for UserCurrentListKeys {}
 impl Endpoint for UserCurrentListKeys {
     type Response = (PublicKeyListHeaders, Vec<PublicKey>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/keys".into(),
             query: Some(self.query.into_list()),
@@ -14528,8 +14528,8 @@ pub struct UserCurrentPostKey {
 impl Sealed for UserCurrentPostKey {}
 impl Endpoint for UserCurrentPostKey {
     type Response = PublicKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/keys".into(),
             query: None,
@@ -14562,8 +14562,8 @@ pub struct UserCurrentGetKey {
 impl Sealed for UserCurrentGetKey {}
 impl Endpoint for UserCurrentGetKey {
     type Response = PublicKey;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/user/keys/{}", self.id).into(),
             query: None,
@@ -14593,8 +14593,8 @@ pub struct UserCurrentDeleteKey {
 impl Sealed for UserCurrentDeleteKey {}
 impl Endpoint for UserCurrentDeleteKey {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/keys/{}", self.id).into(),
             query: None,
@@ -14622,8 +14622,8 @@ pub struct UserListBlockedUsers {}
 impl Sealed for UserListBlockedUsers {}
 impl Endpoint for UserListBlockedUsers {
     type Response = (BlockedUserListHeaders, Vec<BlockedUser>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/list_blocked".into(),
             query: None,
@@ -14650,8 +14650,8 @@ pub struct OrgListCurrentUserOrgs {}
 impl Sealed for OrgListCurrentUserOrgs {}
 impl Endpoint for OrgListCurrentUserOrgs {
     type Response = (OrganizationListHeaders, Vec<Organization>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/orgs".into(),
             query: None,
@@ -14679,8 +14679,8 @@ pub struct UserGetQuota {}
 impl Sealed for UserGetQuota {}
 impl Endpoint for UserGetQuota {
     type Response = QuotaInfo;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/quota".into(),
             query: None,
@@ -14707,8 +14707,8 @@ pub struct UserListQuotaArtifacts {}
 impl Sealed for UserListQuotaArtifacts {}
 impl Endpoint for UserListQuotaArtifacts {
     type Response = (QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/quota/artifacts".into(),
             query: None,
@@ -14735,8 +14735,8 @@ pub struct UserListQuotaAttachments {}
 impl Sealed for UserListQuotaAttachments {}
 impl Endpoint for UserListQuotaAttachments {
     type Response = (QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/quota/attachments".into(),
             query: None,
@@ -14765,8 +14765,8 @@ pub struct UserCheckQuota {
 impl Sealed for UserCheckQuota {}
 impl Endpoint for UserCheckQuota {
     type Response = bool;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/quota/check".into(),
             query: Some(self.query.into_list()),
@@ -14794,8 +14794,8 @@ pub struct UserListQuotaPackages {}
 impl Sealed for UserListQuotaPackages {}
 impl Endpoint for UserListQuotaPackages {
     type Response = (QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/quota/packages".into(),
             query: None,
@@ -14824,8 +14824,8 @@ pub struct UserCurrentListRepos {
 impl Sealed for UserCurrentListRepos {}
 impl Endpoint for UserCurrentListRepos {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/repos".into(),
             query: Some(self.query.into_list()),
@@ -14855,8 +14855,8 @@ pub struct CreateCurrentUserRepo {
 impl Sealed for CreateCurrentUserRepo {}
 impl Endpoint for CreateCurrentUserRepo {
     type Response = Repository;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: "/api/v1/user/repos".into(),
             query: None,
@@ -14890,8 +14890,8 @@ pub struct GetUserSettings {}
 impl Sealed for GetUserSettings {}
 impl Endpoint for GetUserSettings {
     type Response = UserSettings;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/settings".into(),
             query: None,
@@ -14920,8 +14920,8 @@ pub struct UpdateUserSettings {
 impl Sealed for UpdateUserSettings {}
 impl Endpoint for UpdateUserSettings {
     type Response = UserSettings;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PATCH,
             path: "/api/v1/user/settings".into(),
             query: None,
@@ -14951,8 +14951,8 @@ pub struct UserCurrentListStarred {}
 impl Sealed for UserCurrentListStarred {}
 impl Endpoint for UserCurrentListStarred {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/starred".into(),
             query: None,
@@ -14982,8 +14982,8 @@ pub struct UserCurrentCheckStarring<'a> {
 impl Sealed for UserCurrentCheckStarring<'_> {}
 impl Endpoint for UserCurrentCheckStarring<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/user/starred/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -15014,8 +15014,8 @@ pub struct UserCurrentPutStar<'a> {
 impl Sealed for UserCurrentPutStar<'_> {}
 impl Endpoint for UserCurrentPutStar<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/user/starred/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -15046,8 +15046,8 @@ pub struct UserCurrentDeleteStar<'a> {
 impl Sealed for UserCurrentDeleteStar<'_> {}
 impl Endpoint for UserCurrentDeleteStar<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/user/starred/{}/{}", self.owner, self.repo).into(),
             query: None,
@@ -15075,8 +15075,8 @@ pub struct UserGetStopWatches {}
 impl Sealed for UserGetStopWatches {}
 impl Endpoint for UserGetStopWatches {
     type Response = (StopWatchListHeaders, Vec<StopWatch>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/stopwatches".into(),
             query: None,
@@ -15103,8 +15103,8 @@ pub struct UserCurrentListSubscriptions {}
 impl Sealed for UserCurrentListSubscriptions {}
 impl Endpoint for UserCurrentListSubscriptions {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/subscriptions".into(),
             query: None,
@@ -15131,8 +15131,8 @@ pub struct UserListTeams {}
 impl Sealed for UserListTeams {}
 impl Endpoint for UserListTeams {
     type Response = (TeamListHeaders, Vec<Team>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/teams".into(),
             query: None,
@@ -15161,8 +15161,8 @@ pub struct UserCurrentTrackedTimes {
 impl Sealed for UserCurrentTrackedTimes {}
 impl Endpoint for UserCurrentTrackedTimes {
     type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/user/times".into(),
             query: Some(self.query.into_list()),
@@ -15191,8 +15191,8 @@ pub struct UserUnblockUser<'a> {
 impl Sealed for UserUnblockUser<'_> {}
 impl Endpoint for UserUnblockUser<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::PUT,
             path: format!("/api/v1/user/unblock/{}", self.username).into(),
             query: None,
@@ -15223,8 +15223,8 @@ pub struct UserSearch {
 impl Sealed for UserSearch {}
 impl Endpoint for UserSearch {
     type Response = UserSearchResults;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/users/search".into(),
             query: Some(self.query.into_list()),
@@ -15251,8 +15251,8 @@ pub struct UserGet<'a> {
 impl Sealed for UserGet<'_> {}
 impl Endpoint for UserGet<'_> {
     type Response = User;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}", self.username).into(),
             query: None,
@@ -15281,8 +15281,8 @@ pub struct UserListActivityFeeds<'a> {
 impl Sealed for UserListActivityFeeds<'_> {}
 impl Endpoint for UserListActivityFeeds<'_> {
     type Response = (ActivityFeedsListHeaders, Vec<Activity>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/activities/feeds", self.username).into(),
             query: Some(self.query.into_list()),
@@ -15310,8 +15310,8 @@ pub struct UserListFollowers<'a> {
 impl Sealed for UserListFollowers<'_> {}
 impl Endpoint for UserListFollowers<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/followers", self.username).into(),
             query: None,
@@ -15339,8 +15339,8 @@ pub struct UserListFollowing<'a> {
 impl Sealed for UserListFollowing<'_> {}
 impl Endpoint for UserListFollowing<'_> {
     type Response = (UserListHeaders, Vec<User>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/following", self.username).into(),
             query: None,
@@ -15369,8 +15369,8 @@ pub struct UserCheckFollowing<'a> {
 impl Sealed for UserCheckFollowing<'_> {}
 impl Endpoint for UserCheckFollowing<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/following/{}", self.username, self.target).into(),
             query: None,
@@ -15398,8 +15398,8 @@ pub struct UserListGpgKeys<'a> {
 impl Sealed for UserListGpgKeys<'_> {}
 impl Endpoint for UserListGpgKeys<'_> {
     type Response = (GpgKeyListHeaders, Vec<GPGKey>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/gpg_keys", self.username).into(),
             query: None,
@@ -15427,8 +15427,8 @@ pub struct UserGetHeatmapData<'a> {
 impl Sealed for UserGetHeatmapData<'_> {}
 impl Endpoint for UserGetHeatmapData<'_> {
     type Response = Vec<UserHeatmapData>;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/heatmap", self.username).into(),
             query: None,
@@ -15457,8 +15457,8 @@ pub struct UserListKeys<'a> {
 impl Sealed for UserListKeys<'_> {}
 impl Endpoint for UserListKeys<'_> {
     type Response = (PublicKeyListHeaders, Vec<PublicKey>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/keys", self.username).into(),
             query: Some(self.query.into_list()),
@@ -15486,8 +15486,8 @@ pub struct OrgListUserOrgs<'a> {
 impl Sealed for OrgListUserOrgs<'_> {}
 impl Endpoint for OrgListUserOrgs<'_> {
     type Response = (OrganizationListHeaders, Vec<Organization>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/orgs", self.username).into(),
             query: None,
@@ -15516,8 +15516,8 @@ pub struct OrgGetUserPermissions<'a> {
 impl Sealed for OrgGetUserPermissions<'_> {}
 impl Endpoint for OrgGetUserPermissions<'_> {
     type Response = OrganizationPermissions;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!(
                 "/api/v1/users/{}/orgs/{}/permissions",
@@ -15550,8 +15550,8 @@ pub struct UserListRepos<'a> {
 impl Sealed for UserListRepos<'_> {}
 impl Endpoint for UserListRepos<'_> {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/repos", self.username).into(),
             query: None,
@@ -15579,8 +15579,8 @@ pub struct UserListStarred<'a> {
 impl Sealed for UserListStarred<'_> {}
 impl Endpoint for UserListStarred<'_> {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/starred", self.username).into(),
             query: None,
@@ -15608,8 +15608,8 @@ pub struct UserListSubscriptions<'a> {
 impl Sealed for UserListSubscriptions<'_> {}
 impl Endpoint for UserListSubscriptions<'_> {
     type Response = (RepositoryListHeaders, Vec<Repository>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/subscriptions", self.username).into(),
             query: None,
@@ -15637,8 +15637,8 @@ pub struct UserGetTokens<'a> {
 impl Sealed for UserGetTokens<'_> {}
 impl Endpoint for UserGetTokens<'_> {
     type Response = (AccessTokenListHeaders, Vec<AccessToken>);
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: format!("/api/v1/users/{}/tokens", self.username).into(),
             query: None,
@@ -15668,8 +15668,8 @@ pub struct UserCreateToken<'a> {
 impl Sealed for UserCreateToken<'_> {}
 impl Endpoint for UserCreateToken<'_> {
     type Response = AccessToken;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::POST,
             path: format!("/api/v1/users/{}/tokens", self.username).into(),
             query: None,
@@ -15703,8 +15703,8 @@ pub struct UserDeleteAccessToken<'a> {
 impl Sealed for UserDeleteAccessToken<'_> {}
 impl Endpoint for UserDeleteAccessToken<'_> {
     type Response = ();
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::DELETE,
             path: format!("/api/v1/users/{}/tokens/{}", self.username, self.token).into(),
             query: None,
@@ -15732,8 +15732,8 @@ pub struct GetVersion {}
 impl Sealed for GetVersion {}
 impl Endpoint for GetVersion {
     type Response = ServerVersion;
-    fn make_request(self) -> ApiRequest {
-        ApiRequest {
+    fn make_request(self) -> RawRequest {
+        RawRequest {
             method: Method::GET,
             path: "/api/v1/version".into(),
             query: None,

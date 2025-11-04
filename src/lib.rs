@@ -476,7 +476,7 @@ impl Forgejo {
         }
     }
 
-    pub async fn send_request(&self, request: &ApiRequest) -> Result<ApiResponse, ForgejoError> {
+    pub async fn send_request(&self, request: &RawRequest) -> Result<ApiResponse, ForgejoError> {
         let mut url = self
             .url
             .join(&request.path)
@@ -763,12 +763,12 @@ mod sealed {
 
 pub trait Endpoint: sealed::Sealed {
     type Response: FromResponse;
-    fn make_request(self) -> ApiRequest;
+    fn make_request(self) -> RawRequest;
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError>;
 }
 
 #[derive(Clone)]
-pub struct ApiRequest {
+pub struct RawRequest {
     method: reqwest::Method,
     path: Cow<'static, str>,
     query: Option<Vec<(&'static str, String)>>,
@@ -777,12 +777,9 @@ pub struct ApiRequest {
     limit: Option<u32>,
 }
 
-impl ApiRequest {
-    pub(crate) fn wrap<E: Endpoint<Response = R>, R>(
-        self,
-        client: &Forgejo,
-    ) -> WrappedRequest<'_, E, R> {
-        WrappedRequest {
+impl RawRequest {
+    pub(crate) fn wrap<E: Endpoint<Response = R>, R>(self, client: &Forgejo) -> Request<'_, E, R> {
+        Request {
             inner: TypedRequest {
                 inner: self,
                 __endpoint: PhantomData,
@@ -796,8 +793,8 @@ impl ApiRequest {
     pub(crate) fn wrap_sync<E: Endpoint<Response = R>, R>(
         self,
         client: &sync::Forgejo,
-    ) -> sync::WrappedRequest<'_, E, R> {
-        sync::WrappedRequest {
+    ) -> sync::Request<'_, E, R> {
+        sync::Request {
             inner: TypedRequest {
                 inner: self,
                 __endpoint: PhantomData,
@@ -924,7 +921,7 @@ pub enum RequestBody {
 }
 
 pub struct TypedRequest<E, R> {
-    inner: ApiRequest,
+    inner: RawRequest,
     __endpoint: PhantomData<*const E>,
     __response: PhantomData<*const R>,
 }
@@ -962,18 +959,18 @@ impl ApiResponse {
     }
 }
 
-pub struct WrappedRequest<'a, E, R> {
+pub struct Request<'a, E, R> {
     inner: TypedRequest<E, R>,
     client: &'a Forgejo,
 }
 
-impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
+impl<'a, E: Endpoint, R: FromResponse> Request<'a, E, R> {
     pub async fn send(self) -> Result<R, ForgejoError> {
         self.inner.send(self.client).await
     }
 
-    pub fn response_type<T: FromResponse>(self) -> WrappedRequest<'a, E, T> {
-        WrappedRequest {
+    pub fn response_type<T: FromResponse>(self) -> Request<'a, E, T> {
+        Request {
             inner: TypedRequest {
                 inner: self.inner.inner,
                 __endpoint: PhantomData,
@@ -1009,7 +1006,7 @@ impl<T> PageSize for Vec<T> {
     }
 }
 
-impl<'a, E: Endpoint, H: CountHeader, T: PageSize> WrappedRequest<'a, E, (H, T)>
+impl<'a, E: Endpoint, H: CountHeader, T: PageSize> Request<'a, E, (H, T)>
 where
     (H, T): FromResponse,
 {
@@ -1024,7 +1021,7 @@ where
 }
 
 pub struct PageStream<'a, E: Endpoint, T, H> {
-    request: WrappedRequest<'a, E, (H, T)>,
+    request: Request<'a, E, (H, T)>,
     total_seen: usize,
     finished: bool,
     fut: Option<Pin<Box<dyn Future<Output = Result<(H, T), ForgejoError>> + 'a>>>,
@@ -1093,7 +1090,7 @@ where
     }
 }
 
-impl<'a, E: Endpoint + 'a, T: 'a, H: CountHeader + 'a> WrappedRequest<'a, E, (H, Vec<T>)>
+impl<'a, E: Endpoint + 'a, T: 'a, H: CountHeader + 'a> Request<'a, E, (H, Vec<T>)>
 where
     (H, Vec<T>): FromResponse,
 {
@@ -1111,7 +1108,7 @@ where
     }
 }
 
-impl<'a, E: Endpoint, R: FromResponse> std::future::IntoFuture for WrappedRequest<'a, E, R> {
+impl<'a, E: Endpoint, R: FromResponse> std::future::IntoFuture for Request<'a, E, R> {
     type Output = Result<R, ForgejoError>;
 
     type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + 'a>>;

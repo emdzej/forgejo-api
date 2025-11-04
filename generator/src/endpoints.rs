@@ -14,7 +14,7 @@ pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use std::collections::BTreeMap;");
     s.push_str("use super::structs::*;\n");
     s.push_str("use crate::Endpoint;\n");
-    s.push_str("use crate::{ApiRequest, RequestBody, ApiResponse};\n");
+    s.push_str("use crate::{RawRequest, RequestBody, ApiResponse};\n");
     s.push_str("use reqwest::Method;\n");
     s.push_str("use crate::sealed::Sealed;\n");
     s.push_str("use bytes::Bytes;\n");
@@ -321,8 +321,8 @@ fn endpoint_make_request(
     method: Method,
 ) -> eyre::Result<String> {
     let mut s = String::new();
-    writeln!(&mut s, "    fn make_request(self) -> ApiRequest {{")?;
-    writeln!(&mut s, "        ApiRequest {{")?;
+    writeln!(&mut s, "    fn make_request(self) -> RawRequest {{")?;
+    writeln!(&mut s, "        RawRequest {{")?;
     writeln!(&mut s, "            method: {},", method.code_string())?;
     if has_path_params(spec, op)? {
         let (fmt_str, path_fields) = path_to_fmt_string(&mut &*path);
