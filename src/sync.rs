@@ -203,17 +203,17 @@ impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
 
     response_type_method!(json<T> -> Json<T>);
     response_type_method!(json_opt<T> -> Option<Json<T>>);
-    response_type_method!(text -> Text);
-    response_type_method!(bytes -> Bytes);
-    response_type_method!(text_opt -> Option<Text>);
-    response_type_method!(bytes_opt -> Option<Text>);
+    response_type_method!(text -> String);
+    response_type_method!(bytes -> bytes::Bytes);
+    response_type_method!(text_opt -> Option<String>);
+    response_type_method!(bytes_opt -> Option<bytes::Bytes>);
 
-    response_type_method!(headers_json<T, H> -> WithHeaders<Json<T>, H>);
-    response_type_method!(headers_json_opt<T, H> -> WithHeaders<Option<Json<T>>, H>);
-    response_type_method!(headers_text<H> -> WithHeaders<Text, H>);
-    response_type_method!(headers_bytes<H> -> WithHeaders<Bytes, H>);
-    response_type_method!(headers_text_opt<H> -> WithHeaders<Option<Text>, H>);
-    response_type_method!(headers_bytes_opt<H> -> WithHeaders<Option<Text>, H>);
+    response_type_method!(headers_json<T, H> -> (H, Json<T>));
+    response_type_method!(headers_json_opt<T, H> -> (H, Option<Json<T>>));
+    response_type_method!(headers_text<H> -> (H, String));
+    response_type_method!(headers_bytes<H> -> (H, bytes::Bytes));
+    response_type_method!(headers_text_opt<H> -> (H, Option<String>));
+    response_type_method!(headers_bytes_opt<H> -> (H, Option<bytes::Bytes>));
 
     pub fn page(mut self, page: u32) -> Self {
         self.inner.inner.page = Some(page);

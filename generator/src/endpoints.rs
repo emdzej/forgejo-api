@@ -15,9 +15,7 @@ pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use super::structs::*;\n");
     s.push_str("use crate::Endpoint;\n");
     s.push_str("use crate::{ApiRequest, RequestBody, ApiResponse};\n");
-    s.push_str(
-        "use crate::response_type::{Json as RJson, Text as RText, Bytes as RBytes, WithHeaders};\n",
-    );
+    s.push_str("use crate::response_type::Json;\n");
     s.push_str("use reqwest::Method;\n");
     s.push_str("use crate::sealed::Sealed;\n");
     s.push_str("use bytes::Bytes;\n");
@@ -310,9 +308,9 @@ fn create_endpoint_impl(
     let response = response_type_from_op(spec, op)?;
     let (mut response_type, optional) = if let Some(response_body) = response.body.as_ref() {
         let response_type = match response.kind.ok_or_eyre("No response kind")? {
-            ResponseKind::Json => format!("RJson<{}>", response_body.ty),
-            ResponseKind::Text => "RText".into(),
-            ResponseKind::Bytes => "RBytes".into(),
+            ResponseKind::Json => format!("Json<{}>", response_body.ty),
+            ResponseKind::Text => "String".into(),
+            ResponseKind::Bytes => "bytes::Bytes".into(),
         };
         (response_type, response_body.optional)
     } else {
@@ -322,7 +320,7 @@ fn create_endpoint_impl(
         response_type = format!("Option<{response_type}>");
     };
     if let Some(headers) = &response.headers {
-        response_type = format!("WithHeaders<{response_type}, {headers}>");
+        response_type = format!("({headers}, {response_type})");
     }
     writeln!(&mut s, "    type Response = {response_type};")?;
     let make_request = endpoint_make_request(spec, base_path, path, op, method)?;

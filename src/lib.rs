@@ -821,13 +821,6 @@ pub mod response_type {
     struct Unconstructable;
 
     pub struct Json<T>(Unconstructable, PhantomData<*const T>);
-    pub struct Text(Unconstructable);
-    pub struct Bytes(Unconstructable);
-    pub struct WithHeaders<T, H>(
-        Unconstructable,
-        PhantomData<*const T>,
-        PhantomData<*const H>,
-    );
 
     impl<T: serde::de::DeserializeOwned> FromResponse for Json<T> {
         type Output = T;
@@ -844,7 +837,7 @@ pub mod response_type {
         }
     }
 
-    impl FromResponse for Text {
+    impl FromResponse for String {
         type Output = String;
 
         fn from_response(
@@ -856,7 +849,7 @@ pub mod response_type {
         }
     }
 
-    impl FromResponse for Bytes {
+    impl FromResponse for bytes::Bytes {
         type Output = bytes::Bytes;
 
         fn from_response(
@@ -871,7 +864,7 @@ pub mod response_type {
     impl<
             T: FromResponse,
             H: for<'a> TryFrom<&'a reqwest::header::HeaderMap, Error = crate::StructureError>,
-        > FromResponse for WithHeaders<T, H>
+        > FromResponse for (H, T)
     {
         type Output = (H, T::Output);
 
@@ -1000,17 +993,17 @@ impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
 
     response_type_method!(json<T> -> Json<T>);
     response_type_method!(json_opt<T> -> Option<Json<T>>);
-    response_type_method!(text -> Text);
-    response_type_method!(bytes -> Bytes);
-    response_type_method!(text_opt -> Option<Text>);
-    response_type_method!(bytes_opt -> Option<Text>);
+    response_type_method!(text -> String);
+    response_type_method!(bytes -> bytes::Bytes);
+    response_type_method!(text_opt -> Option<String>);
+    response_type_method!(bytes_opt -> Option<bytes::Bytes>);
 
-    response_type_method!(headers_json<T, H> -> WithHeaders<Json<T>, H>);
-    response_type_method!(headers_json_opt<T, H> -> WithHeaders<Option<Json<T>>, H>);
-    response_type_method!(headers_text<H> -> WithHeaders<Text, H>);
-    response_type_method!(headers_bytes<H> -> WithHeaders<Bytes, H>);
-    response_type_method!(headers_text_opt<H> -> WithHeaders<Option<Text>, H>);
-    response_type_method!(headers_bytes_opt<H> -> WithHeaders<Option<Text>, H>);
+    response_type_method!(headers_json<T, H> -> (H, Json<T>));
+    response_type_method!(headers_json_opt<T, H> -> (H, Option<Json<T>>));
+    response_type_method!(headers_text<H> -> (H, String));
+    response_type_method!(headers_bytes<H> -> (H, bytes::Bytes));
+    response_type_method!(headers_text_opt<H> -> (H, Option<String>));
+    response_type_method!(headers_bytes_opt<H> -> (H, Option<String>));
 
     pub fn page(mut self, page: u32) -> Self {
         self.inner.inner.page = Some(page);
