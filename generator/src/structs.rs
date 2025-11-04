@@ -1,15 +1,20 @@
 use crate::openapi::*;
-use eyre::WrapErr;
+use eyre::{OptionExt, WrapErr};
 use heck::ToPascalCase;
-use std::{collections::BTreeMap, fmt::Write};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    fmt::Write,
+};
 
 pub fn create_structs(spec: &OpenApiV2) -> eyre::Result<String> {
     let mut s = String::new();
-    s.push_str("use crate::StructureError;");
+    s.push_str("use crate::{StructureError, impl_from_response};");
     s.push_str("use std::collections::BTreeMap;");
+    let response_types = get_response_types(spec)?;
     if let Some(definitions) = &spec.definitions {
         for (name, schema) in definitions {
-            let strukt = create_struct_for_definition(spec, name, schema)?;
+            let strukt =
+                create_struct_for_definition(spec, name, schema, response_types.contains(name))?;
             s.push_str(&strukt);
         }
     }
@@ -38,22 +43,34 @@ pub fn create_struct_for_definition(
     spec: &OpenApiV2,
     name: &str,
     schema: &Schema,
+    is_response: bool,
 ) -> eyre::Result<String> {
     match schema {
         Schema {
             _type: Some(SchemaType::One(Primitive::String)),
             _enum: Some(_enum),
             ..
-        } => create_enum(name, schema.description.as_deref(), _enum, false),
+        } => create_enum(
+            name,
+            schema.description.as_deref(),
+            _enum,
+            false,
+            is_response,
+        ),
         Schema {
             _type: Some(SchemaType::One(Primitive::Object)),
             ..
-        } => create_object_struct(spec, name, schema),
+        } => create_object_struct(spec, name, schema, is_response),
         _ => Ok(String::new()),
     }
 }
 
-pub fn create_object_struct(spec: &OpenApiV2, name: &str, schema: &Schema) -> eyre::Result<String> {
+pub fn create_object_struct(
+    spec: &OpenApiV2,
+    name: &str,
+    schema: &Schema,
+    is_response: bool,
+) -> eyre::Result<String> {
     let mut subtypes = Vec::new();
 
     let parse_with = schema
@@ -73,7 +90,7 @@ pub fn create_object_struct(spec: &OpenApiV2, name: &str, schema: &Schema) -> ey
             let mut field_ty = prop_ty.clone();
             if let MaybeRef::Value { value } = &prop_schema {
                 crate::schema_subtype_name(spec, name, prop_name, value, &mut field_ty)?;
-                crate::schema_subtypes(spec, name, prop_name, value, &mut subtypes)?;
+                crate::schema_subtypes(spec, name, prop_name, value, &mut subtypes, false)?;
             }
             let is_required = required.contains(prop_name);
             if let Some(format) = &prop_schema.deref(spec)?.format {
@@ -160,6 +177,10 @@ pub fn create_object_struct(spec: &OpenApiV2, name: &str, schema: &Schema) -> ey
 
     let mut out = format!("{docs}#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]\npub struct {name} {{\n{fields}}}\n\n");
 
+    if is_response {
+        out.push_str(&impl_from_response(name));
+    }
+
     if let Some(pagination_field) = schema
         .extensions
         .get("x-pagination-field")
@@ -200,6 +221,7 @@ impl crate::PageSize for {name} {{
     for subtype in subtypes {
         out.push_str(&subtype);
     }
+
     Ok(out)
 }
 
@@ -208,6 +230,7 @@ pub fn create_enum(
     desc: Option<&str>,
     _enum: &[serde_json::Value],
     imp_as_str: bool,
+    is_response: bool,
 ) -> eyre::Result<String> {
     let mut variants = String::new();
     let mut imp = String::new();
@@ -238,7 +261,7 @@ pub enum {name} {{
     {variants}
 }}"
     );
-    let out = if imp_as_str {
+    let mut out = if imp_as_str {
         let imp = format!(
             "\n\nimpl {name} {{
                 fn as_str(&self) -> &'static str {{
@@ -250,7 +273,15 @@ pub enum {name} {{
     } else {
         strukt
     };
+
+    if is_response {
+        out.push_str(&impl_from_response(name));
+    }
     Ok(out)
+}
+
+fn impl_from_response(name: &str) -> String {
+    format!("impl_from_response!({name});\n\n")
 }
 
 fn create_struct_docs(schema: &Schema) -> eyre::Result<String> {
@@ -340,7 +371,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                     ..
                 } => {
                     let name = format!("{op_name}{}", param.name.to_pascal_case());
-                    let enum_def = create_enum(&name, None, _enum, true)?;
+                    let enum_def = create_enum(&name, None, _enum, true, false)?;
                     enums.push(enum_def);
                     name
                 }
@@ -355,7 +386,7 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                     ..
                 } => {
                     let name = format!("{op_name}{}", param.name.to_pascal_case());
-                    let enum_def = create_enum(&name, None, _enum, true)?;
+                    let enum_def = create_enum(&name, None, _enum, true, false)?;
                     enums.push(enum_def);
                     format!("Vec<{name}>")
                 }
@@ -793,11 +824,83 @@ pub fn create_response_struct(
 ) -> eyre::Result<String> {
     let mut types = Vec::new();
     if let Some(MaybeRef::Value { value }) = &res.schema {
-        crate::schema_subtypes(spec, name, "Response", value, &mut types)?;
+        crate::schema_subtypes(spec, name, "Response", value, &mut types, true)?;
     }
     let mut out = String::new();
     for ty in types {
         out.push_str(&ty);
     }
     Ok(out)
+}
+
+fn get_response_types(spec: &OpenApiV2) -> eyre::Result<BTreeSet<String>> {
+    let mut set = BTreeSet::new();
+    for item in spec.paths.values() {
+        if let Some(op) = &item.get {
+            get_response_types_for_op(spec, op, &mut set)?
+        }
+        if let Some(op) = &item.put {
+            get_response_types_for_op(spec, op, &mut set)?
+        }
+        if let Some(op) = &item.post {
+            get_response_types_for_op(spec, op, &mut set)?
+        }
+        if let Some(op) = &item.delete {
+            get_response_types_for_op(spec, op, &mut set)?
+        }
+        if let Some(op) = &item.options {
+            get_response_types_for_op(spec, op, &mut set)?
+        }
+        if let Some(op) = &item.head {
+            get_response_types_for_op(spec, op, &mut set)?
+        }
+        if let Some(op) = &item.patch {
+            get_response_types_for_op(spec, op, &mut set)?
+        }
+    }
+    Ok(set)
+}
+
+fn get_response_types_for_op(
+    spec: &OpenApiV2,
+    op: &Operation,
+    set: &mut BTreeSet<String>,
+) -> eyre::Result<()> {
+    for (_, response) in &op.responses.http_codes {
+        if let Some(schema) = &response.deref(spec)?.schema {
+            let schema = match schema.deref(spec)? {
+                Schema {
+                    _type: Some(SchemaType::One(Primitive::Object)),
+                    properties: Some(_),
+                    ..
+                }
+                | Schema {
+                    _type: Some(SchemaType::One(Primitive::String)),
+                    _enum: Some(_),
+                    ..
+                } => Some(schema),
+                Schema {
+                    _type: Some(SchemaType::One(Primitive::Array)),
+                    items: Some(items),
+                    ..
+                } => Some(items.as_ref()),
+                _ => None,
+            };
+            if let Some(schema_ref) = &schema {
+                let schema = schema_ref.deref(spec)?;
+                let name = schema
+                    .title
+                    .as_deref()
+                    .map(|title| title.split_whitespace().next().unwrap_or(title).to_owned())
+                    .or_else(|| match schema_ref {
+                        MaybeRef::Ref { _ref } => Some(_ref.rsplit_once("/")?.1.to_owned()),
+                        MaybeRef::Value { .. } => None,
+                    })
+                    .or_else(|| Some(format!("{}Response", op.operation_id.as_deref()?)))
+                    .ok_or_eyre("no name found")?;
+                set.insert(name);
+            }
+        }
+    }
+    Ok(())
 }

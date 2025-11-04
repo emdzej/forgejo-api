@@ -136,7 +136,9 @@
 //!   Returns a `Vec` of every item requested. Equivalent to
 //!   `.stream().try_collect()`.
 
-use std::{borrow::Cow, future::Future, marker::PhantomData, pin::Pin, task::Poll};
+use std::{
+    borrow::Cow, collections::BTreeMap, future::Future, marker::PhantomData, pin::Pin, task::Poll,
+};
 
 use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Deserializer};
@@ -519,7 +521,7 @@ impl Forgejo {
     pub async fn hit_endpoint<E: Endpoint, R: FromResponse>(
         &self,
         endpoint: E,
-    ) -> Result<R::Output, ForgejoError> {
+    ) -> Result<R, ForgejoError> {
         let (response, has_body) =
             E::handle_error(self.send_request(&endpoint.make_request()).await?)?;
         Ok(R::from_response(response, has_body)?)
@@ -760,7 +762,7 @@ mod sealed {
 }
 
 pub trait Endpoint: sealed::Sealed {
-    type Response;
+    type Response: FromResponse;
     fn make_request(self) -> ApiRequest;
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError>;
 }
@@ -807,101 +809,110 @@ impl ApiRequest {
 }
 
 pub trait FromResponse {
-    type Output;
-
-    fn from_response(response: ApiResponse, has_body: bool)
-        -> Result<Self::Output, StructureError>;
+    fn from_response(response: ApiResponse, has_body: bool) -> Result<Self, StructureError>
+    where
+        Self: Sized;
 }
 
-pub mod response_type {
-    use std::marker::PhantomData;
-
-    use crate::FromResponse;
-
-    struct Unconstructable;
-
-    pub struct Json<T>(Unconstructable, PhantomData<*const T>);
-
-    impl<T: serde::de::DeserializeOwned> FromResponse for Json<T> {
-        type Output = T;
-
+#[macro_export]
+macro_rules! impl_from_response {
+    ($t:ty) => {
+        impl $crate::FromResponse for $t {
+            $crate::json_impl!();
+        }
+    };
+}
+#[macro_export]
+#[doc(hidden)]
+macro_rules! json_impl {
+    () => {
         fn from_response(
-            response: crate::ApiResponse,
+            response: $crate::ApiResponse,
             has_body: bool,
-        ) -> Result<Self::Output, crate::StructureError> {
-            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
-            serde_json::from_slice(&response.body).map_err(|e| crate::StructureError::Serde {
+        ) -> Result<Self, $crate::StructureError> {
+            soft_assert::soft_assert!(has_body, Err($crate::StructureError::EmptyResponse));
+            serde_json::from_slice(&response.body()).map_err(|e| $crate::StructureError::Serde {
                 e,
-                contents: response.body.clone(),
+                contents: response.body().clone(),
             })
         }
+    };
+}
+
+impl FromResponse for String {
+    fn from_response(
+        response: crate::ApiResponse,
+        has_body: bool,
+    ) -> Result<Self, crate::StructureError> {
+        soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+        Ok(std::str::from_utf8(&response.body)?.to_owned())
     }
+}
 
-    impl FromResponse for String {
-        type Output = String;
+impl FromResponse for bytes::Bytes {
+    fn from_response(
+        response: crate::ApiResponse,
+        has_body: bool,
+    ) -> Result<Self, crate::StructureError> {
+        soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+        Ok(response.body.clone())
+    }
+}
 
-        fn from_response(
-            response: crate::ApiResponse,
-            has_body: bool,
-        ) -> Result<Self::Output, crate::StructureError> {
-            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
-            Ok(std::str::from_utf8(&response.body)?.to_owned())
+impl<T: FromResponse + serde::de::DeserializeOwned> FromResponse for Vec<T> {
+    json_impl!();
+}
+
+impl<K, V> FromResponse for BTreeMap<K, V>
+where
+    BTreeMap<K, V>: serde::de::DeserializeOwned,
+{
+    json_impl!();
+}
+
+impl FromResponse for Vec<u8> {
+    fn from_response(
+        response: crate::ApiResponse,
+        has_body: bool,
+    ) -> Result<Self, crate::StructureError> {
+        soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
+        Ok(response.body.to_vec())
+    }
+}
+
+impl<
+        T: FromResponse,
+        H: for<'a> TryFrom<&'a reqwest::header::HeaderMap, Error = crate::StructureError>,
+    > FromResponse for (H, T)
+{
+    fn from_response(
+        response: crate::ApiResponse,
+        has_body: bool,
+    ) -> Result<Self, crate::StructureError> {
+        let headers = H::try_from(&response.headers)?;
+        let body = T::from_response(response, has_body)?;
+        Ok((headers, body))
+    }
+}
+
+impl<T: FromResponse> FromResponse for Option<T> {
+    fn from_response(
+        response: crate::ApiResponse,
+        has_body: bool,
+    ) -> Result<Self, crate::StructureError> {
+        if has_body {
+            T::from_response(response, true).map(Some)
+        } else {
+            Ok(None)
         }
     }
+}
 
-    impl FromResponse for bytes::Bytes {
-        type Output = bytes::Bytes;
+impl_from_response!(bool);
 
-        fn from_response(
-            response: crate::ApiResponse,
-            has_body: bool,
-        ) -> Result<Self::Output, crate::StructureError> {
-            soft_assert::soft_assert!(has_body, Err(crate::StructureError::EmptyResponse));
-            Ok(response.body.clone())
-        }
-    }
-
-    impl<
-            T: FromResponse,
-            H: for<'a> TryFrom<&'a reqwest::header::HeaderMap, Error = crate::StructureError>,
-        > FromResponse for (H, T)
-    {
-        type Output = (H, T::Output);
-
-        fn from_response(
-            response: crate::ApiResponse,
-            has_body: bool,
-        ) -> Result<Self::Output, crate::StructureError> {
-            let headers = H::try_from(&response.headers)?;
-            let body = T::from_response(response, has_body)?;
-            Ok((headers, body))
-        }
-    }
-
-    impl<T: FromResponse> FromResponse for Option<T> {
-        type Output = Option<T::Output>;
-
-        fn from_response(
-            response: crate::ApiResponse,
-            has_body: bool,
-        ) -> Result<Self::Output, crate::StructureError> {
-            if has_body {
-                T::from_response(response, true).map(Some)
-            } else {
-                Ok(None)
-            }
-        }
-    }
-
-    impl FromResponse for () {
-        type Output = ();
-
-        fn from_response(
-            _: crate::ApiResponse,
-            _: bool,
-        ) -> Result<Self::Output, crate::StructureError> {
-            Ok(())
-        }
+impl FromResponse for () {
+    fn from_response(_: crate::ApiResponse, _: bool) -> Result<Self, crate::StructureError> {
+        Ok(())
     }
 }
 
@@ -919,13 +930,13 @@ pub struct TypedRequest<E, R> {
 }
 
 impl<E: Endpoint, R: FromResponse> TypedRequest<E, R> {
-    async fn send(&self, client: &Forgejo) -> Result<R::Output, ForgejoError> {
+    async fn send(&self, client: &Forgejo) -> Result<R, ForgejoError> {
         let (response, has_body) = E::handle_error(client.send_request(&self.inner).await?)?;
         Ok(R::from_response(response, has_body)?)
     }
 
     #[cfg(feature = "sync")]
-    fn send_sync(&self, client: &sync::Forgejo) -> Result<R::Output, ForgejoError> {
+    fn send_sync(&self, client: &sync::Forgejo) -> Result<R, ForgejoError> {
         let (response, has_body) = E::handle_error(client.send_request(&self.inner)?)?;
         Ok(R::from_response(response, has_body)?)
     }
@@ -937,73 +948,40 @@ pub struct ApiResponse {
     body: bytes::Bytes,
 }
 
+impl ApiResponse {
+    pub fn status_code(&self) -> StatusCode {
+        self.status_code
+    }
+
+    pub fn headers(&self) -> &reqwest::header::HeaderMap {
+        &self.headers
+    }
+
+    pub fn body(&self) -> &bytes::Bytes {
+        &self.body
+    }
+}
+
 pub struct WrappedRequest<'a, E, R> {
     inner: TypedRequest<E, R>,
     client: &'a Forgejo,
 }
 
-macro_rules! response_type_method_inner {
-    ($self:ident) => {
-        WrappedRequest {
-            inner: TypedRequest {
-                inner: $self.inner.inner,
-                __endpoint: PhantomData,
-                __response: PhantomData,
-            },
-            client: $self.client,
-        }
-    };
-}
-
-macro_rules! response_type_method {
-    ($name:ident -> $response:ty) => {
-        pub fn $name(self) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-    ($name:ident<T> -> $response:ty) => {
-        pub fn $name<T: serde::de::DeserializeOwned>(self) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-    ($name:ident<H> -> $response:ty) => {
-        pub fn $name<H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>>(
-            self,
-        ) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-    ($name:ident<T, H> -> $response:ty) => {
-        pub fn $name<
-            T: serde::de::DeserializeOwned,
-            H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>,
-        >(
-            self,
-        ) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-}
-
-use response_type::*;
 impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
-    pub async fn send(self) -> Result<R::Output, ForgejoError> {
+    pub async fn send(self) -> Result<R, ForgejoError> {
         self.inner.send(self.client).await
     }
 
-    response_type_method!(json<T> -> Json<T>);
-    response_type_method!(json_opt<T> -> Option<Json<T>>);
-    response_type_method!(text -> String);
-    response_type_method!(bytes -> bytes::Bytes);
-    response_type_method!(text_opt -> Option<String>);
-    response_type_method!(bytes_opt -> Option<bytes::Bytes>);
-
-    response_type_method!(headers_json<T, H> -> (H, Json<T>));
-    response_type_method!(headers_json_opt<T, H> -> (H, Option<Json<T>>));
-    response_type_method!(headers_text<H> -> (H, String));
-    response_type_method!(headers_bytes<H> -> (H, bytes::Bytes));
-    response_type_method!(headers_text_opt<H> -> (H, Option<String>));
-    response_type_method!(headers_bytes_opt<H> -> (H, Option<String>));
+    pub fn response_type<T: FromResponse>(self) -> WrappedRequest<'a, E, T> {
+        WrappedRequest {
+            inner: TypedRequest {
+                inner: self.inner.inner,
+                __endpoint: PhantomData,
+                __response: PhantomData,
+            },
+            client: self.client,
+        }
+    }
 
     pub fn page(mut self, page: u32) -> Self {
         self.inner.inner.page = Some(page);
@@ -1031,10 +1009,11 @@ impl<T> PageSize for Vec<T> {
     }
 }
 
-impl<'a, E: Endpoint, R: FromResponse<Output = (H, T)>, T: PageSize, H: CountHeader>
-    WrappedRequest<'a, E, R>
+impl<'a, E: Endpoint, H: CountHeader, T: PageSize> WrappedRequest<'a, E, (H, T)>
+where
+    (H, T): FromResponse,
 {
-    pub fn stream_pages(self) -> PageStream<'a, E, R, T, H> {
+    pub fn stream_pages(self) -> PageStream<'a, E, T, H> {
         PageStream {
             request: self,
             total_seen: 0,
@@ -1044,17 +1023,18 @@ impl<'a, E: Endpoint, R: FromResponse<Output = (H, T)>, T: PageSize, H: CountHea
     }
 }
 
-pub struct PageStream<'a, E: Endpoint, R: FromResponse<Output = (H, T)>, T, H> {
-    request: WrappedRequest<'a, E, R>,
+pub struct PageStream<'a, E: Endpoint, T, H> {
+    request: WrappedRequest<'a, E, (H, T)>,
     total_seen: usize,
     finished: bool,
     fut: Option<Pin<Box<dyn Future<Output = Result<(H, T), ForgejoError>> + 'a>>>,
 }
 
-impl<'a, E: Endpoint, R: FromResponse<Output = (H, T)>, T: PageSize, H: CountHeader>
-    futures::stream::Stream for PageStream<'a, E, R, T, H>
+impl<'a, E: Endpoint, T: PageSize, H: CountHeader> futures::stream::Stream
+    for PageStream<'a, E, T, H>
 where
     Self: Unpin + 'a,
+    (H, T): FromResponse,
 {
     type Item = Result<T, ForgejoError>;
 
@@ -1070,8 +1050,9 @@ where
                 let request = self.request.inner.inner.clone();
                 let client = self.request.client;
                 let fut = Box::pin(async move {
-                    E::handle_error(client.send_request(&request).await?)
-                        .and_then(|(res, body)| R::from_response(res, body).map_err(|e| e.into()))
+                    E::handle_error(client.send_request(&request).await?).and_then(|(res, body)| {
+                        <(H, T)>::from_response(res, body).map_err(|e| e.into())
+                    })
                 });
                 self.fut = Some(fut);
                 cx.waker().wake_by_ref();
@@ -1112,17 +1093,11 @@ where
     }
 }
 
-impl<
-        'a,
-        E: Endpoint + 'a,
-        R: FromResponse<Output = (H, Vec<T>)> + 'a,
-        T: 'a,
-        H: CountHeader + 'a,
-    > WrappedRequest<'a, E, R>
+impl<'a, E: Endpoint + 'a, T: 'a, H: CountHeader + 'a> WrappedRequest<'a, E, (H, Vec<T>)>
+where
+    (H, Vec<T>): FromResponse,
 {
-    pub fn stream(
-        self,
-    ) -> impl futures::Stream<Item = Result<T, ForgejoError>> + use<'a, E, R, T, H> {
+    pub fn stream(self) -> impl futures::Stream<Item = Result<T, ForgejoError>> + use<'a, E, T, H> {
         use futures::TryStreamExt;
         self.stream_pages()
             .map_ok(|page| futures::stream::iter(page.into_iter().map(Ok)))
@@ -1137,7 +1112,7 @@ impl<
 }
 
 impl<'a, E: Endpoint, R: FromResponse> std::future::IntoFuture for WrappedRequest<'a, E, R> {
-    type Output = Result<R::Output, ForgejoError>;
+    type Output = Result<R, ForgejoError>;
 
     type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + 'a>>;
 

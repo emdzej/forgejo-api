@@ -1,5 +1,4 @@
 use super::structs::*;
-use crate::response_type::Json;
 use crate::sealed::Sealed;
 use crate::Endpoint;
 use crate::{ApiError, ForgejoError, StructureError};
@@ -25,7 +24,7 @@ pub struct ActivitypubInstanceActor {}
 
 impl Sealed for ActivitypubInstanceActor {}
 impl Endpoint for ActivitypubInstanceActor {
-    type Response = Json<ActivityPub>;
+    type Response = ActivityPub;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -79,7 +78,7 @@ pub struct ActivitypubRepository {
 
 impl Sealed for ActivitypubRepository {}
 impl Endpoint for ActivitypubRepository {
-    type Response = Json<ActivityPub>;
+    type Response = ActivityPub;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -143,7 +142,7 @@ pub struct ActivitypubPerson {
 
 impl Sealed for ActivitypubPerson {}
 impl Endpoint for ActivitypubPerson {
-    type Response = Json<ActivityPub>;
+    type Response = ActivityPub;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -172,7 +171,7 @@ pub struct ActivitypubPersonActivityNote {
 
 impl Sealed for ActivitypubPersonActivityNote {}
 impl Endpoint for ActivitypubPersonActivityNote {
-    type Response = Json<ActivityPub>;
+    type Response = ActivityPub;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -205,7 +204,7 @@ pub struct ActivitypubPersonActivity {
 
 impl Sealed for ActivitypubPersonActivity {}
 impl Endpoint for ActivitypubPersonActivity {
-    type Response = Json<ActivityPub>;
+    type Response = ActivityPub;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -265,7 +264,7 @@ pub struct ActivitypubPersonFeed {
 
 impl Sealed for ActivitypubPersonFeed {}
 impl Endpoint for ActivitypubPersonFeed {
-    type Response = Json<Vec<APPersonFollowItem>>;
+    type Response = Vec<APPersonFollowItem>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -292,7 +291,7 @@ pub struct AdminCronList {}
 
 impl Sealed for AdminCronList {}
 impl Endpoint for AdminCronList {
-    type Response = (CronListHeaders, Json<Vec<Cron>>);
+    type Response = (CronListHeaders, Vec<Cron>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -348,7 +347,7 @@ pub struct AdminGetAllEmails {}
 
 impl Sealed for AdminGetAllEmails {}
 impl Endpoint for AdminGetAllEmails {
-    type Response = Json<Vec<Email>>;
+    type Response = Vec<Email>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -377,7 +376,7 @@ pub struct AdminSearchEmails {
 
 impl Sealed for AdminSearchEmails {}
 impl Endpoint for AdminSearchEmails {
-    type Response = Json<Vec<Email>>;
+    type Response = Vec<Email>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -404,7 +403,7 @@ pub struct AdminListHooks {}
 
 impl Sealed for AdminListHooks {}
 impl Endpoint for AdminListHooks {
-    type Response = (HookListHeaders, Json<Vec<Hook>>);
+    type Response = (HookListHeaders, Vec<Hook>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -432,7 +431,7 @@ pub struct AdminCreateHook {
 
 impl Sealed for AdminCreateHook {}
 impl Endpoint for AdminCreateHook {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -463,7 +462,7 @@ pub struct AdminGetHook {
 
 impl Sealed for AdminGetHook {}
 impl Endpoint for AdminGetHook {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -520,7 +519,7 @@ pub struct AdminEditHook {
 
 impl Sealed for AdminEditHook {}
 impl Endpoint for AdminEditHook {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -549,7 +548,7 @@ pub struct AdminGetAllOrgs {}
 
 impl Sealed for AdminGetAllOrgs {}
 impl Endpoint for AdminGetAllOrgs {
-    type Response = (OrganizationListHeaders, Json<Vec<Organization>>);
+    type Response = (OrganizationListHeaders, Vec<Organization>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -576,7 +575,7 @@ pub struct AdminListQuotaGroups {}
 
 impl Sealed for AdminListQuotaGroups {}
 impl Endpoint for AdminListQuotaGroups {
-    type Response = (QuotaGroupListHeaders, Json<Vec<QuotaGroup>>);
+    type Response = (QuotaGroupListHeaders, Vec<QuotaGroup>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -605,7 +604,7 @@ pub struct AdminCreateQuotaGroup {
 
 impl Sealed for AdminCreateQuotaGroup {}
 impl Endpoint for AdminCreateQuotaGroup {
-    type Response = Json<QuotaGroup>;
+    type Response = QuotaGroup;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -640,7 +639,7 @@ pub struct AdminGetQuotaGroup<'a> {
 
 impl Sealed for AdminGetQuotaGroup<'_> {}
 impl Endpoint for AdminGetQuotaGroup<'_> {
-    type Response = Json<QuotaGroup>;
+    type Response = QuotaGroup;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -776,7 +775,7 @@ pub struct AdminListUsersInQuotaGroup<'a> {
 
 impl Sealed for AdminListUsersInQuotaGroup<'_> {}
 impl Endpoint for AdminListUsersInQuotaGroup<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -879,7 +878,7 @@ pub struct AdminListQuotaRules {}
 
 impl Sealed for AdminListQuotaRules {}
 impl Endpoint for AdminListQuotaRules {
-    type Response = (QuotaRuleInfoListHeaders, Json<Vec<QuotaRuleInfo>>);
+    type Response = (QuotaRuleInfoListHeaders, Vec<QuotaRuleInfo>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -908,7 +907,7 @@ pub struct AdminCreateQuotaRule {
 
 impl Sealed for AdminCreateQuotaRule {}
 impl Endpoint for AdminCreateQuotaRule {
-    type Response = Json<QuotaRuleInfo>;
+    type Response = QuotaRuleInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -943,7 +942,7 @@ pub struct AdminGetQuotaRule<'a> {
 
 impl Sealed for AdminGetQuotaRule<'_> {}
 impl Endpoint for AdminGetQuotaRule<'_> {
-    type Response = Json<QuotaRuleInfo>;
+    type Response = QuotaRuleInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1006,7 +1005,7 @@ pub struct AdminEditQuotaRule<'a> {
 
 impl Sealed for AdminEditQuotaRule<'_> {}
 impl Endpoint for AdminEditQuotaRule<'_> {
-    type Response = Json<QuotaRuleInfo>;
+    type Response = QuotaRuleInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -1041,7 +1040,7 @@ pub struct AdminSearchRunJobs {
 
 impl Sealed for AdminSearchRunJobs {}
 impl Endpoint for AdminSearchRunJobs {
-    type Response = Json<Vec<ActionRunJob>>;
+    type Response = Vec<ActionRunJob>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1068,7 +1067,7 @@ pub struct AdminGetRunnerRegistrationToken {}
 
 impl Sealed for AdminGetRunnerRegistrationToken {}
 impl Endpoint for AdminGetRunnerRegistrationToken {
-    type Response = Json<RegistrationToken>;
+    type Response = RegistrationToken;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1096,7 +1095,7 @@ pub struct AdminUnadoptedList {
 
 impl Sealed for AdminUnadoptedList {}
 impl Endpoint for AdminUnadoptedList {
-    type Response = Json<Vec<String>>;
+    type Response = Vec<String>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1186,7 +1185,7 @@ pub struct AdminSearchUsers {
 
 impl Sealed for AdminSearchUsers {}
 impl Endpoint for AdminSearchUsers {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1215,7 +1214,7 @@ pub struct AdminCreateUser {
 
 impl Sealed for AdminCreateUser {}
 impl Endpoint for AdminCreateUser {
-    type Response = Json<User>;
+    type Response = User;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1282,7 +1281,7 @@ pub struct AdminEditUser<'a> {
 
 impl Sealed for AdminEditUser<'_> {}
 impl Endpoint for AdminEditUser<'_> {
-    type Response = Json<User>;
+    type Response = User;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -1317,7 +1316,7 @@ pub struct AdminCreatePublicKey<'a> {
 
 impl Sealed for AdminCreatePublicKey<'_> {}
 impl Endpoint for AdminCreatePublicKey<'_> {
-    type Response = Json<PublicKey>;
+    type Response = PublicKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1382,7 +1381,7 @@ pub struct AdminCreateOrg<'a> {
 
 impl Sealed for AdminCreateOrg<'_> {}
 impl Endpoint for AdminCreateOrg<'_> {
-    type Response = Json<Organization>;
+    type Response = Organization;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1415,7 +1414,7 @@ pub struct AdminGetUserQuota<'a> {
 
 impl Sealed for AdminGetUserQuota<'_> {}
 impl Endpoint for AdminGetUserQuota<'_> {
-    type Response = Json<QuotaInfo>;
+    type Response = QuotaInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1518,7 +1517,7 @@ pub struct AdminCreateRepo<'a> {
 
 impl Sealed for AdminCreateRepo<'_> {}
 impl Endpoint for AdminCreateRepo<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -1552,7 +1551,7 @@ pub struct ListGitignoresTemplates {}
 
 impl Sealed for ListGitignoresTemplates {}
 impl Endpoint for ListGitignoresTemplates {
-    type Response = Json<Vec<String>>;
+    type Response = Vec<String>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1580,7 +1579,7 @@ pub struct GetGitignoreTemplateInfo<'a> {
 
 impl Sealed for GetGitignoreTemplateInfo<'_> {}
 impl Endpoint for GetGitignoreTemplateInfo<'_> {
-    type Response = Json<GitignoreTemplateInfo>;
+    type Response = GitignoreTemplateInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1607,7 +1606,7 @@ pub struct ListLabelTemplates {}
 
 impl Sealed for ListLabelTemplates {}
 impl Endpoint for ListLabelTemplates {
-    type Response = Json<Vec<String>>;
+    type Response = Vec<String>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1635,7 +1634,7 @@ pub struct GetLabelTemplateInfo<'a> {
 
 impl Sealed for GetLabelTemplateInfo<'_> {}
 impl Endpoint for GetLabelTemplateInfo<'_> {
-    type Response = Json<Vec<LabelTemplate>>;
+    type Response = Vec<LabelTemplate>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1662,7 +1661,7 @@ pub struct ListLicenseTemplates {}
 
 impl Sealed for ListLicenseTemplates {}
 impl Endpoint for ListLicenseTemplates {
-    type Response = Json<Vec<LicensesTemplateListEntry>>;
+    type Response = Vec<LicensesTemplateListEntry>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1690,7 +1689,7 @@ pub struct GetLicenseTemplateInfo<'a> {
 
 impl Sealed for GetLicenseTemplateInfo<'_> {}
 impl Endpoint for GetLicenseTemplateInfo<'_> {
-    type Response = Json<LicenseTemplateInfo>;
+    type Response = LicenseTemplateInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1813,7 +1812,7 @@ pub struct GetNodeInfo {}
 
 impl Sealed for GetNodeInfo {}
 impl Endpoint for GetNodeInfo {
-    type Response = Json<NodeInfo>;
+    type Response = NodeInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1841,7 +1840,7 @@ pub struct NotifyGetList {
 
 impl Sealed for NotifyGetList {}
 impl Endpoint for NotifyGetList {
-    type Response = (NotificationThreadListHeaders, Json<Vec<NotificationThread>>);
+    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1869,7 +1868,7 @@ pub struct NotifyReadList {
 
 impl Sealed for NotifyReadList {}
 impl Endpoint for NotifyReadList {
-    type Response = (NotificationThreadListHeaders, Json<Vec<NotificationThread>>);
+    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -1895,7 +1894,7 @@ pub struct NotifyNewAvailable {}
 
 impl Sealed for NotifyNewAvailable {}
 impl Endpoint for NotifyNewAvailable {
-    type Response = Json<NotificationCount>;
+    type Response = NotificationCount;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1923,7 +1922,7 @@ pub struct NotifyGetThread {
 
 impl Sealed for NotifyGetThread {}
 impl Endpoint for NotifyGetThread {
-    type Response = Json<NotificationThread>;
+    type Response = NotificationThread;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -1954,7 +1953,7 @@ pub struct NotifyReadThread {
 
 impl Sealed for NotifyReadThread {}
 impl Endpoint for NotifyReadThread {
-    type Response = Json<NotificationThread>;
+    type Response = NotificationThread;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -1985,7 +1984,7 @@ pub struct CreateOrgRepoDeprecated<'a> {
 
 impl Sealed for CreateOrgRepoDeprecated<'_> {}
 impl Endpoint for CreateOrgRepoDeprecated<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2017,7 +2016,7 @@ pub struct OrgGetAll {}
 
 impl Sealed for OrgGetAll {}
 impl Endpoint for OrgGetAll {
-    type Response = (OrganizationListHeaders, Json<Vec<Organization>>);
+    type Response = (OrganizationListHeaders, Vec<Organization>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2045,7 +2044,7 @@ pub struct OrgCreate {
 
 impl Sealed for OrgCreate {}
 impl Endpoint for OrgCreate {
-    type Response = Json<Organization>;
+    type Response = Organization;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2078,7 +2077,7 @@ pub struct OrgGet<'a> {
 
 impl Sealed for OrgGet<'_> {}
 impl Endpoint for OrgGet<'_> {
-    type Response = Json<Organization>;
+    type Response = Organization;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2137,7 +2136,7 @@ pub struct OrgEdit<'a> {
 
 impl Sealed for OrgEdit<'_> {}
 impl Endpoint for OrgEdit<'_> {
-    type Response = Json<Organization>;
+    type Response = Organization;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -2171,7 +2170,7 @@ pub struct OrgSearchRunJobs<'a> {
 
 impl Sealed for OrgSearchRunJobs<'_> {}
 impl Endpoint for OrgSearchRunJobs<'_> {
-    type Response = Json<Vec<ActionRunJob>>;
+    type Response = Vec<ActionRunJob>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2200,7 +2199,7 @@ pub struct OrgGetRunnerRegistrationToken<'a> {
 
 impl Sealed for OrgGetRunnerRegistrationToken<'_> {}
 impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
-    type Response = Json<RegistrationToken>;
+    type Response = RegistrationToken;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2232,7 +2231,7 @@ pub struct OrgListActionsSecrets<'a> {
 
 impl Sealed for OrgListActionsSecrets<'_> {}
 impl Endpoint for OrgListActionsSecrets<'_> {
-    type Response = (SecretListHeaders, Json<Vec<Secret>>);
+    type Response = (SecretListHeaders, Vec<Secret>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2336,7 +2335,7 @@ pub struct GetOrgVariablesList<'a> {
 
 impl Sealed for GetOrgVariablesList<'_> {}
 impl Endpoint for GetOrgVariablesList<'_> {
-    type Response = (VariableListHeaders, Json<Vec<ActionVariable>>);
+    type Response = (VariableListHeaders, Vec<ActionVariable>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2367,7 +2366,7 @@ pub struct GetOrgVariable<'a> {
 
 impl Sealed for GetOrgVariable<'_> {}
 impl Endpoint for GetOrgVariable<'_> {
-    type Response = Json<ActionVariable>;
+    type Response = ActionVariable;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2517,7 +2516,7 @@ pub struct OrgListActivityFeeds<'a> {
 
 impl Sealed for OrgListActivityFeeds<'_> {}
 impl Endpoint for OrgListActivityFeeds<'_> {
-    type Response = (ActivityFeedsListHeaders, Json<Vec<Activity>>);
+    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2639,7 +2638,7 @@ pub struct OrgListHooks<'a> {
 
 impl Sealed for OrgListHooks<'_> {}
 impl Endpoint for OrgListHooks<'_> {
-    type Response = (HookListHeaders, Json<Vec<Hook>>);
+    type Response = (HookListHeaders, Vec<Hook>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2669,7 +2668,7 @@ pub struct OrgCreateHook<'a> {
 
 impl Sealed for OrgCreateHook<'_> {}
 impl Endpoint for OrgCreateHook<'_> {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2702,7 +2701,7 @@ pub struct OrgGetHook<'a> {
 
 impl Sealed for OrgGetHook<'_> {}
 impl Endpoint for OrgGetHook<'_> {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2763,7 +2762,7 @@ pub struct OrgEditHook<'a> {
 
 impl Sealed for OrgEditHook<'_> {}
 impl Endpoint for OrgEditHook<'_> {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -2796,7 +2795,7 @@ pub struct OrgListLabels<'a> {
 
 impl Sealed for OrgListLabels<'_> {}
 impl Endpoint for OrgListLabels<'_> {
-    type Response = (LabelListHeaders, Json<Vec<Label>>);
+    type Response = (LabelListHeaders, Vec<Label>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2826,7 +2825,7 @@ pub struct OrgCreateLabel<'a> {
 
 impl Sealed for OrgCreateLabel<'_> {}
 impl Endpoint for OrgCreateLabel<'_> {
-    type Response = Json<Label>;
+    type Response = Label;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -2860,7 +2859,7 @@ pub struct OrgGetLabel<'a> {
 
 impl Sealed for OrgGetLabel<'_> {}
 impl Endpoint for OrgGetLabel<'_> {
-    type Response = Json<Label>;
+    type Response = Label;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2921,7 +2920,7 @@ pub struct OrgEditLabel<'a> {
 
 impl Sealed for OrgEditLabel<'_> {}
 impl Endpoint for OrgEditLabel<'_> {
-    type Response = Json<Label>;
+    type Response = Label;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -2954,7 +2953,7 @@ pub struct OrgListBlockedUsers<'a> {
 
 impl Sealed for OrgListBlockedUsers<'_> {}
 impl Endpoint for OrgListBlockedUsers<'_> {
-    type Response = (BlockedUserListHeaders, Json<Vec<BlockedUser>>);
+    type Response = (BlockedUserListHeaders, Vec<BlockedUser>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -2982,7 +2981,7 @@ pub struct OrgListMembers<'a> {
 
 impl Sealed for OrgListMembers<'_> {}
 impl Endpoint for OrgListMembers<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3071,7 +3070,7 @@ pub struct OrgListPublicMembers<'a> {
 
 impl Sealed for OrgListPublicMembers<'_> {}
 impl Endpoint for OrgListPublicMembers<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3192,7 +3191,7 @@ pub struct OrgGetQuota<'a> {
 
 impl Sealed for OrgGetQuota<'_> {}
 impl Endpoint for OrgGetQuota<'_> {
-    type Response = Json<QuotaInfo>;
+    type Response = QuotaInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3222,7 +3221,7 @@ pub struct OrgListQuotaArtifacts<'a> {
 
 impl Sealed for OrgListQuotaArtifacts<'_> {}
 impl Endpoint for OrgListQuotaArtifacts<'_> {
-    type Response = (QuotaUsedArtifactListHeaders, Json<Vec<QuotaUsedArtifact>>);
+    type Response = (QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3252,10 +3251,7 @@ pub struct OrgListQuotaAttachments<'a> {
 
 impl Sealed for OrgListQuotaAttachments<'_> {}
 impl Endpoint for OrgListQuotaAttachments<'_> {
-    type Response = (
-        QuotaUsedAttachmentListHeaders,
-        Json<Vec<QuotaUsedAttachment>>,
-    );
+    type Response = (QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3286,7 +3282,7 @@ pub struct OrgCheckQuota<'a> {
 
 impl Sealed for OrgCheckQuota<'_> {}
 impl Endpoint for OrgCheckQuota<'_> {
-    type Response = Json<bool>;
+    type Response = bool;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3317,7 +3313,7 @@ pub struct OrgListQuotaPackages<'a> {
 
 impl Sealed for OrgListQuotaPackages<'_> {}
 impl Endpoint for OrgListQuotaPackages<'_> {
-    type Response = (QuotaUsedPackageListHeaders, Json<Vec<QuotaUsedPackage>>);
+    type Response = (QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3381,7 +3377,7 @@ pub struct OrgListRepos<'a> {
 
 impl Sealed for OrgListRepos<'_> {}
 impl Endpoint for OrgListRepos<'_> {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3411,7 +3407,7 @@ pub struct CreateOrgRepo<'a> {
 
 impl Sealed for CreateOrgRepo<'_> {}
 impl Endpoint for CreateOrgRepo<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -3445,7 +3441,7 @@ pub struct OrgListTeams<'a> {
 
 impl Sealed for OrgListTeams<'_> {}
 impl Endpoint for OrgListTeams<'_> {
-    type Response = (TeamListHeaders, Json<Vec<Team>>);
+    type Response = (TeamListHeaders, Vec<Team>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3475,7 +3471,7 @@ pub struct OrgCreateTeam<'a> {
 
 impl Sealed for OrgCreateTeam<'_> {}
 impl Endpoint for OrgCreateTeam<'_> {
-    type Response = Json<Team>;
+    type Response = Team;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -3509,7 +3505,7 @@ pub struct TeamSearch<'a> {
 
 impl Sealed for TeamSearch<'_> {}
 impl Endpoint for TeamSearch<'_> {
-    type Response = Json<TeamSearchResponse>;
+    type Response = TeamSearchResults;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3570,7 +3566,7 @@ pub struct ListPackages<'a> {
 
 impl Sealed for ListPackages<'_> {}
 impl Endpoint for ListPackages<'_> {
-    type Response = (PackageListHeaders, Json<Vec<Package>>);
+    type Response = (PackageListHeaders, Vec<Package>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3673,7 +3669,7 @@ pub struct GetPackage<'a> {
 
 impl Sealed for GetPackage<'_> {}
 impl Endpoint for GetPackage<'_> {
-    type Response = Json<Package>;
+    type Response = Package;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3745,7 +3741,7 @@ pub struct ListPackageFiles<'a> {
 
 impl Sealed for ListPackageFiles<'_> {}
 impl Endpoint for ListPackageFiles<'_> {
-    type Response = (PackageFileListHeaders, Json<Vec<PackageFile>>);
+    type Response = (PackageFileListHeaders, Vec<PackageFile>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3778,7 +3774,7 @@ pub struct IssueSearchIssues {
 
 impl Sealed for IssueSearchIssues {}
 impl Endpoint for IssueSearchIssues {
-    type Response = (IssueListHeaders, Json<Vec<Issue>>);
+    type Response = (IssueListHeaders, Vec<Issue>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3808,7 +3804,7 @@ pub struct RepoMigrate {
 
 impl Sealed for RepoMigrate {}
 impl Endpoint for RepoMigrate {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -3843,7 +3839,7 @@ pub struct RepoSearch {
 
 impl Sealed for RepoSearch {}
 impl Endpoint for RepoSearch {
-    type Response = Json<SearchResults>;
+    type Response = SearchResults;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3873,7 +3869,7 @@ pub struct RepoGet<'a> {
 
 impl Sealed for RepoGet<'_> {}
 impl Endpoint for RepoGet<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -3935,7 +3931,7 @@ pub struct RepoEdit<'a> {
 
 impl Sealed for RepoEdit<'_> {}
 impl Endpoint for RepoEdit<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -3971,7 +3967,7 @@ pub struct RepoSearchRunJobs<'a> {
 
 impl Sealed for RepoSearchRunJobs<'_> {}
 impl Endpoint for RepoSearchRunJobs<'_> {
-    type Response = Json<Vec<ActionRunJob>>;
+    type Response = Vec<ActionRunJob>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4005,7 +4001,7 @@ pub struct RepoGetRunnerRegistrationToken<'a> {
 
 impl Sealed for RepoGetRunnerRegistrationToken<'_> {}
 impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
-    type Response = Json<RegistrationToken>;
+    type Response = RegistrationToken;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4039,7 +4035,7 @@ pub struct ListActionRuns<'a> {
 
 impl Sealed for ListActionRuns<'_> {}
 impl Endpoint for ListActionRuns<'_> {
-    type Response = Json<ListActionRunResponse>;
+    type Response = ListActionRunResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4071,7 +4067,7 @@ pub struct GetActionRun<'a> {
 
 impl Sealed for GetActionRun<'_> {}
 impl Endpoint for GetActionRun<'_> {
-    type Response = Json<ActionRun>;
+    type Response = ActionRun;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4107,7 +4103,7 @@ pub struct RepoListActionsSecrets<'a> {
 
 impl Sealed for RepoListActionsSecrets<'_> {}
 impl Endpoint for RepoListActionsSecrets<'_> {
-    type Response = (SecretListHeaders, Json<Vec<Secret>>);
+    type Response = (SecretListHeaders, Vec<Secret>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4214,7 +4210,7 @@ pub struct ListActionTasks<'a> {
 
 impl Sealed for ListActionTasks<'_> {}
 impl Endpoint for ListActionTasks<'_> {
-    type Response = Json<ActionTaskResponse>;
+    type Response = ActionTaskResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4248,7 +4244,7 @@ pub struct GetRepoVariablesList<'a> {
 
 impl Sealed for GetRepoVariablesList<'_> {}
 impl Endpoint for GetRepoVariablesList<'_> {
-    type Response = (VariableListHeaders, Json<Vec<ActionVariable>>);
+    type Response = (VariableListHeaders, Vec<ActionVariable>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4284,7 +4280,7 @@ pub struct GetRepoVariable<'a> {
 
 impl Sealed for GetRepoVariable<'_> {}
 impl Endpoint for GetRepoVariable<'_> {
-    type Response = Json<ActionVariable>;
+    type Response = ActionVariable;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4439,7 +4435,7 @@ pub struct DispatchWorkflow<'a> {
 
 impl Sealed for DispatchWorkflow<'_> {}
 impl Endpoint for DispatchWorkflow<'_> {
-    type Response = Option<Json<DispatchWorkflowRun>>;
+    type Response = Option<DispatchWorkflowRun>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -4478,7 +4474,7 @@ pub struct RepoListActivityFeeds<'a> {
 
 impl Sealed for RepoListActivityFeeds<'_> {}
 impl Endpoint for RepoListActivityFeeds<'_> {
-    type Response = (ActivityFeedsListHeaders, Json<Vec<Activity>>);
+    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4513,7 +4509,7 @@ pub struct RepoGetArchive<'a> {
 
 impl Sealed for RepoGetArchive<'_> {}
 impl Endpoint for RepoGetArchive<'_> {
-    type Response = bytes::Bytes;
+    type Response = Bytes;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4547,7 +4543,7 @@ pub struct RepoGetAssignees<'a> {
 
 impl Sealed for RepoGetAssignees<'_> {}
 impl Endpoint for RepoGetAssignees<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4641,7 +4637,7 @@ pub struct RepoListBranchProtection<'a> {
 
 impl Sealed for RepoListBranchProtection<'_> {}
 impl Endpoint for RepoListBranchProtection<'_> {
-    type Response = Json<Vec<BranchProtection>>;
+    type Response = Vec<BranchProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4675,7 +4671,7 @@ pub struct RepoCreateBranchProtection<'a> {
 
 impl Sealed for RepoCreateBranchProtection<'_> {}
 impl Endpoint for RepoCreateBranchProtection<'_> {
-    type Response = Json<BranchProtection>;
+    type Response = BranchProtection;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -4716,7 +4712,7 @@ pub struct RepoGetBranchProtection<'a> {
 
 impl Sealed for RepoGetBranchProtection<'_> {}
 impl Endpoint for RepoGetBranchProtection<'_> {
-    type Response = Json<BranchProtection>;
+    type Response = BranchProtection;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4787,7 +4783,7 @@ pub struct RepoEditBranchProtection<'a> {
 
 impl Sealed for RepoEditBranchProtection<'_> {}
 impl Endpoint for RepoEditBranchProtection<'_> {
-    type Response = Json<BranchProtection>;
+    type Response = BranchProtection;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -4826,7 +4822,7 @@ pub struct RepoListBranches<'a> {
 
 impl Sealed for RepoListBranches<'_> {}
 impl Endpoint for RepoListBranches<'_> {
-    type Response = (BranchListHeaders, Json<Vec<Branch>>);
+    type Response = (BranchListHeaders, Vec<Branch>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -4856,7 +4852,7 @@ pub struct RepoCreateBranch<'a> {
 
 impl Sealed for RepoCreateBranch<'_> {}
 impl Endpoint for RepoCreateBranch<'_> {
-    type Response = Json<Branch>;
+    type Response = Branch;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -4894,7 +4890,7 @@ pub struct RepoGetBranch<'a> {
 
 impl Sealed for RepoGetBranch<'_> {}
 impl Endpoint for RepoGetBranch<'_> {
-    type Response = Json<Branch>;
+    type Response = Branch;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5006,7 +5002,7 @@ pub struct RepoListCollaborators<'a> {
 
 impl Sealed for RepoListCollaborators<'_> {}
 impl Endpoint for RepoListCollaborators<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5150,7 +5146,7 @@ pub struct RepoGetRepoPermissions<'a> {
 
 impl Sealed for RepoGetRepoPermissions<'_> {}
 impl Endpoint for RepoGetRepoPermissions<'_> {
-    type Response = Json<RepoCollaboratorPermission>;
+    type Response = RepoCollaboratorPermission;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5186,7 +5182,7 @@ pub struct RepoGetAllCommits<'a> {
 
 impl Sealed for RepoGetAllCommits<'_> {}
 impl Endpoint for RepoGetAllCommits<'_> {
-    type Response = (CommitListHeaders, Json<Vec<Commit>>);
+    type Response = (CommitListHeaders, Vec<Commit>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5218,7 +5214,7 @@ pub struct RepoGetCombinedStatusByRef<'a> {
 
 impl Sealed for RepoGetCombinedStatusByRef<'_> {}
 impl Endpoint for RepoGetCombinedStatusByRef<'_> {
-    type Response = (CombinedStatusHeaders, Json<CombinedStatus>);
+    type Response = (CombinedStatusHeaders, CombinedStatus);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5255,7 +5251,7 @@ pub struct RepoListStatusesByRef<'a> {
 
 impl Sealed for RepoListStatusesByRef<'_> {}
 impl Endpoint for RepoListStatusesByRef<'_> {
-    type Response = (CommitStatusListHeaders, Json<Vec<CommitStatus>>);
+    type Response = (CommitStatusListHeaders, Vec<CommitStatus>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5291,7 +5287,7 @@ pub struct RepoGetCommitPullRequest<'a> {
 
 impl Sealed for RepoGetCommitPullRequest<'_> {}
 impl Endpoint for RepoGetCommitPullRequest<'_> {
-    type Response = Json<PullRequest>;
+    type Response = PullRequest;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5326,7 +5322,7 @@ pub struct RepoCompareDiff<'a> {
 
 impl Sealed for RepoCompareDiff<'_> {}
 impl Endpoint for RepoCompareDiff<'_> {
-    type Response = Json<Compare>;
+    type Response = Compare;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5361,7 +5357,7 @@ pub struct RepoGetContentsList<'a> {
 
 impl Sealed for RepoGetContentsList<'_> {}
 impl Endpoint for RepoGetContentsList<'_> {
-    type Response = Json<Vec<ContentsResponse>>;
+    type Response = Vec<ContentsResponse>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5392,7 +5388,7 @@ pub struct RepoChangeFiles<'a> {
 
 impl Sealed for RepoChangeFiles<'_> {}
 impl Endpoint for RepoChangeFiles<'_> {
-    type Response = Json<FilesResponse>;
+    type Response = FilesResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5432,7 +5428,7 @@ pub struct RepoGetContents<'a> {
 
 impl Sealed for RepoGetContents<'_> {}
 impl Endpoint for RepoGetContents<'_> {
-    type Response = Json<ContentsResponse>;
+    type Response = ContentsResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5468,7 +5464,7 @@ pub struct RepoUpdateFile<'a> {
 
 impl Sealed for RepoUpdateFile<'_> {}
 impl Endpoint for RepoUpdateFile<'_> {
-    type Response = Json<FileResponse>;
+    type Response = FileResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -5512,7 +5508,7 @@ pub struct RepoCreateFile<'a> {
 
 impl Sealed for RepoCreateFile<'_> {}
 impl Endpoint for RepoCreateFile<'_> {
-    type Response = Json<FileResponse>;
+    type Response = FileResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5556,7 +5552,7 @@ pub struct RepoDeleteFile<'a> {
 
 impl Sealed for RepoDeleteFile<'_> {}
 impl Endpoint for RepoDeleteFile<'_> {
-    type Response = Json<FileDeleteResponse>;
+    type Response = FileDeleteResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -5597,7 +5593,7 @@ pub struct RepoConvert<'a> {
 
 impl Sealed for RepoConvert<'_> {}
 impl Endpoint for RepoConvert<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5630,7 +5626,7 @@ pub struct RepoApplyDiffPatch<'a> {
 
 impl Sealed for RepoApplyDiffPatch<'_> {}
 impl Endpoint for RepoApplyDiffPatch<'_> {
-    type Response = Json<FileResponse>;
+    type Response = FileResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5667,7 +5663,7 @@ pub struct RepoGetEditorConfig<'a> {
 
 impl Sealed for RepoGetEditorConfig<'_> {}
 impl Endpoint for RepoGetEditorConfig<'_> {
-    type Response = Json<BTreeMap<String, String>>;
+    type Response = BTreeMap<String, String>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5701,7 +5697,7 @@ pub struct RepoListFlags<'a> {
 
 impl Sealed for RepoListFlags<'_> {}
 impl Endpoint for RepoListFlags<'_> {
-    type Response = Json<Vec<String>>;
+    type Response = Vec<String>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5906,7 +5902,7 @@ pub struct ListForks<'a> {
 
 impl Sealed for ListForks<'_> {}
 impl Endpoint for ListForks<'_> {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -5937,7 +5933,7 @@ pub struct CreateFork<'a> {
 
 impl Sealed for CreateFork<'_> {}
 impl Endpoint for CreateFork<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -5975,7 +5971,7 @@ pub struct GetBlobs<'a> {
 
 impl Sealed for GetBlobs<'_> {}
 impl Endpoint for GetBlobs<'_> {
-    type Response = Json<Vec<GitBlob>>;
+    type Response = Vec<GitBlob>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6006,7 +6002,7 @@ pub struct GetBlob<'a> {
 
 impl Sealed for GetBlob<'_> {}
 impl Endpoint for GetBlob<'_> {
-    type Response = Json<GitBlob>;
+    type Response = GitBlob;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6043,7 +6039,7 @@ pub struct RepoGetSingleCommit<'a> {
 
 impl Sealed for RepoGetSingleCommit<'_> {}
 impl Endpoint for RepoGetSingleCommit<'_> {
-    type Response = Json<Commit>;
+    type Response = Commit;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6116,7 +6112,7 @@ pub struct RepoGetNote<'a> {
 
 impl Sealed for RepoGetNote<'_> {}
 impl Endpoint for RepoGetNote<'_> {
-    type Response = Json<Note>;
+    type Response = Note;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6153,7 +6149,7 @@ pub struct RepoSetNote<'a> {
 
 impl Sealed for RepoSetNote<'_> {}
 impl Endpoint for RepoSetNote<'_> {
-    type Response = Json<Note>;
+    type Response = Note;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -6227,7 +6223,7 @@ pub struct RepoListAllGitRefs<'a> {
 
 impl Sealed for RepoListAllGitRefs<'_> {}
 impl Endpoint for RepoListAllGitRefs<'_> {
-    type Response = Json<Vec<Reference>>;
+    type Response = Vec<Reference>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6258,7 +6254,7 @@ pub struct RepoListGitRefs<'a> {
 
 impl Sealed for RepoListGitRefs<'_> {}
 impl Endpoint for RepoListGitRefs<'_> {
-    type Response = Json<Vec<Reference>>;
+    type Response = Vec<Reference>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6293,7 +6289,7 @@ pub struct GetAnnotatedTag<'a> {
 
 impl Sealed for GetAnnotatedTag<'_> {}
 impl Endpoint for GetAnnotatedTag<'_> {
-    type Response = Json<AnnotatedTag>;
+    type Response = AnnotatedTag;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6330,7 +6326,7 @@ pub struct GetTree<'a> {
 
 impl Sealed for GetTree<'_> {}
 impl Endpoint for GetTree<'_> {
-    type Response = Json<GitTreeResponse>;
+    type Response = GitTreeResponse;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6365,7 +6361,7 @@ pub struct RepoListHooks<'a> {
 
 impl Sealed for RepoListHooks<'_> {}
 impl Endpoint for RepoListHooks<'_> {
-    type Response = (HookListHeaders, Json<Vec<Hook>>);
+    type Response = (HookListHeaders, Vec<Hook>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6396,7 +6392,7 @@ pub struct RepoCreateHook<'a> {
 
 impl Sealed for RepoCreateHook<'_> {}
 impl Endpoint for RepoCreateHook<'_> {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -6429,7 +6425,7 @@ pub struct RepoListGitHooks<'a> {
 
 impl Sealed for RepoListGitHooks<'_> {}
 impl Endpoint for RepoListGitHooks<'_> {
-    type Response = (GitHookListHeaders, Json<Vec<GitHook>>);
+    type Response = (GitHookListHeaders, Vec<GitHook>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6460,7 +6456,7 @@ pub struct RepoGetGitHook<'a> {
 
 impl Sealed for RepoGetGitHook<'_> {}
 impl Endpoint for RepoGetGitHook<'_> {
-    type Response = Json<GitHook>;
+    type Response = GitHook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6531,7 +6527,7 @@ pub struct RepoEditGitHook<'a> {
 
 impl Sealed for RepoEditGitHook<'_> {}
 impl Endpoint for RepoEditGitHook<'_> {
-    type Response = Json<GitHook>;
+    type Response = GitHook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -6569,7 +6565,7 @@ pub struct RepoGetHook<'a> {
 
 impl Sealed for RepoGetHook<'_> {}
 impl Endpoint for RepoGetHook<'_> {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6640,7 +6636,7 @@ pub struct RepoEditHook<'a> {
 
 impl Sealed for RepoEditHook<'_> {}
 impl Endpoint for RepoEditHook<'_> {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -6713,7 +6709,7 @@ pub struct RepoGetIssueConfig<'a> {
 
 impl Sealed for RepoGetIssueConfig<'_> {}
 impl Endpoint for RepoGetIssueConfig<'_> {
-    type Response = Json<IssueConfig>;
+    type Response = IssueConfig;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6743,7 +6739,7 @@ pub struct RepoValidateIssueConfig<'a> {
 
 impl Sealed for RepoValidateIssueConfig<'_> {}
 impl Endpoint for RepoValidateIssueConfig<'_> {
-    type Response = Json<IssueConfigValidation>;
+    type Response = IssueConfigValidation;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6777,7 +6773,7 @@ pub struct RepoGetIssueTemplates<'a> {
 
 impl Sealed for RepoGetIssueTemplates<'_> {}
 impl Endpoint for RepoGetIssueTemplates<'_> {
-    type Response = Json<Vec<IssueTemplate>>;
+    type Response = Vec<IssueTemplate>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6808,7 +6804,7 @@ pub struct IssueListIssues<'a> {
 
 impl Sealed for IssueListIssues<'_> {}
 impl Endpoint for IssueListIssues<'_> {
-    type Response = (IssueListHeaders, Json<Vec<Issue>>);
+    type Response = (IssueListHeaders, Vec<Issue>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6839,7 +6835,7 @@ pub struct IssueCreateIssue<'a> {
 
 impl Sealed for IssueCreateIssue<'_> {}
 impl Endpoint for IssueCreateIssue<'_> {
-    type Response = Json<Issue>;
+    type Response = Issue;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -6877,7 +6873,7 @@ pub struct IssueGetRepoComments<'a> {
 
 impl Sealed for IssueGetRepoComments<'_> {}
 impl Endpoint for IssueGetRepoComments<'_> {
-    type Response = (CommentListHeaders, Json<Vec<Comment>>);
+    type Response = (CommentListHeaders, Vec<Comment>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6909,7 +6905,7 @@ pub struct IssueGetComment<'a> {
 
 impl Sealed for IssueGetComment<'_> {}
 impl Endpoint for IssueGetComment<'_> {
-    type Response = Option<Json<Comment>>;
+    type Response = Option<Comment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -6982,7 +6978,7 @@ pub struct IssueEditComment<'a> {
 
 impl Sealed for IssueEditComment<'_> {}
 impl Endpoint for IssueEditComment<'_> {
-    type Response = Option<Json<Comment>>;
+    type Response = Option<Comment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7023,7 +7019,7 @@ pub struct IssueListIssueCommentAttachments<'a> {
 
 impl Sealed for IssueListIssueCommentAttachments<'_> {}
 impl Endpoint for IssueListIssueCommentAttachments<'_> {
-    type Response = Json<Vec<Attachment>>;
+    type Response = Vec<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7060,7 +7056,7 @@ pub struct IssueCreateIssueCommentAttachment<'a> {
 
 impl Sealed for IssueCreateIssueCommentAttachment<'_> {}
 impl Endpoint for IssueCreateIssueCommentAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7105,7 +7101,7 @@ pub struct IssueGetIssueCommentAttachment<'a> {
 
 impl Sealed for IssueGetIssueCommentAttachment<'_> {}
 impl Endpoint for IssueGetIssueCommentAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7179,7 +7175,7 @@ pub struct IssueEditIssueCommentAttachment<'a> {
 
 impl Sealed for IssueEditIssueCommentAttachment<'_> {}
 impl Endpoint for IssueEditIssueCommentAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7219,7 +7215,7 @@ pub struct IssueGetCommentReactions<'a> {
 
 impl Sealed for IssueGetCommentReactions<'_> {}
 impl Endpoint for IssueGetCommentReactions<'_> {
-    type Response = (ReactionListHeaders, Json<Vec<Reaction>>);
+    type Response = (ReactionListHeaders, Vec<Reaction>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7256,7 +7252,7 @@ pub struct IssuePostCommentReaction<'a> {
 
 impl Sealed for IssuePostCommentReaction<'_> {}
 impl Endpoint for IssuePostCommentReaction<'_> {
-    type Response = Json<Reaction>;
+    type Response = Reaction;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7335,7 +7331,7 @@ pub struct RepoListPinnedIssues<'a> {
 
 impl Sealed for RepoListPinnedIssues<'_> {}
 impl Endpoint for RepoListPinnedIssues<'_> {
-    type Response = (IssueListHeaders, Json<Vec<Issue>>);
+    type Response = (IssueListHeaders, Vec<Issue>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7366,7 +7362,7 @@ pub struct IssueGetIssue<'a> {
 
 impl Sealed for IssueGetIssue<'_> {}
 impl Endpoint for IssueGetIssue<'_> {
-    type Response = Json<Issue>;
+    type Response = Issue;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7438,7 +7434,7 @@ pub struct IssueEditIssue<'a> {
 
 impl Sealed for IssueEditIssue<'_> {}
 impl Endpoint for IssueEditIssue<'_> {
-    type Response = Json<Issue>;
+    type Response = Issue;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7478,7 +7474,7 @@ pub struct IssueListIssueAttachments<'a> {
 
 impl Sealed for IssueListIssueAttachments<'_> {}
 impl Endpoint for IssueListIssueAttachments<'_> {
-    type Response = Json<Vec<Attachment>>;
+    type Response = Vec<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7515,7 +7511,7 @@ pub struct IssueCreateIssueAttachment<'a> {
 
 impl Sealed for IssueCreateIssueAttachment<'_> {}
 impl Endpoint for IssueCreateIssueAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7560,7 +7556,7 @@ pub struct IssueGetIssueAttachment<'a> {
 
 impl Sealed for IssueGetIssueAttachment<'_> {}
 impl Endpoint for IssueGetIssueAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7634,7 +7630,7 @@ pub struct IssueEditIssueAttachment<'a> {
 
 impl Sealed for IssueEditIssueAttachment<'_> {}
 impl Endpoint for IssueEditIssueAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7674,7 +7670,7 @@ pub struct IssueListBlocks<'a> {
 
 impl Sealed for IssueListBlocks<'_> {}
 impl Endpoint for IssueListBlocks<'_> {
-    type Response = (IssueListHeaders, Json<Vec<Issue>>);
+    type Response = (IssueListHeaders, Vec<Issue>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7710,7 +7706,7 @@ pub struct IssueCreateIssueBlocking<'a> {
 
 impl Sealed for IssueCreateIssueBlocking<'_> {}
 impl Endpoint for IssueCreateIssueBlocking<'_> {
-    type Response = Json<Issue>;
+    type Response = Issue;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7749,7 +7745,7 @@ pub struct IssueRemoveIssueBlocking<'a> {
 
 impl Sealed for IssueRemoveIssueBlocking<'_> {}
 impl Endpoint for IssueRemoveIssueBlocking<'_> {
-    type Response = Json<Issue>;
+    type Response = Issue;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -7788,7 +7784,7 @@ pub struct IssueGetComments<'a> {
 
 impl Sealed for IssueGetComments<'_> {}
 impl Endpoint for IssueGetComments<'_> {
-    type Response = (CommentListHeaders, Json<Vec<Comment>>);
+    type Response = (CommentListHeaders, Vec<Comment>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -7825,7 +7821,7 @@ pub struct IssueCreateComment<'a> {
 
 impl Sealed for IssueCreateComment<'_> {}
 impl Endpoint for IssueCreateComment<'_> {
-    type Response = Json<Comment>;
+    type Response = Comment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7903,7 +7899,7 @@ pub struct IssueEditCommentDeprecated<'a> {
 
 impl Sealed for IssueEditCommentDeprecated<'_> {}
 impl Endpoint for IssueEditCommentDeprecated<'_> {
-    type Response = Option<Json<Comment>>;
+    type Response = Option<Comment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -7944,7 +7940,7 @@ pub struct IssueEditIssueDeadline<'a> {
 
 impl Sealed for IssueEditIssueDeadline<'_> {}
 impl Endpoint for IssueEditIssueDeadline<'_> {
-    type Response = Json<IssueDeadline>;
+    type Response = IssueDeadline;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -7983,7 +7979,7 @@ pub struct IssueListIssueDependencies<'a> {
 
 impl Sealed for IssueListIssueDependencies<'_> {}
 impl Endpoint for IssueListIssueDependencies<'_> {
-    type Response = (IssueListHeaders, Json<Vec<Issue>>);
+    type Response = (IssueListHeaders, Vec<Issue>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8019,7 +8015,7 @@ pub struct IssueCreateIssueDependencies<'a> {
 
 impl Sealed for IssueCreateIssueDependencies<'_> {}
 impl Endpoint for IssueCreateIssueDependencies<'_> {
-    type Response = Json<Issue>;
+    type Response = Issue;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8059,7 +8055,7 @@ pub struct IssueRemoveIssueDependencies<'a> {
 
 impl Sealed for IssueRemoveIssueDependencies<'_> {}
 impl Endpoint for IssueRemoveIssueDependencies<'_> {
-    type Response = Json<Issue>;
+    type Response = Issue;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::DELETE,
@@ -8098,7 +8094,7 @@ pub struct IssueGetLabels<'a> {
 
 impl Sealed for IssueGetLabels<'_> {}
 impl Endpoint for IssueGetLabels<'_> {
-    type Response = (LabelListHeaders, Json<Vec<Label>>);
+    type Response = (LabelListHeaders, Vec<Label>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8134,7 +8130,7 @@ pub struct IssueReplaceLabels<'a> {
 
 impl Sealed for IssueReplaceLabels<'_> {}
 impl Endpoint for IssueReplaceLabels<'_> {
-    type Response = (LabelListHeaders, Json<Vec<Label>>);
+    type Response = (LabelListHeaders, Vec<Label>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -8174,7 +8170,7 @@ pub struct IssueAddLabel<'a> {
 
 impl Sealed for IssueAddLabel<'_> {}
 impl Endpoint for IssueAddLabel<'_> {
-    type Response = (LabelListHeaders, Json<Vec<Label>>);
+    type Response = (LabelListHeaders, Vec<Label>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8404,7 +8400,7 @@ pub struct IssueGetIssueReactions<'a> {
 
 impl Sealed for IssueGetIssueReactions<'_> {}
 impl Endpoint for IssueGetIssueReactions<'_> {
-    type Response = (ReactionListHeaders, Json<Vec<Reaction>>);
+    type Response = (ReactionListHeaders, Vec<Reaction>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8441,7 +8437,7 @@ pub struct IssuePostIssueReaction<'a> {
 
 impl Sealed for IssuePostIssueReaction<'_> {}
 impl Endpoint for IssuePostIssueReaction<'_> {
-    type Response = Json<Reaction>;
+    type Response = Reaction;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8632,7 +8628,7 @@ pub struct IssueSubscriptions<'a> {
 
 impl Sealed for IssueSubscriptions<'_> {}
 impl Endpoint for IssueSubscriptions<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8667,7 +8663,7 @@ pub struct IssueCheckSubscription<'a> {
 
 impl Sealed for IssueCheckSubscription<'_> {}
 impl Endpoint for IssueCheckSubscription<'_> {
-    type Response = Json<WatchInfo>;
+    type Response = WatchInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8777,7 +8773,7 @@ pub struct IssueGetCommentsAndTimeline<'a> {
 
 impl Sealed for IssueGetCommentsAndTimeline<'_> {}
 impl Endpoint for IssueGetCommentsAndTimeline<'_> {
-    type Response = (TimelineListHeaders, Json<Vec<TimelineComment>>);
+    type Response = (TimelineListHeaders, Vec<TimelineComment>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8814,7 +8810,7 @@ pub struct IssueTrackedTimes<'a> {
 
 impl Sealed for IssueTrackedTimes<'_> {}
 impl Endpoint for IssueTrackedTimes<'_> {
-    type Response = (TrackedTimeListHeaders, Json<Vec<TrackedTime>>);
+    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8850,7 +8846,7 @@ pub struct IssueAddTime<'a> {
 
 impl Sealed for IssueAddTime<'_> {}
 impl Endpoint for IssueAddTime<'_> {
-    type Response = Json<TrackedTime>;
+    type Response = TrackedTime;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -8965,7 +8961,7 @@ pub struct RepoListKeys<'a> {
 
 impl Sealed for RepoListKeys<'_> {}
 impl Endpoint for RepoListKeys<'_> {
-    type Response = (DeployKeyListHeaders, Json<Vec<DeployKey>>);
+    type Response = (DeployKeyListHeaders, Vec<DeployKey>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -8996,7 +8992,7 @@ pub struct RepoCreateKey<'a> {
 
 impl Sealed for RepoCreateKey<'_> {}
 impl Endpoint for RepoCreateKey<'_> {
-    type Response = Json<DeployKey>;
+    type Response = DeployKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9031,7 +9027,7 @@ pub struct RepoGetKey<'a> {
 
 impl Sealed for RepoGetKey<'_> {}
 impl Endpoint for RepoGetKey<'_> {
-    type Response = Json<DeployKey>;
+    type Response = DeployKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9102,7 +9098,7 @@ pub struct IssueListLabels<'a> {
 
 impl Sealed for IssueListLabels<'_> {}
 impl Endpoint for IssueListLabels<'_> {
-    type Response = (LabelListHeaders, Json<Vec<Label>>);
+    type Response = (LabelListHeaders, Vec<Label>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9133,7 +9129,7 @@ pub struct IssueCreateLabel<'a> {
 
 impl Sealed for IssueCreateLabel<'_> {}
 impl Endpoint for IssueCreateLabel<'_> {
-    type Response = Json<Label>;
+    type Response = Label;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9168,7 +9164,7 @@ pub struct IssueGetLabel<'a> {
 
 impl Sealed for IssueGetLabel<'_> {}
 impl Endpoint for IssueGetLabel<'_> {
-    type Response = Json<Label>;
+    type Response = Label;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9239,7 +9235,7 @@ pub struct IssueEditLabel<'a> {
 
 impl Sealed for IssueEditLabel<'_> {}
 impl Endpoint for IssueEditLabel<'_> {
-    type Response = Json<Label>;
+    type Response = Label;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -9277,7 +9273,7 @@ pub struct RepoGetLanguages<'a> {
 
 impl Sealed for RepoGetLanguages<'_> {}
 impl Endpoint for RepoGetLanguages<'_> {
-    type Response = Json<BTreeMap<String, i64>>;
+    type Response = BTreeMap<String, i64>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9309,7 +9305,7 @@ pub struct RepoGetRawFileOrLfs<'a> {
 
 impl Sealed for RepoGetRawFileOrLfs<'_> {}
 impl Endpoint for RepoGetRawFileOrLfs<'_> {
-    type Response = bytes::Bytes;
+    type Response = Bytes;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9344,7 +9340,7 @@ pub struct IssueGetMilestonesList<'a> {
 
 impl Sealed for IssueGetMilestonesList<'_> {}
 impl Endpoint for IssueGetMilestonesList<'_> {
-    type Response = (MilestoneListHeaders, Json<Vec<Milestone>>);
+    type Response = (MilestoneListHeaders, Vec<Milestone>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9375,7 +9371,7 @@ pub struct IssueCreateMilestone<'a> {
 
 impl Sealed for IssueCreateMilestone<'_> {}
 impl Endpoint for IssueCreateMilestone<'_> {
-    type Response = Json<Milestone>;
+    type Response = Milestone;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9409,7 +9405,7 @@ pub struct IssueGetMilestone<'a> {
 
 impl Sealed for IssueGetMilestone<'_> {}
 impl Endpoint for IssueGetMilestone<'_> {
-    type Response = Json<Milestone>;
+    type Response = Milestone;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9480,7 +9476,7 @@ pub struct IssueEditMilestone<'a> {
 
 impl Sealed for IssueEditMilestone<'_> {}
 impl Endpoint for IssueEditMilestone<'_> {
-    type Response = Json<Milestone>;
+    type Response = Milestone;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -9549,7 +9545,7 @@ pub struct RepoNewPinAllowed<'a> {
 
 impl Sealed for RepoNewPinAllowed<'_> {}
 impl Endpoint for RepoNewPinAllowed<'_> {
-    type Response = Json<NewIssuePinsAllowed>;
+    type Response = NewIssuePinsAllowed;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9580,7 +9576,7 @@ pub struct NotifyGetRepoList<'a> {
 
 impl Sealed for NotifyGetRepoList<'_> {}
 impl Endpoint for NotifyGetRepoList<'_> {
-    type Response = (NotificationThreadListHeaders, Json<Vec<NotificationThread>>);
+    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9610,7 +9606,7 @@ pub struct NotifyReadRepoList<'a> {
 
 impl Sealed for NotifyReadRepoList<'_> {}
 impl Endpoint for NotifyReadRepoList<'_> {
-    type Response = (NotificationThreadListHeaders, Json<Vec<NotificationThread>>);
+    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -9640,7 +9636,7 @@ pub struct RepoListPullRequests<'a> {
 
 impl Sealed for RepoListPullRequests<'_> {}
 impl Endpoint for RepoListPullRequests<'_> {
-    type Response = (PullRequestListHeaders, Json<Vec<PullRequest>>);
+    type Response = (PullRequestListHeaders, Vec<PullRequest>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9671,7 +9667,7 @@ pub struct RepoCreatePullRequest<'a> {
 
 impl Sealed for RepoCreatePullRequest<'_> {}
 impl Endpoint for RepoCreatePullRequest<'_> {
-    type Response = Json<PullRequest>;
+    type Response = PullRequest;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -9708,7 +9704,7 @@ pub struct RepoListPinnedPullRequests<'a> {
 
 impl Sealed for RepoListPinnedPullRequests<'_> {}
 impl Endpoint for RepoListPinnedPullRequests<'_> {
-    type Response = (PullRequestListHeaders, Json<Vec<PullRequest>>);
+    type Response = (PullRequestListHeaders, Vec<PullRequest>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9740,7 +9736,7 @@ pub struct RepoGetPullRequestByBaseHead<'a> {
 
 impl Sealed for RepoGetPullRequestByBaseHead<'_> {}
 impl Endpoint for RepoGetPullRequestByBaseHead<'_> {
-    type Response = Json<PullRequest>;
+    type Response = PullRequest;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9775,7 +9771,7 @@ pub struct RepoGetPullRequest<'a> {
 
 impl Sealed for RepoGetPullRequest<'_> {}
 impl Endpoint for RepoGetPullRequest<'_> {
-    type Response = Json<PullRequest>;
+    type Response = PullRequest;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9811,7 +9807,7 @@ pub struct RepoEditPullRequest<'a> {
 
 impl Sealed for RepoEditPullRequest<'_> {}
 impl Endpoint for RepoEditPullRequest<'_> {
-    type Response = Json<PullRequest>;
+    type Response = PullRequest;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -9891,7 +9887,7 @@ pub struct RepoGetPullRequestCommits<'a> {
 
 impl Sealed for RepoGetPullRequestCommits<'_> {}
 impl Endpoint for RepoGetPullRequestCommits<'_> {
-    type Response = (CommitListHeaders, Json<Vec<Commit>>);
+    type Response = (CommitListHeaders, Vec<Commit>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -9927,7 +9923,7 @@ pub struct RepoGetPullRequestFiles<'a> {
 
 impl Sealed for RepoGetPullRequestFiles<'_> {}
 impl Endpoint for RepoGetPullRequestFiles<'_> {
-    type Response = (ChangedFileListHeaders, Json<Vec<ChangedFile>>);
+    type Response = (ChangedFileListHeaders, Vec<ChangedFile>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10079,7 +10075,7 @@ pub struct RepoCreatePullReviewRequests<'a> {
 
 impl Sealed for RepoCreatePullReviewRequests<'_> {}
 impl Endpoint for RepoCreatePullReviewRequests<'_> {
-    type Response = (PullReviewListHeaders, Json<Vec<PullReview>>);
+    type Response = (PullReviewListHeaders, Vec<PullReview>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10159,7 +10155,7 @@ pub struct RepoListPullReviews<'a> {
 
 impl Sealed for RepoListPullReviews<'_> {}
 impl Endpoint for RepoListPullReviews<'_> {
-    type Response = (PullReviewListHeaders, Json<Vec<PullReview>>);
+    type Response = (PullReviewListHeaders, Vec<PullReview>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10195,7 +10191,7 @@ pub struct RepoCreatePullReview<'a> {
 
 impl Sealed for RepoCreatePullReview<'_> {}
 impl Endpoint for RepoCreatePullReview<'_> {
-    type Response = Json<PullReview>;
+    type Response = PullReview;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10235,7 +10231,7 @@ pub struct RepoGetPullReview<'a> {
 
 impl Sealed for RepoGetPullReview<'_> {}
 impl Endpoint for RepoGetPullReview<'_> {
-    type Response = Json<PullReview>;
+    type Response = PullReview;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10272,7 +10268,7 @@ pub struct RepoSubmitPullReview<'a> {
 
 impl Sealed for RepoSubmitPullReview<'_> {}
 impl Endpoint for RepoSubmitPullReview<'_> {
-    type Response = Json<PullReview>;
+    type Response = PullReview;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10349,7 +10345,7 @@ pub struct RepoGetPullReviewComments<'a> {
 
 impl Sealed for RepoGetPullReviewComments<'_> {}
 impl Endpoint for RepoGetPullReviewComments<'_> {
-    type Response = Json<Vec<PullReviewComment>>;
+    type Response = Vec<PullReviewComment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10386,7 +10382,7 @@ pub struct RepoCreatePullReviewComment<'a> {
 
 impl Sealed for RepoCreatePullReviewComment<'_> {}
 impl Endpoint for RepoCreatePullReviewComment<'_> {
-    type Response = Json<PullReviewComment>;
+    type Response = PullReviewComment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10427,7 +10423,7 @@ pub struct RepoGetPullReviewComment<'a> {
 
 impl Sealed for RepoGetPullReviewComment<'_> {}
 impl Endpoint for RepoGetPullReviewComment<'_> {
-    type Response = Json<PullReviewComment>;
+    type Response = PullReviewComment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10503,7 +10499,7 @@ pub struct RepoDismissPullReview<'a> {
 
 impl Sealed for RepoDismissPullReview<'_> {}
 impl Endpoint for RepoDismissPullReview<'_> {
-    type Response = Json<PullReview>;
+    type Response = PullReview;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10544,7 +10540,7 @@ pub struct RepoUnDismissPullReview<'a> {
 
 impl Sealed for RepoUnDismissPullReview<'_> {}
 impl Endpoint for RepoUnDismissPullReview<'_> {
-    type Response = Json<PullReview>;
+    type Response = PullReview;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10620,7 +10616,7 @@ pub struct RepoListPushMirrors<'a> {
 
 impl Sealed for RepoListPushMirrors<'_> {}
 impl Endpoint for RepoListPushMirrors<'_> {
-    type Response = (PushMirrorListHeaders, Json<Vec<PushMirror>>);
+    type Response = (PushMirrorListHeaders, Vec<PushMirror>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10653,7 +10649,7 @@ pub struct RepoAddPushMirror<'a> {
 
 impl Sealed for RepoAddPushMirror<'_> {}
 impl Endpoint for RepoAddPushMirror<'_> {
-    type Response = Json<PushMirror>;
+    type Response = PushMirror;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10727,7 +10723,7 @@ pub struct RepoGetPushMirrorByRemoteName<'a> {
 
 impl Sealed for RepoGetPushMirrorByRemoteName<'_> {}
 impl Endpoint for RepoGetPushMirrorByRemoteName<'_> {
-    type Response = Json<PushMirror>;
+    type Response = PushMirror;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10801,7 +10797,7 @@ pub struct RepoGetRawFile<'a> {
 
 impl Sealed for RepoGetRawFile<'_> {}
 impl Endpoint for RepoGetRawFile<'_> {
-    type Response = bytes::Bytes;
+    type Response = Bytes;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10836,7 +10832,7 @@ pub struct RepoListReleases<'a> {
 
 impl Sealed for RepoListReleases<'_> {}
 impl Endpoint for RepoListReleases<'_> {
-    type Response = (ReleaseListHeaders, Json<Vec<Release>>);
+    type Response = (ReleaseListHeaders, Vec<Release>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10867,7 +10863,7 @@ pub struct RepoCreateRelease<'a> {
 
 impl Sealed for RepoCreateRelease<'_> {}
 impl Endpoint for RepoCreateRelease<'_> {
-    type Response = Json<Release>;
+    type Response = Release;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -10902,7 +10898,7 @@ pub struct RepoGetLatestRelease<'a> {
 
 impl Sealed for RepoGetLatestRelease<'_> {}
 impl Endpoint for RepoGetLatestRelease<'_> {
-    type Response = Json<Release>;
+    type Response = Release;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -10933,7 +10929,7 @@ pub struct RepoGetReleaseByTag<'a> {
 
 impl Sealed for RepoGetReleaseByTag<'_> {}
 impl Endpoint for RepoGetReleaseByTag<'_> {
-    type Response = Json<Release>;
+    type Response = Release;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11004,7 +11000,7 @@ pub struct RepoGetRelease<'a> {
 
 impl Sealed for RepoGetRelease<'_> {}
 impl Endpoint for RepoGetRelease<'_> {
-    type Response = Json<Release>;
+    type Response = Release;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11076,7 +11072,7 @@ pub struct RepoEditRelease<'a> {
 
 impl Sealed for RepoEditRelease<'_> {}
 impl Endpoint for RepoEditRelease<'_> {
-    type Response = Json<Release>;
+    type Response = Release;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -11114,7 +11110,7 @@ pub struct RepoListReleaseAttachments<'a> {
 
 impl Sealed for RepoListReleaseAttachments<'_> {}
 impl Endpoint for RepoListReleaseAttachments<'_> {
-    type Response = Json<Vec<Attachment>>;
+    type Response = Vec<Attachment>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11152,7 +11148,7 @@ pub struct RepoCreateReleaseAttachment<'a> {
 
 impl Sealed for RepoCreateReleaseAttachment<'_> {}
 impl Endpoint for RepoCreateReleaseAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11199,7 +11195,7 @@ pub struct RepoGetReleaseAttachment<'a> {
 
 impl Sealed for RepoGetReleaseAttachment<'_> {}
 impl Endpoint for RepoGetReleaseAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11272,7 +11268,7 @@ pub struct RepoEditReleaseAttachment<'a> {
 
 impl Sealed for RepoEditReleaseAttachment<'_> {}
 impl Endpoint for RepoEditReleaseAttachment<'_> {
-    type Response = Json<Attachment>;
+    type Response = Attachment;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -11310,7 +11306,7 @@ pub struct RepoGetReviewers<'a> {
 
 impl Sealed for RepoGetReviewers<'_> {}
 impl Endpoint for RepoGetReviewers<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11369,7 +11365,7 @@ pub struct RepoListStargazers<'a> {
 
 impl Sealed for RepoListStargazers<'_> {}
 impl Endpoint for RepoListStargazers<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11401,7 +11397,7 @@ pub struct RepoListStatuses<'a> {
 
 impl Sealed for RepoListStatuses<'_> {}
 impl Endpoint for RepoListStatuses<'_> {
-    type Response = (CommitStatusListHeaders, Json<Vec<CommitStatus>>);
+    type Response = (CommitStatusListHeaders, Vec<CommitStatus>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11438,7 +11434,7 @@ pub struct RepoCreateStatus<'a> {
 
 impl Sealed for RepoCreateStatus<'_> {}
 impl Endpoint for RepoCreateStatus<'_> {
-    type Response = Json<CommitStatus>;
+    type Response = CommitStatus;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11476,7 +11472,7 @@ pub struct RepoListSubscribers<'a> {
 
 impl Sealed for RepoListSubscribers<'_> {}
 impl Endpoint for RepoListSubscribers<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11506,7 +11502,7 @@ pub struct UserCurrentCheckSubscription<'a> {
 
 impl Sealed for UserCurrentCheckSubscription<'_> {}
 impl Endpoint for UserCurrentCheckSubscription<'_> {
-    type Response = Json<WatchInfo>;
+    type Response = WatchInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11536,7 +11532,7 @@ pub struct UserCurrentPutSubscription<'a> {
 
 impl Sealed for UserCurrentPutSubscription<'_> {}
 impl Endpoint for UserCurrentPutSubscription<'_> {
-    type Response = Json<WatchInfo>;
+    type Response = WatchInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PUT,
@@ -11596,7 +11592,7 @@ pub struct RepoSyncForkDefaultInfo<'a> {
 
 impl Sealed for RepoSyncForkDefaultInfo<'_> {}
 impl Endpoint for RepoSyncForkDefaultInfo<'_> {
-    type Response = Json<SyncForkInfo>;
+    type Response = SyncForkInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11659,7 +11655,7 @@ pub struct RepoSyncForkBranchInfo<'a> {
 
 impl Sealed for RepoSyncForkBranchInfo<'_> {}
 impl Endpoint for RepoSyncForkBranchInfo<'_> {
-    type Response = Json<SyncForkInfo>;
+    type Response = SyncForkInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11730,7 +11726,7 @@ pub struct RepoListTagProtection<'a> {
 
 impl Sealed for RepoListTagProtection<'_> {}
 impl Endpoint for RepoListTagProtection<'_> {
-    type Response = Json<Vec<TagProtection>>;
+    type Response = Vec<TagProtection>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11760,7 +11756,7 @@ pub struct RepoCreateTagProtection<'a> {
 
 impl Sealed for RepoCreateTagProtection<'_> {}
 impl Endpoint for RepoCreateTagProtection<'_> {
-    type Response = Json<TagProtection>;
+    type Response = TagProtection;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11797,7 +11793,7 @@ pub struct RepoGetTagProtection<'a> {
 
 impl Sealed for RepoGetTagProtection<'_> {}
 impl Endpoint for RepoGetTagProtection<'_> {
-    type Response = Json<TagProtection>;
+    type Response = TagProtection;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11868,7 +11864,7 @@ pub struct RepoEditTagProtection<'a> {
 
 impl Sealed for RepoEditTagProtection<'_> {}
 impl Endpoint for RepoEditTagProtection<'_> {
-    type Response = Json<TagProtection>;
+    type Response = TagProtection;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -11907,7 +11903,7 @@ pub struct RepoListTags<'a> {
 
 impl Sealed for RepoListTags<'_> {}
 impl Endpoint for RepoListTags<'_> {
-    type Response = (TagListHeaders, Json<Vec<Tag>>);
+    type Response = (TagListHeaders, Vec<Tag>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -11938,7 +11934,7 @@ pub struct RepoCreateTag<'a> {
 
 impl Sealed for RepoCreateTag<'_> {}
 impl Endpoint for RepoCreateTag<'_> {
-    type Response = Json<Tag>;
+    type Response = Tag;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -11977,7 +11973,7 @@ pub struct RepoGetTag<'a> {
 
 impl Sealed for RepoGetTag<'_> {}
 impl Endpoint for RepoGetTag<'_> {
-    type Response = Json<Tag>;
+    type Response = Tag;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12050,7 +12046,7 @@ pub struct RepoListTeams<'a> {
 
 impl Sealed for RepoListTeams<'_> {}
 impl Endpoint for RepoListTeams<'_> {
-    type Response = (TeamListHeaders, Json<Vec<Team>>);
+    type Response = (TeamListHeaders, Vec<Team>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12081,7 +12077,7 @@ pub struct RepoCheckTeam<'a> {
 
 impl Sealed for RepoCheckTeam<'_> {}
 impl Endpoint for RepoCheckTeam<'_> {
-    type Response = Json<Team>;
+    type Response = Team;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12191,7 +12187,7 @@ pub struct RepoTrackedTimes<'a> {
 
 impl Sealed for RepoTrackedTimes<'_> {}
 impl Endpoint for RepoTrackedTimes<'_> {
-    type Response = (TrackedTimeListHeaders, Json<Vec<TrackedTime>>);
+    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12224,7 +12220,7 @@ pub struct UserTrackedTimes<'a> {
 
 impl Sealed for UserTrackedTimes<'_> {}
 impl Endpoint for UserTrackedTimes<'_> {
-    type Response = (TrackedTimeListHeaders, Json<Vec<TrackedTime>>);
+    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12260,7 +12256,7 @@ pub struct RepoListTopics<'a> {
 
 impl Sealed for RepoListTopics<'_> {}
 impl Endpoint for RepoListTopics<'_> {
-    type Response = Json<TopicName>;
+    type Response = TopicName;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12398,7 +12394,7 @@ pub struct RepoTransfer<'a> {
 
 impl Sealed for RepoTransfer<'_> {}
 impl Endpoint for RepoTransfer<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12434,7 +12430,7 @@ pub struct AcceptRepoTransfer<'a> {
 
 impl Sealed for AcceptRepoTransfer<'_> {}
 impl Endpoint for AcceptRepoTransfer<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12466,7 +12462,7 @@ pub struct RejectRepoTransfer<'a> {
 
 impl Sealed for RejectRepoTransfer<'_> {}
 impl Endpoint for RejectRepoTransfer<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12498,7 +12494,7 @@ pub struct RepoCreateWikiPage<'a> {
 
 impl Sealed for RepoCreateWikiPage<'_> {}
 impl Endpoint for RepoCreateWikiPage<'_> {
-    type Response = Json<WikiPage>;
+    type Response = WikiPage;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12536,7 +12532,7 @@ pub struct RepoGetWikiPage<'a> {
 
 impl Sealed for RepoGetWikiPage<'_> {}
 impl Endpoint for RepoGetWikiPage<'_> {
-    type Response = Json<WikiPage>;
+    type Response = WikiPage;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12609,7 +12605,7 @@ pub struct RepoEditWikiPage<'a> {
 
 impl Sealed for RepoEditWikiPage<'_> {}
 impl Endpoint for RepoEditWikiPage<'_> {
-    type Response = Json<WikiPage>;
+    type Response = WikiPage;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -12650,7 +12646,7 @@ pub struct RepoGetWikiPages<'a> {
 
 impl Sealed for RepoGetWikiPages<'_> {}
 impl Endpoint for RepoGetWikiPages<'_> {
-    type Response = (WikiPageListHeaders, Json<Vec<WikiPageMetaData>>);
+    type Response = (WikiPageListHeaders, Vec<WikiPageMetaData>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12681,7 +12677,7 @@ pub struct RepoGetWikiPageRevisions<'a> {
 
 impl Sealed for RepoGetWikiPageRevisions<'_> {}
 impl Endpoint for RepoGetWikiPageRevisions<'_> {
-    type Response = (WikiCommitListHeaders, Json<WikiCommitList>);
+    type Response = (WikiCommitListHeaders, WikiCommitList);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12716,7 +12712,7 @@ pub struct GenerateRepo<'a> {
 
 impl Sealed for GenerateRepo<'_> {}
 impl Endpoint for GenerateRepo<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -12756,7 +12752,7 @@ pub struct RepoGetById {
 
 impl Sealed for RepoGetById {}
 impl Endpoint for RepoGetById {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12783,7 +12779,7 @@ pub struct GetGeneralApiSettings {}
 
 impl Sealed for GetGeneralApiSettings {}
 impl Endpoint for GetGeneralApiSettings {
-    type Response = Json<GeneralAPISettings>;
+    type Response = GeneralAPISettings;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12809,7 +12805,7 @@ pub struct GetGeneralAttachmentSettings {}
 
 impl Sealed for GetGeneralAttachmentSettings {}
 impl Endpoint for GetGeneralAttachmentSettings {
-    type Response = Json<GeneralAttachmentSettings>;
+    type Response = GeneralAttachmentSettings;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12835,7 +12831,7 @@ pub struct GetGeneralRepositorySettings {}
 
 impl Sealed for GetGeneralRepositorySettings {}
 impl Endpoint for GetGeneralRepositorySettings {
-    type Response = Json<GeneralRepoSettings>;
+    type Response = GeneralRepoSettings;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12861,7 +12857,7 @@ pub struct GetGeneralUiSettings {}
 
 impl Sealed for GetGeneralUiSettings {}
 impl Endpoint for GetGeneralUiSettings {
-    type Response = Json<GeneralUISettings>;
+    type Response = GeneralUISettings;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -12942,7 +12938,7 @@ pub struct OrgGetTeam {
 
 impl Sealed for OrgGetTeam {}
 impl Endpoint for OrgGetTeam {
-    type Response = Json<Team>;
+    type Response = Team;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13001,7 +12997,7 @@ pub struct OrgEditTeam {
 
 impl Sealed for OrgEditTeam {}
 impl Endpoint for OrgEditTeam {
-    type Response = Json<Team>;
+    type Response = Team;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -13034,7 +13030,7 @@ pub struct OrgListTeamActivityFeeds {
 
 impl Sealed for OrgListTeamActivityFeeds {}
 impl Endpoint for OrgListTeamActivityFeeds {
-    type Response = (ActivityFeedsListHeaders, Json<Vec<Activity>>);
+    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13063,7 +13059,7 @@ pub struct OrgListTeamMembers {
 
 impl Sealed for OrgListTeamMembers {}
 impl Endpoint for OrgListTeamMembers {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13093,7 +13089,7 @@ pub struct OrgListTeamMember<'a> {
 
 impl Sealed for OrgListTeamMember<'_> {}
 impl Endpoint for OrgListTeamMember<'_> {
-    type Response = Json<User>;
+    type Response = User;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13182,7 +13178,7 @@ pub struct OrgListTeamRepos {
 
 impl Sealed for OrgListTeamRepos {}
 impl Endpoint for OrgListTeamRepos {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13213,7 +13209,7 @@ pub struct OrgListTeamRepo<'a> {
 
 impl Sealed for OrgListTeamRepo<'_> {}
 impl Endpoint for OrgListTeamRepo<'_> {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13306,7 +13302,7 @@ pub struct TopicSearch {
 
 impl Sealed for TopicSearch {}
 impl Endpoint for TopicSearch {
-    type Response = Json<TopicSearchResponse>;
+    type Response = TopicSearchResults;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13334,7 +13330,7 @@ pub struct UserGetCurrent {}
 
 impl Sealed for UserGetCurrent {}
 impl Endpoint for UserGetCurrent {
-    type Response = Json<User>;
+    type Response = User;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13364,7 +13360,7 @@ pub struct UserSearchRunJobs {
 
 impl Sealed for UserSearchRunJobs {}
 impl Endpoint for UserSearchRunJobs {
-    type Response = Json<Vec<ActionRunJob>>;
+    type Response = Vec<ActionRunJob>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13392,7 +13388,7 @@ pub struct UserGetRunnerRegistrationToken {}
 
 impl Sealed for UserGetRunnerRegistrationToken {}
 impl Endpoint for UserGetRunnerRegistrationToken {
-    type Response = Json<RegistrationToken>;
+    type Response = RegistrationToken;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13489,7 +13485,7 @@ pub struct GetUserVariablesList {}
 
 impl Sealed for GetUserVariablesList {}
 impl Endpoint for GetUserVariablesList {
-    type Response = (VariableListHeaders, Json<Vec<ActionVariable>>);
+    type Response = (VariableListHeaders, Vec<ActionVariable>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13521,7 +13517,7 @@ pub struct GetUserVariable<'a> {
 
 impl Sealed for GetUserVariable<'_> {}
 impl Endpoint for GetUserVariable<'_> {
-    type Response = Json<ActionVariable>;
+    type Response = ActionVariable;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13658,7 +13654,7 @@ pub struct UserGetOAuth2Applications {}
 
 impl Sealed for UserGetOAuth2Applications {}
 impl Endpoint for UserGetOAuth2Applications {
-    type Response = (OAuth2ApplicationListHeaders, Json<Vec<OAuth2Application>>);
+    type Response = (OAuth2ApplicationListHeaders, Vec<OAuth2Application>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13688,7 +13684,7 @@ pub struct UserCreateOAuth2Application {
 
 impl Sealed for UserCreateOAuth2Application {}
 impl Endpoint for UserCreateOAuth2Application {
-    type Response = Json<OAuth2Application>;
+    type Response = OAuth2Application;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -13722,7 +13718,7 @@ pub struct UserGetOAuth2Application {
 
 impl Sealed for UserGetOAuth2Application {}
 impl Endpoint for UserGetOAuth2Application {
-    type Response = Json<OAuth2Application>;
+    type Response = OAuth2Application;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13785,7 +13781,7 @@ pub struct UserUpdateOAuth2Application {
 
 impl Sealed for UserUpdateOAuth2Application {}
 impl Endpoint for UserUpdateOAuth2Application {
-    type Response = Json<OAuth2Application>;
+    type Response = OAuth2Application;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -13910,7 +13906,7 @@ pub struct UserListEmails {}
 
 impl Sealed for UserListEmails {}
 impl Endpoint for UserListEmails {
-    type Response = Json<Vec<Email>>;
+    type Response = Vec<Email>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -13940,7 +13936,7 @@ pub struct UserAddEmail {
 
 impl Sealed for UserAddEmail {}
 impl Endpoint for UserAddEmail {
-    type Response = Json<Vec<Email>>;
+    type Response = Vec<Email>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14006,7 +14002,7 @@ pub struct UserCurrentListFollowers {}
 
 impl Sealed for UserCurrentListFollowers {}
 impl Endpoint for UserCurrentListFollowers {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14034,7 +14030,7 @@ pub struct UserCurrentListFollowing {}
 
 impl Sealed for UserCurrentListFollowing {}
 impl Endpoint for UserCurrentListFollowing {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14186,7 +14182,7 @@ pub struct UserVerifyGpgKey {
 
 impl Sealed for UserVerifyGpgKey {}
 impl Endpoint for UserVerifyGpgKey {
-    type Response = Json<GPGKey>;
+    type Response = GPGKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14219,7 +14215,7 @@ pub struct UserCurrentListGpgKeys {}
 
 impl Sealed for UserCurrentListGpgKeys {}
 impl Endpoint for UserCurrentListGpgKeys {
-    type Response = (GpgKeyListHeaders, Json<Vec<GPGKey>>);
+    type Response = (GpgKeyListHeaders, Vec<GPGKey>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14249,7 +14245,7 @@ pub struct UserCurrentPostGpgKey {
 
 impl Sealed for UserCurrentPostGpgKey {}
 impl Endpoint for UserCurrentPostGpgKey {
-    type Response = Json<GPGKey>;
+    type Response = GPGKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14284,7 +14280,7 @@ pub struct UserCurrentGetGpgKey {
 
 impl Sealed for UserCurrentGetGpgKey {}
 impl Endpoint for UserCurrentGetGpgKey {
-    type Response = Json<GPGKey>;
+    type Response = GPGKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14344,7 +14340,7 @@ pub struct UserListHooks {}
 
 impl Sealed for UserListHooks {}
 impl Endpoint for UserListHooks {
-    type Response = (HookListHeaders, Json<Vec<Hook>>);
+    type Response = (HookListHeaders, Vec<Hook>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14374,7 +14370,7 @@ pub struct UserCreateHook {
 
 impl Sealed for UserCreateHook {}
 impl Endpoint for UserCreateHook {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14407,7 +14403,7 @@ pub struct UserGetHook {
 
 impl Sealed for UserGetHook {}
 impl Endpoint for UserGetHook {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14468,7 +14464,7 @@ pub struct UserEditHook {
 
 impl Sealed for UserEditHook {}
 impl Endpoint for UserEditHook {
-    type Response = Json<Hook>;
+    type Response = Hook;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -14501,7 +14497,7 @@ pub struct UserCurrentListKeys {
 
 impl Sealed for UserCurrentListKeys {}
 impl Endpoint for UserCurrentListKeys {
-    type Response = (PublicKeyListHeaders, Json<Vec<PublicKey>>);
+    type Response = (PublicKeyListHeaders, Vec<PublicKey>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14531,7 +14527,7 @@ pub struct UserCurrentPostKey {
 
 impl Sealed for UserCurrentPostKey {}
 impl Endpoint for UserCurrentPostKey {
-    type Response = Json<PublicKey>;
+    type Response = PublicKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14565,7 +14561,7 @@ pub struct UserCurrentGetKey {
 
 impl Sealed for UserCurrentGetKey {}
 impl Endpoint for UserCurrentGetKey {
-    type Response = Json<PublicKey>;
+    type Response = PublicKey;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14625,7 +14621,7 @@ pub struct UserListBlockedUsers {}
 
 impl Sealed for UserListBlockedUsers {}
 impl Endpoint for UserListBlockedUsers {
-    type Response = (BlockedUserListHeaders, Json<Vec<BlockedUser>>);
+    type Response = (BlockedUserListHeaders, Vec<BlockedUser>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14653,7 +14649,7 @@ pub struct OrgListCurrentUserOrgs {}
 
 impl Sealed for OrgListCurrentUserOrgs {}
 impl Endpoint for OrgListCurrentUserOrgs {
-    type Response = (OrganizationListHeaders, Json<Vec<Organization>>);
+    type Response = (OrganizationListHeaders, Vec<Organization>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14682,7 +14678,7 @@ pub struct UserGetQuota {}
 
 impl Sealed for UserGetQuota {}
 impl Endpoint for UserGetQuota {
-    type Response = Json<QuotaInfo>;
+    type Response = QuotaInfo;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14710,7 +14706,7 @@ pub struct UserListQuotaArtifacts {}
 
 impl Sealed for UserListQuotaArtifacts {}
 impl Endpoint for UserListQuotaArtifacts {
-    type Response = (QuotaUsedArtifactListHeaders, Json<Vec<QuotaUsedArtifact>>);
+    type Response = (QuotaUsedArtifactListHeaders, Vec<QuotaUsedArtifact>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14738,10 +14734,7 @@ pub struct UserListQuotaAttachments {}
 
 impl Sealed for UserListQuotaAttachments {}
 impl Endpoint for UserListQuotaAttachments {
-    type Response = (
-        QuotaUsedAttachmentListHeaders,
-        Json<Vec<QuotaUsedAttachment>>,
-    );
+    type Response = (QuotaUsedAttachmentListHeaders, Vec<QuotaUsedAttachment>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14771,7 +14764,7 @@ pub struct UserCheckQuota {
 
 impl Sealed for UserCheckQuota {}
 impl Endpoint for UserCheckQuota {
-    type Response = Json<bool>;
+    type Response = bool;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14800,7 +14793,7 @@ pub struct UserListQuotaPackages {}
 
 impl Sealed for UserListQuotaPackages {}
 impl Endpoint for UserListQuotaPackages {
-    type Response = (QuotaUsedPackageListHeaders, Json<Vec<QuotaUsedPackage>>);
+    type Response = (QuotaUsedPackageListHeaders, Vec<QuotaUsedPackage>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14830,7 +14823,7 @@ pub struct UserCurrentListRepos {
 
 impl Sealed for UserCurrentListRepos {}
 impl Endpoint for UserCurrentListRepos {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14861,7 +14854,7 @@ pub struct CreateCurrentUserRepo {
 
 impl Sealed for CreateCurrentUserRepo {}
 impl Endpoint for CreateCurrentUserRepo {
-    type Response = Json<Repository>;
+    type Response = Repository;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -14896,7 +14889,7 @@ pub struct GetUserSettings {}
 
 impl Sealed for GetUserSettings {}
 impl Endpoint for GetUserSettings {
-    type Response = Json<UserSettings>;
+    type Response = UserSettings;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -14926,7 +14919,7 @@ pub struct UpdateUserSettings {
 
 impl Sealed for UpdateUserSettings {}
 impl Endpoint for UpdateUserSettings {
-    type Response = Json<UserSettings>;
+    type Response = UserSettings;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::PATCH,
@@ -14957,7 +14950,7 @@ pub struct UserCurrentListStarred {}
 
 impl Sealed for UserCurrentListStarred {}
 impl Endpoint for UserCurrentListStarred {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15081,7 +15074,7 @@ pub struct UserGetStopWatches {}
 
 impl Sealed for UserGetStopWatches {}
 impl Endpoint for UserGetStopWatches {
-    type Response = (StopWatchListHeaders, Json<Vec<StopWatch>>);
+    type Response = (StopWatchListHeaders, Vec<StopWatch>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15109,7 +15102,7 @@ pub struct UserCurrentListSubscriptions {}
 
 impl Sealed for UserCurrentListSubscriptions {}
 impl Endpoint for UserCurrentListSubscriptions {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15137,7 +15130,7 @@ pub struct UserListTeams {}
 
 impl Sealed for UserListTeams {}
 impl Endpoint for UserListTeams {
-    type Response = (TeamListHeaders, Json<Vec<Team>>);
+    type Response = (TeamListHeaders, Vec<Team>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15167,7 +15160,7 @@ pub struct UserCurrentTrackedTimes {
 
 impl Sealed for UserCurrentTrackedTimes {}
 impl Endpoint for UserCurrentTrackedTimes {
-    type Response = (TrackedTimeListHeaders, Json<Vec<TrackedTime>>);
+    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15229,7 +15222,7 @@ pub struct UserSearch {
 
 impl Sealed for UserSearch {}
 impl Endpoint for UserSearch {
-    type Response = Json<UserSearchResponse>;
+    type Response = UserSearchResults;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15257,7 +15250,7 @@ pub struct UserGet<'a> {
 
 impl Sealed for UserGet<'_> {}
 impl Endpoint for UserGet<'_> {
-    type Response = Json<User>;
+    type Response = User;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15287,7 +15280,7 @@ pub struct UserListActivityFeeds<'a> {
 
 impl Sealed for UserListActivityFeeds<'_> {}
 impl Endpoint for UserListActivityFeeds<'_> {
-    type Response = (ActivityFeedsListHeaders, Json<Vec<Activity>>);
+    type Response = (ActivityFeedsListHeaders, Vec<Activity>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15316,7 +15309,7 @@ pub struct UserListFollowers<'a> {
 
 impl Sealed for UserListFollowers<'_> {}
 impl Endpoint for UserListFollowers<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15345,7 +15338,7 @@ pub struct UserListFollowing<'a> {
 
 impl Sealed for UserListFollowing<'_> {}
 impl Endpoint for UserListFollowing<'_> {
-    type Response = (UserListHeaders, Json<Vec<User>>);
+    type Response = (UserListHeaders, Vec<User>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15404,7 +15397,7 @@ pub struct UserListGpgKeys<'a> {
 
 impl Sealed for UserListGpgKeys<'_> {}
 impl Endpoint for UserListGpgKeys<'_> {
-    type Response = (GpgKeyListHeaders, Json<Vec<GPGKey>>);
+    type Response = (GpgKeyListHeaders, Vec<GPGKey>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15433,7 +15426,7 @@ pub struct UserGetHeatmapData<'a> {
 
 impl Sealed for UserGetHeatmapData<'_> {}
 impl Endpoint for UserGetHeatmapData<'_> {
-    type Response = Json<Vec<UserHeatmapData>>;
+    type Response = Vec<UserHeatmapData>;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15463,7 +15456,7 @@ pub struct UserListKeys<'a> {
 
 impl Sealed for UserListKeys<'_> {}
 impl Endpoint for UserListKeys<'_> {
-    type Response = (PublicKeyListHeaders, Json<Vec<PublicKey>>);
+    type Response = (PublicKeyListHeaders, Vec<PublicKey>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15492,7 +15485,7 @@ pub struct OrgListUserOrgs<'a> {
 
 impl Sealed for OrgListUserOrgs<'_> {}
 impl Endpoint for OrgListUserOrgs<'_> {
-    type Response = (OrganizationListHeaders, Json<Vec<Organization>>);
+    type Response = (OrganizationListHeaders, Vec<Organization>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15522,7 +15515,7 @@ pub struct OrgGetUserPermissions<'a> {
 
 impl Sealed for OrgGetUserPermissions<'_> {}
 impl Endpoint for OrgGetUserPermissions<'_> {
-    type Response = Json<OrganizationPermissions>;
+    type Response = OrganizationPermissions;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15556,7 +15549,7 @@ pub struct UserListRepos<'a> {
 
 impl Sealed for UserListRepos<'_> {}
 impl Endpoint for UserListRepos<'_> {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15585,7 +15578,7 @@ pub struct UserListStarred<'a> {
 
 impl Sealed for UserListStarred<'_> {}
 impl Endpoint for UserListStarred<'_> {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15614,7 +15607,7 @@ pub struct UserListSubscriptions<'a> {
 
 impl Sealed for UserListSubscriptions<'_> {}
 impl Endpoint for UserListSubscriptions<'_> {
-    type Response = (RepositoryListHeaders, Json<Vec<Repository>>);
+    type Response = (RepositoryListHeaders, Vec<Repository>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15643,7 +15636,7 @@ pub struct UserGetTokens<'a> {
 
 impl Sealed for UserGetTokens<'_> {}
 impl Endpoint for UserGetTokens<'_> {
-    type Response = (AccessTokenListHeaders, Json<Vec<AccessToken>>);
+    type Response = (AccessTokenListHeaders, Vec<AccessToken>);
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,
@@ -15674,7 +15667,7 @@ pub struct UserCreateToken<'a> {
 
 impl Sealed for UserCreateToken<'_> {}
 impl Endpoint for UserCreateToken<'_> {
-    type Response = Json<AccessToken>;
+    type Response = AccessToken;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::POST,
@@ -15738,7 +15731,7 @@ pub struct GetVersion {}
 
 impl Sealed for GetVersion {}
 impl Endpoint for GetVersion {
-    type Response = Json<ServerVersion>;
+    type Response = ServerVersion;
     fn make_request(self) -> ApiRequest {
         ApiRequest {
             method: Method::GET,

@@ -1,4 +1,4 @@
-use crate::StructureError;
+use crate::{impl_from_response, StructureError};
 use std::collections::BTreeMap;
 /// APIError is an api error with a message
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -8,17 +8,23 @@ pub struct APIError {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(APIError);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIForbiddenError {
     pub message: Option<String>,
     pub url: Option<String>,
 }
 
+impl_from_response!(APIForbiddenError);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIInternalServerError {
     pub message: Option<String>,
     pub url: Option<String>,
 }
+
+impl_from_response!(APIInternalServerError);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIInvalidTopicsError {
@@ -27,6 +33,8 @@ pub struct APIInvalidTopicsError {
     pub message: Option<String>,
 }
 
+impl_from_response!(APIInvalidTopicsError);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APINotFound {
     pub errors: Option<Vec<String>>,
@@ -34,11 +42,15 @@ pub struct APINotFound {
     pub url: Option<String>,
 }
 
+impl_from_response!(APINotFound);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIRepoArchivedError {
     pub message: Option<String>,
     pub url: Option<String>,
 }
+
+impl_from_response!(APIRepoArchivedError);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIUnauthorizedError {
@@ -46,11 +58,15 @@ pub struct APIUnauthorizedError {
     pub url: Option<String>,
 }
 
+impl_from_response!(APIUnauthorizedError);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIValidationError {
     pub message: Option<String>,
     pub url: Option<String>,
 }
+
+impl_from_response!(APIValidationError);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APPersonFollowItem {
@@ -60,6 +76,8 @@ pub struct APPersonFollowItem {
     pub original_url: Option<String>,
 }
 
+impl_from_response!(APPersonFollowItem);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
     pub id: Option<i64>,
@@ -68,6 +86,8 @@ pub struct AccessToken {
     pub sha1: Option<String>,
     pub token_last_eight: Option<String>,
 }
+
+impl_from_response!(AccessToken);
 
 /// ActionRun represents an action run
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -123,6 +143,8 @@ pub struct ActionRun {
     pub workflow_id: Option<String>,
 }
 
+impl_from_response!(ActionRun);
+
 /// ActionRunJob represents a job of a run
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ActionRunJob {
@@ -143,6 +165,8 @@ pub struct ActionRunJob {
     /// the action run job latest task id
     pub task_id: Option<i64>,
 }
+
+impl_from_response!(ActionRunJob);
 
 /// ActionTask represents a ActionTask
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -173,6 +197,8 @@ pub struct ActionTaskResponse {
     pub workflow_runs: Option<Vec<ActionTask>>,
 }
 
+impl_from_response!(ActionTaskResponse);
+
 /// ActionVariable return value of the query API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ActionVariable {
@@ -185,6 +211,8 @@ pub struct ActionVariable {
     /// the repository to which the variable belongs
     pub repo_id: Option<i64>,
 }
+
+impl_from_response!(ActionVariable);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Activity {
@@ -204,6 +232,8 @@ pub struct Activity {
     pub repo_id: Option<i64>,
     pub user_id: Option<i64>,
 }
+
+impl_from_response!(Activity);
 
 /// the type of action
 
@@ -271,6 +301,8 @@ pub struct ActivityPub {
     pub context: Option<String>,
 }
 
+impl_from_response!(ActivityPub);
+
 /// AddCollaboratorOption options when adding a user as a collaborator of a repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AddCollaboratorOption {
@@ -311,6 +343,8 @@ pub struct AnnotatedTag {
     pub verification: Option<PayloadCommitVerification>,
 }
 
+impl_from_response!(AnnotatedTag);
+
 /// AnnotatedTagObject contains meta information of the tag object
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AnnotatedTagObject {
@@ -337,6 +371,8 @@ pub struct Attachment {
     pub uuid: Option<String>,
 }
 
+impl_from_response!(Attachment);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum AttachmentType {
     #[serde(rename = "attachment")]
@@ -351,6 +387,8 @@ pub struct BlockedUser {
     pub created_at: Option<time::OffsetDateTime>,
 }
 
+impl_from_response!(BlockedUser);
+
 /// Branch represents a repository branch
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Branch {
@@ -364,6 +402,8 @@ pub struct Branch {
     pub user_can_merge: Option<bool>,
     pub user_can_push: Option<bool>,
 }
+
+impl_from_response!(Branch);
 
 /// BranchProtection represents a branch protection for a repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -399,6 +439,8 @@ pub struct BranchProtection {
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
 }
+
+impl_from_response!(BranchProtection);
 
 /// ChangeFileOperation for creating, updating or deleting a file
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -463,6 +505,8 @@ pub struct ChangedFile {
     pub status: Option<String>,
 }
 
+impl_from_response!(ChangedFile);
+
 /// CombinedStatus holds the combined state of several statuses for a single commit
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CombinedStatus {
@@ -476,6 +520,8 @@ pub struct CombinedStatus {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
 }
+
+impl_from_response!(CombinedStatus);
 
 impl crate::sealed::Sealed for CombinedStatus {}
 impl crate::PageSize for CombinedStatus {
@@ -505,6 +551,8 @@ pub struct Comment {
     pub user: Option<User>,
 }
 
+impl_from_response!(Comment);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Commit {
     pub author: Option<User>,
@@ -521,6 +569,8 @@ pub struct Commit {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
 }
+
+impl_from_response!(Commit);
 
 /// CommitAffectedFiles store information about files affected by the commit
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -573,6 +623,8 @@ pub struct CommitStatus {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(CommitStatus);
+
 /// CommitStatusState holds the state of a CommitStatus
 ///
 /// It can be "pending", "success", "error" or "failure"
@@ -601,6 +653,8 @@ pub struct Compare {
     pub files: Option<Vec<CommitAffectedFiles>>,
     pub total_commits: Option<i64>,
 }
+
+impl_from_response!(Compare);
 
 /// ContentsResponse contains information about a repo's entry's (dir, file, symlink, submodule) metadata and content
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -635,6 +689,8 @@ pub struct ContentsResponse {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
 }
+
+impl_from_response!(ContentsResponse);
 
 /// CreateAccessTokenOption options when create access token
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1136,6 +1192,8 @@ pub struct Cron {
     pub schedule: Option<String>,
 }
 
+impl_from_response!(Cron);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum DefaultMergeStyle {
     #[serde(rename = "merge")]
@@ -1199,6 +1257,8 @@ pub struct DeployKey {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(DeployKey);
+
 /// DismissPullReviewOptions are options to dismiss a pull review
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct DismissPullReviewOptions {
@@ -1228,6 +1288,8 @@ pub struct DispatchWorkflowRun {
     /// a unique number for each run of a repository
     pub run_number: Option<i64>,
 }
+
+impl_from_response!(DispatchWorkflowRun);
 
 /// EditAttachmentOptions options for editing attachments
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1540,6 +1602,8 @@ pub struct Email {
     pub verified: Option<bool>,
 }
 
+impl_from_response!(Email);
+
 /// ExternalTracker represents settings for external tracker
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ExternalTracker {
@@ -1586,6 +1650,8 @@ pub struct FileDeleteResponse {
     pub verification: Option<PayloadCommitVerification>,
 }
 
+impl_from_response!(FileDeleteResponse);
+
 /// FileLinksResponse contains the links for a repo's file
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct FileLinksResponse {
@@ -1603,6 +1669,8 @@ pub struct FileResponse {
     pub verification: Option<PayloadCommitVerification>,
 }
 
+impl_from_response!(FileResponse);
+
 /// FilesResponse contains information about multiple files from a repo
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct FilesResponse {
@@ -1610,6 +1678,8 @@ pub struct FilesResponse {
     pub files: Option<Vec<ContentsResponse>>,
     pub verification: Option<PayloadCommitVerification>,
 }
+
+impl_from_response!(FilesResponse);
 
 /// ForgeLike activity data type
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1635,6 +1705,8 @@ pub struct GPGKey {
     pub verified: Option<bool>,
 }
 
+impl_from_response!(GPGKey);
+
 /// GPGKeyEmail an email attached to a GPGKey
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GPGKeyEmail {
@@ -1651,6 +1723,8 @@ pub struct GeneralAPISettings {
     pub max_response_items: Option<i64>,
 }
 
+impl_from_response!(GeneralAPISettings);
+
 /// GeneralAttachmentSettings contains global Attachment settings exposed by API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GeneralAttachmentSettings {
@@ -1659,6 +1733,8 @@ pub struct GeneralAttachmentSettings {
     pub max_files: Option<i64>,
     pub max_size: Option<i64>,
 }
+
+impl_from_response!(GeneralAttachmentSettings);
 
 /// GeneralRepoSettings contains global repository settings exposed by API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1672,6 +1748,8 @@ pub struct GeneralRepoSettings {
     pub time_tracking_disabled: Option<bool>,
 }
 
+impl_from_response!(GeneralRepoSettings);
+
 /// GeneralUISettings contains global ui settings exposed by API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GeneralUISettings {
@@ -1679,6 +1757,8 @@ pub struct GeneralUISettings {
     pub custom_emojis: Option<Vec<String>>,
     pub default_theme: Option<String>,
 }
+
+impl_from_response!(GeneralUISettings);
 
 /// GenerateRepoOption options when creating repository using a template
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1720,6 +1800,8 @@ pub struct GitBlob {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(GitBlob);
+
 /// GitEntry represents a git tree
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GitEntry {
@@ -1740,6 +1822,8 @@ pub struct GitHook {
     pub is_active: Option<bool>,
     pub name: Option<String>,
 }
+
+impl_from_response!(GitHook);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GitObject {
@@ -1762,12 +1846,16 @@ pub struct GitTreeResponse {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(GitTreeResponse);
+
 /// GitignoreTemplateInfo name and text of a gitignore template
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GitignoreTemplateInfo {
     pub name: Option<String>,
     pub source: Option<String>,
 }
+
+impl_from_response!(GitignoreTemplateInfo);
 
 /// Hook a hook is a web hook when one repository changed
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1790,6 +1878,8 @@ pub struct Hook {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
 }
+
+impl_from_response!(Hook);
 
 /// Identity for a person's identity like an author or committer
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1846,11 +1936,15 @@ pub struct Issue {
     pub user: Option<User>,
 }
 
+impl_from_response!(Issue);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueConfig {
     pub blank_issues_enabled: Option<bool>,
     pub contact_links: Option<Vec<IssueConfigContactLink>>,
 }
+
+impl_from_response!(IssueConfig);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueConfigContactLink {
@@ -1866,12 +1960,16 @@ pub struct IssueConfigValidation {
     pub valid: Option<bool>,
 }
 
+impl_from_response!(IssueConfigValidation);
+
 /// IssueDeadline represents an issue deadline
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueDeadline {
     #[serde(with = "time::serde::rfc3339::option")]
     pub due_date: Option<time::OffsetDateTime>,
 }
+
+impl_from_response!(IssueDeadline);
 
 /// IssueFormField represents a form field
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1930,6 +2028,8 @@ pub struct IssueTemplate {
     pub title: Option<String>,
 }
 
+impl_from_response!(IssueTemplate);
+
 /// Label a label to an issue or a pr
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Label {
@@ -1943,6 +2043,8 @@ pub struct Label {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(Label);
+
 /// LabelTemplate info of a Label template
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct LabelTemplate {
@@ -1951,6 +2053,8 @@ pub struct LabelTemplate {
     pub exclusive: Option<bool>,
     pub name: Option<String>,
 }
+
+impl_from_response!(LabelTemplate);
 
 /// LicensesInfo contains information about a License
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -1963,6 +2067,8 @@ pub struct LicenseTemplateInfo {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(LicenseTemplateInfo);
+
 /// LicensesListEntry is used for the API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct LicensesTemplateListEntry {
@@ -1972,12 +2078,16 @@ pub struct LicensesTemplateListEntry {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(LicensesTemplateListEntry);
+
 /// ListActionRunResponse return a list of ActionRun
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ListActionRunResponse {
     pub total_count: Option<i64>,
     pub workflow_runs: Option<Vec<ActionRun>>,
 }
+
+impl_from_response!(ListActionRunResponse);
 
 /// MarkdownOption markdown options
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2158,12 +2268,16 @@ pub struct Milestone {
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
+impl_from_response!(Milestone);
+
 /// NewIssuePinsAllowed represents an API response that says if new Issue Pins are allowed
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NewIssuePinsAllowed {
     pub issues: Option<bool>,
     pub pull_requests: Option<bool>,
 }
+
+impl_from_response!(NewIssuePinsAllowed);
 
 /// NodeInfo contains standardized way of exposing metadata about a server running one of the distributed social networks
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2177,6 +2291,8 @@ pub struct NodeInfo {
     pub usage: Option<NodeInfoUsage>,
     pub version: Option<String>,
 }
+
+impl_from_response!(NodeInfo);
 
 /// NodeInfoServices contains the third party sites this server can connect to via their application API
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2221,6 +2337,8 @@ pub struct Note {
     pub message: Option<String>,
 }
 
+impl_from_response!(Note);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NoteOptions {
     pub message: Option<String>,
@@ -2231,6 +2349,8 @@ pub struct NoteOptions {
 pub struct NotificationCount {
     pub new: Option<i64>,
 }
+
+impl_from_response!(NotificationCount);
 
 /// NotificationSubject contains the notification subject (Issue/Pull/Commit)
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2263,6 +2383,8 @@ pub struct NotificationThread {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(NotificationThread);
+
 /// NotifySubjectType represent type of notification subject
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -2287,6 +2409,8 @@ pub struct OAuth2Application {
     pub name: Option<String>,
     pub redirect_uris: Option<Vec<String>>,
 }
+
+impl_from_response!(OAuth2Application);
 
 /// ObjectFormatName of the underlying git repository
 
@@ -2315,6 +2439,8 @@ pub struct Organization {
     pub website: Option<String>,
 }
 
+impl_from_response!(Organization);
+
 /// OrganizationPermissions list different users permissions on an organization
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct OrganizationPermissions {
@@ -2324,6 +2450,8 @@ pub struct OrganizationPermissions {
     pub is_admin: Option<bool>,
     pub is_owner: Option<bool>,
 }
+
+impl_from_response!(OrganizationPermissions);
 
 /// PRBranchInfo information about a branch
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2353,6 +2481,8 @@ pub struct Package {
     pub version: Option<String>,
 }
 
+impl_from_response!(Package);
+
 /// PackageFile represents a package file
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PackageFile {
@@ -2365,6 +2495,8 @@ pub struct PackageFile {
     pub sha256: Option<String>,
     pub sha512: Option<String>,
 }
+
+impl_from_response!(PackageFile);
 
 /// PayloadCommit represents a commit
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2427,6 +2559,8 @@ pub struct PublicKey {
     pub user: Option<User>,
 }
 
+impl_from_response!(PublicKey);
+
 /// PullRequest represents a pull request
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullRequest {
@@ -2481,6 +2615,8 @@ pub struct PullRequest {
     pub user: Option<User>,
 }
 
+impl_from_response!(PullRequest);
+
 /// PullRequestMeta PR info if an issue is a PR
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullRequestMeta {
@@ -2515,6 +2651,8 @@ pub struct PullReview {
     pub user: Option<User>,
 }
 
+impl_from_response!(PullReview);
+
 /// PullReviewComment represents a comment on a pull request review
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullReviewComment {
@@ -2538,6 +2676,8 @@ pub struct PullReviewComment {
     pub updated_at: Option<time::OffsetDateTime>,
     pub user: Option<User>,
 }
+
+impl_from_response!(PullReviewComment);
 
 /// PullReviewRequestOptions are options to add or remove pull review requests
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2563,6 +2703,8 @@ pub struct PushMirror {
     pub sync_on_commit: Option<bool>,
 }
 
+impl_from_response!(PushMirror);
+
 /// QuotaGroup represents a quota group
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaGroup {
@@ -2572,12 +2714,16 @@ pub struct QuotaGroup {
     pub rules: Option<Vec<QuotaRuleInfo>>,
 }
 
+impl_from_response!(QuotaGroup);
+
 /// QuotaInfo represents information about a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaInfo {
     pub groups: Option<Vec<QuotaGroup>>,
     pub used: Option<QuotaUsed>,
 }
+
+impl_from_response!(QuotaInfo);
 
 /// QuotaRuleInfo contains information about a quota rule
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2589,6 +2735,8 @@ pub struct QuotaRuleInfo {
     /// Subjects the rule affects
     pub subjects: Option<Vec<String>>,
 }
+
+impl_from_response!(QuotaRuleInfo);
 
 /// QuotaUsed represents the quota usage of a user
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2608,6 +2756,8 @@ pub struct QuotaUsedArtifact {
     pub size: Option<i64>,
 }
 
+impl_from_response!(QuotaUsedArtifact);
+
 /// QuotaUsedAttachment represents an attachment counting towards a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedAttachment {
@@ -2621,6 +2771,8 @@ pub struct QuotaUsedAttachment {
     /// Size of the attachment (in bytes)
     pub size: Option<i64>,
 }
+
+impl_from_response!(QuotaUsedAttachment);
 
 /// Context for the attachment: URLs to the containing object
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2649,6 +2801,8 @@ pub struct QuotaUsedPackage {
     /// Version of the package
     pub version: Option<String>,
 }
+
+impl_from_response!(QuotaUsedPackage);
 
 /// QuotaUsedSize represents the size-based quota usage of a user
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2709,6 +2863,8 @@ pub struct Reaction {
     pub user: Option<User>,
 }
 
+impl_from_response!(Reaction);
+
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Reference {
     pub object: Option<GitObject>,
@@ -2718,11 +2874,15 @@ pub struct Reference {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(Reference);
+
 /// RegistrationToken is a string used to register a runner with a server
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RegistrationToken {
     pub token: Option<String>,
 }
+
+impl_from_response!(RegistrationToken);
 
 /// Release represents a repository release
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2754,6 +2914,8 @@ pub struct Release {
     pub zipball_url: Option<url::Url>,
 }
 
+impl_from_response!(Release);
+
 /// RenameOrgOption options when renaming an organization
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RenameOrgOption {
@@ -2781,6 +2943,8 @@ pub struct RepoCollaboratorPermission {
     pub role_name: Option<String>,
     pub user: Option<User>,
 }
+
+impl_from_response!(RepoCollaboratorPermission);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RepoCommit {
@@ -2887,6 +3051,8 @@ pub struct Repository {
     pub wiki_branch: Option<String>,
 }
 
+impl_from_response!(Repository);
+
 /// RepositoryMeta basic repository information
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RepositoryMeta {
@@ -2903,6 +3069,8 @@ pub struct SearchResults {
     pub ok: Option<bool>,
 }
 
+impl_from_response!(SearchResults);
+
 /// Secret represents a secret
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Secret {
@@ -2912,11 +3080,15 @@ pub struct Secret {
     pub name: Option<String>,
 }
 
+impl_from_response!(Secret);
+
 /// ServerVersion wraps the version of the server
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ServerVersion {
     pub version: Option<String>,
 }
+
+impl_from_response!(ServerVersion);
 
 /// SetUserQuotaGroupsOptions represents the quota groups of a user
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2947,6 +3119,8 @@ pub struct StopWatch {
     pub seconds: Option<i64>,
 }
 
+impl_from_response!(StopWatch);
+
 /// SubmitPullReviewOptions are options to submit a pending pull review
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct SubmitPullReviewOptions {
@@ -2963,6 +3137,8 @@ pub struct SyncForkInfo {
     pub fork_commit: Option<String>,
 }
 
+impl_from_response!(SyncForkInfo);
+
 /// Tag represents a repository tag
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Tag {
@@ -2976,6 +3152,8 @@ pub struct Tag {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub zipball_url: Option<url::Url>,
 }
+
+impl_from_response!(Tag);
 
 /// TagArchiveDownloadCount counts how many times a archive was downloaded
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2997,6 +3175,8 @@ pub struct TagProtection {
     pub whitelist_usernames: Option<Vec<String>>,
 }
 
+impl_from_response!(TagProtection);
+
 /// Team represents a team in an organization
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Team {
@@ -3010,6 +3190,8 @@ pub struct Team {
     pub units: Option<Vec<String>>,
     pub units_map: Option<BTreeMap<String, String>>,
 }
+
+impl_from_response!(Team);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum TeamPermission {
@@ -3066,11 +3248,15 @@ pub struct TimelineComment {
     pub user: Option<User>,
 }
 
+impl_from_response!(TimelineComment);
+
 /// TopicName a list of repo topic names
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TopicName {
     pub topics: Option<Vec<String>>,
 }
+
+impl_from_response!(TopicName);
 
 /// TopicResponse for returning topics
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -3099,6 +3285,8 @@ pub struct TrackedTime {
     pub user_id: Option<i64>,
     pub user_name: Option<String>,
 }
+
+impl_from_response!(TrackedTime);
 
 /// TransferRepoOption options when transfer a repository's ownership
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -3212,12 +3400,16 @@ pub struct User {
     pub website: Option<String>,
 }
 
+impl_from_response!(User);
+
 /// UserHeatmapData represents the data needed to create a heatmap
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct UserHeatmapData {
     pub contributions: Option<i64>,
     pub timestamp: Option<i64>,
 }
+
+impl_from_response!(UserHeatmapData);
 
 /// UserSettings represents user settings
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -3236,6 +3428,8 @@ pub struct UserSettings {
     pub theme: Option<String>,
     pub website: Option<String>,
 }
+
+impl_from_response!(UserSettings);
 
 /// UserSettingsOptions represents options to change user settings
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -3277,6 +3471,8 @@ pub struct WatchInfo {
     pub url: Option<url::Url>,
 }
 
+impl_from_response!(WatchInfo);
+
 /// WikiCommit page commit/revision
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WikiCommit {
@@ -3293,6 +3489,8 @@ pub struct WikiCommitList {
     pub count: Option<i64>,
 }
 
+impl_from_response!(WikiCommitList);
+
 /// WikiPage a wiki page
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WikiPage {
@@ -3308,6 +3506,8 @@ pub struct WikiPage {
     pub title: Option<String>,
 }
 
+impl_from_response!(WikiPage);
+
 /// WikiPageMetaData wiki page meta information
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WikiPageMetaData {
@@ -3317,6 +3517,8 @@ pub struct WikiPageMetaData {
     pub sub_url: Option<String>,
     pub title: Option<String>,
 }
+
+impl_from_response!(WikiPageMetaData);
 
 pub struct AccessTokenListHeaders {
     pub x_total_count: Option<i64>,
@@ -4940,10 +5142,12 @@ impl TeamSearchQuery {
     }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct TeamSearchResponse {
+pub struct TeamSearchResults {
     pub data: Option<Vec<Team>>,
     pub ok: Option<bool>,
 }
+
+impl_from_response!(TeamSearchResults);
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct ListPackagesQuery {
@@ -6718,9 +6922,11 @@ impl TopicSearchQuery {
     }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct TopicSearchResponse {
+pub struct TopicSearchResults {
     pub topics: Option<Vec<TopicResponse>>,
 }
+
+impl_from_response!(TopicSearchResults);
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserSearchRunJobsQuery {
@@ -6941,10 +7147,12 @@ impl UserSearchQuerySort {
     }
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct UserSearchResponse {
+pub struct UserSearchResults {
     pub data: Option<Vec<User>>,
     pub ok: Option<bool>,
 }
+
+impl_from_response!(UserSearchResults);
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserListActivityFeedsQuery {
