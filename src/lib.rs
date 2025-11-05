@@ -9,35 +9,37 @@
 //! Start by connecting to the API with [`Forgejo::new`]
 //!
 //! ```no_run
-//! # use forgejo_api::{Forgejo, Auth}
-//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # use forgejo_api::{Forgejo, Auth};
+//! # fn foo() -> Result<(), Box<dyn std::error::Error>> {
 //! let api = Forgejo::new(
 //!     Auth::None, // More info on authentication below
-//!     url::Url::new("https://forgejo.example.local")?,
+//!     url::Url::parse("https://forgejo.example.local")?,
 //! )?;
+//! # Ok(())
 //! # }
 //! ```
 //!
 //! Then use that to interact with Forgejo!
 //!
 //! ```no_run
-//! # use forgejo_api::{Forgejo, Auth}
-//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # use forgejo_api::{Forgejo, Auth, structs::IssueListIssuesQuery};
+//! # async fn foo() -> Result<(), Box<dyn std::error::Error>> {
 //! # let api = Forgejo::new(
 //! #     Auth::None, // More info on authentication below
-//! #     url::Url::new("https://forgejo.example.local")?,
+//! #     url::Url::parse("https://forgejo.example.local")?,
 //! # )?;
 //! // Loads every issue made by "someone" on that repo!
 //! let issues = api.issue_list_issues(
 //!         "example-user",
 //!         "example-repo",
 //!         IssueListIssuesQuery {
-//!             author: Some("someone".into()),
+//!             created_by: Some("someone".into()),
 //!             ..Default::default()
 //!         }
 //!     )
 //!     .all()
 //!     .await?;
+//! # Ok(())
 //! # }
 //! ```
 //!
@@ -53,27 +55,27 @@
 //! supported here.
 //!
 //! ```no_run
-//! # use forgejo_api::{Forgejo, Auth}
-//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # use forgejo_api::{Forgejo, Auth};
+//! # fn foo() -> Result<(), Box<dyn std::error::Error>> {
 //! // No authentication
 //! // No credentials are sent, only public endpoints are available
 //! let api = Forgejo::new(
 //!     Auth::None,
-//!     url::Url::new("https://forgejo.example.local")?,
+//!     url::Url::parse("https://forgejo.example.local")?,
 //! )?;
 //!
 //! // Application Token
 //! // Provides access depending on the scopes set when the token is created
 //! let api = Forgejo::new(
 //!     Auth::Token("2a3684d663cd9fdef3a9d759492c21844429e0f9"),
-//!     url::Url::new("https://forgejo.example.local")?,
+//!     url::Url::parse("https://forgejo.example.local")?,
 //! )?;
 //!
 //! // OAuth2 Token
 //! // Provides complete access to the user's account
 //! let api = Forgejo::new(
 //!     Auth::OAuth2("Pretend there's a token here (they're really long!)"),
-//!     url::Url::new("https://forgejo.example.local")?,
+//!     url::Url::parse("https://forgejo.example.local")?,
 //! )?;
 //!
 //! // Username & password
@@ -88,8 +90,9 @@
 //!         password: "password123", // I hope your password is more secure than this...
 //!         mfa: None, // If the user has 2FA enable, it has to be included here.
 //!     },
-//!     url::Url::new("https://forgejo.example.local")?,
+//!     url::Url::parse("https://forgejo.example.local")?,
 //! )?;
+//! # Ok(())
 //! # }
 //! ```
 //!
@@ -104,10 +107,11 @@
 //!
 //! For example:
 //! ```no_run
+//! # use forgejo_api::{Forgejo, Auth};
 //! # async fn foo() -> Result<(), Box<dyn std::error::Error>> {
 //! # let api = Forgejo::new(
 //! #    Auth::None,
-//! #    url::Url::new("https://unimportant/")?,
+//! #    url::Url::parse("https://unimportant/")?,
 //! # )?;
 //! let following = api.user_current_list_following()
 //!     // The third page (pages are 1-indexed)
@@ -116,6 +120,7 @@
 //!     // there aren't enough to fill the page
 //!     .page_size(30)
 //!     .await?;
+//! # Ok(())
 //! # }
 //! ```
 //!

@@ -20,13 +20,14 @@ use url::Url;
 /// Calling an endpoint requires calling `.call()` instead of using `.await`.
 ///
 /// ```no_run
-/// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// # let api = forgejo_api::Forgejo::new(forgejo_api::Auth::none, url::Url::parse("")?)?;
+/// # async fn foo() -> Result<(), Box<dyn std::error::Error>> {
+/// # let api = forgejo_api::Forgejo::new(forgejo_api::Auth::None, url::Url::parse("")?)?;
 /// // Instead of this
 /// let following = api.user_current_list_following().await;
-/// # let api = forgejo_api::sync::Forgejo::new(forgejo_api::Auth::none, url::Url::parse("")?)?;
+/// # let api = forgejo_api::sync::Forgejo::new(forgejo_api::Auth::None, url::Url::parse("")?)?;
 /// // Do this!
 /// let following = api.user_current_list_following().send();
+/// # Ok(())
 /// # }
 /// ```
 pub struct Forgejo {
