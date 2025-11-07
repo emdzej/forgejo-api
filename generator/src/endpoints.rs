@@ -14,10 +14,7 @@ pub fn create_endpoints(spec: &OpenApiV2) -> eyre::Result<String> {
     s.push_str("use std::collections::BTreeMap;");
     s.push_str("use super::structs::*;\n");
     s.push_str("use crate::Endpoint;\n");
-    s.push_str("use crate::{ApiRequest, RequestBody, ApiResponse};\n");
-    s.push_str(
-        "use crate::response_type::{Json as RJson, Text as RText, Bytes as RBytes, WithHeaders};\n",
-    );
+    s.push_str("use crate::{RawRequest, RequestBody, ApiResponse};\n");
     s.push_str("use reqwest::Method;\n");
     s.push_str("use crate::sealed::Sealed;\n");
     s.push_str("use bytes::Bytes;\n");
@@ -308,23 +305,7 @@ fn create_endpoint_impl(
         writeln!(&mut s, "impl Endpoint for {struct_name} {{")?;
     }
     let response = response_type_from_op(spec, op)?;
-    let (mut response_type, optional) = if let Some(response_body) = response.body.as_ref() {
-        let response_type = match response.kind.ok_or_eyre("No response kind")? {
-            ResponseKind::Json => format!("RJson<{}>", response_body.ty),
-            ResponseKind::Text => "RText".into(),
-            ResponseKind::Bytes => "RBytes".into(),
-        };
-        (response_type, response_body.optional)
-    } else {
-        ("()".into(), false)
-    };
-    if optional {
-        response_type = format!("Option<{response_type}>");
-    };
-    if let Some(headers) = &response.headers {
-        response_type = format!("WithHeaders<{response_type}, {headers}>");
-    }
-    writeln!(&mut s, "    type Response = {response_type};")?;
+    writeln!(&mut s, "    type Response = {response};")?;
     let make_request = endpoint_make_request(spec, base_path, path, op, method)?;
     writeln!(&mut s, "{make_request}")?;
     let handle_error = endpoint_handle_error(spec, op)?;
@@ -340,8 +321,8 @@ fn endpoint_make_request(
     method: Method,
 ) -> eyre::Result<String> {
     let mut s = String::new();
-    writeln!(&mut s, "    fn make_request(self) -> ApiRequest {{")?;
-    writeln!(&mut s, "        ApiRequest {{")?;
+    writeln!(&mut s, "    fn make_request(self) -> RawRequest {{")?;
+    writeln!(&mut s, "        RawRequest {{")?;
     writeln!(&mut s, "            method: {},", method.code_string())?;
     if has_path_params(spec, op)? {
         let (fmt_str, path_fields) = path_to_fmt_string(&mut &*path);

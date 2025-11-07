@@ -31,7 +31,13 @@ async fn myself_custom_type() {
         login: String,
     }
 
-    let myself = api.user_get_current().json::<CustomUser>().await.unwrap();
+    forgejo_api::impl_from_response!(CustomUser);
+
+    let myself = api
+        .user_get_current()
+        .response_type::<CustomUser>()
+        .await
+        .unwrap();
     assert!(myself.is_admin, "user should be admin");
     assert_eq!(
         myself.login, "TestingAdmin",
@@ -40,7 +46,7 @@ async fn myself_custom_type() {
 
     let myself_indirect = api
         .user_get("TestingAdmin")
-        .json::<CustomUser>()
+        .response_type::<CustomUser>()
         .await
         .unwrap();
     assert_eq!(

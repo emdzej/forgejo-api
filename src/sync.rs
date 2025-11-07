@@ -1,23 +1,51 @@
 //! Blocking (non-async) API
 
 use super::{
-    response_type::*, structs, ApiError, ApiRequest, ApiResponse, Auth, Endpoint, ForgejoError,
-    FromResponse, OAuthError, RequestBody, TypedRequest,
+    structs, ApiError, ApiResponse, Auth, Endpoint, ForgejoError, FromResponse, OAuthError,
+    RawRequest, RequestBody, TypedRequest,
 };
 use reqwest::blocking::Client;
 use soft_assert::soft_assert;
 use url::Url;
 
+/// A blocking client for Forgejo's web API.
+///
+/// ## Differences from `async` version
+///
+/// This has largely the same interface as the [async version](crate::Forgejo),
+/// but isn't entirely identical.
+///
+/// ### `.send()` instead of `.await`
+///
+/// Calling an endpoint requires calling `.call()` instead of using `.await`.
+///
+/// ```no_run
+/// # async fn foo() -> Result<(), Box<dyn std::error::Error>> {
+/// # let api = forgejo_api::Forgejo::new(forgejo_api::Auth::None, url::Url::parse("")?)?;
+/// // Instead of this
+/// let following = api.user_current_list_following().await;
+/// # let api = forgejo_api::sync::Forgejo::new(forgejo_api::Auth::None, url::Url::parse("")?)?;
+/// // Do this!
+/// let following = api.user_current_list_following().send();
+/// # Ok(())
+/// # }
+/// ```
 pub struct Forgejo {
     url: Url,
     client: Client,
 }
 
 impl Forgejo {
+    /// Creates a new client connected to the API of the specified Forgejo instance.
+    ///
+    /// The default user agent is "forgejo-api-rs". Use
+    /// [`Forgejo::with_user_agent`] to set a custom one.
     pub fn new(auth: Auth, url: Url) -> Result<Self, ForgejoError> {
         Self::with_user_agent(auth, url, "forgejo-api-rs")
     }
 
+    /// Just like [`Forgejo::new`], but includes a custom user agent to be sent
+    /// with each request.
     pub fn with_user_agent(auth: Auth, url: Url, user_agent: &str) -> Result<Self, ForgejoError> {
         soft_assert!(
             matches!(url.scheme(), "http" | "https"),
@@ -70,7 +98,7 @@ impl Forgejo {
         }
     }
 
-    pub fn send_request(&self, request: &ApiRequest) -> Result<ApiResponse, ForgejoError> {
+    pub fn send_request(&self, request: &RawRequest) -> Result<ApiResponse, ForgejoError> {
         let mut url = self
             .url
             .join(&request.path)
@@ -115,78 +143,32 @@ impl Forgejo {
     pub fn hit_endpoint<E: Endpoint, R: FromResponse>(
         &self,
         endpoint: E,
-    ) -> Result<R::Output, ForgejoError> {
+    ) -> Result<R, ForgejoError> {
         let (response, has_body) = E::handle_error(self.send_request(&endpoint.make_request())?)?;
         Ok(R::from_response(response, has_body)?)
     }
 }
 
-pub struct WrappedRequest<'a, E, R> {
+pub struct Request<'a, E, R> {
     pub(crate) inner: TypedRequest<E, R>,
     pub(crate) client: &'a Forgejo,
 }
 
-macro_rules! response_type_method_inner {
-    ($self:ident) => {
-        WrappedRequest {
-            inner: TypedRequest {
-                inner: $self.inner.inner,
-                __endpoint: std::marker::PhantomData,
-                __response: std::marker::PhantomData,
-            },
-            client: $self.client,
-        }
-    };
-}
-
-macro_rules! response_type_method {
-    ($name:ident -> $response:ty) => {
-        pub fn $name(self) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-    ($name:ident<T> -> $response:ty) => {
-        pub fn $name<T: serde::de::DeserializeOwned>(self) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-    ($name:ident<H> -> $response:ty) => {
-        pub fn $name<H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>>(
-            self,
-        ) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-    ($name:ident<T, H> -> $response:ty) => {
-        pub fn $name<
-            T: serde::de::DeserializeOwned,
-            H: for<'h> TryFrom<&'h reqwest::header::HeaderMap>,
-        >(
-            self,
-        ) -> WrappedRequest<'a, E, $response> {
-            response_type_method_inner!(self)
-        }
-    };
-}
-
-impl<'a, E: Endpoint, R: FromResponse> WrappedRequest<'a, E, R> {
-    pub fn send(self) -> Result<R::Output, ForgejoError> {
+impl<'a, E: Endpoint, R: FromResponse> Request<'a, E, R> {
+    pub fn send(self) -> Result<R, ForgejoError> {
         self.inner.send_sync(self.client)
     }
 
-    response_type_method!(json<T> -> Json<T>);
-    response_type_method!(json_opt<T> -> Option<Json<T>>);
-    response_type_method!(text -> Text);
-    response_type_method!(bytes -> Bytes);
-    response_type_method!(text_opt -> Option<Text>);
-    response_type_method!(bytes_opt -> Option<Text>);
-
-    response_type_method!(headers_json<T, H> -> WithHeaders<Json<T>, H>);
-    response_type_method!(headers_json_opt<T, H> -> WithHeaders<Option<Json<T>>, H>);
-    response_type_method!(headers_text<H> -> WithHeaders<Text, H>);
-    response_type_method!(headers_bytes<H> -> WithHeaders<Bytes, H>);
-    response_type_method!(headers_text_opt<H> -> WithHeaders<Option<Text>, H>);
-    response_type_method!(headers_bytes_opt<H> -> WithHeaders<Option<Text>, H>);
+    pub fn response_type<T: FromResponse>(self) -> Request<'a, E, T> {
+        Request {
+            inner: TypedRequest {
+                inner: self.inner.inner,
+                __endpoint: std::marker::PhantomData,
+                __response: std::marker::PhantomData,
+            },
+            client: self.client,
+        }
+    }
 
     pub fn page(mut self, page: u32) -> Self {
         self.inner.inner.page = Some(page);

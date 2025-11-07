@@ -221,7 +221,11 @@ fn schema_subtype_name(
             _enum: Some(_),
             ..
         } => {
-            *ty = format!("{parent_name}{}", name.to_pascal_case());
+            *ty = schema
+                .title
+                .as_deref()
+                .map(|title| title.split_whitespace().next().unwrap_or(title).to_owned())
+                .unwrap_or_else(|| format!("{parent_name}{}", name.to_pascal_case()));
             true
         }
         Schema {
@@ -262,6 +266,7 @@ fn schema_subtypes(
     name: &str,
     schema: &Schema,
     subtypes: &mut Vec<String>,
+    is_response: bool,
 ) -> eyre::Result<()> {
     match schema {
         Schema {
@@ -269,8 +274,12 @@ fn schema_subtypes(
             properties: Some(_),
             ..
         } => {
-            let name = format!("{parent_name}{}", name.to_pascal_case());
-            let subtype = structs::create_struct_for_definition(spec, &name, schema)?;
+            let name = schema
+                .title
+                .as_deref()
+                .map(|title| title.split_whitespace().next().unwrap_or(title).to_owned())
+                .unwrap_or_else(|| format!("{parent_name}{}", name.to_pascal_case()));
+            let subtype = structs::create_struct_for_definition(spec, &name, schema, is_response)?;
             subtypes.push(subtype);
         }
         Schema {
@@ -278,8 +287,18 @@ fn schema_subtypes(
             _enum: Some(_enum),
             ..
         } => {
-            let name = format!("{parent_name}{}", name.to_pascal_case());
-            let subtype = structs::create_enum(&name, schema.description.as_deref(), _enum, false)?;
+            let name = schema
+                .title
+                .as_deref()
+                .map(|title| title.split_whitespace().next().unwrap_or(title).to_owned())
+                .unwrap_or_else(|| format!("{parent_name}{}", name.to_pascal_case()));
+            let subtype = structs::create_enum(
+                &name,
+                schema.description.as_deref(),
+                _enum,
+                false,
+                is_response,
+            )?;
             subtypes.push(subtype);
         }
         Schema {
@@ -288,7 +307,7 @@ fn schema_subtypes(
             ..
         } => {
             if let MaybeRef::Value { value } = &**items {
-                schema_subtypes(spec, parent_name, name, value, subtypes)?;
+                schema_subtypes(spec, parent_name, name, value, subtypes, is_response)?;
             }
         }
         _ => (),
