@@ -39,7 +39,7 @@ steps:
     settings:
       work_dir: ./forgejo
       package: Cyborus/forgejo-api-test-failure-archive
-      instance: https://code.cartoon-aa.xyz/
+      instance: https://codeberg.org/
       token:
         from_secret: preserve_token
 
