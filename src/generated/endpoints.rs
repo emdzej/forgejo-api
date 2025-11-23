@@ -967,12 +967,12 @@ impl Endpoint for AdminGetQuotaRule<'_> {
     }
 }
 
-pub struct AdminDEleteQuotaRule<'a> {
+pub struct AdminDeleteQuotaRule<'a> {
     pub quotarule: &'a str,
 }
 
-impl Sealed for AdminDEleteQuotaRule<'_> {}
-impl Endpoint for AdminDEleteQuotaRule<'_> {
+impl Sealed for AdminDeleteQuotaRule<'_> {}
+impl Endpoint for AdminDeleteQuotaRule<'_> {
     type Response = ();
     fn make_request(self) -> RawRequest {
         RawRequest {
