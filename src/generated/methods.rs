@@ -392,11 +392,11 @@ impl crate::Forgejo {
     /// Deletes a quota rule
     ///
     /// - `quotarule`: quota rule to delete
-    pub fn admin_d_elete_quota_rule(
+    pub fn admin_delete_quota_rule(
         &self,
         quotarule: &str,
-    ) -> Request<'_, endpoints::AdminDEleteQuotaRule<'_>, ()> {
-        endpoints::AdminDEleteQuotaRule { quotarule }
+    ) -> Request<'_, endpoints::AdminDeleteQuotaRule<'_>, ()> {
+        endpoints::AdminDeleteQuotaRule { quotarule }
             .make_request()
             .wrap::<_, _>(self)
     }
