@@ -486,17 +486,23 @@ impl Forgejo {
             .url
             .join(&request.path)
             .expect("url fail. bug in forgejo-api");
-        let mut query_pairs = url.query_pairs_mut();
-        if let Some(query) = &request.query {
-            query_pairs.extend_pairs(query.iter());
+
+        // Block needed to contain the scope of query_pairs
+        // Otherwise it prevents the returned Futured from being Send
+        // Oddly, `drop(query_pairs)` doesn't work for this.
+        {
+            let mut query_pairs = url.query_pairs_mut();
+            if let Some(query) = &request.query {
+                query_pairs.extend_pairs(query.iter());
+            }
+            if let Some(page) = request.page {
+                query_pairs.append_pair("page", &format!("{page}"));
+            }
+            if let Some(limit) = request.limit {
+                query_pairs.append_pair("limit", &format!("{limit}"));
+            }
         }
-        if let Some(page) = request.page {
-            query_pairs.append_pair("page", &format!("{page}"));
-        }
-        if let Some(limit) = request.limit {
-            query_pairs.append_pair("limit", &format!("{limit}"));
-        }
-        drop(query_pairs);
+
         let mut reqwest_request = self.client.request(request.method.clone(), url);
         reqwest_request = match &request.body {
             RequestBody::Json(bytes) => reqwest_request
@@ -1116,7 +1122,7 @@ where
 impl<'a, E: Endpoint, R: FromResponse> std::future::IntoFuture for Request<'a, E, R> {
     type Output = Result<R, ForgejoError>;
 
-    type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + 'a>>;
+    type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + Send + Sync + 'a>>;
 
     fn into_future(self) -> Self::IntoFuture {
         Box::pin(async move {
