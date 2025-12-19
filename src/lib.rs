@@ -933,8 +933,8 @@ pub enum RequestBody {
 
 pub struct TypedRequest<E, R> {
     inner: RawRequest,
-    __endpoint: PhantomData<*const E>,
-    __response: PhantomData<*const R>,
+    __endpoint: PhantomData<E>,
+    __response: PhantomData<R>,
 }
 
 impl<E: Endpoint, R: FromResponse> TypedRequest<E, R> {
@@ -1035,7 +1035,7 @@ pub struct PageStream<'a, E: Endpoint, T, H> {
     request: Request<'a, E, (H, T)>,
     total_seen: usize,
     finished: bool,
-    fut: Option<Pin<Box<dyn Future<Output = Result<(H, T), ForgejoError>> + 'a>>>,
+    fut: Option<Pin<Box<dyn Future<Output = Result<(H, T), ForgejoError>> + Send + Sync + 'a>>>,
 }
 
 impl<'a, E: Endpoint, T: PageSize, H: CountHeader> futures::stream::Stream
@@ -1101,11 +1101,18 @@ where
     }
 }
 
-impl<'a, E: Endpoint + 'a, T: 'a, H: CountHeader + 'a> Request<'a, E, (H, Vec<T>)>
+impl<
+        'a,
+        E: Endpoint + Unpin + Send + Sync + 'a,
+        T: Unpin + Send + Sync + 'a,
+        H: CountHeader + Unpin + Send + Sync + 'a,
+    > Request<'a, E, (H, Vec<T>)>
 where
     (H, Vec<T>): FromResponse,
 {
-    pub fn stream(self) -> impl futures::Stream<Item = Result<T, ForgejoError>> + use<'a, E, T, H> {
+    pub fn stream(
+        self,
+    ) -> impl futures::Stream<Item = Result<T, ForgejoError>> + Send + Sync + use<'a, E, T, H> {
         use futures::TryStreamExt;
         self.stream_pages()
             .map_ok(|page| futures::stream::iter(page.into_iter().map(Ok)))
