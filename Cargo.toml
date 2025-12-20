@@ -10,7 +10,7 @@ description = "Interface to Forgejo's Web API"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-reqwest = { version = "0.12", features = ["json", "multipart"] }
+reqwest = { version = "0.12", default-features = false, features = ["charset", "http2", "macos-system-configuration", "json", "multipart"] }
 soft_assert = "0.1.1"
 thiserror = "1.0.43"
 tokio = { version = "1.29.1", features = ["net"] }
@@ -24,7 +24,9 @@ zeroize = "1.7.0"
 futures = "0.3.31"
 
 [features]
+default = ["reqwest/default-tls"]
 sync = ["reqwest/blocking"]
+rustls-tls = ["reqwest/rustls-tls"]
 
 [dev-dependencies]
 eyre = "0.6.9"
