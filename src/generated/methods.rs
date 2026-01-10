@@ -184,9 +184,7 @@ impl crate::Forgejo {
 
     /// List global (system) webhooks
     ///
-    pub fn admin_list_hooks(
-        &self,
-    ) -> Request<'_, endpoints::AdminListHooks, (HookListHeaders, Vec<Hook>)> {
+    pub fn admin_list_hooks(&self) -> Request<'_, endpoints::AdminListHooks, Vec<Hook>> {
         endpoints::AdminListHooks {}
             .make_request()
             .wrap::<_, _>(self)
@@ -249,8 +247,7 @@ impl crate::Forgejo {
     /// List the available quota groups
     pub fn admin_list_quota_groups(
         &self,
-    ) -> Request<'_, endpoints::AdminListQuotaGroups, (QuotaGroupListHeaders, Vec<QuotaGroup>)>
-    {
+    ) -> Request<'_, endpoints::AdminListQuotaGroups, Vec<QuotaGroup>> {
         endpoints::AdminListQuotaGroups {}
             .make_request()
             .wrap::<_, _>(self)
@@ -377,8 +374,7 @@ impl crate::Forgejo {
     /// List the available quota rules
     pub fn admin_list_quota_rules(
         &self,
-    ) -> Request<'_, endpoints::AdminListQuotaRules, (QuotaRuleInfoListHeaders, Vec<QuotaRuleInfo>)>
-    {
+    ) -> Request<'_, endpoints::AdminListQuotaRules, Vec<QuotaRuleInfo>> {
         endpoints::AdminListQuotaRules {}
             .make_request()
             .wrap::<_, _>(self)
@@ -817,11 +813,7 @@ impl crate::Forgejo {
     pub fn notify_read_list(
         &self,
         query: NotifyReadListQuery,
-    ) -> Request<
-        '_,
-        endpoints::NotifyReadList,
-        (NotificationThreadListHeaders, Vec<NotificationThread>),
-    > {
+    ) -> Request<'_, endpoints::NotifyReadList, Vec<NotificationThread>> {
         endpoints::NotifyReadList { query }
             .make_request()
             .wrap::<_, _>(self)
@@ -1131,10 +1123,7 @@ impl crate::Forgejo {
     /// List an organization's webhooks
     ///
     /// - `org`: name of the organization
-    pub fn org_list_hooks(
-        &self,
-        org: &str,
-    ) -> Request<'_, endpoints::OrgListHooks<'_>, (HookListHeaders, Vec<Hook>)> {
+    pub fn org_list_hooks(&self, org: &str) -> Request<'_, endpoints::OrgListHooks<'_>, Vec<Hook>> {
         endpoints::OrgListHooks { org }
             .make_request()
             .wrap::<_, _>(self)
@@ -1657,8 +1646,7 @@ impl crate::Forgejo {
         r#type: &str,
         name: &str,
         version: &str,
-    ) -> Request<'_, endpoints::ListPackageFiles<'_>, (PackageFileListHeaders, Vec<PackageFile>)>
-    {
+    ) -> Request<'_, endpoints::ListPackageFiles<'_>, Vec<PackageFile>> {
         endpoints::ListPackageFiles {
             owner,
             r#type,
@@ -3035,7 +3023,7 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Request<'_, endpoints::RepoListGitHooks<'_>, (GitHookListHeaders, Vec<GitHook>)> {
+    ) -> Request<'_, endpoints::RepoListGitHooks<'_>, Vec<GitHook>> {
         endpoints::RepoListGitHooks { owner, repo }
             .make_request()
             .wrap::<_, _>(self)
@@ -3443,8 +3431,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         id: i64,
-    ) -> Request<'_, endpoints::IssueGetCommentReactions<'_>, (ReactionListHeaders, Vec<Reaction>)>
-    {
+    ) -> Request<'_, endpoints::IssueGetCommentReactions<'_>, Vec<Reaction>> {
         endpoints::IssueGetCommentReactions { owner, repo, id }
             .make_request()
             .wrap::<_, _>(self)
@@ -3504,7 +3491,7 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Request<'_, endpoints::RepoListPinnedIssues<'_>, (IssueListHeaders, Vec<Issue>)> {
+    ) -> Request<'_, endpoints::RepoListPinnedIssues<'_>, Vec<Issue>> {
         endpoints::RepoListPinnedIssues { owner, repo }
             .make_request()
             .wrap::<_, _>(self)
@@ -3688,7 +3675,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: i64,
-    ) -> Request<'_, endpoints::IssueListBlocks<'_>, (IssueListHeaders, Vec<Issue>)> {
+    ) -> Request<'_, endpoints::IssueListBlocks<'_>, Vec<Issue>> {
         endpoints::IssueListBlocks { owner, repo, index }
             .make_request()
             .wrap::<_, _>(self)
@@ -3867,8 +3854,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: i64,
-    ) -> Request<'_, endpoints::IssueListIssueDependencies<'_>, (IssueListHeaders, Vec<Issue>)>
-    {
+    ) -> Request<'_, endpoints::IssueListIssueDependencies<'_>, Vec<Issue>> {
         endpoints::IssueListIssueDependencies { owner, repo, index }
             .make_request()
             .wrap::<_, _>(self)
@@ -3930,7 +3916,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         index: i64,
-    ) -> Request<'_, endpoints::IssueGetLabels<'_>, (LabelListHeaders, Vec<Label>)> {
+    ) -> Request<'_, endpoints::IssueGetLabels<'_>, Vec<Label>> {
         endpoints::IssueGetLabels { owner, repo, index }
             .make_request()
             .wrap::<_, _>(self)
@@ -3948,7 +3934,7 @@ impl crate::Forgejo {
         repo: &str,
         index: i64,
         body: IssueLabelsOption,
-    ) -> Request<'_, endpoints::IssueReplaceLabels<'_>, (LabelListHeaders, Vec<Label>)> {
+    ) -> Request<'_, endpoints::IssueReplaceLabels<'_>, Vec<Label>> {
         endpoints::IssueReplaceLabels {
             owner,
             repo,
@@ -3971,7 +3957,7 @@ impl crate::Forgejo {
         repo: &str,
         index: i64,
         body: IssueLabelsOption,
-    ) -> Request<'_, endpoints::IssueAddLabel<'_>, (LabelListHeaders, Vec<Label>)> {
+    ) -> Request<'_, endpoints::IssueAddLabel<'_>, Vec<Label>> {
         endpoints::IssueAddLabel {
             owner,
             repo,
@@ -4726,11 +4712,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         query: NotifyReadRepoListQuery,
-    ) -> Request<
-        '_,
-        endpoints::NotifyReadRepoList<'_>,
-        (NotificationThreadListHeaders, Vec<NotificationThread>),
-    > {
+    ) -> Request<'_, endpoints::NotifyReadRepoList<'_>, Vec<NotificationThread>> {
         endpoints::NotifyReadRepoList { owner, repo, query }
             .make_request()
             .wrap::<_, _>(self)
@@ -4914,7 +4896,7 @@ impl crate::Forgejo {
     ) -> Request<
         '_,
         endpoints::RepoGetPullRequestFiles<'_>,
-        (ChangedFileListHeaders, Vec<ChangedFile>),
+        (ChangedFileListWithPaginationHeaders, Vec<ChangedFile>),
     > {
         endpoints::RepoGetPullRequestFiles {
             owner,
@@ -4993,11 +4975,7 @@ impl crate::Forgejo {
         repo: &str,
         index: i64,
         body: PullReviewRequestOptions,
-    ) -> Request<
-        '_,
-        endpoints::RepoCreatePullReviewRequests<'_>,
-        (PullReviewListHeaders, Vec<PullReview>),
-    > {
+    ) -> Request<'_, endpoints::RepoCreatePullReviewRequests<'_>, Vec<PullReview>> {
         endpoints::RepoCreatePullReviewRequests {
             owner,
             repo,
@@ -6045,7 +6023,7 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> Request<'_, endpoints::RepoListTeams<'_>, (TeamListHeaders, Vec<Team>)> {
+    ) -> Request<'_, endpoints::RepoListTeams<'_>, Vec<Team>> {
         endpoints::RepoListTeams { owner, repo }
             .make_request()
             .wrap::<_, _>(self)
@@ -6125,8 +6103,7 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         user: &str,
-    ) -> Request<'_, endpoints::UserTrackedTimes<'_>, (TrackedTimeListHeaders, Vec<TrackedTime>)>
-    {
+    ) -> Request<'_, endpoints::UserTrackedTimes<'_>, Vec<TrackedTime>> {
         endpoints::UserTrackedTimes { owner, repo, user }
             .make_request()
             .wrap::<_, _>(self)
@@ -6988,9 +6965,7 @@ impl crate::Forgejo {
 
     /// List the authenticated user's webhooks
     ///
-    pub fn user_list_hooks(
-        &self,
-    ) -> Request<'_, endpoints::UserListHooks, (HookListHeaders, Vec<Hook>)> {
+    pub fn user_list_hooks(&self) -> Request<'_, endpoints::UserListHooks, Vec<Hook>> {
         endpoints::UserListHooks {}
             .make_request()
             .wrap::<_, _>(self)
@@ -7102,8 +7077,7 @@ impl crate::Forgejo {
     ///
     pub fn org_list_current_user_orgs(
         &self,
-    ) -> Request<'_, endpoints::OrgListCurrentUserOrgs, (OrganizationListHeaders, Vec<Organization>)>
-    {
+    ) -> Request<'_, endpoints::OrgListCurrentUserOrgs, Vec<Organization>> {
         endpoints::OrgListCurrentUserOrgs {}
             .make_request()
             .wrap::<_, _>(self)
@@ -7436,8 +7410,7 @@ impl crate::Forgejo {
     pub fn org_list_user_orgs(
         &self,
         username: &str,
-    ) -> Request<'_, endpoints::OrgListUserOrgs<'_>, (OrganizationListHeaders, Vec<Organization>)>
-    {
+    ) -> Request<'_, endpoints::OrgListUserOrgs<'_>, Vec<Organization>> {
         endpoints::OrgListUserOrgs { username }
             .make_request()
             .wrap::<_, _>(self)

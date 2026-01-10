@@ -461,7 +461,7 @@ pub struct AdminListHooks {}
 
 impl Sealed for AdminListHooks {}
 impl Endpoint for AdminListHooks {
-    type Response = (HookListHeaders, Vec<Hook>);
+    type Response = Vec<Hook>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -633,7 +633,7 @@ pub struct AdminListQuotaGroups {}
 
 impl Sealed for AdminListQuotaGroups {}
 impl Endpoint for AdminListQuotaGroups {
-    type Response = (QuotaGroupListHeaders, Vec<QuotaGroup>);
+    type Response = Vec<QuotaGroup>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -936,7 +936,7 @@ pub struct AdminListQuotaRules {}
 
 impl Sealed for AdminListQuotaRules {}
 impl Endpoint for AdminListQuotaRules {
-    type Response = (QuotaRuleInfoListHeaders, Vec<QuotaRuleInfo>);
+    type Response = Vec<QuotaRuleInfo>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -1990,7 +1990,7 @@ pub struct NotifyReadList {
 
 impl Sealed for NotifyReadList {}
 impl Endpoint for NotifyReadList {
-    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
+    type Response = Vec<NotificationThread>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
@@ -2760,7 +2760,7 @@ pub struct OrgListHooks<'a> {
 
 impl Sealed for OrgListHooks<'_> {}
 impl Endpoint for OrgListHooks<'_> {
-    type Response = (HookListHeaders, Vec<Hook>);
+    type Response = Vec<Hook>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -3863,7 +3863,7 @@ pub struct ListPackageFiles<'a> {
 
 impl Sealed for ListPackageFiles<'_> {}
 impl Endpoint for ListPackageFiles<'_> {
-    type Response = (PackageFileListHeaders, Vec<PackageFile>);
+    type Response = Vec<PackageFile>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -6547,7 +6547,7 @@ pub struct RepoListGitHooks<'a> {
 
 impl Sealed for RepoListGitHooks<'_> {}
 impl Endpoint for RepoListGitHooks<'_> {
-    type Response = (GitHookListHeaders, Vec<GitHook>);
+    type Response = Vec<GitHook>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -7337,7 +7337,7 @@ pub struct IssueGetCommentReactions<'a> {
 
 impl Sealed for IssueGetCommentReactions<'_> {}
 impl Endpoint for IssueGetCommentReactions<'_> {
-    type Response = (ReactionListHeaders, Vec<Reaction>);
+    type Response = Vec<Reaction>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -7453,7 +7453,7 @@ pub struct RepoListPinnedIssues<'a> {
 
 impl Sealed for RepoListPinnedIssues<'_> {}
 impl Endpoint for RepoListPinnedIssues<'_> {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = Vec<Issue>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -7792,7 +7792,7 @@ pub struct IssueListBlocks<'a> {
 
 impl Sealed for IssueListBlocks<'_> {}
 impl Endpoint for IssueListBlocks<'_> {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = Vec<Issue>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -8101,7 +8101,7 @@ pub struct IssueListIssueDependencies<'a> {
 
 impl Sealed for IssueListIssueDependencies<'_> {}
 impl Endpoint for IssueListIssueDependencies<'_> {
-    type Response = (IssueListHeaders, Vec<Issue>);
+    type Response = Vec<Issue>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -8216,7 +8216,7 @@ pub struct IssueGetLabels<'a> {
 
 impl Sealed for IssueGetLabels<'_> {}
 impl Endpoint for IssueGetLabels<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = Vec<Label>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -8252,7 +8252,7 @@ pub struct IssueReplaceLabels<'a> {
 
 impl Sealed for IssueReplaceLabels<'_> {}
 impl Endpoint for IssueReplaceLabels<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = Vec<Label>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
@@ -8292,7 +8292,7 @@ pub struct IssueAddLabel<'a> {
 
 impl Sealed for IssueAddLabel<'_> {}
 impl Endpoint for IssueAddLabel<'_> {
-    type Response = (LabelListHeaders, Vec<Label>);
+    type Response = Vec<Label>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
@@ -9728,7 +9728,7 @@ pub struct NotifyReadRepoList<'a> {
 
 impl Sealed for NotifyReadRepoList<'_> {}
 impl Endpoint for NotifyReadRepoList<'_> {
-    type Response = (NotificationThreadListHeaders, Vec<NotificationThread>);
+    type Response = Vec<NotificationThread>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
@@ -10045,7 +10045,7 @@ pub struct RepoGetPullRequestFiles<'a> {
 
 impl Sealed for RepoGetPullRequestFiles<'_> {}
 impl Endpoint for RepoGetPullRequestFiles<'_> {
-    type Response = (ChangedFileListHeaders, Vec<ChangedFile>);
+    type Response = (ChangedFileListWithPaginationHeaders, Vec<ChangedFile>);
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -10197,7 +10197,7 @@ pub struct RepoCreatePullReviewRequests<'a> {
 
 impl Sealed for RepoCreatePullReviewRequests<'_> {}
 impl Endpoint for RepoCreatePullReviewRequests<'_> {
-    type Response = (PullReviewListHeaders, Vec<PullReview>);
+    type Response = Vec<PullReview>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
@@ -12168,7 +12168,7 @@ pub struct RepoListTeams<'a> {
 
 impl Sealed for RepoListTeams<'_> {}
 impl Endpoint for RepoListTeams<'_> {
-    type Response = (TeamListHeaders, Vec<Team>);
+    type Response = Vec<Team>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -12342,7 +12342,7 @@ pub struct UserTrackedTimes<'a> {
 
 impl Sealed for UserTrackedTimes<'_> {}
 impl Endpoint for UserTrackedTimes<'_> {
-    type Response = (TrackedTimeListHeaders, Vec<TrackedTime>);
+    type Response = Vec<TrackedTime>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -14462,7 +14462,7 @@ pub struct UserListHooks {}
 
 impl Sealed for UserListHooks {}
 impl Endpoint for UserListHooks {
-    type Response = (HookListHeaders, Vec<Hook>);
+    type Response = Vec<Hook>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -14771,7 +14771,7 @@ pub struct OrgListCurrentUserOrgs {}
 
 impl Sealed for OrgListCurrentUserOrgs {}
 impl Endpoint for OrgListCurrentUserOrgs {
-    type Response = (OrganizationListHeaders, Vec<Organization>);
+    type Response = Vec<Organization>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -15607,7 +15607,7 @@ pub struct OrgListUserOrgs<'a> {
 
 impl Sealed for OrgListUserOrgs<'_> {}
 impl Endpoint for OrgListUserOrgs<'_> {
-    type Response = (OrganizationListHeaders, Vec<Organization>);
+    type Response = Vec<Organization>;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,

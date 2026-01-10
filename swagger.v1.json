@@ -401,7 +401,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/HookList"
+            "$ref": "#/responses/HookListWithoutPagination"
           }
         }
       },
@@ -1924,7 +1924,7 @@
         ],
         "responses": {
           "205": {
-            "$ref": "#/responses/NotificationThreadList"
+            "$ref": "#/responses/NotificationThreadListWithoutPagination"
           }
         }
       }
@@ -2713,7 +2713,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/HookList"
+            "$ref": "#/responses/HookListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -8771,7 +8771,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/ReactionList"
+            "$ref": "#/responses/ReactionListWithoutPagination"
           },
           "403": {
             "$ref": "#/responses/forbidden"
@@ -8907,7 +8907,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/IssueList"
+            "$ref": "#/responses/IssueListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -9359,7 +9359,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/IssueList"
+            "$ref": "#/responses/IssueListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -9780,7 +9780,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/IssueList"
+            "$ref": "#/responses/IssueListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -9916,7 +9916,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/LabelList"
+            "$ref": "#/responses/LabelListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -9962,7 +9962,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/LabelList"
+            "$ref": "#/responses/LabelListWithoutPagination"
           },
           "403": {
             "$ref": "#/responses/forbidden"
@@ -10011,7 +10011,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/LabelList"
+            "$ref": "#/responses/LabelListWithoutPagination"
           },
           "403": {
             "$ref": "#/responses/forbidden"
@@ -11953,7 +11953,7 @@
         ],
         "responses": {
           "205": {
-            "$ref": "#/responses/NotificationThreadList"
+            "$ref": "#/responses/NotificationThreadListWithoutPagination"
           }
         }
       }
@@ -12456,7 +12456,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/ChangedFileList"
+            "$ref": "#/responses/ChangedFileListWithPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -12648,7 +12648,7 @@
         ],
         "responses": {
           "201": {
-            "$ref": "#/responses/PullReviewList"
+            "$ref": "#/responses/PullReviewListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -15155,7 +15155,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/TeamList"
+            "$ref": "#/responses/TeamListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -15393,7 +15393,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/TrackedTimeList"
+            "$ref": "#/responses/TrackedTimeListWithoutPagination"
           },
           "400": {
             "$ref": "#/responses/error"
@@ -17625,7 +17625,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/HookList"
+            "$ref": "#/responses/HookListWithoutPagination"
           },
           "401": {
             "$ref": "#/responses/unauthorized"
@@ -17941,7 +17941,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/OrganizationList"
+            "$ref": "#/responses/OrganizationListWithoutPagination"
           },
           "401": {
             "$ref": "#/responses/unauthorized"
@@ -18957,7 +18957,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/OrganizationList"
+            "$ref": "#/responses/OrganizationListWithoutPagination"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -27286,7 +27286,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of activity feeds"
         }
       }
     },
@@ -27351,7 +27351,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of branches"
         }
       }
     },
@@ -27379,14 +27379,45 @@
         }
       },
       "headers": {
+        "X-Total-Count": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total number of changed files"
+        }
+      }
+    },
+    "ChangedFileListWithPagination": {
+      "description": "ChangedFileListWithPagination",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/ChangedFile"
+        }
+      },
+      "headers": {
         "X-HasMore": {
           "type": "boolean",
           "description": "True if there is another page"
         },
+        "X-Page": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The current page"
+        },
+        "X-PageCount": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Total number of pages"
+        },
+        "X-PerPage": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Commits per page"
+        },
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of changed files"
         }
       }
     },
@@ -27421,7 +27452,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of comments"
+        }
+      }
+    },
+    "CommentListWithoutPagination": {
+      "description": "CommentListWithoutPagination - Comments without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Comment"
         }
       }
     },
@@ -27469,7 +27509,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of commit statuses"
+        }
+      }
+    },
+    "CommitStatusListWithoutPagination": {
+      "description": "CommitStatusListWithoutPagination - Commit statuses without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/CommitStatus"
         }
       }
     },
@@ -27506,7 +27555,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of cron jobs"
         }
       }
     },
@@ -27528,7 +27577,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of deploy keys"
         }
       }
     },
@@ -27645,13 +27694,6 @@
         "items": {
           "$ref": "#/definitions/GitHook"
         }
-      },
-      "headers": {
-        "X-Total-Count": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "GitTreeResponse": {
@@ -27693,7 +27735,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of hooks"
+        }
+      }
+    },
+    "HookListWithoutPagination": {
+      "description": "HookListWithoutPagination - Hooks without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Hook"
         }
       }
     },
@@ -27725,6 +27776,15 @@
         }
       }
     },
+    "IssueListWithoutPagination": {
+      "description": "IssueListWithoutPagination - Issues without pagination headers (used for pinned issues, dependencies, etc.)",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Issue"
+        }
+      }
+    },
     "IssueTemplates": {
       "description": "IssueTemplates",
       "schema": {
@@ -27752,7 +27812,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of labels"
+        }
+      }
+    },
+    "LabelListWithoutPagination": {
+      "description": "LabelListWithoutPagination - Labels for a specific issue (no pagination headers)",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Label"
         }
       }
     },
@@ -27829,7 +27898,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of milestones"
         }
       }
     },
@@ -27869,7 +27938,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of notification threads"
+        }
+      }
+    },
+    "NotificationThreadListWithoutPagination": {
+      "description": "NotificationThreadListWithoutPagination - Notification threads without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/NotificationThread"
         }
       }
     },
@@ -27891,7 +27969,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of OAuth2 applications"
         }
       }
     },
@@ -27913,7 +27991,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of organizations"
+        }
+      }
+    },
+    "OrganizationListWithoutPagination": {
+      "description": "OrganizationListWithoutPagination - Organizations without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Organization"
         }
       }
     },
@@ -27942,13 +28029,6 @@
         "items": {
           "$ref": "#/definitions/PackageFile"
         }
-      },
-      "headers": {
-        "X-Total-Count": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "PackageList": {
@@ -27963,7 +28043,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of packages"
         }
       }
     },
@@ -28044,7 +28124,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of pull reviews"
+        }
+      }
+    },
+    "PullReviewListWithoutPagination": {
+      "description": "PullReviewListWithoutPagination - Review requests without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/PullReview"
         }
       }
     },
@@ -28066,7 +28155,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of push mirrors"
         }
       }
     },
@@ -28080,13 +28169,6 @@
       "description": "QuotaGroupList",
       "schema": {
         "$ref": "#/definitions/QuotaGroupList"
-      },
-      "headers": {
-        "X-Total-Count": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
-        }
       }
     },
     "QuotaInfo": {
@@ -28107,13 +28189,6 @@
         "type": "array",
         "items": {
           "$ref": "#/definitions/QuotaRuleInfo"
-        }
-      },
-      "headers": {
-        "X-Total-Count": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total commit count"
         }
       }
     },
@@ -28174,7 +28249,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of reactions"
+        }
+      }
+    },
+    "ReactionListWithoutPagination": {
+      "description": "ReactionListWithoutPagination - Reactions for a specific comment (no pagination headers)",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Reaction"
         }
       }
     },
@@ -28191,6 +28275,12 @@
         "items": {
           "$ref": "#/definitions/Reference"
         }
+      }
+    },
+    "RegisterRunnerResponse": {
+      "description": "RegisterRunnerResponse contains the details of the just registered runner.",
+      "schema": {
+        "$ref": "#/definitions/RegisterRunnerResponse"
       }
     },
     "RegistrationToken": {
@@ -28217,7 +28307,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of releases"
         }
       }
     },
@@ -28263,7 +28353,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of repositories"
+        }
+      }
+    },
+    "RepositoryListWithoutPagination": {
+      "description": "RepositoryListWithoutPagination - Repositories without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Repository"
         }
       }
     },
@@ -28300,7 +28399,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of secrets"
         }
       }
     },
@@ -28328,7 +28427,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of stop watches"
         }
       }
     },
@@ -28365,7 +28464,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of tags"
         }
       }
     },
@@ -28408,7 +28507,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of teams"
+        }
+      }
+    },
+    "TeamListWithoutPagination": {
+      "description": "TeamListWithoutPagination - Teams without pagination headers",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Team"
         }
       }
     },
@@ -28424,7 +28532,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of timeline comments"
         }
       }
     },
@@ -28461,7 +28569,16 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of tracked times"
+        }
+      }
+    },
+    "TrackedTimeListWithoutPagination": {
+      "description": "TrackedTimeListWithoutPagination - Tracked times for a specific user (no pagination headers)",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/TrackedTime"
         }
       }
     },
@@ -28514,7 +28631,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of variables"
         }
       }
     },
@@ -28533,7 +28650,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of wiki commits"
         }
       }
     },
@@ -28555,7 +28672,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of wiki pages"
         }
       }
     },
