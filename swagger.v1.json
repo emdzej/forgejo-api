@@ -10,7 +10,7 @@
       "name": "This file is distributed under the MIT license for the purpose of interoperability",
       "url": "http://opensource.org/licenses/MIT"
     },
-    "version": "13.0.1+gitea-1.22.0"
+    "version": "14.0.0+gitea-1.22.0"
   },
   "basePath": "/api/v1",
   "paths": {
@@ -36,6 +36,19 @@
         "responses": {
           "204": {
             "$ref": "#/responses/empty"
+          }
+        }
+      }
+    },
+    "/activitypub/actor/outbox": {
+      "post": {
+        "produces": ["application/ld+json"],
+        "tags": ["activitypub"],
+        "summary": "Display the outbox (always empty)",
+        "operationId": "activitypubInstanceActorOutbox",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Outbox"
           }
         }
       }
@@ -89,6 +102,29 @@
         "responses": {
           "204": {
             "$ref": "#/responses/empty"
+          }
+        }
+      }
+    },
+    "/activitypub/repository-id/{repository-id}/outbox": {
+      "post": {
+        "produces": ["application/ld+json"],
+        "tags": ["activitypub"],
+        "summary": "Display the outbox",
+        "operationId": "activitypubRepositoryOutbox",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "repository ID of the repo",
+            "name": "repository-id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Outbox"
           }
         }
       }
@@ -214,7 +250,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/PersonFeed"
+            "$ref": "#/responses/Outbox"
           },
           "403": {
             "$ref": "#/responses/forbidden"
@@ -1245,6 +1281,67 @@
         }
       }
     },
+    "/admin/users/{username}/emails": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "List all email addresses for a user",
+        "operationId": "adminListUserEmails",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "username of user to get email addresses of",
+            "name": "username",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/EmailList"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "delete": {
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Delete email addresses from a user's account",
+        "operationId": "adminDeleteUserEmails",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "username of user to delete email addresses from",
+            "name": "username",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/DeleteEmailOption"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/empty"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
+          }
+        }
+      }
+    },
     "/admin/users/{username}/keys": {
       "post": {
         "consumes": ["application/json"],
@@ -1747,7 +1844,7 @@
           {
             "type": "array",
             "items": {
-              "enum": ["issue", "pull", "commit", "repository"],
+              "enum": ["issue", "pull", "repository"],
               "type": "string"
             },
             "collectionFormat": "multi",
@@ -6988,7 +7085,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "Gets multiplbe blobs of a repository.",
+        "summary": "Gets multiple blobs of a repository.",
         "operationId": "GetBlobs",
         "parameters": [
           {
@@ -11762,7 +11859,7 @@
           {
             "type": "array",
             "items": {
-              "enum": ["issue", "pull", "commit", "repository"],
+              "enum": ["issue", "pull", "repository"],
               "type": "string"
             },
             "collectionFormat": "multi",
@@ -19018,7 +19115,7 @@
       "get": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "List the authenticated user's access tokens",
+        "summary": "List the specified user's access tokens",
         "operationId": "userGetTokens",
         "parameters": [
           {
@@ -19057,7 +19154,7 @@
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Generate an access token for the current user",
+        "summary": "Generate an access token for the specified user",
         "operationId": "userCreateToken",
         "parameters": [
           {
@@ -19095,7 +19192,7 @@
       "delete": {
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Delete an access token from current user's account",
+        "summary": "Delete an access token from the specified user's account",
         "operationId": "userDeleteAccessToken",
         "parameters": [
           {
@@ -19267,28 +19364,6 @@
         }
       },
       "x-go-package": "forgejo.org/services/context"
-    },
-    "APPersonFollowItem": {
-      "type": "object",
-      "properties": {
-        "actor_id": {
-          "type": "string",
-          "x-go-name": "ActorID"
-        },
-        "note": {
-          "type": "string",
-          "x-go-name": "Note"
-        },
-        "original_item": {
-          "type": "string",
-          "x-go-name": "OriginalItem"
-        },
-        "original_url": {
-          "type": "string",
-          "x-go-name": "OriginalURL"
-        }
-      },
-      "x-go-package": "forgejo.org/modules/structs"
     },
     "AccessToken": {
       "type": "object",
@@ -20459,9 +20534,9 @@
       "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitStatusState": {
-      "description": "CommitStatusState holds the state of a CommitStatus\nIt can be \"pending\", \"success\", \"error\" or \"failure\"",
+      "description": "CommitStatusState holds the state of a CommitStatus\nIt can be \"pending\", \"success\", \"error\", \"failure\" and \"warning\"",
       "type": "string",
-      "enum": ["pending", "success", "error", "failure"],
+      "enum": ["pending", "success", "error", "failure", "warning"],
       "x-go-package": "forgejo.org/modules/structs"
     },
     "CommitUser": {
@@ -21245,7 +21320,7 @@
           "x-go-name": "Path"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreatePullReviewCommentOptions": {
       "description": "CreatePullReviewCommentOptions are options to create a pull review comment",
@@ -21480,7 +21555,7 @@
           "x-go-name": "TrustModel"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateStatusOption": {
       "description": "CreateStatusOption holds the information needed to create a new CommitStatus for a Commit",
@@ -22700,6 +22775,10 @@
           "type": "string",
           "x-go-name": "FullName"
         },
+        "hide_email": {
+          "type": "boolean",
+          "x-go-name": "HideEmail"
+        },
         "location": {
           "type": "string",
           "x-go-name": "Location"
@@ -22938,6 +23017,11 @@
     },
     "ForgeLike": {
       "description": "ForgeLike activity data type",
+      "type": "object",
+      "x-go-package": "forgejo.org/modules/forgefed"
+    },
+    "ForgeOutbox": {
+      "description": "ActivityStream OrderedCollection of activities",
       "type": "object",
       "x-go-package": "forgejo.org/modules/forgefed"
     },
@@ -25690,7 +25774,7 @@
           "x-go-name": "NewName"
         }
       },
-      "x-go-package": "code.gitea.io/gitea/modules/structs"
+      "x-go-package": "forgejo.org/modules/structs"
     },
     "ReplaceFlagsOption": {
       "description": "ReplaceFlagsOption options when replacing the flags of a repository",
@@ -27839,6 +27923,12 @@
         "$ref": "#/definitions/OrganizationPermissions"
       }
     },
+    "Outbox": {
+      "description": "Outbox",
+      "schema": {
+        "$ref": "#/definitions/ForgeOutbox"
+      }
+    },
     "Package": {
       "description": "Package",
       "schema": {
@@ -27874,15 +27964,6 @@
           "type": "integer",
           "format": "int64",
           "description": "Total commit count"
-        }
-      }
-    },
-    "PersonFeed": {
-      "description": "Personfeed",
-      "schema": {
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/APPersonFollowItem"
         }
       }
     },

@@ -24,6 +24,15 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
+    /// Display the outbox (always empty)
+    pub fn activitypub_instance_actor_outbox(
+        &self,
+    ) -> Request<'_, endpoints::ActivitypubInstanceActorOutbox, Bytes> {
+        endpoints::ActivitypubInstanceActorOutbox {}
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
     /// Returns the Repository actor for a repo
     ///
     /// - `repository-id`: repository ID of the repo
@@ -51,6 +60,18 @@ impl crate::Forgejo {
         }
         .make_request()
         .wrap::<_, _>(self)
+    }
+
+    /// Display the outbox
+    ///
+    /// - `repository-id`: repository ID of the repo
+    pub fn activitypub_repository_outbox(
+        &self,
+        repository_id: i64,
+    ) -> Request<'_, endpoints::ActivitypubRepositoryOutbox, Bytes> {
+        endpoints::ActivitypubRepositoryOutbox { repository_id }
+            .make_request()
+            .wrap::<_, _>(self)
     }
 
     /// Returns the Person actor for a user
@@ -117,7 +138,7 @@ impl crate::Forgejo {
     pub fn activitypub_person_feed(
         &self,
         user_id: u32,
-    ) -> Request<'_, endpoints::ActivitypubPersonFeed, Vec<APPersonFollowItem>> {
+    ) -> Request<'_, endpoints::ActivitypubPersonFeed, ForgeOutbox> {
         endpoints::ActivitypubPersonFeed { user_id }
             .make_request()
             .wrap::<_, _>(self)
@@ -523,6 +544,35 @@ impl crate::Forgejo {
         body: EditUserOption,
     ) -> Request<'_, endpoints::AdminEditUser<'_>, User> {
         endpoints::AdminEditUser {
+            username,
+            body: body,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// List all email addresses for a user
+    ///
+    /// - `username`: username of user to get email addresses of
+    pub fn admin_list_user_emails(
+        &self,
+        username: &str,
+    ) -> Request<'_, endpoints::AdminListUserEmails<'_>, Vec<Email>> {
+        endpoints::AdminListUserEmails { username }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Delete email addresses from a user's account
+    ///
+    /// - `username`: username of user to delete email addresses from
+    /// - `body`: See [`DeleteEmailOption`]
+    pub fn admin_delete_user_emails(
+        &self,
+        username: &str,
+        body: DeleteEmailOption,
+    ) -> Request<'_, endpoints::AdminDeleteUserEmails<'_>, ()> {
+        endpoints::AdminDeleteUserEmails {
             username,
             body: body,
         }
@@ -2738,7 +2788,7 @@ impl crate::Forgejo {
         .wrap::<_, _>(self)
     }
 
-    /// Gets multiplbe blobs of a repository.
+    /// Gets multiple blobs of a repository.
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
@@ -7444,7 +7494,7 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
-    /// List the authenticated user's access tokens
+    /// List the specified user's access tokens
     ///
     /// - `username`: username of user
     pub fn user_get_tokens(
@@ -7456,7 +7506,7 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
-    /// Generate an access token for the current user
+    /// Generate an access token for the specified user
     ///
     /// - `username`: username of user
     /// - `body`: See [`CreateAccessTokenOption`]
@@ -7473,7 +7523,7 @@ impl crate::Forgejo {
         .wrap::<_, _>(self)
     }
 
-    /// Delete an access token from current user's account
+    /// Delete an access token from the specified user's account
     ///
     /// - `username`: username of user
     /// - `token`: token to be deleted, identified by ID and if not available by name

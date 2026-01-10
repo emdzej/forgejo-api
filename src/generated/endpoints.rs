@@ -72,6 +72,32 @@ impl Endpoint for ActivitypubInstanceActorInbox {
     }
 }
 
+pub struct ActivitypubInstanceActorOutbox {}
+
+impl Sealed for ActivitypubInstanceActorOutbox {}
+impl Endpoint for ActivitypubInstanceActorOutbox {
+    type Response = Bytes;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: "/api/v1/activitypub/actor/outbox".into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct ActivitypubRepository {
     pub repository_id: i64,
 }
@@ -129,6 +155,38 @@ impl Endpoint for ActivitypubRepositoryInbox {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             204 => Ok((response, false)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct ActivitypubRepositoryOutbox {
+    pub repository_id: i64,
+}
+
+impl Sealed for ActivitypubRepositoryOutbox {}
+impl Endpoint for ActivitypubRepositoryOutbox {
+    type Response = Bytes;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/activitypub/repository-id/{}/outbox",
+                self.repository_id
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -264,7 +322,7 @@ pub struct ActivitypubPersonFeed {
 
 impl Sealed for ActivitypubPersonFeed {}
 impl Endpoint for ActivitypubPersonFeed {
-    type Response = Vec<APPersonFollowItem>;
+    type Response = ForgeOutbox;
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
@@ -1300,6 +1358,70 @@ impl Endpoint for AdminEditUser<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct AdminListUserEmails<'a> {
+    pub username: &'a str,
+}
+
+impl Sealed for AdminListUserEmails<'_> {}
+impl Endpoint for AdminListUserEmails<'_> {
+    type Response = Vec<Email>;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!("/api/v1/admin/users/{}/emails", self.username).into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct AdminDeleteUserEmails<'a> {
+    pub username: &'a str,
+    pub body: DeleteEmailOption,
+}
+
+impl Sealed for AdminDeleteUserEmails<'_> {}
+impl Endpoint for AdminDeleteUserEmails<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!("/api/v1/admin/users/{}/emails", self.username).into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(

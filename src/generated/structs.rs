@@ -69,16 +69,6 @@ pub struct APIValidationError {
 impl_from_response!(APIValidationError);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct APPersonFollowItem {
-    pub actor_id: Option<String>,
-    pub note: Option<String>,
-    pub original_item: Option<String>,
-    pub original_url: Option<String>,
-}
-
-impl_from_response!(APPersonFollowItem);
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
     pub id: Option<i64>,
     pub name: Option<String>,
@@ -627,7 +617,7 @@ impl_from_response!(CommitStatus);
 
 /// CommitStatusState holds the state of a CommitStatus
 ///
-/// It can be "pending", "success", "error" or "failure"
+/// It can be "pending", "success", "error", "failure" and "warning"
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CommitStatusState {
@@ -639,6 +629,8 @@ pub enum CommitStatusState {
     Error,
     #[serde(rename = "failure")]
     Failure,
+    #[serde(rename = "warning")]
+    Warning,
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitUser {
@@ -1579,6 +1571,7 @@ pub struct EditUserOption {
     pub description: Option<String>,
     pub email: Option<String>,
     pub full_name: Option<String>,
+    pub hide_email: Option<bool>,
     pub location: Option<String>,
     pub login_name: Option<String>,
     pub max_repo_creation: Option<i64>,
@@ -1684,6 +1677,10 @@ impl_from_response!(FilesResponse);
 /// ForgeLike activity data type
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ForgeLike {}
+
+/// ActivityStream OrderedCollection of activities
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ForgeOutbox {}
 
 /// GPGKey a user GPG key to sign commit and tag in repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -4956,8 +4953,6 @@ pub enum NotifyGetListQuerySubjectType {
     Issue,
     #[serde(rename = "pull")]
     Pull,
-    #[serde(rename = "commit")]
-    Commit,
     #[serde(rename = "repository")]
     Repository,
 }
@@ -4967,7 +4962,6 @@ impl NotifyGetListQuerySubjectType {
         match self {
             NotifyGetListQuerySubjectType::Issue => "issue",
             NotifyGetListQuerySubjectType::Pull => "pull",
-            NotifyGetListQuerySubjectType::Commit => "commit",
             NotifyGetListQuerySubjectType::Repository => "repository",
         }
     }
@@ -6449,8 +6443,6 @@ pub enum NotifyGetRepoListQuerySubjectType {
     Issue,
     #[serde(rename = "pull")]
     Pull,
-    #[serde(rename = "commit")]
-    Commit,
     #[serde(rename = "repository")]
     Repository,
 }
@@ -6460,7 +6452,6 @@ impl NotifyGetRepoListQuerySubjectType {
         match self {
             NotifyGetRepoListQuerySubjectType::Issue => "issue",
             NotifyGetRepoListQuerySubjectType::Pull => "pull",
-            NotifyGetRepoListQuerySubjectType::Commit => "commit",
             NotifyGetRepoListQuerySubjectType::Repository => "repository",
         }
     }
