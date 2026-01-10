@@ -233,7 +233,7 @@ async fn quota_group() {
         .as_ref()
         .is_some_and(|rules| rules.len() == 1));
 
-    let (_, quota_groups) = api
+    let quota_groups = api
         .admin_list_quota_groups()
         .await
         .expect("failed to list quota groups");
