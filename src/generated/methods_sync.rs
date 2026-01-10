@@ -24,6 +24,15 @@ impl crate::sync::Forgejo {
             .wrap_sync::<_, _>(self)
     }
 
+    /// Display the outbox (always empty)
+    pub fn activitypub_instance_actor_outbox(
+        &self,
+    ) -> crate::sync::Request<'_, endpoints::ActivitypubInstanceActorOutbox, Bytes> {
+        endpoints::ActivitypubInstanceActorOutbox {}
+            .make_request()
+            .wrap_sync::<_, _>(self)
+    }
+
     /// Returns the Repository actor for a repo
     ///
     /// - `repository-id`: repository ID of the repo
@@ -51,6 +60,18 @@ impl crate::sync::Forgejo {
         }
         .make_request()
         .wrap_sync::<_, _>(self)
+    }
+
+    /// Display the outbox
+    ///
+    /// - `repository-id`: repository ID of the repo
+    pub fn activitypub_repository_outbox(
+        &self,
+        repository_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::ActivitypubRepositoryOutbox, Bytes> {
+        endpoints::ActivitypubRepositoryOutbox { repository_id }
+            .make_request()
+            .wrap_sync::<_, _>(self)
     }
 
     /// Returns the Person actor for a user
@@ -117,7 +138,7 @@ impl crate::sync::Forgejo {
     pub fn activitypub_person_feed(
         &self,
         user_id: u32,
-    ) -> crate::sync::Request<'_, endpoints::ActivitypubPersonFeed, Vec<APPersonFollowItem>> {
+    ) -> crate::sync::Request<'_, endpoints::ActivitypubPersonFeed, ForgeOutbox> {
         endpoints::ActivitypubPersonFeed { user_id }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -170,7 +191,7 @@ impl crate::sync::Forgejo {
     ///
     pub fn admin_list_hooks(
         &self,
-    ) -> crate::sync::Request<'_, endpoints::AdminListHooks, (HookListHeaders, Vec<Hook>)> {
+    ) -> crate::sync::Request<'_, endpoints::AdminListHooks, Vec<Hook>> {
         endpoints::AdminListHooks {}
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -243,11 +264,7 @@ impl crate::sync::Forgejo {
     /// List the available quota groups
     pub fn admin_list_quota_groups(
         &self,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::AdminListQuotaGroups,
-        (QuotaGroupListHeaders, Vec<QuotaGroup>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::AdminListQuotaGroups, Vec<QuotaGroup>> {
         endpoints::AdminListQuotaGroups {}
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -378,11 +395,7 @@ impl crate::sync::Forgejo {
     /// List the available quota rules
     pub fn admin_list_quota_rules(
         &self,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::AdminListQuotaRules,
-        (QuotaRuleInfoListHeaders, Vec<QuotaRuleInfo>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::AdminListQuotaRules, Vec<QuotaRuleInfo>> {
         endpoints::AdminListQuotaRules {}
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -549,6 +562,35 @@ impl crate::sync::Forgejo {
         body: EditUserOption,
     ) -> crate::sync::Request<'_, endpoints::AdminEditUser<'_>, User> {
         endpoints::AdminEditUser {
+            username,
+            body: body,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// List all email addresses for a user
+    ///
+    /// - `username`: username of user to get email addresses of
+    pub fn admin_list_user_emails(
+        &self,
+        username: &str,
+    ) -> crate::sync::Request<'_, endpoints::AdminListUserEmails<'_>, Vec<Email>> {
+        endpoints::AdminListUserEmails { username }
+            .make_request()
+            .wrap_sync::<_, _>(self)
+    }
+
+    /// Delete email addresses from a user's account
+    ///
+    /// - `username`: username of user to delete email addresses from
+    /// - `body`: See [`DeleteEmailOption`]
+    pub fn admin_delete_user_emails(
+        &self,
+        username: &str,
+        body: DeleteEmailOption,
+    ) -> crate::sync::Request<'_, endpoints::AdminDeleteUserEmails<'_>, ()> {
+        endpoints::AdminDeleteUserEmails {
             username,
             body: body,
         }
@@ -799,11 +841,7 @@ impl crate::sync::Forgejo {
     pub fn notify_read_list(
         &self,
         query: NotifyReadListQuery,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::NotifyReadList,
-        (NotificationThreadListHeaders, Vec<NotificationThread>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::NotifyReadList, Vec<NotificationThread>> {
         endpoints::NotifyReadList { query }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -1138,7 +1176,7 @@ impl crate::sync::Forgejo {
     pub fn org_list_hooks(
         &self,
         org: &str,
-    ) -> crate::sync::Request<'_, endpoints::OrgListHooks<'_>, (HookListHeaders, Vec<Hook>)> {
+    ) -> crate::sync::Request<'_, endpoints::OrgListHooks<'_>, Vec<Hook>> {
         endpoints::OrgListHooks { org }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -1678,11 +1716,7 @@ impl crate::sync::Forgejo {
         r#type: &str,
         name: &str,
         version: &str,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::ListPackageFiles<'_>,
-        (PackageFileListHeaders, Vec<PackageFile>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::ListPackageFiles<'_>, Vec<PackageFile>> {
         endpoints::ListPackageFiles {
             owner,
             r#type,
@@ -2833,7 +2867,7 @@ impl crate::sync::Forgejo {
         .wrap_sync::<_, _>(self)
     }
 
-    /// Gets multiplbe blobs of a repository.
+    /// Gets multiple blobs of a repository.
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
@@ -3080,8 +3114,7 @@ impl crate::sync::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> crate::sync::Request<'_, endpoints::RepoListGitHooks<'_>, (GitHookListHeaders, Vec<GitHook>)>
-    {
+    ) -> crate::sync::Request<'_, endpoints::RepoListGitHooks<'_>, Vec<GitHook>> {
         endpoints::RepoListGitHooks { owner, repo }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -3497,11 +3530,7 @@ impl crate::sync::Forgejo {
         owner: &str,
         repo: &str,
         id: i64,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::IssueGetCommentReactions<'_>,
-        (ReactionListHeaders, Vec<Reaction>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::IssueGetCommentReactions<'_>, Vec<Reaction>> {
         endpoints::IssueGetCommentReactions { owner, repo, id }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -3561,8 +3590,7 @@ impl crate::sync::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> crate::sync::Request<'_, endpoints::RepoListPinnedIssues<'_>, (IssueListHeaders, Vec<Issue>)>
-    {
+    ) -> crate::sync::Request<'_, endpoints::RepoListPinnedIssues<'_>, Vec<Issue>> {
         endpoints::RepoListPinnedIssues { owner, repo }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -3746,8 +3774,7 @@ impl crate::sync::Forgejo {
         owner: &str,
         repo: &str,
         index: i64,
-    ) -> crate::sync::Request<'_, endpoints::IssueListBlocks<'_>, (IssueListHeaders, Vec<Issue>)>
-    {
+    ) -> crate::sync::Request<'_, endpoints::IssueListBlocks<'_>, Vec<Issue>> {
         endpoints::IssueListBlocks { owner, repo, index }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -3927,11 +3954,7 @@ impl crate::sync::Forgejo {
         owner: &str,
         repo: &str,
         index: i64,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::IssueListIssueDependencies<'_>,
-        (IssueListHeaders, Vec<Issue>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::IssueListIssueDependencies<'_>, Vec<Issue>> {
         endpoints::IssueListIssueDependencies { owner, repo, index }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -3993,8 +4016,7 @@ impl crate::sync::Forgejo {
         owner: &str,
         repo: &str,
         index: i64,
-    ) -> crate::sync::Request<'_, endpoints::IssueGetLabels<'_>, (LabelListHeaders, Vec<Label>)>
-    {
+    ) -> crate::sync::Request<'_, endpoints::IssueGetLabels<'_>, Vec<Label>> {
         endpoints::IssueGetLabels { owner, repo, index }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -4012,8 +4034,7 @@ impl crate::sync::Forgejo {
         repo: &str,
         index: i64,
         body: IssueLabelsOption,
-    ) -> crate::sync::Request<'_, endpoints::IssueReplaceLabels<'_>, (LabelListHeaders, Vec<Label>)>
-    {
+    ) -> crate::sync::Request<'_, endpoints::IssueReplaceLabels<'_>, Vec<Label>> {
         endpoints::IssueReplaceLabels {
             owner,
             repo,
@@ -4036,8 +4057,7 @@ impl crate::sync::Forgejo {
         repo: &str,
         index: i64,
         body: IssueLabelsOption,
-    ) -> crate::sync::Request<'_, endpoints::IssueAddLabel<'_>, (LabelListHeaders, Vec<Label>)>
-    {
+    ) -> crate::sync::Request<'_, endpoints::IssueAddLabel<'_>, Vec<Label>> {
         endpoints::IssueAddLabel {
             owner,
             repo,
@@ -4804,11 +4824,7 @@ impl crate::sync::Forgejo {
         owner: &str,
         repo: &str,
         query: NotifyReadRepoListQuery,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::NotifyReadRepoList<'_>,
-        (NotificationThreadListHeaders, Vec<NotificationThread>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::NotifyReadRepoList<'_>, Vec<NotificationThread>> {
         endpoints::NotifyReadRepoList { owner, repo, query }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -4998,7 +5014,7 @@ impl crate::sync::Forgejo {
     ) -> crate::sync::Request<
         '_,
         endpoints::RepoGetPullRequestFiles<'_>,
-        (ChangedFileListHeaders, Vec<ChangedFile>),
+        (ChangedFileListWithPaginationHeaders, Vec<ChangedFile>),
     > {
         endpoints::RepoGetPullRequestFiles {
             owner,
@@ -5077,11 +5093,8 @@ impl crate::sync::Forgejo {
         repo: &str,
         index: i64,
         body: PullReviewRequestOptions,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::RepoCreatePullReviewRequests<'_>,
-        (PullReviewListHeaders, Vec<PullReview>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::RepoCreatePullReviewRequests<'_>, Vec<PullReview>>
+    {
         endpoints::RepoCreatePullReviewRequests {
             owner,
             repo,
@@ -6144,7 +6157,7 @@ impl crate::sync::Forgejo {
         &self,
         owner: &str,
         repo: &str,
-    ) -> crate::sync::Request<'_, endpoints::RepoListTeams<'_>, (TeamListHeaders, Vec<Team>)> {
+    ) -> crate::sync::Request<'_, endpoints::RepoListTeams<'_>, Vec<Team>> {
         endpoints::RepoListTeams { owner, repo }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -6227,11 +6240,7 @@ impl crate::sync::Forgejo {
         owner: &str,
         repo: &str,
         user: &str,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::UserTrackedTimes<'_>,
-        (TrackedTimeListHeaders, Vec<TrackedTime>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::UserTrackedTimes<'_>, Vec<TrackedTime>> {
         endpoints::UserTrackedTimes { owner, repo, user }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -7130,9 +7139,7 @@ impl crate::sync::Forgejo {
 
     /// List the authenticated user's webhooks
     ///
-    pub fn user_list_hooks(
-        &self,
-    ) -> crate::sync::Request<'_, endpoints::UserListHooks, (HookListHeaders, Vec<Hook>)> {
+    pub fn user_list_hooks(&self) -> crate::sync::Request<'_, endpoints::UserListHooks, Vec<Hook>> {
         endpoints::UserListHooks {}
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -7254,11 +7261,7 @@ impl crate::sync::Forgejo {
     ///
     pub fn org_list_current_user_orgs(
         &self,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::OrgListCurrentUserOrgs,
-        (OrganizationListHeaders, Vec<Organization>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::OrgListCurrentUserOrgs, Vec<Organization>> {
         endpoints::OrgListCurrentUserOrgs {}
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -7618,11 +7621,7 @@ impl crate::sync::Forgejo {
     pub fn org_list_user_orgs(
         &self,
         username: &str,
-    ) -> crate::sync::Request<
-        '_,
-        endpoints::OrgListUserOrgs<'_>,
-        (OrganizationListHeaders, Vec<Organization>),
-    > {
+    ) -> crate::sync::Request<'_, endpoints::OrgListUserOrgs<'_>, Vec<Organization>> {
         endpoints::OrgListUserOrgs { username }
             .make_request()
             .wrap_sync::<_, _>(self)
@@ -7691,7 +7690,7 @@ impl crate::sync::Forgejo {
             .wrap_sync::<_, _>(self)
     }
 
-    /// List the authenticated user's access tokens
+    /// List the specified user's access tokens
     ///
     /// - `username`: username of user
     pub fn user_get_tokens(
@@ -7707,7 +7706,7 @@ impl crate::sync::Forgejo {
             .wrap_sync::<_, _>(self)
     }
 
-    /// Generate an access token for the current user
+    /// Generate an access token for the specified user
     ///
     /// - `username`: username of user
     /// - `body`: See [`CreateAccessTokenOption`]
@@ -7724,7 +7723,7 @@ impl crate::sync::Forgejo {
         .wrap_sync::<_, _>(self)
     }
 
-    /// Delete an access token from current user's account
+    /// Delete an access token from the specified user's account
     ///
     /// - `username`: username of user
     /// - `token`: token to be deleted, identified by ID and if not available by name

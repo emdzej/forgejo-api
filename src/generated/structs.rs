@@ -69,16 +69,6 @@ pub struct APIValidationError {
 impl_from_response!(APIValidationError);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct APPersonFollowItem {
-    pub actor_id: Option<String>,
-    pub note: Option<String>,
-    pub original_item: Option<String>,
-    pub original_url: Option<String>,
-}
-
-impl_from_response!(APPersonFollowItem);
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
     pub id: Option<i64>,
     pub name: Option<String>,
@@ -627,7 +617,7 @@ impl_from_response!(CommitStatus);
 
 /// CommitStatusState holds the state of a CommitStatus
 ///
-/// It can be "pending", "success", "error" or "failure"
+/// It can be "pending", "success", "error", "failure" and "warning"
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CommitStatusState {
@@ -639,6 +629,8 @@ pub enum CommitStatusState {
     Error,
     #[serde(rename = "failure")]
     Failure,
+    #[serde(rename = "warning")]
+    Warning,
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitUser {
@@ -1579,6 +1571,7 @@ pub struct EditUserOption {
     pub description: Option<String>,
     pub email: Option<String>,
     pub full_name: Option<String>,
+    pub hide_email: Option<bool>,
     pub location: Option<String>,
     pub login_name: Option<String>,
     pub max_repo_creation: Option<i64>,
@@ -1684,6 +1677,12 @@ impl_from_response!(FilesResponse);
 /// ForgeLike activity data type
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ForgeLike {}
+
+/// ActivityStream OrderedCollection of activities
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ForgeOutbox {}
+
+impl_from_response!(ForgeOutbox);
 
 /// GPGKey a user GPG key to sign commit and tag in repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -3629,11 +3628,41 @@ impl crate::CountHeader for BranchListHeaders {
 }
 
 pub struct ChangedFileListHeaders {
-    pub x_has_more: Option<bool>,
     pub x_total_count: Option<i64>,
 }
 
 impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
+    type Error = StructureError;
+
+    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+        let x_total_count = map
+            .get("x-total-count")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                s.parse::<i64>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
+            })
+            .transpose()?;
+        Ok(Self { x_total_count })
+    }
+}
+
+impl crate::sealed::Sealed for ChangedFileListHeaders {}
+impl crate::CountHeader for ChangedFileListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
+pub struct ChangedFileListWithPaginationHeaders {
+    pub x_has_more: Option<bool>,
+    pub x_page: Option<i64>,
+    pub x_page_count: Option<i64>,
+    pub x_per_page: Option<i64>,
+    pub x_total_count: Option<i64>,
+}
+
+impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListWithPaginationHeaders {
     type Error = StructureError;
 
     fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
@@ -3642,6 +3671,30 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             .map(|s| -> Result<_, _> {
                 let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
                 s.parse::<bool>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
+            })
+            .transpose()?;
+        let x_page = map
+            .get("x-page")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                s.parse::<i64>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
+            })
+            .transpose()?;
+        let x_page_count = map
+            .get("x-pagecount")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                s.parse::<i64>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
+            })
+            .transpose()?;
+        let x_per_page = map
+            .get("x-perpage")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                s.parse::<i64>()
                     .map_err(|_| StructureError::HeaderParseFailed)
             })
             .transpose()?;
@@ -3655,13 +3708,16 @@ impl TryFrom<&reqwest::header::HeaderMap> for ChangedFileListHeaders {
             .transpose()?;
         Ok(Self {
             x_has_more,
+            x_page,
+            x_page_count,
+            x_per_page,
             x_total_count,
         })
     }
 }
 
-impl crate::sealed::Sealed for ChangedFileListHeaders {}
-impl crate::CountHeader for ChangedFileListHeaders {
+impl crate::sealed::Sealed for ChangedFileListWithPaginationHeaders {}
+impl crate::CountHeader for ChangedFileListWithPaginationHeaders {
     fn count(&self) -> Option<usize> {
         self.x_total_count.map(|x| x as usize)
     }
@@ -3868,33 +3924,6 @@ impl crate::CountHeader for GpgKeyListHeaders {
     }
 }
 
-pub struct GitHookListHeaders {
-    pub x_total_count: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for GitHookListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_total_count = map
-            .get("x-total-count")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { x_total_count })
-    }
-}
-
-impl crate::sealed::Sealed for GitHookListHeaders {}
-impl crate::CountHeader for GitHookListHeaders {
-    fn count(&self) -> Option<usize> {
-        self.x_total_count.map(|x| x as usize)
-    }
-}
-
 pub struct HookListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -4084,33 +4113,6 @@ impl crate::CountHeader for OrganizationListHeaders {
     }
 }
 
-pub struct PackageFileListHeaders {
-    pub x_total_count: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for PackageFileListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_total_count = map
-            .get("x-total-count")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { x_total_count })
-    }
-}
-
-impl crate::sealed::Sealed for PackageFileListHeaders {}
-impl crate::CountHeader for PackageFileListHeaders {
-    fn count(&self) -> Option<usize> {
-        self.x_total_count.map(|x| x as usize)
-    }
-}
-
 pub struct PackageListHeaders {
     pub x_total_count: Option<i64>,
 }
@@ -4241,60 +4243,6 @@ impl TryFrom<&reqwest::header::HeaderMap> for PushMirrorListHeaders {
 
 impl crate::sealed::Sealed for PushMirrorListHeaders {}
 impl crate::CountHeader for PushMirrorListHeaders {
-    fn count(&self) -> Option<usize> {
-        self.x_total_count.map(|x| x as usize)
-    }
-}
-
-pub struct QuotaGroupListHeaders {
-    pub x_total_count: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for QuotaGroupListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_total_count = map
-            .get("x-total-count")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { x_total_count })
-    }
-}
-
-impl crate::sealed::Sealed for QuotaGroupListHeaders {}
-impl crate::CountHeader for QuotaGroupListHeaders {
-    fn count(&self) -> Option<usize> {
-        self.x_total_count.map(|x| x as usize)
-    }
-}
-
-pub struct QuotaRuleInfoListHeaders {
-    pub x_total_count: Option<i64>,
-}
-
-impl TryFrom<&reqwest::header::HeaderMap> for QuotaRuleInfoListHeaders {
-    type Error = StructureError;
-
-    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
-        let x_total_count = map
-            .get("x-total-count")
-            .map(|s| -> Result<_, _> {
-                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
-                s.parse::<i64>()
-                    .map_err(|_| StructureError::HeaderParseFailed)
-            })
-            .transpose()?;
-        Ok(Self { x_total_count })
-    }
-}
-
-impl crate::sealed::Sealed for QuotaRuleInfoListHeaders {}
-impl crate::CountHeader for QuotaRuleInfoListHeaders {
     fn count(&self) -> Option<usize> {
         self.x_total_count.map(|x| x as usize)
     }
@@ -4956,8 +4904,6 @@ pub enum NotifyGetListQuerySubjectType {
     Issue,
     #[serde(rename = "pull")]
     Pull,
-    #[serde(rename = "commit")]
-    Commit,
     #[serde(rename = "repository")]
     Repository,
 }
@@ -4967,7 +4913,6 @@ impl NotifyGetListQuerySubjectType {
         match self {
             NotifyGetListQuerySubjectType::Issue => "issue",
             NotifyGetListQuerySubjectType::Pull => "pull",
-            NotifyGetListQuerySubjectType::Commit => "commit",
             NotifyGetListQuerySubjectType::Repository => "repository",
         }
     }
@@ -6449,8 +6394,6 @@ pub enum NotifyGetRepoListQuerySubjectType {
     Issue,
     #[serde(rename = "pull")]
     Pull,
-    #[serde(rename = "commit")]
-    Commit,
     #[serde(rename = "repository")]
     Repository,
 }
@@ -6460,7 +6403,6 @@ impl NotifyGetRepoListQuerySubjectType {
         match self {
             NotifyGetRepoListQuerySubjectType::Issue => "issue",
             NotifyGetRepoListQuerySubjectType::Pull => "pull",
-            NotifyGetRepoListQuerySubjectType::Commit => "commit",
             NotifyGetRepoListQuerySubjectType::Repository => "repository",
         }
     }

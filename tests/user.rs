@@ -156,7 +156,7 @@ async fn oauth2_login() {
         .unwrap();
 
     // Load the authorization page
-    let response = client
+    let _ = client
         .get(&format!(
             "{base_url}login/oauth/authorize\
              ?client_id={client_id}\
@@ -169,14 +169,12 @@ async fn oauth2_login() {
         .unwrap()
         .error_for_status()
         .unwrap();
-    let csrf = response.cookies().find(|x| x.name() == "_csrf").unwrap();
 
     // Authorize the new application via the web interface
     let response = client
         .post(&format!("{base_url}login/oauth/grant"))
         .form(&[
-            ("_csrf", csrf.value()),
-            ("client_id", &client_id),
+            ("client_id", &*client_id),
             ("state", "theyve"),
             ("scope", ""),
             ("nonce", ""),

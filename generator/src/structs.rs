@@ -871,7 +871,6 @@ fn get_response_types_for_op(
             let schema = match schema.deref(spec)? {
                 Schema {
                     _type: Some(SchemaType::One(Primitive::Object)),
-                    properties: Some(_),
                     ..
                 }
                 | Schema {
