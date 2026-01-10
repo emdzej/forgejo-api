@@ -1682,6 +1682,8 @@ pub struct ForgeLike {}
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ForgeOutbox {}
 
+impl_from_response!(ForgeOutbox);
+
 /// GPGKey a user GPG key to sign commit and tag in repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct GPGKey {
