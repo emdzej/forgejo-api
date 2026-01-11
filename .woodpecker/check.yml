@@ -11,3 +11,7 @@ steps:
     commands:
       - rustup component add rustfmt
       - cargo fmt --check
+  check-swagger-fmt:
+    image: rust
+    commands:
+      - cargo run -p format-swagger -- --check

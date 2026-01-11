@@ -1,4 +1,4 @@
-workspace = { members = ["generator"] }
+workspace = { members = ["generator", "format-swagger"] }
 [package]
 name = "forgejo-api"
 version = "0.8.1"
