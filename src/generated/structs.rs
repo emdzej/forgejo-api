@@ -5002,11 +5002,7 @@ impl OrgListActivityFeedsQuery {
     pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
         let mut list = Vec::new();
         if let Some(date) = self.date {
-            list.push((
-                "date",
-                date.format(&time::format_description::well_known::Rfc3339)
-                    .unwrap(),
-            ));
+            list.push(("date", date.to_string()));
         }
 
         list
@@ -5617,11 +5613,7 @@ impl RepoListActivityFeedsQuery {
     pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
         let mut list = Vec::new();
         if let Some(date) = self.date {
-            list.push((
-                "date",
-                date.format(&time::format_description::well_known::Rfc3339)
-                    .unwrap(),
-            ));
+            list.push(("date", date.to_string()));
         }
 
         list
@@ -6837,11 +6829,7 @@ impl OrgListTeamActivityFeedsQuery {
     pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
         let mut list = Vec::new();
         if let Some(date) = self.date {
-            list.push((
-                "date",
-                date.format(&time::format_description::well_known::Rfc3339)
-                    .unwrap(),
-            ));
+            list.push(("date", date.to_string()));
         }
 
         list
@@ -7111,11 +7099,7 @@ impl UserListActivityFeedsQuery {
             list.push(("only-performed-by", only_performed_by.to_string()));
         }
         if let Some(date) = self.date {
-            list.push((
-                "date",
-                date.format(&time::format_description::well_known::Rfc3339)
-                    .unwrap(),
-            ));
+            list.push(("date", date.to_string()));
         }
 
         list
