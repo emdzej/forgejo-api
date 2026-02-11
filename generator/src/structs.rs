@@ -434,11 +434,18 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                         )?;
                     } else {
                         match query_param.format.as_deref() {
-                            Some("date-time" | "date") => {
+                            Some("date-time") => {
                                 writeln!(
                                     &mut handler,
                                     "list.push((\"{}\", {field_name}.format(&time::format_description::well_known::Rfc3339).unwrap()));",
                                     param.name)?;
+                            }
+                            Some("date") => {
+                                writeln!(
+                                    &mut handler,
+                                    "list.push((\"{}\", {field_name}.to_string()));",
+                                    param.name
+                                )?;
                             }
                             _ => {
                                 writeln!(
@@ -471,8 +478,11 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                                 "item.as_str()"
                             } else {
                                 match query_param.format.as_deref() {
-                                    Some("date-time" | "date") => {
+                                    Some("date-time") => {
                                         "&item.format(&time::format_description::well_known::Rfc3339).unwrap()"
+                                    },
+                                    Some("date") => {
+                                        "&item.to_string()"
                                     },
                                     _ => {
                                         "item"
@@ -528,8 +538,11 @@ fn create_query_struct(spec: &OpenApiV2, op: &Operation) -> eyre::Result<String>
                                         "item.as_str().to_string()"
                                     } else {
                                         match query_param.format.as_deref() {
-                                            Some("date-time" | "date") => {
+                                            Some("date-time") => {
                                                 "item.format(&time::format_description::well_known::Rfc3339).unwrap()"
+                                            },
+                                            Some("date") => {
+                                                "item.to_string()"
                                             },
                                             _ => {
                                                 "item.to_string()"
