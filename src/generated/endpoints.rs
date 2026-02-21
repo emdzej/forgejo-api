@@ -108,7 +108,11 @@ impl Endpoint for ActivitypubRepository {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/activitypub/repository-id/{}", self.repository_id).into(),
+            path: format!(
+                "/api/v1/activitypub/repository-id/{repository_id}",
+                repository_id = self.repository_id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -138,8 +142,8 @@ impl Endpoint for ActivitypubRepositoryInbox {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/activitypub/repository-id/{}/inbox",
-                self.repository_id
+                "/api/v1/activitypub/repository-id/{repository_id}/inbox",
+                repository_id = self.repository_id
             )
             .into(),
             query: None,
@@ -173,8 +177,8 @@ impl Endpoint for ActivitypubRepositoryOutbox {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/activitypub/repository-id/{}/outbox",
-                self.repository_id
+                "/api/v1/activitypub/repository-id/{repository_id}/outbox",
+                repository_id = self.repository_id
             )
             .into(),
             query: None,
@@ -204,7 +208,11 @@ impl Endpoint for ActivitypubPerson {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/activitypub/user-id/{}", self.user_id).into(),
+            path: format!(
+                "/api/v1/activitypub/user-id/{user_id}",
+                user_id = self.user_id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -234,8 +242,9 @@ impl Endpoint for ActivitypubPersonActivityNote {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/activitypub/user-id/{}/activities/{}",
-                self.user_id, self.activity_id
+                "/api/v1/activitypub/user-id/{user_id}/activities/{activity_id}",
+                user_id = self.user_id,
+                activity_id = self.activity_id
             )
             .into(),
             query: None,
@@ -267,8 +276,9 @@ impl Endpoint for ActivitypubPersonActivity {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/activitypub/user-id/{}/activities/{}/activity",
-                self.user_id, self.activity_id
+                "/api/v1/activitypub/user-id/{user_id}/activities/{activity_id}/activity",
+                user_id = self.user_id,
+                activity_id = self.activity_id
             )
             .into(),
             query: None,
@@ -298,7 +308,11 @@ impl Endpoint for ActivitypubPersonInbox {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/activitypub/user-id/{}/inbox", self.user_id).into(),
+            path: format!(
+                "/api/v1/activitypub/user-id/{user_id}/inbox",
+                user_id = self.user_id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -326,7 +340,11 @@ impl Endpoint for ActivitypubPersonFeed {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/activitypub/user-id/{}/outbox", self.user_id).into(),
+            path: format!(
+                "/api/v1/activitypub/user-id/{user_id}/outbox",
+                user_id = self.user_id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -382,7 +400,11 @@ impl Endpoint for AdminCronRun<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/admin/cron/{}", self.task).into(),
+            path: format!(
+                "/api/v1/admin/cron/{task}",
+                task = urlencoding::encode(self.task)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -524,7 +546,7 @@ impl Endpoint for AdminGetHook {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/admin/hooks/{}", self.id).into(),
+            path: format!("/api/v1/admin/hooks/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -552,7 +574,7 @@ impl Endpoint for AdminDeleteHook {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/admin/hooks/{}", self.id).into(),
+            path: format!("/api/v1/admin/hooks/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -581,7 +603,7 @@ impl Endpoint for AdminEditHook {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/admin/hooks/{}", self.id).into(),
+            path: format!("/api/v1/admin/hooks/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -701,7 +723,11 @@ impl Endpoint for AdminGetQuotaGroup<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/admin/quota/groups/{}", self.quotagroup).into(),
+            path: format!(
+                "/api/v1/admin/quota/groups/{quotagroup}",
+                quotagroup = urlencoding::encode(self.quotagroup)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -732,7 +758,11 @@ impl Endpoint for AdminDeleteQuotaGroup<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/admin/quota/groups/{}", self.quotagroup).into(),
+            path: format!(
+                "/api/v1/admin/quota/groups/{quotagroup}",
+                quotagroup = urlencoding::encode(self.quotagroup)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -765,8 +795,9 @@ impl Endpoint for AdminAddRuleToQuotaGroup<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/admin/quota/groups/{}/rules/{}",
-                self.quotagroup, self.quotarule
+                "/api/v1/admin/quota/groups/{quotagroup}/rules/{quotarule}",
+                quotagroup = urlencoding::encode(self.quotagroup),
+                quotarule = urlencoding::encode(self.quotarule)
             )
             .into(),
             query: None,
@@ -803,8 +834,9 @@ impl Endpoint for AdminRemoveRuleFromQuotaGroup<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/admin/quota/groups/{}/rules/{}",
-                self.quotagroup, self.quotarule
+                "/api/v1/admin/quota/groups/{quotagroup}/rules/{quotarule}",
+                quotagroup = urlencoding::encode(self.quotagroup),
+                quotarule = urlencoding::encode(self.quotarule)
             )
             .into(),
             query: None,
@@ -837,7 +869,11 @@ impl Endpoint for AdminListUsersInQuotaGroup<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/admin/quota/groups/{}/users", self.quotagroup).into(),
+            path: format!(
+                "/api/v1/admin/quota/groups/{quotagroup}/users",
+                quotagroup = urlencoding::encode(self.quotagroup)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -870,8 +906,9 @@ impl Endpoint for AdminAddUserToQuotaGroup<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/admin/quota/groups/{}/users/{}",
-                self.quotagroup, self.username
+                "/api/v1/admin/quota/groups/{quotagroup}/users/{username}",
+                quotagroup = urlencoding::encode(self.quotagroup),
+                username = urlencoding::encode(self.username)
             )
             .into(),
             query: None,
@@ -908,8 +945,9 @@ impl Endpoint for AdminRemoveUserFromQuotaGroup<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/admin/quota/groups/{}/users/{}",
-                self.quotagroup, self.username
+                "/api/v1/admin/quota/groups/{quotagroup}/users/{username}",
+                quotagroup = urlencoding::encode(self.quotagroup),
+                username = urlencoding::encode(self.username)
             )
             .into(),
             query: None,
@@ -1004,7 +1042,11 @@ impl Endpoint for AdminGetQuotaRule<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/admin/quota/rules/{}", self.quotarule).into(),
+            path: format!(
+                "/api/v1/admin/quota/rules/{quotarule}",
+                quotarule = urlencoding::encode(self.quotarule)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1035,7 +1077,11 @@ impl Endpoint for AdminDeleteQuotaRule<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/admin/quota/rules/{}", self.quotarule).into(),
+            path: format!(
+                "/api/v1/admin/quota/rules/{quotarule}",
+                quotarule = urlencoding::encode(self.quotarule)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1067,7 +1113,11 @@ impl Endpoint for AdminEditQuotaRule<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/admin/quota/rules/{}", self.quotarule).into(),
+            path: format!(
+                "/api/v1/admin/quota/rules/{quotarule}",
+                quotarule = urlencoding::encode(self.quotarule)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1187,7 +1237,12 @@ impl Endpoint for AdminAdoptRepository<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/admin/unadopted/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/admin/unadopted/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1218,7 +1273,12 @@ impl Endpoint for AdminDeleteUnadoptedRepository<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/admin/unadopted/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/admin/unadopted/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1311,7 +1371,11 @@ impl Endpoint for AdminDeleteUser<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/admin/users/{}", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -1343,7 +1407,11 @@ impl Endpoint for AdminEditUser<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/admin/users/{}", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1377,7 +1445,11 @@ impl Endpoint for AdminListUserEmails<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/admin/users/{}/emails", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/emails",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1408,7 +1480,11 @@ impl Endpoint for AdminDeleteUserEmails<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/admin/users/{}/emails", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/emails",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1442,7 +1518,11 @@ impl Endpoint for AdminCreatePublicKey<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/admin/users/{}/keys", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/keys",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1476,7 +1556,12 @@ impl Endpoint for AdminDeleteUserPublicKey<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/admin/users/{}/keys/{}", self.username, self.id).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/keys/{id}",
+                username = urlencoding::encode(self.username),
+                id = self.id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1507,7 +1592,11 @@ impl Endpoint for AdminCreateOrg<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/admin/users/{}/orgs", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/orgs",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1540,7 +1629,11 @@ impl Endpoint for AdminGetUserQuota<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/admin/users/{}/quota", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/quota",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1573,7 +1666,11 @@ impl Endpoint for AdminSetUserQuotaGroups<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/admin/users/{}/quota/groups", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/quota/groups",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1609,7 +1706,11 @@ impl Endpoint for AdminRenameUser<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/admin/users/{}/rename", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/rename",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1643,7 +1744,11 @@ impl Endpoint for AdminCreateRepo<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/admin/users/{}/repos", self.username).into(),
+            path: format!(
+                "/api/v1/admin/users/{username}/repos",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -1705,7 +1810,11 @@ impl Endpoint for GetGitignoreTemplateInfo<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/gitignore/templates/{}", self.name).into(),
+            path: format!(
+                "/api/v1/gitignore/templates/{name}",
+                name = urlencoding::encode(self.name)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1760,7 +1869,11 @@ impl Endpoint for GetLabelTemplateInfo<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/label/templates/{}", self.name).into(),
+            path: format!(
+                "/api/v1/label/templates/{name}",
+                name = urlencoding::encode(self.name)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -1815,7 +1928,11 @@ impl Endpoint for GetLicenseTemplateInfo<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/licenses/{}", self.name).into(),
+            path: format!(
+                "/api/v1/licenses/{name}",
+                name = urlencoding::encode(self.name)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2048,7 +2165,7 @@ impl Endpoint for NotifyGetThread {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/notifications/threads/{}", self.id).into(),
+            path: format!("/api/v1/notifications/threads/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2079,7 +2196,7 @@ impl Endpoint for NotifyReadThread {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/notifications/threads/{}", self.id).into(),
+            path: format!("/api/v1/notifications/threads/{id}", id = self.id).into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -2110,7 +2227,11 @@ impl Endpoint for CreateOrgRepoDeprecated<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/org/{}/repos", self.org).into(),
+            path: format!(
+                "/api/v1/org/{org}/repos",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -2203,7 +2324,7 @@ impl Endpoint for OrgGet<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}", self.org).into(),
+            path: format!("/api/v1/orgs/{org}", org = urlencoding::encode(self.org)).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2232,7 +2353,7 @@ impl Endpoint for OrgDelete<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/orgs/{}", self.org).into(),
+            path: format!("/api/v1/orgs/{org}", org = urlencoding::encode(self.org)).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2262,7 +2383,7 @@ impl Endpoint for OrgEdit<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/orgs/{}", self.org).into(),
+            path: format!("/api/v1/orgs/{org}", org = urlencoding::encode(self.org)).into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -2296,7 +2417,11 @@ impl Endpoint for OrgSearchRunJobs<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/actions/runners/jobs", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/actions/runners/jobs",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -2326,8 +2451,8 @@ impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/orgs/{}/actions/runners/registration-token",
-                self.org
+                "/api/v1/orgs/{org}/actions/runners/registration-token",
+                org = urlencoding::encode(self.org)
             )
             .into(),
             query: None,
@@ -2357,7 +2482,11 @@ impl Endpoint for OrgListActionsSecrets<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/actions/secrets", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/actions/secrets",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2389,8 +2518,9 @@ impl Endpoint for UpdateOrgSecret<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/orgs/{}/actions/secrets/{}",
-                self.org, self.secretname
+                "/api/v1/orgs/{org}/actions/secrets/{secretname}",
+                org = urlencoding::encode(self.org),
+                secretname = urlencoding::encode(self.secretname)
             )
             .into(),
             query: None,
@@ -2428,8 +2558,9 @@ impl Endpoint for DeleteOrgSecret<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/orgs/{}/actions/secrets/{}",
-                self.org, self.secretname
+                "/api/v1/orgs/{org}/actions/secrets/{secretname}",
+                org = urlencoding::encode(self.org),
+                secretname = urlencoding::encode(self.secretname)
             )
             .into(),
             query: None,
@@ -2461,7 +2592,11 @@ impl Endpoint for GetOrgVariablesList<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/actions/variables", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/actions/variables",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2493,8 +2628,9 @@ impl Endpoint for GetOrgVariable<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/orgs/{}/actions/variables/{}",
-                self.org, self.variablename
+                "/api/v1/orgs/{org}/actions/variables/{variablename}",
+                org = urlencoding::encode(self.org),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -2529,8 +2665,9 @@ impl Endpoint for UpdateOrgVariable<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/orgs/{}/actions/variables/{}",
-                self.org, self.variablename
+                "/api/v1/orgs/{org}/actions/variables/{variablename}",
+                org = urlencoding::encode(self.org),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -2569,8 +2706,9 @@ impl Endpoint for CreateOrgVariable<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/orgs/{}/actions/variables/{}",
-                self.org, self.variablename
+                "/api/v1/orgs/{org}/actions/variables/{variablename}",
+                org = urlencoding::encode(self.org),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -2608,8 +2746,9 @@ impl Endpoint for DeleteOrgVariable<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/orgs/{}/actions/variables/{}",
-                self.org, self.variablename
+                "/api/v1/orgs/{org}/actions/variables/{variablename}",
+                org = urlencoding::encode(self.org),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -2642,7 +2781,11 @@ impl Endpoint for OrgListActivityFeeds<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/activities/feeds", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/activities/feeds",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -2672,7 +2815,11 @@ impl Endpoint for OrgUpdateAvatar<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/orgs/{}/avatar", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/avatar",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -2704,7 +2851,11 @@ impl Endpoint for OrgDeleteAvatar<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/orgs/{}/avatar", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/avatar",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2734,7 +2885,12 @@ impl Endpoint for OrgBlockUser<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/orgs/{}/block/{}", self.org, self.username).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/block/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2764,7 +2920,11 @@ impl Endpoint for OrgListHooks<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/hooks", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/hooks",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2794,7 +2954,11 @@ impl Endpoint for OrgCreateHook<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/orgs/{}/hooks", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/hooks",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -2827,7 +2991,12 @@ impl Endpoint for OrgGetHook<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/hooks/{}", self.org, self.id).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/hooks/{id}",
+                org = urlencoding::encode(self.org),
+                id = self.id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2857,7 +3026,12 @@ impl Endpoint for OrgDeleteHook<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/orgs/{}/hooks/{}", self.org, self.id).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/hooks/{id}",
+                org = urlencoding::encode(self.org),
+                id = self.id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -2888,7 +3062,12 @@ impl Endpoint for OrgEditHook<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/orgs/{}/hooks/{}", self.org, self.id).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/hooks/{id}",
+                org = urlencoding::encode(self.org),
+                id = self.id
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -2921,7 +3100,11 @@ impl Endpoint for OrgListLabels<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/labels", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/labels",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -2951,7 +3134,11 @@ impl Endpoint for OrgCreateLabel<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/orgs/{}/labels", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/labels",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -2985,7 +3172,12 @@ impl Endpoint for OrgGetLabel<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/labels/{}", self.org, self.id).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/labels/{id}",
+                org = urlencoding::encode(self.org),
+                id = self.id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3015,7 +3207,12 @@ impl Endpoint for OrgDeleteLabel<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/orgs/{}/labels/{}", self.org, self.id).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/labels/{id}",
+                org = urlencoding::encode(self.org),
+                id = self.id
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3046,7 +3243,12 @@ impl Endpoint for OrgEditLabel<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/orgs/{}/labels/{}", self.org, self.id).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/labels/{id}",
+                org = urlencoding::encode(self.org),
+                id = self.id
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -3079,7 +3281,11 @@ impl Endpoint for OrgListBlockedUsers<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/list_blocked", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/list_blocked",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3107,7 +3313,11 @@ impl Endpoint for OrgListMembers<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/members", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/members",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3137,7 +3347,12 @@ impl Endpoint for OrgIsMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/members/{}", self.org, self.username).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/members/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3167,7 +3382,12 @@ impl Endpoint for OrgDeleteMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/orgs/{}/members/{}", self.org, self.username).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/members/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3196,7 +3416,11 @@ impl Endpoint for OrgListPublicMembers<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/public_members", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/public_members",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3226,7 +3450,12 @@ impl Endpoint for OrgIsPublicMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/public_members/{}", self.org, self.username).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/public_members/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3256,7 +3485,12 @@ impl Endpoint for OrgPublicizeMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/orgs/{}/public_members/{}", self.org, self.username).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/public_members/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3287,7 +3521,12 @@ impl Endpoint for OrgConcealMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/orgs/{}/public_members/{}", self.org, self.username).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/public_members/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3317,7 +3556,11 @@ impl Endpoint for OrgGetQuota<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/quota", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/quota",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3347,7 +3590,11 @@ impl Endpoint for OrgListQuotaArtifacts<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/quota/artifacts", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/quota/artifacts",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3377,7 +3624,11 @@ impl Endpoint for OrgListQuotaAttachments<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/quota/attachments", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/quota/attachments",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3408,7 +3659,11 @@ impl Endpoint for OrgCheckQuota<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/quota/check", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/quota/check",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -3439,7 +3694,11 @@ impl Endpoint for OrgListQuotaPackages<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/quota/packages", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/quota/packages",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3470,7 +3729,11 @@ impl Endpoint for RenameOrg<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/orgs/{}/rename", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/rename",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -3503,7 +3766,11 @@ impl Endpoint for OrgListRepos<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/repos", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/repos",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3533,7 +3800,11 @@ impl Endpoint for CreateOrgRepo<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/orgs/{}/repos", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/repos",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -3567,7 +3838,11 @@ impl Endpoint for OrgListTeams<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/teams", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/teams",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3597,7 +3872,11 @@ impl Endpoint for OrgCreateTeam<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/orgs/{}/teams", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/teams",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -3631,7 +3910,11 @@ impl Endpoint for TeamSearch<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/orgs/{}/teams/search", self.org).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/teams/search",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -3661,7 +3944,12 @@ impl Endpoint for OrgUnblockUser<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/orgs/{}/unblock/{}", self.org, self.username).into(),
+            path: format!(
+                "/api/v1/orgs/{org}/unblock/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -3692,7 +3980,11 @@ impl Endpoint for ListPackages<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/packages/{}", self.owner).into(),
+            path: format!(
+                "/api/v1/packages/{owner}",
+                owner = urlencoding::encode(self.owner)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -3725,8 +4017,11 @@ impl Endpoint for LinkPackage<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/packages/{}/{}/{}/-/link/{}",
-                self.owner, self.r#type, self.name, self.repo_name
+                "/api/v1/packages/{owner}/{type}/{name}/-/link/{repo_name}",
+                owner = urlencoding::encode(self.owner),
+                r#type = urlencoding::encode(self.r#type),
+                name = urlencoding::encode(self.name),
+                repo_name = urlencoding::encode(self.repo_name)
             )
             .into(),
             query: None,
@@ -3760,8 +4055,10 @@ impl Endpoint for UnlinkPackage<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/packages/{}/{}/{}/-/unlink",
-                self.owner, self.r#type, self.name
+                "/api/v1/packages/{owner}/{type}/{name}/-/unlink",
+                owner = urlencoding::encode(self.owner),
+                r#type = urlencoding::encode(self.r#type),
+                name = urlencoding::encode(self.name)
             )
             .into(),
             query: None,
@@ -3796,8 +4093,11 @@ impl Endpoint for GetPackage<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/packages/{}/{}/{}/{}",
-                self.owner, self.r#type, self.name, self.version
+                "/api/v1/packages/{owner}/{type}/{name}/{version}",
+                owner = urlencoding::encode(self.owner),
+                r#type = urlencoding::encode(self.r#type),
+                name = urlencoding::encode(self.name),
+                version = urlencoding::encode(self.version)
             )
             .into(),
             query: None,
@@ -3832,8 +4132,11 @@ impl Endpoint for DeletePackage<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/packages/{}/{}/{}/{}",
-                self.owner, self.r#type, self.name, self.version
+                "/api/v1/packages/{owner}/{type}/{name}/{version}",
+                owner = urlencoding::encode(self.owner),
+                r#type = urlencoding::encode(self.r#type),
+                name = urlencoding::encode(self.name),
+                version = urlencoding::encode(self.version)
             )
             .into(),
             query: None,
@@ -3868,8 +4171,11 @@ impl Endpoint for ListPackageFiles<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/packages/{}/{}/{}/{}/files",
-                self.owner, self.r#type, self.name, self.version
+                "/api/v1/packages/{owner}/{type}/{name}/{version}/files",
+                owner = urlencoding::encode(self.owner),
+                r#type = urlencoding::encode(self.r#type),
+                name = urlencoding::encode(self.name),
+                version = urlencoding::encode(self.version)
             )
             .into(),
             query: None,
@@ -3995,7 +4301,12 @@ impl Endpoint for RepoGet<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -4025,7 +4336,12 @@ impl Endpoint for RepoDelete<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/repos/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -4057,7 +4373,12 @@ impl Endpoint for RepoEdit<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/repos/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -4094,8 +4415,9 @@ impl Endpoint for RepoSearchRunJobs<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/runners/jobs",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/actions/runners/jobs",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -4128,8 +4450,9 @@ impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/runners/registration-token",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/actions/runners/registration-token",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: None,
@@ -4161,7 +4484,12 @@ impl Endpoint for ListActionRuns<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/actions/runs", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/actions/runs",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -4194,8 +4522,10 @@ impl Endpoint for GetActionRun<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/runs/{}",
-                self.owner, self.repo, self.run_id
+                "/api/v1/repos/{owner}/{repo}/actions/runs/{run_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                run_id = self.run_id
             )
             .into(),
             query: None,
@@ -4229,7 +4559,12 @@ impl Endpoint for RepoListActionsSecrets<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/actions/secrets", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/actions/secrets",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -4262,8 +4597,10 @@ impl Endpoint for UpdateRepoSecret<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/secrets/{}",
-                self.owner, self.repo, self.secretname
+                "/api/v1/repos/{owner}/{repo}/actions/secrets/{secretname}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                secretname = urlencoding::encode(self.secretname)
             )
             .into(),
             query: None,
@@ -4302,8 +4639,10 @@ impl Endpoint for DeleteRepoSecret<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/secrets/{}",
-                self.owner, self.repo, self.secretname
+                "/api/v1/repos/{owner}/{repo}/actions/secrets/{secretname}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                secretname = urlencoding::encode(self.secretname)
             )
             .into(),
             query: None,
@@ -4336,7 +4675,12 @@ impl Endpoint for ListActionTasks<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/actions/tasks", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/actions/tasks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -4371,8 +4715,9 @@ impl Endpoint for GetRepoVariablesList<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/variables",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/actions/variables",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: None,
@@ -4407,8 +4752,10 @@ impl Endpoint for GetRepoVariable<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/variables/{}",
-                self.owner, self.repo, self.variablename
+                "/api/v1/repos/{owner}/{repo}/actions/variables/{variablename}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -4444,8 +4791,10 @@ impl Endpoint for UpdateRepoVariable<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/variables/{}",
-                self.owner, self.repo, self.variablename
+                "/api/v1/repos/{owner}/{repo}/actions/variables/{variablename}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -4485,8 +4834,10 @@ impl Endpoint for CreateRepoVariable<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/variables/{}",
-                self.owner, self.repo, self.variablename
+                "/api/v1/repos/{owner}/{repo}/actions/variables/{variablename}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -4525,8 +4876,10 @@ impl Endpoint for DeleteRepoVariable<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/variables/{}",
-                self.owner, self.repo, self.variablename
+                "/api/v1/repos/{owner}/{repo}/actions/variables/{variablename}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                variablename = urlencoding::encode(self.variablename)
             )
             .into(),
             query: None,
@@ -4562,8 +4915,10 @@ impl Endpoint for DispatchWorkflow<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/actions/workflows/{}/dispatches",
-                self.owner, self.repo, self.workflowfilename
+                "/api/v1/repos/{owner}/{repo}/actions/workflows/{workflowfilename}/dispatches",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                workflowfilename = urlencoding::encode(self.workflowfilename)
             )
             .into(),
             query: None,
@@ -4601,8 +4956,9 @@ impl Endpoint for RepoListActivityFeeds<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/activities/feeds",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/activities/feeds",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -4636,8 +4992,10 @@ impl Endpoint for RepoGetArchive<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/archive/{}",
-                self.owner, self.repo, self.archive
+                "/api/v1/repos/{owner}/{repo}/archive/{archive}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                archive = urlencoding::encode(self.archive)
             )
             .into(),
             query: None,
@@ -4669,7 +5027,12 @@ impl Endpoint for RepoGetAssignees<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/assignees", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/assignees",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -4700,7 +5063,12 @@ impl Endpoint for RepoUpdateAvatar<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/avatar", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/avatar",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -4733,7 +5101,12 @@ impl Endpoint for RepoDeleteAvatar<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/repos/{}/{}/avatar", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/avatar",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -4764,8 +5137,9 @@ impl Endpoint for RepoListBranchProtection<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/branch_protections",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/branch_protections",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: None,
@@ -4798,8 +5172,9 @@ impl Endpoint for RepoCreateBranchProtection<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/branch_protections",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/branch_protections",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: None,
@@ -4839,8 +5214,10 @@ impl Endpoint for RepoGetBranchProtection<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/branch_protections/{}",
-                self.owner, self.repo, self.name
+                "/api/v1/repos/{owner}/{repo}/branch_protections/{name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                name = urlencoding::encode(self.name)
             )
             .into(),
             query: None,
@@ -4874,8 +5251,10 @@ impl Endpoint for RepoDeleteBranchProtection<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/branch_protections/{}",
-                self.owner, self.repo, self.name
+                "/api/v1/repos/{owner}/{repo}/branch_protections/{name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                name = urlencoding::encode(self.name)
             )
             .into(),
             query: None,
@@ -4910,8 +5289,10 @@ impl Endpoint for RepoEditBranchProtection<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/branch_protections/{}",
-                self.owner, self.repo, self.name
+                "/api/v1/repos/{owner}/{repo}/branch_protections/{name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                name = urlencoding::encode(self.name)
             )
             .into(),
             query: None,
@@ -4948,7 +5329,12 @@ impl Endpoint for RepoListBranches<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/branches", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/branches",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -4978,7 +5364,12 @@ impl Endpoint for RepoCreateBranch<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/branches", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/branches",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -5017,8 +5408,10 @@ impl Endpoint for RepoGetBranch<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/branches/{}",
-                self.owner, self.repo, self.branch
+                "/api/v1/repos/{owner}/{repo}/branches/{branch}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                branch = urlencoding::encode(self.branch)
             )
             .into(),
             query: None,
@@ -5052,8 +5445,10 @@ impl Endpoint for RepoDeleteBranch<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/branches/{}",
-                self.owner, self.repo, self.branch
+                "/api/v1/repos/{owner}/{repo}/branches/{branch}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                branch = urlencoding::encode(self.branch)
             )
             .into(),
             query: None,
@@ -5090,8 +5485,10 @@ impl Endpoint for RepoUpdateBranch<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/branches/{}",
-                self.owner, self.repo, self.branch
+                "/api/v1/repos/{owner}/{repo}/branches/{branch}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                branch = urlencoding::encode(self.branch)
             )
             .into(),
             query: None,
@@ -5128,7 +5525,12 @@ impl Endpoint for RepoListCollaborators<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/collaborators", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/collaborators",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -5160,8 +5562,10 @@ impl Endpoint for RepoCheckCollaborator<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/collaborators/{}",
-                self.owner, self.repo, self.collaborator
+                "/api/v1/repos/{owner}/{repo}/collaborators/{collaborator}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                collaborator = urlencoding::encode(self.collaborator)
             )
             .into(),
             query: None,
@@ -5197,8 +5601,10 @@ impl Endpoint for RepoAddCollaborator<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/collaborators/{}",
-                self.owner, self.repo, self.collaborator
+                "/api/v1/repos/{owner}/{repo}/collaborators/{collaborator}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                collaborator = urlencoding::encode(self.collaborator)
             )
             .into(),
             query: None,
@@ -5237,8 +5643,10 @@ impl Endpoint for RepoDeleteCollaborator<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/collaborators/{}",
-                self.owner, self.repo, self.collaborator
+                "/api/v1/repos/{owner}/{repo}/collaborators/{collaborator}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                collaborator = urlencoding::encode(self.collaborator)
             )
             .into(),
             query: None,
@@ -5273,8 +5681,10 @@ impl Endpoint for RepoGetRepoPermissions<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/collaborators/{}/permission",
-                self.owner, self.repo, self.collaborator
+                "/api/v1/repos/{owner}/{repo}/collaborators/{collaborator}/permission",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                collaborator = urlencoding::encode(self.collaborator)
             )
             .into(),
             query: None,
@@ -5308,7 +5718,12 @@ impl Endpoint for RepoGetAllCommits<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/commits", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/commits",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -5341,8 +5756,10 @@ impl Endpoint for RepoGetCombinedStatusByRef<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/commits/{}/status",
-                self.owner, self.repo, self.r#ref
+                "/api/v1/repos/{owner}/{repo}/commits/{ref}/status",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                r#ref = urlencoding::encode(self.r#ref)
             )
             .into(),
             query: None,
@@ -5378,8 +5795,10 @@ impl Endpoint for RepoListStatusesByRef<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/commits/{}/statuses",
-                self.owner, self.repo, self.r#ref
+                "/api/v1/repos/{owner}/{repo}/commits/{ref}/statuses",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                r#ref = urlencoding::encode(self.r#ref)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -5414,8 +5833,10 @@ impl Endpoint for RepoGetCommitPullRequest<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/commits/{}/pull",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/commits/{sha}/pull",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: None,
@@ -5449,8 +5870,10 @@ impl Endpoint for RepoCompareDiff<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/compare/{}",
-                self.owner, self.repo, self.basehead
+                "/api/v1/repos/{owner}/{repo}/compare/{basehead}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                basehead = urlencoding::encode(self.basehead)
             )
             .into(),
             query: None,
@@ -5483,7 +5906,12 @@ impl Endpoint for RepoGetContentsList<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/contents", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/contents",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -5514,7 +5942,12 @@ impl Endpoint for RepoChangeFiles<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/contents", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/contents",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -5555,8 +5988,10 @@ impl Endpoint for RepoGetContents<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/contents/{}",
-                self.owner, self.repo, self.filepath
+                "/api/v1/repos/{owner}/{repo}/contents/{filepath}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                filepath = urlencoding::encode(self.filepath)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -5591,8 +6026,10 @@ impl Endpoint for RepoUpdateFile<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/contents/{}",
-                self.owner, self.repo, self.filepath
+                "/api/v1/repos/{owner}/{repo}/contents/{filepath}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                filepath = urlencoding::encode(self.filepath)
             )
             .into(),
             query: None,
@@ -5635,8 +6072,10 @@ impl Endpoint for RepoCreateFile<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/contents/{}",
-                self.owner, self.repo, self.filepath
+                "/api/v1/repos/{owner}/{repo}/contents/{filepath}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                filepath = urlencoding::encode(self.filepath)
             )
             .into(),
             query: None,
@@ -5679,8 +6118,10 @@ impl Endpoint for RepoDeleteFile<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/contents/{}",
-                self.owner, self.repo, self.filepath
+                "/api/v1/repos/{owner}/{repo}/contents/{filepath}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                filepath = urlencoding::encode(self.filepath)
             )
             .into(),
             query: None,
@@ -5719,7 +6160,12 @@ impl Endpoint for RepoConvert<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/convert", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/convert",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -5752,7 +6198,12 @@ impl Endpoint for RepoApplyDiffPatch<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/diffpatch", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/diffpatch",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -5790,8 +6241,10 @@ impl Endpoint for RepoGetEditorConfig<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/editorconfig/{}",
-                self.owner, self.repo, self.filepath
+                "/api/v1/repos/{owner}/{repo}/editorconfig/{filepath}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                filepath = urlencoding::encode(self.filepath)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -5823,7 +6276,12 @@ impl Endpoint for RepoListFlags<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/flags", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/flags",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -5855,7 +6313,12 @@ impl Endpoint for RepoReplaceAllFlags<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/repos/{}/{}/flags", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/flags",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -5889,7 +6352,12 @@ impl Endpoint for RepoDeleteAllFlags<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/repos/{}/{}/flags", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/flags",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -5922,8 +6390,10 @@ impl Endpoint for RepoCheckFlag<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/flags/{}",
-                self.owner, self.repo, self.flag
+                "/api/v1/repos/{owner}/{repo}/flags/{flag}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                flag = urlencoding::encode(self.flag)
             )
             .into(),
             query: None,
@@ -5958,8 +6428,10 @@ impl Endpoint for RepoAddFlag<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/flags/{}",
-                self.owner, self.repo, self.flag
+                "/api/v1/repos/{owner}/{repo}/flags/{flag}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                flag = urlencoding::encode(self.flag)
             )
             .into(),
             query: None,
@@ -5994,8 +6466,10 @@ impl Endpoint for RepoDeleteFlag<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/flags/{}",
-                self.owner, self.repo, self.flag
+                "/api/v1/repos/{owner}/{repo}/flags/{flag}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                flag = urlencoding::encode(self.flag)
             )
             .into(),
             query: None,
@@ -6028,7 +6502,12 @@ impl Endpoint for ListForks<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/forks", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/forks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -6059,7 +6538,12 @@ impl Endpoint for CreateFork<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/forks", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/forks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -6097,7 +6581,12 @@ impl Endpoint for GetBlobs<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/git/blobs", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/git/blobs",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -6129,8 +6618,10 @@ impl Endpoint for GetBlob<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/git/blobs/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/git/blobs/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: None,
@@ -6166,8 +6657,10 @@ impl Endpoint for RepoGetSingleCommit<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/git/commits/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/git/commits/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -6203,8 +6696,11 @@ impl Endpoint for RepoDownloadCommitDiffOrPatch<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/git/commits/{}.{}",
-                self.owner, self.repo, self.sha, self.diff_type
+                "/api/v1/repos/{owner}/{repo}/git/commits/{sha}.{diff_type}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha),
+                diff_type = urlencoding::encode(self.diff_type)
             )
             .into(),
             query: None,
@@ -6239,8 +6735,10 @@ impl Endpoint for RepoGetNote<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/git/notes/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/git/notes/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -6276,8 +6774,10 @@ impl Endpoint for RepoSetNote<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/git/notes/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/git/notes/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: None,
@@ -6315,8 +6815,10 @@ impl Endpoint for RepoRemoveNote<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/git/notes/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/git/notes/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: None,
@@ -6349,7 +6851,12 @@ impl Endpoint for RepoListAllGitRefs<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/git/refs", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/git/refs",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -6381,8 +6888,10 @@ impl Endpoint for RepoListGitRefs<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/git/refs/{}",
-                self.owner, self.repo, self.r#ref
+                "/api/v1/repos/{owner}/{repo}/git/refs/{ref}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                r#ref = urlencoding::encode(self.r#ref)
             )
             .into(),
             query: None,
@@ -6416,8 +6925,10 @@ impl Endpoint for GetAnnotatedTag<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/git/tags/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/git/tags/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: None,
@@ -6453,8 +6964,10 @@ impl Endpoint for GetTree<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/git/trees/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/git/trees/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -6487,7 +7000,12 @@ impl Endpoint for RepoListHooks<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/hooks", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/hooks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -6518,7 +7036,12 @@ impl Endpoint for RepoCreateHook<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/hooks", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/hooks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -6551,7 +7074,12 @@ impl Endpoint for RepoListGitHooks<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/hooks/git", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/hooks/git",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -6583,8 +7111,10 @@ impl Endpoint for RepoGetGitHook<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/hooks/git/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/hooks/git/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = urlencoding::encode(self.id)
             )
             .into(),
             query: None,
@@ -6618,8 +7148,10 @@ impl Endpoint for RepoDeleteGitHook<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/hooks/git/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/hooks/git/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = urlencoding::encode(self.id)
             )
             .into(),
             query: None,
@@ -6654,8 +7186,10 @@ impl Endpoint for RepoEditGitHook<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/hooks/git/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/hooks/git/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = urlencoding::encode(self.id)
             )
             .into(),
             query: None,
@@ -6692,8 +7226,10 @@ impl Endpoint for RepoGetHook<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/hooks/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/hooks/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -6727,8 +7263,10 @@ impl Endpoint for RepoDeleteHook<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/hooks/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/hooks/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -6763,8 +7301,10 @@ impl Endpoint for RepoEditHook<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/hooks/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/hooks/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -6802,8 +7342,10 @@ impl Endpoint for RepoTestHook<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/hooks/{}/tests",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/hooks/{id}/tests",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -6835,7 +7377,12 @@ impl Endpoint for RepoGetIssueConfig<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/issue_config", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/issue_config",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -6866,8 +7413,9 @@ impl Endpoint for RepoValidateIssueConfig<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issue_config/validate",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/issue_config/validate",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: None,
@@ -6899,7 +7447,12 @@ impl Endpoint for RepoGetIssueTemplates<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/issue_templates", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/issue_templates",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -6930,7 +7483,12 @@ impl Endpoint for IssueListIssues<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/issues", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/issues",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -6961,7 +7519,12 @@ impl Endpoint for IssueCreateIssue<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/issues", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/issues",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -6999,7 +7562,12 @@ impl Endpoint for IssueGetRepoComments<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/issues/comments", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/issues/comments",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -7032,8 +7600,10 @@ impl Endpoint for IssueGetComment<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -7069,8 +7639,10 @@ impl Endpoint for IssueDeleteComment<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -7105,8 +7677,10 @@ impl Endpoint for IssueEditComment<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -7146,8 +7720,10 @@ impl Endpoint for IssueListIssueCommentAttachments<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/assets",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/assets",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -7183,8 +7759,10 @@ impl Endpoint for IssueCreateIssueCommentAttachment<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/assets",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/assets",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -7228,8 +7806,11 @@ impl Endpoint for IssueGetIssueCommentAttachment<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/assets/{}",
-                self.owner, self.repo, self.id, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -7264,8 +7845,11 @@ impl Endpoint for IssueDeleteIssueCommentAttachment<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/assets/{}",
-                self.owner, self.repo, self.id, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -7302,8 +7886,11 @@ impl Endpoint for IssueEditIssueCommentAttachment<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/assets/{}",
-                self.owner, self.repo, self.id, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -7342,8 +7929,10 @@ impl Endpoint for IssueGetCommentReactions<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/reactions",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/reactions",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -7379,8 +7968,10 @@ impl Endpoint for IssuePostCommentReaction<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/reactions",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/reactions",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -7420,8 +8011,10 @@ impl Endpoint for IssueDeleteCommentReaction<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/comments/{}/reactions",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/comments/{id}/reactions",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -7457,7 +8050,12 @@ impl Endpoint for RepoListPinnedIssues<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/issues/pinned", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/issues/pinned",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -7489,8 +8087,10 @@ impl Endpoint for IssueGetIssue<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7524,8 +8124,10 @@ impl Endpoint for IssueDelete<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7561,8 +8163,10 @@ impl Endpoint for IssueEditIssue<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7601,8 +8205,10 @@ impl Endpoint for IssueListIssueAttachments<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/assets",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/assets",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7638,8 +8244,10 @@ impl Endpoint for IssueCreateIssueAttachment<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/assets",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/assets",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -7683,8 +8291,11 @@ impl Endpoint for IssueGetIssueAttachment<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/assets/{}",
-                self.owner, self.repo, self.index, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -7719,8 +8330,11 @@ impl Endpoint for IssueDeleteIssueAttachment<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/assets/{}",
-                self.owner, self.repo, self.index, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -7757,8 +8371,11 @@ impl Endpoint for IssueEditIssueAttachment<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/assets/{}",
-                self.owner, self.repo, self.index, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -7797,8 +8414,10 @@ impl Endpoint for IssueListBlocks<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/blocks",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/blocks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7833,8 +8452,10 @@ impl Endpoint for IssueCreateIssueBlocking<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/blocks",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/blocks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7872,8 +8493,10 @@ impl Endpoint for IssueRemoveIssueBlocking<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/blocks",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/blocks",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7911,8 +8534,10 @@ impl Endpoint for IssueGetComments<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/comments",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/comments",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -7948,8 +8573,10 @@ impl Endpoint for IssueCreateComment<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/comments",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/comments",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -7989,8 +8616,11 @@ impl Endpoint for IssueDeleteCommentDeprecated<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/comments/{}",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/comments/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -8026,8 +8656,11 @@ impl Endpoint for IssueEditCommentDeprecated<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/comments/{}",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/comments/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -8067,8 +8700,10 @@ impl Endpoint for IssueEditIssueDeadline<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/deadline",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/deadline",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8106,8 +8741,10 @@ impl Endpoint for IssueListIssueDependencies<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/dependencies",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/dependencies",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8142,8 +8779,10 @@ impl Endpoint for IssueCreateIssueDependencies<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/dependencies",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/dependencies",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8182,8 +8821,10 @@ impl Endpoint for IssueRemoveIssueDependencies<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/dependencies",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/dependencies",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8221,8 +8862,10 @@ impl Endpoint for IssueGetLabels<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/labels",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/labels",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8257,8 +8900,10 @@ impl Endpoint for IssueReplaceLabels<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/labels",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/labels",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8297,8 +8942,10 @@ impl Endpoint for IssueAddLabel<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/labels",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/labels",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8337,8 +8984,10 @@ impl Endpoint for IssueClearLabels<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/labels",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/labels",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8378,8 +9027,11 @@ impl Endpoint for IssueRemoveLabel<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/labels/{}",
-                self.owner, self.repo, self.index, self.identifier
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/labels/{identifier}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                identifier = urlencoding::encode(self.identifier)
             )
             .into(),
             query: None,
@@ -8418,8 +9070,10 @@ impl Endpoint for PinIssue<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/pin",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/pin",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8454,8 +9108,10 @@ impl Endpoint for UnpinIssue<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/pin",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/pin",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8491,8 +9147,11 @@ impl Endpoint for MoveIssuePin<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/pin/{}",
-                self.owner, self.repo, self.index, self.position
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/pin/{position}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                position = self.position
             )
             .into(),
             query: None,
@@ -8527,8 +9186,10 @@ impl Endpoint for IssueGetIssueReactions<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/reactions",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/reactions",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8564,8 +9225,10 @@ impl Endpoint for IssuePostIssueReaction<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/reactions",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/reactions",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8605,8 +9268,10 @@ impl Endpoint for IssueDeleteIssueReaction<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/reactions",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/reactions",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8644,8 +9309,10 @@ impl Endpoint for IssueDeleteStopWatch<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/stopwatch/delete",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/stopwatch/delete",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8681,8 +9348,10 @@ impl Endpoint for IssueStartStopWatch<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/stopwatch/start",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/stopwatch/start",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8718,8 +9387,10 @@ impl Endpoint for IssueStopStopWatch<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/stopwatch/stop",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/stopwatch/stop",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8755,8 +9426,10 @@ impl Endpoint for IssueSubscriptions<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/subscriptions",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/subscriptions",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8790,8 +9463,10 @@ impl Endpoint for IssueCheckSubscription<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/subscriptions/check",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/subscriptions/check",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -8826,8 +9501,11 @@ impl Endpoint for IssueAddSubscription<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/subscriptions/{}",
-                self.owner, self.repo, self.index, self.user
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/subscriptions/{user}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                user = urlencoding::encode(self.user)
             )
             .into(),
             query: None,
@@ -8863,8 +9541,11 @@ impl Endpoint for IssueDeleteSubscription<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/subscriptions/{}",
-                self.owner, self.repo, self.index, self.user
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/subscriptions/{user}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                user = urlencoding::encode(self.user)
             )
             .into(),
             query: None,
@@ -8900,8 +9581,10 @@ impl Endpoint for IssueGetCommentsAndTimeline<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/timeline",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/timeline",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -8937,8 +9620,10 @@ impl Endpoint for IssueTrackedTimes<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/times",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/times",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -8973,8 +9658,10 @@ impl Endpoint for IssueAddTime<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/times",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/times",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -9013,8 +9700,10 @@ impl Endpoint for IssueResetTime<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/times",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/times",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -9051,8 +9740,11 @@ impl Endpoint for IssueDeleteTime<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/issues/{}/times/{}",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/issues/{index}/times/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -9087,7 +9779,12 @@ impl Endpoint for RepoListKeys<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/keys", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/keys",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -9118,7 +9815,12 @@ impl Endpoint for RepoCreateKey<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/keys", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/keys",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -9154,8 +9856,10 @@ impl Endpoint for RepoGetKey<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/keys/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/keys/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9189,8 +9893,10 @@ impl Endpoint for RepoDeleteKey<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/keys/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/keys/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9224,7 +9930,12 @@ impl Endpoint for IssueListLabels<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/labels", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/labels",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -9255,7 +9966,12 @@ impl Endpoint for IssueCreateLabel<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/labels", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/labels",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -9291,8 +10007,10 @@ impl Endpoint for IssueGetLabel<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/labels/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/labels/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9326,8 +10044,10 @@ impl Endpoint for IssueDeleteLabel<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/labels/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/labels/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9362,8 +10082,10 @@ impl Endpoint for IssueEditLabel<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/labels/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/labels/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9399,7 +10121,12 @@ impl Endpoint for RepoGetLanguages<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/languages", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/languages",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -9432,8 +10159,10 @@ impl Endpoint for RepoGetRawFileOrLfs<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/media/{}",
-                self.owner, self.repo, self.filepath
+                "/api/v1/repos/{owner}/{repo}/media/{filepath}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                filepath = urlencoding::encode(self.filepath)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -9466,7 +10195,12 @@ impl Endpoint for IssueGetMilestonesList<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/milestones", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/milestones",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -9497,7 +10231,12 @@ impl Endpoint for IssueCreateMilestone<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/milestones", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/milestones",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -9532,8 +10271,10 @@ impl Endpoint for IssueGetMilestone<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/milestones/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/milestones/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9567,8 +10308,10 @@ impl Endpoint for IssueDeleteMilestone<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/milestones/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/milestones/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9603,8 +10346,10 @@ impl Endpoint for IssueEditMilestone<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/milestones/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/milestones/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -9639,7 +10384,12 @@ impl Endpoint for RepoMirrorSync<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/mirror-sync", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/mirror-sync",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -9671,7 +10421,12 @@ impl Endpoint for RepoNewPinAllowed<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/new_pin_allowed", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/new_pin_allowed",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -9702,7 +10457,12 @@ impl Endpoint for NotifyGetRepoList<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/notifications", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/notifications",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -9732,7 +10492,12 @@ impl Endpoint for NotifyReadRepoList<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/repos/{}/{}/notifications", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/notifications",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -9762,7 +10527,12 @@ impl Endpoint for RepoListPullRequests<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/pulls", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/pulls",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -9793,7 +10563,12 @@ impl Endpoint for RepoCreatePullRequest<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/pulls", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/pulls",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -9830,7 +10605,12 @@ impl Endpoint for RepoListPinnedPullRequests<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/pulls/pinned", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/pulls/pinned",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -9863,8 +10643,11 @@ impl Endpoint for RepoGetPullRequestByBaseHead<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/{}",
-                self.owner, self.repo, self.base, self.head
+                "/api/v1/repos/{owner}/{repo}/pulls/{base}/{head}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                base = urlencoding::encode(self.base),
+                head = urlencoding::encode(self.head)
             )
             .into(),
             query: None,
@@ -9898,8 +10681,10 @@ impl Endpoint for RepoGetPullRequest<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -9934,8 +10719,10 @@ impl Endpoint for RepoEditPullRequest<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -9978,8 +10765,11 @@ impl Endpoint for RepoDownloadPullDiffOrPatch<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}.{}",
-                self.owner, self.repo, self.index, self.diff_type
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}.{diff_type}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                diff_type = urlencoding::encode(self.diff_type)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -10014,8 +10804,10 @@ impl Endpoint for RepoGetPullRequestCommits<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/commits",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/commits",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -10050,8 +10842,10 @@ impl Endpoint for RepoGetPullRequestFiles<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/files",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/files",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -10085,8 +10879,10 @@ impl Endpoint for RepoPullRequestIsMerged<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/merge",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/merge",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -10121,8 +10917,10 @@ impl Endpoint for RepoMergePullRequest<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/merge",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/merge",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -10164,8 +10962,10 @@ impl Endpoint for RepoCancelScheduledAutoMerge<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/merge",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/merge",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -10202,8 +11002,10 @@ impl Endpoint for RepoCreatePullReviewRequests<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/requested_reviewers",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/requested_reviewers",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -10242,8 +11044,10 @@ impl Endpoint for RepoDeletePullReviewRequests<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/requested_reviewers",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/requested_reviewers",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -10282,8 +11086,10 @@ impl Endpoint for RepoListPullReviews<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -10318,8 +11124,10 @@ impl Endpoint for RepoCreatePullReview<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: None,
@@ -10358,8 +11166,11 @@ impl Endpoint for RepoGetPullReview<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -10395,8 +11206,11 @@ impl Endpoint for RepoSubmitPullReview<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -10435,8 +11249,11 @@ impl Endpoint for RepoDeletePullReview<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -10472,8 +11289,11 @@ impl Endpoint for RepoGetPullReviewComments<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -10509,8 +11329,11 @@ impl Endpoint for RepoCreatePullReviewComment<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -10550,8 +11373,12 @@ impl Endpoint for RepoGetPullReviewComment<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments/{}",
-                self.owner, self.repo, self.index, self.id, self.comment
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments/{comment}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id,
+                comment = self.comment
             )
             .into(),
             query: None,
@@ -10588,8 +11415,12 @@ impl Endpoint for RepoDeletePullReviewComment<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/comments/{}",
-                self.owner, self.repo, self.index, self.id, self.comment
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments/{comment}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id,
+                comment = self.comment
             )
             .into(),
             query: None,
@@ -10626,8 +11457,11 @@ impl Endpoint for RepoDismissPullReview<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/dismissals",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/dismissals",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -10667,8 +11501,11 @@ impl Endpoint for RepoUnDismissPullReview<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/reviews/{}/undismissals",
-                self.owner, self.repo, self.index, self.id
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/undismissals",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index,
+                id = self.id
             )
             .into(),
             query: None,
@@ -10705,8 +11542,10 @@ impl Endpoint for RepoUpdatePullRequest<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/pulls/{}/update",
-                self.owner, self.repo, self.index
+                "/api/v1/repos/{owner}/{repo}/pulls/{index}/update",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                index = self.index
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -10742,7 +11581,12 @@ impl Endpoint for RepoListPushMirrors<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/push_mirrors", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/push_mirrors",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -10775,7 +11619,12 @@ impl Endpoint for RepoAddPushMirror<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/push_mirrors", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/push_mirrors",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -10812,8 +11661,9 @@ impl Endpoint for RepoPushMirrorSync<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/push_mirrors-sync",
-                self.owner, self.repo
+                "/api/v1/repos/{owner}/{repo}/push_mirrors-sync",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
             )
             .into(),
             query: None,
@@ -10850,8 +11700,10 @@ impl Endpoint for RepoGetPushMirrorByRemoteName<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/push_mirrors/{}",
-                self.owner, self.repo, self.name
+                "/api/v1/repos/{owner}/{repo}/push_mirrors/{name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                name = urlencoding::encode(self.name)
             )
             .into(),
             query: None,
@@ -10887,8 +11739,10 @@ impl Endpoint for RepoDeletePushMirror<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/push_mirrors/{}",
-                self.owner, self.repo, self.name
+                "/api/v1/repos/{owner}/{repo}/push_mirrors/{name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                name = urlencoding::encode(self.name)
             )
             .into(),
             query: None,
@@ -10924,8 +11778,10 @@ impl Endpoint for RepoGetRawFile<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/raw/{}",
-                self.owner, self.repo, self.filepath
+                "/api/v1/repos/{owner}/{repo}/raw/{filepath}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                filepath = urlencoding::encode(self.filepath)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -10958,7 +11814,12 @@ impl Endpoint for RepoListReleases<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/releases", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/releases",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -10989,7 +11850,12 @@ impl Endpoint for RepoCreateRelease<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/releases", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/releases",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -11024,7 +11890,12 @@ impl Endpoint for RepoGetLatestRelease<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/releases/latest", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/releases/latest",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11056,8 +11927,10 @@ impl Endpoint for RepoGetReleaseByTag<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/tags/{}",
-                self.owner, self.repo, self.tag
+                "/api/v1/repos/{owner}/{repo}/releases/tags/{tag}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                tag = urlencoding::encode(self.tag)
             )
             .into(),
             query: None,
@@ -11091,8 +11964,10 @@ impl Endpoint for RepoDeleteReleaseByTag<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/tags/{}",
-                self.owner, self.repo, self.tag
+                "/api/v1/repos/{owner}/{repo}/releases/tags/{tag}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                tag = urlencoding::encode(self.tag)
             )
             .into(),
             query: None,
@@ -11127,8 +12002,10 @@ impl Endpoint for RepoGetRelease<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -11162,8 +12039,10 @@ impl Endpoint for RepoDeleteRelease<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -11199,8 +12078,10 @@ impl Endpoint for RepoEditRelease<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -11237,8 +12118,10 @@ impl Endpoint for RepoListReleaseAttachments<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}/assets",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}/assets",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -11275,8 +12158,10 @@ impl Endpoint for RepoCreateReleaseAttachment<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}/assets",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}/assets",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -11322,8 +12207,11 @@ impl Endpoint for RepoGetReleaseAttachment<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}/assets/{}",
-                self.owner, self.repo, self.id, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -11358,8 +12246,11 @@ impl Endpoint for RepoDeleteReleaseAttachment<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}/assets/{}",
-                self.owner, self.repo, self.id, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -11395,8 +12286,11 @@ impl Endpoint for RepoEditReleaseAttachment<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/releases/{}/assets/{}",
-                self.owner, self.repo, self.id, self.attachment_id
+                "/api/v1/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id,
+                attachment_id = self.attachment_id
             )
             .into(),
             query: None,
@@ -11432,7 +12326,12 @@ impl Endpoint for RepoGetReviewers<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/reviewers", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/reviewers",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11462,7 +12361,12 @@ impl Endpoint for RepoSigningKey<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/signing-key.gpg", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/signing-key.gpg",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11491,7 +12395,12 @@ impl Endpoint for RepoListStargazers<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/stargazers", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/stargazers",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11524,8 +12433,10 @@ impl Endpoint for RepoListStatuses<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/statuses/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/statuses/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: Some(self.query.into_list()),
@@ -11561,8 +12472,10 @@ impl Endpoint for RepoCreateStatus<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/statuses/{}",
-                self.owner, self.repo, self.sha
+                "/api/v1/repos/{owner}/{repo}/statuses/{sha}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                sha = urlencoding::encode(self.sha)
             )
             .into(),
             query: None,
@@ -11598,7 +12511,12 @@ impl Endpoint for RepoListSubscribers<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/subscribers", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/subscribers",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11628,7 +12546,12 @@ impl Endpoint for UserCurrentCheckSubscription<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/subscription", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/subscription",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11658,7 +12581,12 @@ impl Endpoint for UserCurrentPutSubscription<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/repos/{}/{}/subscription", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/subscription",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11688,7 +12616,12 @@ impl Endpoint for UserCurrentDeleteSubscription<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/repos/{}/{}/subscription", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/subscription",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11718,7 +12651,12 @@ impl Endpoint for RepoSyncForkDefaultInfo<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/sync_fork", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/sync_fork",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11749,7 +12687,12 @@ impl Endpoint for RepoSyncForkDefault<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/sync_fork", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/sync_fork",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11782,8 +12725,10 @@ impl Endpoint for RepoSyncForkBranchInfo<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/sync_fork/{}",
-                self.owner, self.repo, self.branch
+                "/api/v1/repos/{owner}/{repo}/sync_fork/{branch}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                branch = urlencoding::encode(self.branch)
             )
             .into(),
             query: None,
@@ -11818,8 +12763,10 @@ impl Endpoint for RepoSyncForkBranch<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/sync_fork/{}",
-                self.owner, self.repo, self.branch
+                "/api/v1/repos/{owner}/{repo}/sync_fork/{branch}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                branch = urlencoding::encode(self.branch)
             )
             .into(),
             query: None,
@@ -11852,7 +12799,12 @@ impl Endpoint for RepoListTagProtection<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/tag_protections", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/tag_protections",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -11882,7 +12834,12 @@ impl Endpoint for RepoCreateTagProtection<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/tag_protections", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/tag_protections",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -11920,8 +12877,10 @@ impl Endpoint for RepoGetTagProtection<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/tag_protections/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/tag_protections/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -11955,8 +12914,10 @@ impl Endpoint for RepoDeleteTagProtection<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/tag_protections/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/tag_protections/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -11991,8 +12952,10 @@ impl Endpoint for RepoEditTagProtection<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/tag_protections/{}",
-                self.owner, self.repo, self.id
+                "/api/v1/repos/{owner}/{repo}/tag_protections/{id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                id = self.id
             )
             .into(),
             query: None,
@@ -12029,7 +12992,12 @@ impl Endpoint for RepoListTags<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/tags", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/tags",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -12060,7 +13028,12 @@ impl Endpoint for RepoCreateTag<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/tags", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/tags",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -12100,8 +13073,10 @@ impl Endpoint for RepoGetTag<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/tags/{}",
-                self.owner, self.repo, self.tag
+                "/api/v1/repos/{owner}/{repo}/tags/{tag}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                tag = urlencoding::encode(self.tag)
             )
             .into(),
             query: None,
@@ -12135,8 +13110,10 @@ impl Endpoint for RepoDeleteTag<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/tags/{}",
-                self.owner, self.repo, self.tag
+                "/api/v1/repos/{owner}/{repo}/tags/{tag}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                tag = urlencoding::encode(self.tag)
             )
             .into(),
             query: None,
@@ -12172,7 +13149,12 @@ impl Endpoint for RepoListTeams<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/teams", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/teams",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -12204,8 +13186,10 @@ impl Endpoint for RepoCheckTeam<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/teams/{}",
-                self.owner, self.repo, self.team
+                "/api/v1/repos/{owner}/{repo}/teams/{team}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                team = urlencoding::encode(self.team)
             )
             .into(),
             query: None,
@@ -12240,8 +13224,10 @@ impl Endpoint for RepoAddTeam<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/teams/{}",
-                self.owner, self.repo, self.team
+                "/api/v1/repos/{owner}/{repo}/teams/{team}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                team = urlencoding::encode(self.team)
             )
             .into(),
             query: None,
@@ -12277,8 +13263,10 @@ impl Endpoint for RepoDeleteTeam<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/teams/{}",
-                self.owner, self.repo, self.team
+                "/api/v1/repos/{owner}/{repo}/teams/{team}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                team = urlencoding::encode(self.team)
             )
             .into(),
             query: None,
@@ -12313,7 +13301,12 @@ impl Endpoint for RepoTrackedTimes<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/times", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/times",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -12347,8 +13340,10 @@ impl Endpoint for UserTrackedTimes<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/times/{}",
-                self.owner, self.repo, self.user
+                "/api/v1/repos/{owner}/{repo}/times/{user}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                user = urlencoding::encode(self.user)
             )
             .into(),
             query: None,
@@ -12382,7 +13377,12 @@ impl Endpoint for RepoListTopics<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/topics", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/topics",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -12413,7 +13413,12 @@ impl Endpoint for RepoUpdateTopics<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/repos/{}/{}/topics", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/topics",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -12449,8 +13454,10 @@ impl Endpoint for RepoAddTopic<'_> {
         RawRequest {
             method: Method::PUT,
             path: format!(
-                "/api/v1/repos/{}/{}/topics/{}",
-                self.owner, self.repo, self.topic
+                "/api/v1/repos/{owner}/{repo}/topics/{topic}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                topic = urlencoding::encode(self.topic)
             )
             .into(),
             query: None,
@@ -12485,8 +13492,10 @@ impl Endpoint for RepoDeleteTopic<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/topics/{}",
-                self.owner, self.repo, self.topic
+                "/api/v1/repos/{owner}/{repo}/topics/{topic}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                topic = urlencoding::encode(self.topic)
             )
             .into(),
             query: None,
@@ -12520,7 +13529,12 @@ impl Endpoint for RepoTransfer<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/transfer", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/transfer",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -12556,7 +13570,12 @@ impl Endpoint for AcceptRepoTransfer<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/transfer/accept", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/transfer/accept",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -12588,7 +13607,12 @@ impl Endpoint for RejectRepoTransfer<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/transfer/reject", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/transfer/reject",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -12620,7 +13644,12 @@ impl Endpoint for RepoCreateWikiPage<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/repos/{}/{}/wiki/new", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/wiki/new",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -12659,8 +13688,10 @@ impl Endpoint for RepoGetWikiPage<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/wiki/page/{}",
-                self.owner, self.repo, self.page_name
+                "/api/v1/repos/{owner}/{repo}/wiki/page/{page_name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                page_name = urlencoding::encode(self.page_name)
             )
             .into(),
             query: None,
@@ -12694,8 +13725,10 @@ impl Endpoint for RepoDeleteWikiPage<'_> {
         RawRequest {
             method: Method::DELETE,
             path: format!(
-                "/api/v1/repos/{}/{}/wiki/page/{}",
-                self.owner, self.repo, self.page_name
+                "/api/v1/repos/{owner}/{repo}/wiki/page/{page_name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                page_name = urlencoding::encode(self.page_name)
             )
             .into(),
             query: None,
@@ -12732,8 +13765,10 @@ impl Endpoint for RepoEditWikiPage<'_> {
         RawRequest {
             method: Method::PATCH,
             path: format!(
-                "/api/v1/repos/{}/{}/wiki/page/{}",
-                self.owner, self.repo, self.page_name
+                "/api/v1/repos/{owner}/{repo}/wiki/page/{page_name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                page_name = urlencoding::encode(self.page_name)
             )
             .into(),
             query: None,
@@ -12772,7 +13807,12 @@ impl Endpoint for RepoGetWikiPages<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repos/{}/{}/wiki/pages", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/wiki/pages",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -12804,8 +13844,10 @@ impl Endpoint for RepoGetWikiPageRevisions<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/repos/{}/{}/wiki/revisions/{}",
-                self.owner, self.repo, self.page_name
+                "/api/v1/repos/{owner}/{repo}/wiki/revisions/{page_name}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                page_name = urlencoding::encode(self.page_name)
             )
             .into(),
             query: None,
@@ -12839,8 +13881,9 @@ impl Endpoint for GenerateRepo<'_> {
         RawRequest {
             method: Method::POST,
             path: format!(
-                "/api/v1/repos/{}/{}/generate",
-                self.template_owner, self.template_repo
+                "/api/v1/repos/{template_owner}/{template_repo}/generate",
+                template_owner = urlencoding::encode(self.template_owner),
+                template_repo = urlencoding::encode(self.template_repo)
             )
             .into(),
             query: None,
@@ -12878,7 +13921,7 @@ impl Endpoint for RepoGetById {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/repositories/{}", self.id).into(),
+            path: format!("/api/v1/repositories/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13064,7 +14107,7 @@ impl Endpoint for OrgGetTeam {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/teams/{}", self.id).into(),
+            path: format!("/api/v1/teams/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13093,7 +14136,7 @@ impl Endpoint for OrgDeleteTeam {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/teams/{}", self.id).into(),
+            path: format!("/api/v1/teams/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13123,7 +14166,7 @@ impl Endpoint for OrgEditTeam {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/teams/{}", self.id).into(),
+            path: format!("/api/v1/teams/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -13156,7 +14199,7 @@ impl Endpoint for OrgListTeamActivityFeeds {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/teams/{}/activities/feeds", self.id).into(),
+            path: format!("/api/v1/teams/{id}/activities/feeds", id = self.id).into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -13185,7 +14228,7 @@ impl Endpoint for OrgListTeamMembers {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/teams/{}/members", self.id).into(),
+            path: format!("/api/v1/teams/{id}/members", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13215,7 +14258,12 @@ impl Endpoint for OrgListTeamMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/teams/{}/members/{}", self.id, self.username).into(),
+            path: format!(
+                "/api/v1/teams/{id}/members/{username}",
+                id = self.id,
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13245,7 +14293,12 @@ impl Endpoint for OrgAddTeamMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/teams/{}/members/{}", self.id, self.username).into(),
+            path: format!(
+                "/api/v1/teams/{id}/members/{username}",
+                id = self.id,
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13275,7 +14328,12 @@ impl Endpoint for OrgRemoveTeamMember<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/teams/{}/members/{}", self.id, self.username).into(),
+            path: format!(
+                "/api/v1/teams/{id}/members/{username}",
+                id = self.id,
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13304,7 +14362,7 @@ impl Endpoint for OrgListTeamRepos {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/teams/{}/repos", self.id).into(),
+            path: format!("/api/v1/teams/{id}/repos", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13335,7 +14393,13 @@ impl Endpoint for OrgListTeamRepo<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/teams/{}/repos/{}/{}", self.id, self.org, self.repo).into(),
+            path: format!(
+                "/api/v1/teams/{id}/repos/{org}/{repo}",
+                id = self.id,
+                org = urlencoding::encode(self.org),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13366,7 +14430,13 @@ impl Endpoint for OrgAddTeamRepository<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/teams/{}/repos/{}/{}", self.id, self.org, self.repo).into(),
+            path: format!(
+                "/api/v1/teams/{id}/repos/{org}/{repo}",
+                id = self.id,
+                org = urlencoding::encode(self.org),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13398,7 +14468,13 @@ impl Endpoint for OrgRemoveTeamRepository<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/teams/{}/repos/{}/{}", self.id, self.org, self.repo).into(),
+            path: format!(
+                "/api/v1/teams/{id}/repos/{org}/{repo}",
+                id = self.id,
+                org = urlencoding::encode(self.org),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13545,7 +14621,11 @@ impl Endpoint for UpdateUserSecret<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/user/actions/secrets/{}", self.secretname).into(),
+            path: format!(
+                "/api/v1/user/actions/secrets/{secretname}",
+                secretname = urlencoding::encode(self.secretname)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -13581,7 +14661,11 @@ impl Endpoint for DeleteUserSecret<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/actions/secrets/{}", self.secretname).into(),
+            path: format!(
+                "/api/v1/user/actions/secrets/{secretname}",
+                secretname = urlencoding::encode(self.secretname)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13643,7 +14727,11 @@ impl Endpoint for GetUserVariable<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
+            path: format!(
+                "/api/v1/user/actions/variables/{variablename}",
+                variablename = urlencoding::encode(self.variablename)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13676,7 +14764,11 @@ impl Endpoint for UpdateUserVariable<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
+            path: format!(
+                "/api/v1/user/actions/variables/{variablename}",
+                variablename = urlencoding::encode(self.variablename)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -13713,7 +14805,11 @@ impl Endpoint for CreateUserVariable<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
+            path: format!(
+                "/api/v1/user/actions/variables/{variablename}",
+                variablename = urlencoding::encode(self.variablename)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -13749,7 +14845,11 @@ impl Endpoint for DeleteUserVariable<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/actions/variables/{}", self.variablename).into(),
+            path: format!(
+                "/api/v1/user/actions/variables/{variablename}",
+                variablename = urlencoding::encode(self.variablename)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13844,7 +14944,7 @@ impl Endpoint for UserGetOAuth2Application {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/user/applications/oauth2/{}", self.id).into(),
+            path: format!("/api/v1/user/applications/oauth2/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13875,7 +14975,7 @@ impl Endpoint for UserDeleteOAuth2Application {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/applications/oauth2/{}", self.id).into(),
+            path: format!("/api/v1/user/applications/oauth2/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -13907,7 +15007,7 @@ impl Endpoint for UserUpdateOAuth2Application {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/user/applications/oauth2/{}", self.id).into(),
+            path: format!("/api/v1/user/applications/oauth2/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -14002,7 +15102,11 @@ impl Endpoint for UserBlockUser<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/user/block/{}", self.username).into(),
+            path: format!(
+                "/api/v1/user/block/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14186,7 +15290,11 @@ impl Endpoint for UserCurrentCheckFollowing<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/user/following/{}", self.username).into(),
+            path: format!(
+                "/api/v1/user/following/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14217,7 +15325,11 @@ impl Endpoint for UserCurrentPutFollow<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/user/following/{}", self.username).into(),
+            path: format!(
+                "/api/v1/user/following/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14248,7 +15360,11 @@ impl Endpoint for UserCurrentDeleteFollow<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/following/{}", self.username).into(),
+            path: format!(
+                "/api/v1/user/following/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14406,7 +15522,7 @@ impl Endpoint for UserCurrentGetGpgKey {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/user/gpg_keys/{}", self.id).into(),
+            path: format!("/api/v1/user/gpg_keys/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14437,7 +15553,7 @@ impl Endpoint for UserCurrentDeleteGpgKey {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/gpg_keys/{}", self.id).into(),
+            path: format!("/api/v1/user/gpg_keys/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14529,7 +15645,7 @@ impl Endpoint for UserGetHook {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/user/hooks/{}", self.id).into(),
+            path: format!("/api/v1/user/hooks/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14559,7 +15675,7 @@ impl Endpoint for UserDeleteHook {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/hooks/{}", self.id).into(),
+            path: format!("/api/v1/user/hooks/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14590,7 +15706,7 @@ impl Endpoint for UserEditHook {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PATCH,
-            path: format!("/api/v1/user/hooks/{}", self.id).into(),
+            path: format!("/api/v1/user/hooks/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -14687,7 +15803,7 @@ impl Endpoint for UserCurrentGetKey {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/user/keys/{}", self.id).into(),
+            path: format!("/api/v1/user/keys/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -14718,7 +15834,7 @@ impl Endpoint for UserCurrentDeleteKey {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/keys/{}", self.id).into(),
+            path: format!("/api/v1/user/keys/{id}", id = self.id).into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15107,7 +16223,12 @@ impl Endpoint for UserCurrentCheckStarring<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/user/starred/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/user/starred/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15139,7 +16260,12 @@ impl Endpoint for UserCurrentPutStar<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/user/starred/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/user/starred/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15171,7 +16297,12 @@ impl Endpoint for UserCurrentDeleteStar<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/user/starred/{}/{}", self.owner, self.repo).into(),
+            path: format!(
+                "/api/v1/user/starred/{owner}/{repo}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15316,7 +16447,11 @@ impl Endpoint for UserUnblockUser<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::PUT,
-            path: format!("/api/v1/user/unblock/{}", self.username).into(),
+            path: format!(
+                "/api/v1/user/unblock/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15376,7 +16511,11 @@ impl Endpoint for UserGet<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15406,7 +16545,11 @@ impl Endpoint for UserListActivityFeeds<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/activities/feeds", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/activities/feeds",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -15435,7 +16578,11 @@ impl Endpoint for UserListFollowers<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/followers", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/followers",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15464,7 +16611,11 @@ impl Endpoint for UserListFollowing<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/following", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/following",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15494,7 +16645,12 @@ impl Endpoint for UserCheckFollowing<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/following/{}", self.username, self.target).into(),
+            path: format!(
+                "/api/v1/users/{username}/following/{target}",
+                username = urlencoding::encode(self.username),
+                target = urlencoding::encode(self.target)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15523,7 +16679,11 @@ impl Endpoint for UserListGpgKeys<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/gpg_keys", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/gpg_keys",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15552,7 +16712,11 @@ impl Endpoint for UserGetHeatmapData<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/heatmap", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/heatmap",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15582,7 +16746,11 @@ impl Endpoint for UserListKeys<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/keys", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/keys",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
@@ -15611,7 +16779,11 @@ impl Endpoint for OrgListUserOrgs<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/orgs", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/orgs",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15642,8 +16814,9 @@ impl Endpoint for OrgGetUserPermissions<'_> {
         RawRequest {
             method: Method::GET,
             path: format!(
-                "/api/v1/users/{}/orgs/{}/permissions",
-                self.username, self.org
+                "/api/v1/users/{username}/orgs/{org}/permissions",
+                username = urlencoding::encode(self.username),
+                org = urlencoding::encode(self.org)
             )
             .into(),
             query: None,
@@ -15675,7 +16848,11 @@ impl Endpoint for UserListRepos<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/repos", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/repos",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15704,7 +16881,11 @@ impl Endpoint for UserListStarred<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/starred", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/starred",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15733,7 +16914,11 @@ impl Endpoint for UserListSubscriptions<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/subscriptions", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/subscriptions",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15762,7 +16947,11 @@ impl Endpoint for UserGetTokens<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::GET,
-            path: format!("/api/v1/users/{}/tokens", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/tokens",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
@@ -15793,7 +16982,11 @@ impl Endpoint for UserCreateToken<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::POST,
-            path: format!("/api/v1/users/{}/tokens", self.username).into(),
+            path: format!(
+                "/api/v1/users/{username}/tokens",
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
             query: None,
             body: RequestBody::Json(Bytes::from(
                 serde_json::to_vec(&self.body)
@@ -15828,7 +17021,12 @@ impl Endpoint for UserDeleteAccessToken<'_> {
     fn make_request(self) -> RawRequest {
         RawRequest {
             method: Method::DELETE,
-            path: format!("/api/v1/users/{}/tokens/{}", self.username, self.token).into(),
+            path: format!(
+                "/api/v1/users/{username}/tokens/{token}",
+                username = urlencoding::encode(self.username),
+                token = urlencoding::encode(self.token)
+            )
+            .into(),
             query: None,
             body: RequestBody::None,
             page: None,
