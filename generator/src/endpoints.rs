@@ -1,5 +1,5 @@
 use heck::{ToSnakeCase, ToUpperCamelCase};
-use std::fmt::Write;
+use std::{collections::BTreeMap, fmt::Write};
 
 use eyre::{Context, OptionExt};
 
@@ -325,10 +325,22 @@ fn endpoint_make_request(
     writeln!(&mut s, "        RawRequest {{")?;
     writeln!(&mut s, "            method: {},", method.code_string())?;
     if has_path_params(spec, op)? {
-        let (fmt_str, path_fields) = path_to_fmt_string(&mut &*path);
+        let fmt_str = path_to_fmt_string(&mut &*path);
         write!(&mut s, "            path: format!(\"{base_path}{fmt_str}\"")?;
-        for field in path_fields {
-            write!(&mut s, ", self.{}", crate::sanitize_ident(&field))?;
+        for param in op.parameters.as_deref().unwrap() {
+            let param = param.deref(spec)?;
+            let param_name = crate::sanitize_ident(&param.name.to_snake_case());
+            let ParameterIn::Path { param } = &param._in else {
+                continue;
+            };
+            if param._type == ParameterType::String {
+                write!(
+                    &mut s,
+                    ", {param_name} = urlencoding::encode(self.{param_name})",
+                )?;
+            } else {
+                write!(&mut s, ", {param_name} = self.{param_name}")?;
+            }
         }
         writeln!(&mut s, ").into(),")?;
     } else {
@@ -651,17 +663,17 @@ pub fn response_ref_type_name(
     Ok(ty)
 }
 
-fn path_to_fmt_string(path: &mut &str) -> (String, Vec<String>) {
+fn path_to_fmt_string(path: &mut &str) -> String {
     let mut out = String::new();
-    let mut fields = Vec::new();
     while let Some((head, tail)) = path.split_once("{") {
         // If this fails, the OpenAPI file is malformed. I'm fine with panicking in that case.
         let (field, tail) = tail.split_once("}").expect("unterminated value in path");
-        fields.push(field.to_snake_case());
         out.push_str(head);
-        out.push_str("{}");
+        out.push('{');
+        out.push_str(&field.to_snake_case());
+        out.push('}');
         *path = tail;
     }
     out.push_str(path);
-    (out, fields)
+    out
 }

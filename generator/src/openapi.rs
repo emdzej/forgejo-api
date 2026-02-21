@@ -540,6 +540,18 @@ pub enum ParameterIn {
     },
 }
 
+impl ParameterIn {
+    pub fn as_non_body(&self) -> Option<&NonBodyParameter> {
+        match self {
+            ParameterIn::Body { .. } => None,
+            ParameterIn::Path { param }
+            | ParameterIn::Query { param }
+            | ParameterIn::Header { param }
+            | ParameterIn::FormData { param } => Some(param),
+        }
+    }
+}
+
 impl JsonDeref for ParameterIn {
     fn deref_any(&self, path: &str) -> eyre::Result<&dyn std::any::Any> {
         let (head, tail) = path.split_once("/").unwrap_or((path, ""));

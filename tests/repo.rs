@@ -463,3 +463,54 @@ async fn combined_status_list() {
 
     assert_eq!(statuses.len(), 100);
 }
+
+#[tokio::test]
+async fn url_encoding_labels() {
+    let api = common::login();
+    let git = Git::new("./test_repos/url-encoding-labels");
+    let _ = basic_repo(&api, &git, "url-encoding-labels").await;
+
+    let opt = CreateLabelOption {
+        color: "FFFFFF".into(),
+        description: None,
+        exclusive: None,
+        is_archived: None,
+        name: "Testing/Scoped".into(),
+    };
+    api.issue_create_label("TestingAdmin", "url-encoding-labels", opt)
+        .await
+        .unwrap();
+    let opt = CreateIssueOption {
+        assignee: None,
+        assignees: None,
+        body: None,
+        closed: None,
+        due_date: None,
+        labels: None,
+        milestone: None,
+        r#ref: None,
+        title: "Test Issue".into(),
+    };
+    let issue = api
+        .issue_create_issue("TestingAdmin", "url-encoding-labels", opt)
+        .await
+        .unwrap();
+    let index = issue.number.unwrap();
+    let opt = IssueLabelsOption {
+        labels: Some(vec!["Testing/Scoped".into()]),
+        updated_at: None,
+    };
+    api.issue_add_label("TestingAdmin", "url-encoding-labels", index, opt)
+        .await
+        .unwrap();
+    let opt = DeleteLabelsOption { updated_at: None };
+    api.issue_remove_label(
+        "TestingAdmin",
+        "url-encoding-labels",
+        index,
+        "Testing/Scoped",
+        opt,
+    )
+    .await
+    .unwrap();
+}
