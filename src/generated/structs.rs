@@ -634,7 +634,8 @@ pub enum CommitStatusState {
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitUser {
-    pub date: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub date: Option<time::OffsetDateTime>,
     pub email: Option<String>,
     pub name: Option<String>,
 }
