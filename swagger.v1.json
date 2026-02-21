@@ -22669,6 +22669,7 @@
       "properties": {
         "date": {
           "type": "string",
+          "format": "date-time",
           "x-go-name": "Date"
         },
         "email": {
