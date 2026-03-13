@@ -127,17 +127,17 @@
 //! There are helper functions to make this easier as well:
 //!
 //! - **`.stream()`**:
-//!   
+//!
 //!   Returns a `Stream` that yields one item at a time, automatically incrementing
 //!   the page number as needed. (i.e. `.issue_list_issues().stream()` yields `Issue`)
 //! - **`.stream_pages()`**;
-//!   
+//!
 //!   Returns a `Stream` that yields one page of items at a
 //!   time. (i.e. `.issue_list_issues().stream_pages()` yields `Vec<Issue>`)
 //!
 //!   Useful for endpoints that return more than just a `Vec<T>` (such as `repo_search`)
 //! - **`.all()`**;
-//!   
+//!
 //!   Returns a `Vec` of every item requested. Equivalent to
 //!   `.stream().try_collect()`.
 
@@ -416,6 +416,75 @@ impl Auth<'_> {
         }
         Ok(headers)
     }
+}
+
+#[test]
+fn to_headers_token() {
+    let token = Auth::Token("hello");
+
+    let headers = token.to_headers().unwrap();
+
+    assert!(headers["Authorization"].is_sensitive());
+    assert_eq!(headers["Authorization"].to_str().unwrap(), "token hello");
+}
+
+#[test]
+fn to_headers_password() {
+    let auth_password = Auth::Password {
+        username: "username",
+        password: "password",
+        mfa: None,
+    };
+
+    let headers = auth_password.to_headers().unwrap();
+
+    assert!(headers["Authorization"].is_sensitive());
+    assert_eq!(
+        headers["Authorization"].to_str().unwrap(),
+        "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+    );
+    assert!(headers.get("X-FORGEJO-OTP").is_none());
+}
+
+#[test]
+fn to_headers_password_with_mfa() {
+    let mfa_code: Option<&str> = Some("123456");
+    let auth_password_with_mfa = Auth::Password {
+        username: "username",
+        password: "password",
+        mfa: mfa_code,
+    };
+
+    let headers = auth_password_with_mfa.to_headers().unwrap();
+
+    assert!(headers["Authorization"].is_sensitive());
+    assert_eq!(
+        headers["Authorization"].to_str().unwrap(),
+        "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+    );
+    assert_eq!(headers["X-FORGEJO-OTP"].to_str().unwrap(), "123456");
+}
+
+#[test]
+fn to_headers_oauth2() {
+    let oauth_token = Auth::OAuth2("some token");
+
+    let headers = oauth_token.to_headers().unwrap();
+
+    assert!(headers["Authorization"].is_sensitive());
+    assert_eq!(
+        headers["Authorization"].to_str().unwrap(),
+        "Bearer some token"
+    );
+}
+
+#[test]
+fn to_headers_none() {
+    let no_auth = Auth::None;
+
+    let headers = no_auth.to_headers().unwrap();
+
+    assert!(headers.is_empty());
 }
 
 impl Forgejo {
