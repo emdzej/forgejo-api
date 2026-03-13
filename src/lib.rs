@@ -429,6 +429,19 @@ fn to_headers_token() {
 }
 
 #[test]
+fn to_headers_token_error() {
+    let token = Auth::Token("🎉");
+
+    let headers = token.to_headers().unwrap();
+    let expected_error = headers["Authorization"].to_str().unwrap_err();
+
+    assert_eq!(
+        expected_error.to_string(),
+        "failed to convert header to a str"
+    );
+}
+
+#[test]
 fn to_headers_password() {
     let auth_password = Auth::Password {
         username: "username",
@@ -466,6 +479,23 @@ fn to_headers_password_with_mfa() {
 }
 
 #[test]
+fn to_headers_password_with_mfa_error() {
+    let mfa_code: Option<&str> = Some("🎉");
+    let auth_password_with_mfa = Auth::Password {
+        username: "username",
+        password: "password",
+        mfa: mfa_code,
+    };
+    let headers = auth_password_with_mfa.to_headers().unwrap();
+    let expected_error = headers["X-FORGEJO-OTP"].to_str().unwrap_err();
+
+    assert_eq!(
+        expected_error.to_string(),
+        "failed to convert header to a str"
+    );
+}
+
+#[test]
 fn to_headers_oauth2() {
     let oauth_token = Auth::OAuth2("some token");
 
@@ -475,6 +505,19 @@ fn to_headers_oauth2() {
     assert_eq!(
         headers["Authorization"].to_str().unwrap(),
         "Bearer some token"
+    );
+}
+
+#[test]
+fn to_headers_oauth2_error() {
+    let oauth_token = Auth::OAuth2("🎉");
+
+    let headers = oauth_token.to_headers().unwrap();
+    let expected_error = headers["Authorization"].to_str().unwrap_err();
+
+    assert_eq!(
+        expected_error.to_string(),
+        "failed to convert header to a str"
     );
 }
 
