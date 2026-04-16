@@ -12,7 +12,7 @@ variables:
 
 steps:
   get-token:
-    image: code.cartoon-aa.xyz/ci/ci-forgejo-token:14.0.0
+    image: code.cartoon-aa.xyz/ci/ci-forgejo-token:15.0.0
     pull: true
     when:
       <<: *when
@@ -32,7 +32,7 @@ steps:
       - export FORGEJO_API_CI_TOKEN=$(cat .token)
       - cargo test -F sync --no-fail-fast --jobs 1
   preserve:
-    image: code.cartoon-aa.xyz/ci/ci-forgejo-preserve:14.0.0
+    image: code.cartoon-aa.xyz/ci/ci-forgejo-preserve:15.0.0
     pull: true
     when:
       - status: [ failure ]
@@ -46,7 +46,7 @@ steps:
 
 services:
   forgejo-testing:
-    image: code.cartoon-aa.xyz/ci/ci-forgejo:14.0.0
+    image: code.cartoon-aa.xyz/ci/ci-forgejo:15.0.0
     pull: true
     when:
       <<: *when

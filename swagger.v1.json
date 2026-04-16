@@ -10,7 +10,7 @@
       "name": "This file is distributed under the MIT license for the purpose of interoperability",
       "url": "http://opensource.org/licenses/MIT"
     },
-    "version": "14.0.0+gitea-1.22.0"
+    "version": "15.0.0+gitea-1.22.0"
   },
   "basePath": "/api/v1",
   "paths": {
@@ -254,6 +254,168 @@
           },
           "403": {
             "$ref": "#/responses/forbidden"
+          }
+        }
+      }
+    },
+    "/admin/actions/runners": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Get all runners, no matter whether they are global runners or scoped to an organization, user, or repository",
+        "operationId": "getAdminRunners",
+        "parameters": [
+          {
+            "type": "boolean",
+            "description": "whether to include all visible runners (true) or only those that are directly owned by the instance (false)",
+            "name": "visible",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page number of results to return (1-based)",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page size of results",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunnerList"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "post": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Register a new global runner",
+        "operationId": "registerAdminRunner",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterRunnerOptions"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/RegisterRunnerResponse"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/admin/actions/runners/jobs": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Get action run jobs",
+        "operationId": "adminGetActionRunJobs",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "a comma separated list of labels to search for",
+            "name": "labels",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RunJobList"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          }
+        }
+      }
+    },
+    "/admin/actions/runners/registration-token": {
+      "get": {
+        "description": "This operation has been deprecated in Forgejo 15. Use the web UI or [`/admin/actions/runners`](#/admin/registerAdminRunner) instead.\n",
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Get a runner registration token for registering global runners",
+        "operationId": "adminGetRunnerRegistrationToken",
+        "deprecated": true,
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RegistrationToken"
+          }
+        }
+      }
+    },
+    "/admin/actions/runners/{runner_id}": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Get a particular runner, no matter whether it is a global runner or scoped to an organization, user, or repository",
+        "operationId": "getAdminRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunner"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "delete": {
+        "produces": ["application/json"],
+        "tags": ["admin"],
+        "summary": "Delete a particular runner, no matter whether it is a global runner or scoped to an organization, user, or repository",
+        "operationId": "deleteAdminRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "runner has been deleted"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
           }
         }
       }
@@ -984,10 +1146,12 @@
     },
     "/admin/runners/jobs": {
       "get": {
+        "description": "This operation has been deprecated in Forgejo 15. Use [`/admin/actions/runners/jobs`](#/admin/adminGetActionRunJobs) instead.\n",
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "Search action jobs according filter conditions",
+        "summary": "Search action jobs according to filter conditions",
         "operationId": "adminSearchRunJobs",
+        "deprecated": true,
         "parameters": [
           {
             "type": "string",
@@ -1008,10 +1172,12 @@
     },
     "/admin/runners/registration-token": {
       "get": {
+        "description": "This operation has been deprecated in Forgejo 15. Use the web UI or [`/admin/actions/runners`](#/admin/registerAdminRunner) instead.\n",
         "produces": ["application/json"],
         "tags": ["admin"],
-        "summary": "Get an global actions runner registration token",
-        "operationId": "adminGetRunnerRegistrationToken",
+        "summary": "Get a runner registration token for registering global runners",
+        "operationId": "adminGetRegistrationToken",
+        "deprecated": true,
         "responses": {
           "200": {
             "$ref": "#/responses/RegistrationToken"
@@ -1837,7 +2003,7 @@
               "type": "string"
             },
             "collectionFormat": "multi",
-            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread & pinned.",
+            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread \u0026 pinned.",
             "name": "status-types",
             "in": "query"
           },
@@ -2184,6 +2350,89 @@
         }
       }
     },
+    "/orgs/{org}/actions/runners": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["organization"],
+        "summary": "Get the organization's runners",
+        "operationId": "getOrgRunners",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "name of the organization",
+            "name": "org",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "boolean",
+            "description": "whether to include all visible runners (true) or only those that are directly owned by the organization (false)",
+            "name": "visible",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page number of results to return (1-based)",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page size of results",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunnerList"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "post": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["organization"],
+        "summary": "Register a new organization-level runner",
+        "operationId": "registerOrgRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "name of the organization",
+            "name": "org",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterRunnerOptions"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/RegisterRunnerResponse"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/orgs/{org}/actions/runners/jobs": {
       "get": {
         "produces": ["application/json"],
@@ -2217,10 +2466,12 @@
     },
     "/orgs/{org}/actions/runners/registration-token": {
       "get": {
+        "description": "This operation has been deprecated in Forgejo 15. Use the web UI or [`/orgs/{org}/actions/runners`](#/organization/registerOrgRunner) instead.\n",
         "produces": ["application/json"],
         "tags": ["organization"],
-        "summary": "Get an organization's actions runner registration token",
+        "summary": "Get the organization's runner registration token",
         "operationId": "orgGetRunnerRegistrationToken",
+        "deprecated": true,
         "parameters": [
           {
             "type": "string",
@@ -2233,6 +2484,74 @@
         "responses": {
           "200": {
             "$ref": "#/responses/RegistrationToken"
+          }
+        }
+      }
+    },
+    "/orgs/{org}/actions/runners/{runner_id}": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["organization"],
+        "summary": "Get a particular runner that belongs to the organization",
+        "operationId": "getOrgRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "name of the organization",
+            "name": "org",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunner"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "delete": {
+        "produces": ["application/json"],
+        "tags": ["organization"],
+        "summary": "Delete a particular runner that belongs to the organization",
+        "operationId": "deleteOrgRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "name of the organization",
+            "name": "org",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "runner has been deleted"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
           }
         }
       }
@@ -4502,6 +4821,103 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/actions/runners": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Get runners belonging to the repository",
+        "operationId": "getRepoRunners",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "boolean",
+            "description": "whether to include all visible runners (true) or only those that are directly owned by the repository (false)",
+            "name": "visible",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page number of results to return (1-based)",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page size of results",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunnerList"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "post": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Register a new repository-level runner",
+        "operationId": "registerRepoRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterRunnerOptions"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/RegisterRunnerResponse"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/actions/runners/jobs": {
       "get": {
         "produces": ["application/json"],
@@ -4542,10 +4958,12 @@
     },
     "/repos/{owner}/{repo}/actions/runners/registration-token": {
       "get": {
+        "description": "This operation has been deprecated in Forgejo 15. Use the web UI or [`/repos/{owner}/{repo}/actions/runners`](#/repository/registerRepoRunner) instead.\n",
         "produces": ["application/json"],
         "tags": ["repository"],
-        "summary": "Get a repository's actions runner registration token",
+        "summary": "Get a repository's runner registration token",
         "operationId": "repoGetRunnerRegistrationToken",
+        "deprecated": true,
         "parameters": [
           {
             "type": "string",
@@ -4565,6 +4983,88 @@
         "responses": {
           "200": {
             "$ref": "#/responses/RegistrationToken"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/actions/runners/{runner_id}": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Get a particular runner that belongs to the repository",
+        "operationId": "getRepoRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunner"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "delete": {
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Delete a particular runner that belongs to a repository",
+        "operationId": "deleteRepoRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "runner has been deleted"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
           }
         }
       }
@@ -4641,6 +5141,18 @@
             "type": "string",
             "description": "Only returns workflow runs that are associated with the specified head_sha.",
             "name": "head_sha",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Only return workflow runs that involve the given Git reference, for example, `refs/heads/main`.",
+            "name": "ref",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Only return workflow runs that involve the given workflow ID.",
+            "name": "workflow_id",
             "in": "query"
           }
         ],
@@ -4872,6 +5384,25 @@
             "type": "integer",
             "description": "page size of results, default maximum page size is 50",
             "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "enum": [
+                "unknown",
+                "waiting",
+                "running",
+                "success",
+                "failure",
+                "cancelled",
+                "skipped",
+                "blocked"
+              ],
+              "type": "string"
+            },
+            "description": "Returns workflow tasks with the check run status or conclusion that is specified.\n For example, a conclusion can be success or a status can be in_progress.\n",
+            "name": "status",
             "in": "query"
           }
         ],
@@ -8204,6 +8735,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
           }
         }
       },
@@ -10898,8 +11432,14 @@
           "200": {
             "$ref": "#/responses/TrackedTimeList"
           },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
           }
         }
       },
@@ -11852,7 +12392,7 @@
               "type": "string"
             },
             "collectionFormat": "multi",
-            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread & pinned",
+            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread \u0026 pinned",
             "name": "status-types",
             "in": "query"
           },
@@ -12045,6 +12585,9 @@
         "responses": {
           "200": {
             "$ref": "#/responses/PullRequestList"
+          },
+          "400": {
+            "$ref": "#/responses/error"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -12649,6 +13192,9 @@
         "responses": {
           "201": {
             "$ref": "#/responses/PullReviewListWithoutPagination"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -15159,6 +15705,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "405": {
+            "$ref": "#/responses/error"
           }
         }
       }
@@ -15357,6 +15906,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
           }
         }
       }
@@ -16629,6 +17181,78 @@
         }
       }
     },
+    "/user/actions/runners": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Get the user's runners",
+        "operationId": "getUserRunners",
+        "parameters": [
+          {
+            "type": "boolean",
+            "description": "whether to include all visible runners (true) or only those that are directly owned by the user (false)",
+            "name": "visible",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page number of results to return (1-based)",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page size of results",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunnerList"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "post": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Register a new user-level runner",
+        "operationId": "registerUserRunner",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterRunnerOptions"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/RegisterRunnerResponse"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/user/actions/runners/jobs": {
       "get": {
         "produces": ["application/json"],
@@ -16658,10 +17282,12 @@
     },
     "/user/actions/runners/registration-token": {
       "get": {
+        "description": "This operation has been deprecated in Forgejo 15. Use the web UI or [`/user/actions/runners`](#/user/registerUserRunner) instead.\n",
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Get an user's actions runner registration token",
+        "summary": "Get the user's runner registration token",
         "operationId": "userGetRunnerRegistrationToken",
+        "deprecated": true,
         "responses": {
           "200": {
             "$ref": "#/responses/RegistrationToken"
@@ -16671,6 +17297,66 @@
           },
           "403": {
             "$ref": "#/responses/forbidden"
+          }
+        }
+      }
+    },
+    "/user/actions/runners/{runner_id}": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Get a particular runner that belongs to the user",
+        "operationId": "getUserRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunner"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      },
+      "delete": {
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Delete a particular user-level runner",
+        "operationId": "deleteUserRunner",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the runner",
+            "name": "runner_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "runner has been deleted"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
           }
         }
       }
@@ -19378,6 +20064,14 @@
           "type": "string",
           "x-go-name": "Name"
         },
+        "repositories": {
+          "description": "Indicates that an access token only has access to the specified repositories.  Will be null if the access token\nis not limited to a set of specified repositories.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RepositoryMeta"
+          },
+          "x-go-name": "Repositories"
+        },
         "scopes": {
           "type": "array",
           "items": {
@@ -19524,8 +20218,19 @@
       "description": "ActionRunJob represents a job of a run",
       "type": "object",
       "properties": {
+        "attempt": {
+          "description": "How many times the job has been attempted including the current attempt.",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Attempt"
+        },
+        "handle": {
+          "description": "Opaque identifier that uniquely identifies a single attempt of a job.",
+          "type": "string",
+          "x-go-name": "Handle"
+        },
         "id": {
-          "description": "the action run job id",
+          "description": "Identifier of this job.",
           "type": "integer",
           "format": "int64",
           "x-go-name": "ID"
@@ -19573,6 +20278,70 @@
           "type": "integer",
           "format": "int64",
           "x-go-name": "TaskID"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "ActionRunner": {
+      "description": "ActionRunner represents a runner",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "Description provides optional details about this runner.",
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "ephemeral": {
+          "description": "Indicates if runner is ephemeral runner",
+          "type": "boolean",
+          "x-go-name": "Ephemeral"
+        },
+        "id": {
+          "description": "ID uniquely identifies this runner.",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "labels": {
+          "description": "Labels is a list of labels attached to this runner.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Labels"
+        },
+        "name": {
+          "description": "Name of the runner; not unique.",
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "owner_id": {
+          "description": "OwnerID is the identifier of the user or organization this runner belongs to. O if the runner is owned by a\nrepository.",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "OwnerID"
+        },
+        "repo_id": {
+          "description": "RepoID is the identifier of the repository this runner belongs to. 0 if the runner belongs to a user or\norganization.",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "RepoID"
+        },
+        "status": {
+          "description": "Status indicates whether this runner is offline, or active, for example.",
+          "type": "string",
+          "enum": ["offline", "idle", "active"],
+          "x-go-name": "Status"
+        },
+        "uuid": {
+          "description": "UUID uniquely identifies this runner.",
+          "type": "string",
+          "x-go-name": "UUID"
+        },
+        "version": {
+          "description": "Version is the self-reported version string of Forgejo Runner.",
+          "type": "string",
+          "x-go-name": "Version"
         }
       },
       "x-go-package": "forgejo.org/modules/structs"
@@ -20305,6 +21074,7 @@
       "type": "object",
       "properties": {
         "assets": {
+          "description": "The attachments to the comment",
           "type": "array",
           "items": {
             "$ref": "#/definitions/Attachment"
@@ -20312,44 +21082,53 @@
           "x-go-name": "Attachments"
         },
         "body": {
+          "description": "The body of the comment",
           "type": "string",
           "x-go-name": "Body"
         },
         "created_at": {
+          "description": "The time of the comment's creation",
           "type": "string",
           "format": "date-time",
           "x-go-name": "Created"
         },
         "html_url": {
+          "description": "The HTML URL of the comment",
           "type": "string",
           "format": "url",
           "x-go-name": "HTMLURL"
         },
         "id": {
+          "description": "The identifier of the comment",
           "type": "integer",
           "format": "int64",
           "x-go-name": "ID"
         },
         "issue_url": {
+          "description": "The HTML URL of the issue if the comment is posted on an issue, else empty string",
           "type": "string",
           "format": "url",
           "x-go-name": "IssueURL"
         },
         "original_author": {
+          "description": "The original author that posted the comment if it was not posted locally, else empty string",
           "type": "string",
           "x-go-name": "OriginalAuthor"
         },
         "original_author_id": {
+          "description": "The ID of the original author that posted the comment if it was not posted locally, else 0",
           "type": "integer",
           "format": "int64",
           "x-go-name": "OriginalAuthorID"
         },
         "pull_request_url": {
+          "description": "The HTML URL of the pull request if the comment is posted on a pull request, else empty string",
           "type": "string",
           "format": "url",
           "x-go-name": "PRURL"
         },
         "updated_at": {
+          "description": "The time of the comment's update",
           "type": "string",
           "format": "date-time",
           "x-go-name": "Updated"
@@ -20676,6 +21455,14 @@
         "name": {
           "type": "string",
           "x-go-name": "Name"
+        },
+        "repositories": {
+          "description": "If provided and not-empty, creates an access token with access only to specified repositories.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RepoTargetOption"
+          },
+          "x-go-name": "Repositories"
         },
         "scopes": {
           "type": "array",
@@ -21018,10 +21805,12 @@
       "required": ["body"],
       "properties": {
         "body": {
+          "description": "The body of the comment",
           "type": "string",
           "x-go-name": "Body"
         },
         "updated_at": {
+          "description": "The time of the comment's update, needs admin or repository owner permission",
           "type": "string",
           "format": "date-time",
           "x-go-name": "Updated"
@@ -21189,12 +21978,12 @@
       "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateOrUpdateSecretOption": {
-      "description": "CreateOrUpdateSecretOption options when creating or updating secret",
       "type": "object",
+      "title": "CreateOrUpdateSecretOption defines the properties of the secret to create or update.",
       "required": ["data"],
       "properties": {
         "data": {
-          "description": "Data of the secret to update",
+          "description": "Data of the secret. Special characters will be retained. Line endings will be normalized to LF to match the\nbehaviour of browsers. Encode the data with Base64 if line endings should be retained.",
           "type": "string",
           "x-go-name": "Data"
         }
@@ -21677,7 +22466,18 @@
             "type": "string"
           },
           "x-go-name": "UnitsMap",
-          "example": "{\"repo.actions\",\"repo.packages\",\"repo.code\":\"read\",\"repo.issues\":\"write\",\"repo.ext_issues\":\"none\",\"repo.wiki\":\"admin\",\"repo.pulls\":\"owner\",\"repo.releases\":\"none\",\"repo.projects\":\"none\",\"repo.ext_wiki\":\"none\"}"
+          "example": {
+            "repo.actions": "none",
+            "repo.code": "read",
+            "repo.ext_issues": "none",
+            "repo.ext_wiki": "none",
+            "repo.issues": "write",
+            "repo.packages": "none",
+            "repo.projects": "none",
+            "repo.pulls": "owner",
+            "repo.releases": "none",
+            "repo.wiki": "admin"
+          }
         }
       },
       "x-go-package": "forgejo.org/modules/structs"
@@ -21739,12 +22539,12 @@
       "x-go-package": "forgejo.org/modules/structs"
     },
     "CreateVariableOption": {
-      "description": "CreateVariableOption the option when creating variable",
       "type": "object",
+      "title": "CreateVariableOption defines the properties of the variable to create.",
       "required": ["value"],
       "properties": {
         "value": {
-          "description": "Value of the variable to create",
+          "description": "Value of the variable to create. Special characters will be retained. Line endings will be normalized to LF to\nmatch the behaviour of browsers. Encode the data with Base64 if line endings should be retained.",
           "type": "string",
           "x-go-name": "Value"
         }
@@ -22198,10 +22998,12 @@
       "required": ["body"],
       "properties": {
         "body": {
+          "description": "The body of the comment",
           "type": "string",
           "x-go-name": "Body"
         },
         "updated_at": {
+          "description": "The time of the comment's update, needs admin or repository owner permission",
           "type": "string",
           "format": "date-time",
           "x-go-name": "Updated"
@@ -22726,10 +23528,12 @@
           },
           "x-go-name": "UnitsMap",
           "example": {
+            "repo.actions": "none",
             "repo.code": "read",
             "repo.ext_issues": "none",
             "repo.ext_wiki": "none",
             "repo.issues": "write",
+            "repo.packages": "none",
             "repo.projects": "none",
             "repo.pulls": "owner",
             "repo.releases": "none",
@@ -25650,6 +26454,49 @@
       },
       "x-go-package": "forgejo.org/modules/structs"
     },
+    "RegisterRunnerOptions": {
+      "type": "object",
+      "title": "RegisterRunnerOptions declares the accepted options for registering runners.",
+      "required": ["name"],
+      "properties": {
+        "description": {
+          "description": "Description of the runner to register.",
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "ephemeral": {
+          "description": "Register as ephemeral runner https://forgejo.org/docs/latest/admin/actions/security/#ephemeral-runner",
+          "type": "boolean",
+          "x-go-name": "Ephemeral"
+        },
+        "name": {
+          "description": "Name of the runner to register. The name of the runner does not have to be unique.",
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "RegisterRunnerResponse": {
+      "type": "object",
+      "title": "RegisterRunnerResponse contains the details of the just registered runner.",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "token": {
+          "type": "string",
+          "x-go-name": "Token"
+        },
+        "uuid": {
+          "type": "string",
+          "x-go-name": "UUID"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
     "RegistrationToken": {
       "description": "RegistrationToken is a string used to register a runner with a server",
       "type": "object",
@@ -25837,6 +26684,23 @@
       },
       "x-go-package": "forgejo.org/modules/structs"
     },
+    "RepoTargetOption": {
+      "type": "object",
+      "required": ["owner", "name"],
+      "properties": {
+        "name": {
+          "description": "Name of repository",
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "owner": {
+          "description": "Name of user or organisation that owns the repository",
+          "type": "string",
+          "x-go-name": "Owner"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
     "RepoTopicOptions": {
       "description": "RepoTopicOptions a collection of repo topic names",
       "type": "object",
@@ -25999,8 +26863,14 @@
           "x-go-name": "HasReleases"
         },
         "has_wiki": {
+          "description": "is the wiki enabled",
           "type": "boolean",
           "x-go-name": "HasWiki"
+        },
+        "has_wiki_contents": {
+          "description": "have wiki pages ever been created",
+          "type": "boolean",
+          "x-go-name": "HasWikiContents"
         },
         "html_url": {
           "type": "string",
@@ -26140,6 +27010,14 @@
         "wiki_branch": {
           "type": "string",
           "x-go-name": "WikiBranch"
+        },
+        "wiki_clone_url": {
+          "type": "string",
+          "x-go-name": "WikiCloneURL"
+        },
+        "wiki_ssh_url": {
+          "type": "string",
+          "x-go-name": "WikiSSHURL"
         }
       },
       "x-go-package": "forgejo.org/modules/structs"
@@ -26466,10 +27344,12 @@
           },
           "x-go-name": "UnitsMap",
           "example": {
+            "repo.actions": "none",
             "repo.code": "read",
             "repo.ext_issues": "none",
             "repo.ext_wiki": "none",
             "repo.issues": "write",
+            "repo.packages": "none",
             "repo.projects": "none",
             "repo.pulls": "owner",
             "repo.releases": "none",
@@ -26807,17 +27687,17 @@
       "x-go-package": "forgejo.org/modules/structs"
     },
     "UpdateVariableOption": {
-      "description": "UpdateVariableOption the option when updating variable",
       "type": "object",
+      "title": "UpdateVariableOption defines the properties of the variable to update.",
       "required": ["value"],
       "properties": {
         "name": {
-          "description": "New name for the variable. If the field is empty, the variable name won't be updated.",
+          "description": "New name for the variable. If the field is empty, the variable name won't be updated. Forgejo will convert it to\nuppercase.",
           "type": "string",
           "x-go-name": "Name"
         },
         "value": {
-          "description": "Value of the variable to update",
+          "description": "Value of the variable to update. Special characters will be retained. Line endings will be normalized to LF to\nmatch the behaviour of browsers. Encode the data with Base64 if line endings should be retained.",
           "type": "string",
           "x-go-name": "Value"
         }
@@ -27253,7 +28133,7 @@
         "X-Total-Count": {
           "type": "integer",
           "format": "int64",
-          "description": "Total commit count"
+          "description": "The total number of access tokens"
         }
       }
     },
@@ -27267,6 +28147,32 @@
       "description": "ActionRunList",
       "schema": {
         "$ref": "#/definitions/ListActionRunResponse"
+      }
+    },
+    "ActionRunner": {
+      "description": "ActionRunner represents a runner",
+      "schema": {
+        "$ref": "#/definitions/ActionRunner"
+      }
+    },
+    "ActionRunnerList": {
+      "description": "ActionRunnerList is a list of Forgejo Action runners",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/ActionRunner"
+        }
+      },
+      "headers": {
+        "Link": {
+          "type": "string",
+          "description": "Links to other pages, if any"
+        },
+        "X-Total-Count": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Total number of runners matching the search criteria (excluding page and limit)"
+        }
       }
     },
     "ActionVariable": {
@@ -28719,7 +29625,7 @@
     "parameterBodies": {
       "description": "parameterBodies",
       "schema": {
-        "$ref": "#/definitions/NoteOptions"
+        "$ref": "#/definitions/RegisterRunnerOptions"
       }
     },
     "quotaExceeded": {
@@ -28766,12 +29672,6 @@
     }
   },
   "securityDefinitions": {
-    "AccessToken": {
-      "description": "This authentication option is deprecated for removal in Forgejo v13.0.0. Please use AuthorizationHeaderToken instead.",
-      "type": "apiKey",
-      "name": "access_token",
-      "in": "query"
-    },
     "AuthorizationHeaderToken": {
       "description": "API tokens must be prepended with \"token\" followed by a space.",
       "type": "apiKey",
@@ -28798,23 +29698,11 @@
       "type": "apiKey",
       "name": "X-FORGEJO-OTP",
       "in": "header"
-    },
-    "Token": {
-      "description": "This authentication option is deprecated for removal in Forgejo v13.0.0. Please use AuthorizationHeaderToken instead.",
-      "type": "apiKey",
-      "name": "token",
-      "in": "query"
     }
   },
   "security": [
     {
       "BasicAuth": []
-    },
-    {
-      "Token": []
-    },
-    {
-      "AccessToken": []
     },
     {
       "AuthorizationHeaderToken": []

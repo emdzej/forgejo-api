@@ -72,6 +72,10 @@ impl_from_response!(APIValidationError);
 pub struct AccessToken {
     pub id: Option<i64>,
     pub name: Option<String>,
+    /// Indicates that an access token only has access to the specified repositories.  Will be null if the access token
+    ///
+    /// is not limited to a set of specified repositories.
+    pub repositories: Option<Vec<RepositoryMeta>>,
     pub scopes: Option<Vec<String>>,
     pub sha1: Option<String>,
     pub token_last_eight: Option<String>,
@@ -138,7 +142,11 @@ impl_from_response!(ActionRun);
 /// ActionRunJob represents a job of a run
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ActionRunJob {
-    /// the action run job id
+    /// How many times the job has been attempted including the current attempt.
+    pub attempt: Option<i64>,
+    /// Opaque identifier that uniquely identifies a single attempt of a job.
+    pub handle: Option<String>,
+    /// Identifier of this job.
     pub id: Option<i64>,
     /// the action run job name
     pub name: Option<String>,
@@ -158,6 +166,48 @@ pub struct ActionRunJob {
 
 impl_from_response!(ActionRunJob);
 
+/// ActionRunner represents a runner
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionRunner {
+    /// Description provides optional details about this runner.
+    pub description: Option<String>,
+    /// Indicates if runner is ephemeral runner
+    pub ephemeral: Option<bool>,
+    /// ID uniquely identifies this runner.
+    pub id: Option<i64>,
+    /// Labels is a list of labels attached to this runner.
+    pub labels: Option<Vec<String>>,
+    /// Name of the runner; not unique.
+    pub name: Option<String>,
+    /// OwnerID is the identifier of the user or organization this runner belongs to. O if the runner is owned by a
+    ///
+    /// repository.
+    pub owner_id: Option<i64>,
+    /// RepoID is the identifier of the repository this runner belongs to. 0 if the runner belongs to a user or
+    ///
+    /// organization.
+    pub repo_id: Option<i64>,
+    /// Status indicates whether this runner is offline, or active, for example.
+    pub status: Option<ActionRunnerStatus>,
+    /// UUID uniquely identifies this runner.
+    pub uuid: Option<String>,
+    /// Version is the self-reported version string of Forgejo Runner.
+    pub version: Option<String>,
+}
+
+impl_from_response!(ActionRunner);
+
+/// Status indicates whether this runner is offline, or active, for example.
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ActionRunnerStatus {
+    #[serde(rename = "offline")]
+    Offline,
+    #[serde(rename = "idle")]
+    Idle,
+    #[serde(rename = "active")]
+    Active,
+}
 /// ActionTask represents a ActionTask
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ActionTask {
@@ -523,20 +573,30 @@ impl crate::PageSize for CombinedStatus {
 /// Comment represents a comment on a commit or issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Comment {
+    /// The attachments to the comment
     pub assets: Option<Vec<Attachment>>,
+    /// The body of the comment
     pub body: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
+    /// The time of the comment's creation
     pub created_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
+    /// The HTML URL of the comment
     pub html_url: Option<url::Url>,
+    /// The identifier of the comment
     pub id: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
+    /// The HTML URL of the issue if the comment is posted on an issue, else empty string
     pub issue_url: Option<url::Url>,
+    /// The original author that posted the comment if it was not posted locally, else empty string
     pub original_author: Option<String>,
+    /// The ID of the original author that posted the comment if it was not posted locally, else 0
     pub original_author_id: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
+    /// The HTML URL of the pull request if the comment is posted on a pull request, else empty string
     pub pull_request_url: Option<url::Url>,
     #[serde(with = "time::serde::rfc3339::option")]
+    /// The time of the comment's update
     pub updated_at: Option<time::OffsetDateTime>,
     pub user: Option<User>,
 }
@@ -689,6 +749,8 @@ impl_from_response!(ContentsResponse);
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateAccessTokenOption {
     pub name: String,
+    /// If provided and not-empty, creates an access token with access only to specified repositories.
+    pub repositories: Option<Vec<RepoTargetOption>>,
     pub scopes: Option<Vec<String>>,
 }
 
@@ -831,8 +893,10 @@ pub struct CreateHookOptionConfig {
 /// CreateIssueCommentOption options for creating a comment on an issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateIssueCommentOption {
+    /// The body of the comment
     pub body: String,
     #[serde(with = "time::serde::rfc3339::option")]
+    /// The time of the comment's update, needs admin or repository owner permission
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
@@ -901,10 +965,11 @@ pub struct CreateOAuth2ApplicationOptions {
     pub redirect_uris: Option<Vec<String>>,
 }
 
-/// CreateOrUpdateSecretOption options when creating or updating secret
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateOrUpdateSecretOption {
-    /// Data of the secret to update
+    /// Data of the secret. Special characters will be retained. Line endings will be normalized to LF to match the
+    ///
+    /// behaviour of browsers. Encode the data with Base64 if line endings should be retained.
     pub data: String,
 }
 
@@ -1155,10 +1220,11 @@ pub struct CreateUserOption {
     pub visibility: Option<String>,
 }
 
-/// CreateVariableOption the option when creating variable
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateVariableOption {
-    /// Value of the variable to create
+    /// Value of the variable to create. Special characters will be retained. Line endings will be normalized to LF to
+    ///
+    /// match the behaviour of browsers. Encode the data with Base64 if line endings should be retained.
     pub value: String,
 }
 
@@ -1347,8 +1413,10 @@ pub struct EditHookOption {
 /// EditIssueCommentOption options for editing a comment
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditIssueCommentOption {
+    /// The body of the comment
     pub body: String,
     #[serde(with = "time::serde::rfc3339::option")]
+    /// The time of the comment's update, needs admin or repository owner permission
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
@@ -2876,6 +2944,25 @@ pub struct Reference {
 
 impl_from_response!(Reference);
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct RegisterRunnerOptions {
+    /// Description of the runner to register.
+    pub description: Option<String>,
+    /// Register as ephemeral runner https://forgejo.org/docs/latest/admin/actions/security/#ephemeral-runner
+    pub ephemeral: Option<bool>,
+    /// Name of the runner to register. The name of the runner does not have to be unique.
+    pub name: String,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct RegisterRunnerResponse {
+    pub id: Option<i64>,
+    pub token: Option<String>,
+    pub uuid: Option<String>,
+}
+
+impl_from_response!(RegisterRunnerResponse);
+
 /// RegistrationToken is a string used to register a runner with a server
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RegistrationToken {
@@ -2957,6 +3044,14 @@ pub struct RepoCommit {
     pub verification: Option<PayloadCommitVerification>,
 }
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct RepoTargetOption {
+    /// Name of repository
+    pub name: String,
+    /// Name of user or organisation that owns the repository
+    pub owner: String,
+}
+
 /// RepoTopicOptions a collection of repo topic names
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct RepoTopicOptions {
@@ -3009,7 +3104,10 @@ pub struct Repository {
     pub has_projects: Option<bool>,
     pub has_pull_requests: Option<bool>,
     pub has_releases: Option<bool>,
+    /// is the wiki enabled
     pub has_wiki: Option<bool>,
+    /// have wiki pages ever been created
+    pub has_wiki_contents: Option<bool>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
@@ -3049,6 +3147,8 @@ pub struct Repository {
     pub watchers_count: Option<i64>,
     pub website: Option<String>,
     pub wiki_branch: Option<String>,
+    pub wiki_clone_url: Option<String>,
+    pub wiki_ssh_url: Option<String>,
 }
 
 impl_from_response!(Repository);
@@ -3341,12 +3441,15 @@ pub struct UpdateUserAvatarOption {
     pub image: Option<String>,
 }
 
-/// UpdateVariableOption the option when updating variable
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct UpdateVariableOption {
-    /// New name for the variable. If the field is empty, the variable name won't be updated.
+    /// New name for the variable. If the field is empty, the variable name won't be updated. Forgejo will convert it to
+    ///
+    /// uppercase.
     pub name: Option<String>,
-    /// Value of the variable to update
+    /// Value of the variable to update. Special characters will be retained. Line endings will be normalized to LF to
+    ///
+    /// match the behaviour of browsers. Encode the data with Base64 if line endings should be retained.
     pub value: String,
 }
 
@@ -3542,6 +3645,44 @@ impl TryFrom<&reqwest::header::HeaderMap> for AccessTokenListHeaders {
 
 impl crate::sealed::Sealed for AccessTokenListHeaders {}
 impl crate::CountHeader for AccessTokenListHeaders {
+    fn count(&self) -> Option<usize> {
+        self.x_total_count.map(|x| x as usize)
+    }
+}
+
+pub struct ActionRunnerListHeaders {
+    pub link: Option<String>,
+    pub x_total_count: Option<i64>,
+}
+
+impl TryFrom<&reqwest::header::HeaderMap> for ActionRunnerListHeaders {
+    type Error = StructureError;
+
+    fn try_from(map: &reqwest::header::HeaderMap) -> Result<Self, Self::Error> {
+        let link = map
+            .get("link")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                Ok::<_, StructureError>(s.to_string())
+            })
+            .transpose()?;
+        let x_total_count = map
+            .get("x-total-count")
+            .map(|s| -> Result<_, _> {
+                let s = s.to_str().map_err(|_| StructureError::HeaderNotAscii)?;
+                s.parse::<i64>()
+                    .map_err(|_| StructureError::HeaderParseFailed)
+            })
+            .transpose()?;
+        Ok(Self {
+            link,
+            x_total_count,
+        })
+    }
+}
+
+impl crate::sealed::Sealed for ActionRunnerListHeaders {}
+impl crate::CountHeader for ActionRunnerListHeaders {
     fn count(&self) -> Option<usize> {
         self.x_total_count.map(|x| x as usize)
     }
@@ -4722,6 +4863,40 @@ impl TryFrom<&reqwest::header::HeaderMap> for QuotaExceededHeaders {
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+pub struct GetAdminRunnersQuery {
+    /// whether to include all visible runners (true) or only those that are directly owned by the instance (false)
+    pub visible: Option<bool>,
+}
+
+impl GetAdminRunnersQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(visible) = self.visible {
+            list.push(("visible", visible.to_string()));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct AdminGetActionRunJobsQuery {
+    /// a comma separated list of labels to search for
+    pub labels: Option<String>,
+}
+
+impl AdminGetActionRunJobsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(labels) = self.labels {
+            list.push(("labels", labels));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AdminSearchEmailsQuery {
     /// keyword
     pub q: Option<String>,
@@ -4970,6 +5145,23 @@ impl NotifyReadThreadQuery {
         let mut list = Vec::new();
         if let Some(to_status) = self.to_status {
             list.push(("to-status", to_status));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct GetOrgRunnersQuery {
+    /// whether to include all visible runners (true) or only those that are directly owned by the organization (false)
+    pub visible: Option<bool>,
+}
+
+impl GetOrgRunnersQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(visible) = self.visible {
+            list.push(("visible", visible.to_string()));
         }
 
         list
@@ -5504,6 +5696,23 @@ impl RepoSearchQueryOrder {
     }
 }
 #[derive(Debug, Clone, PartialEq, Default)]
+pub struct GetRepoRunnersQuery {
+    /// whether to include all visible runners (true) or only those that are directly owned by the repository (false)
+    pub visible: Option<bool>,
+}
+
+impl GetRepoRunnersQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(visible) = self.visible {
+            list.push(("visible", visible.to_string()));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoSearchRunJobsQuery {
     /// a comma separated list of run job labels to search for
     pub labels: Option<String>,
@@ -5530,6 +5739,10 @@ pub struct ListActionRunsQuery {
     pub run_number: Option<i64>,
     /// Only returns workflow runs that are associated with the specified head_sha.
     pub head_sha: Option<String>,
+    /// Only return workflow runs that involve the given Git reference, for example, `refs/heads/main`.
+    pub r#ref: Option<String>,
+    /// Only return workflow runs that involve the given workflow ID.
+    pub workflow_id: Option<String>,
 }
 
 impl ListActionRunsQuery {
@@ -5564,6 +5777,12 @@ impl ListActionRunsQuery {
         }
         if let Some(head_sha) = self.head_sha {
             list.push(("head_sha", head_sha));
+        }
+        if let Some(r#ref) = self.r#ref {
+            list.push(("ref", r#ref));
+        }
+        if let Some(workflow_id) = self.workflow_id {
+            list.push(("workflow_id", workflow_id));
         }
 
         list
@@ -5601,6 +5820,68 @@ impl ListActionRunsQueryStatus {
             ListActionRunsQueryStatus::Cancelled => "cancelled",
             ListActionRunsQueryStatus::Skipped => "skipped",
             ListActionRunsQueryStatus::Blocked => "blocked",
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ListActionTasksQuery {
+    /// Returns workflow tasks with the check run status or conclusion that is specified.
+    ///
+    ///  For example, a conclusion can be success or a status can be in_progress.
+    pub status: Option<Vec<ListActionTasksQueryStatus>>,
+}
+
+impl ListActionTasksQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(status) = self.status {
+            if !status.is_empty() {
+                let mut s = String::new();
+                for (i, item) in status.iter().enumerate() {
+                    s.push_str(item.as_str());
+                    if i < status.len() - 1 {
+                        s.push(',')
+                    }
+                }
+                list.push(("status", s));
+            }
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ListActionTasksQueryStatus {
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(rename = "waiting")]
+    Waiting,
+    #[serde(rename = "running")]
+    Running,
+    #[serde(rename = "success")]
+    Success,
+    #[serde(rename = "failure")]
+    Failure,
+    #[serde(rename = "cancelled")]
+    Cancelled,
+    #[serde(rename = "skipped")]
+    Skipped,
+    #[serde(rename = "blocked")]
+    Blocked,
+}
+
+impl ListActionTasksQueryStatus {
+    fn as_str(&self) -> &'static str {
+        match self {
+            ListActionTasksQueryStatus::Unknown => "unknown",
+            ListActionTasksQueryStatus::Waiting => "waiting",
+            ListActionTasksQueryStatus::Running => "running",
+            ListActionTasksQueryStatus::Success => "success",
+            ListActionTasksQueryStatus::Failure => "failure",
+            ListActionTasksQueryStatus::Cancelled => "cancelled",
+            ListActionTasksQueryStatus::Skipped => "skipped",
+            ListActionTasksQueryStatus::Blocked => "blocked",
         }
     }
 }
@@ -6858,6 +7139,23 @@ pub struct TopicSearchResults {
 }
 
 impl_from_response!(TopicSearchResults);
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct GetUserRunnersQuery {
+    /// whether to include all visible runners (true) or only those that are directly owned by the user (false)
+    pub visible: Option<bool>,
+}
+
+impl GetUserRunnersQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(visible) = self.visible {
+            list.push(("visible", visible.to_string()));
+        }
+
+        list
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct UserSearchRunJobsQuery {
