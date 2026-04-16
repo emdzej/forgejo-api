@@ -144,6 +144,73 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
+    /// Get all runners, no matter whether they are global runners or scoped to an organization, user, or repository
+    ///
+    pub fn get_admin_runners(
+        &self,
+        query: GetAdminRunnersQuery,
+    ) -> Request<'_, endpoints::GetAdminRunners, (ActionRunnerListHeaders, Vec<ActionRunner>)> {
+        endpoints::GetAdminRunners { query }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Register a new global runner
+    ///
+    /// - `body`: See [`RegisterRunnerOptions`]
+    pub fn register_admin_runner(
+        &self,
+        body: RegisterRunnerOptions,
+    ) -> Request<'_, endpoints::RegisterAdminRunner, RegisterRunnerResponse> {
+        endpoints::RegisterAdminRunner { body: body }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Get action run jobs
+    ///
+    pub fn admin_get_action_run_jobs(
+        &self,
+        query: AdminGetActionRunJobsQuery,
+    ) -> Request<'_, endpoints::AdminGetActionRunJobs, Vec<ActionRunJob>> {
+        endpoints::AdminGetActionRunJobs { query }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Get a runner registration token for registering global runners
+    pub fn admin_get_runner_registration_token(
+        &self,
+    ) -> Request<'_, endpoints::AdminGetRunnerRegistrationToken, RegistrationToken> {
+        endpoints::AdminGetRunnerRegistrationToken {}
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Get a particular runner, no matter whether it is a global runner or scoped to an organization, user, or repository
+    ///
+    /// - `runner_id`: ID of the runner
+    pub fn get_admin_runner(
+        &self,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::GetAdminRunner<'_>, ActionRunner> {
+        endpoints::GetAdminRunner { runner_id }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Delete a particular runner, no matter whether it is a global runner or scoped to an organization, user, or repository
+    ///
+    /// - `runner_id`: ID of the runner
+    pub fn delete_admin_runner(
+        &self,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::DeleteAdminRunner<'_>, ()> {
+        endpoints::DeleteAdminRunner { runner_id }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
     /// List cron tasks
     ///
     pub fn admin_cron_list(
@@ -435,7 +502,7 @@ impl crate::Forgejo {
         .wrap::<_, _>(self)
     }
 
-    /// Search action jobs according filter conditions
+    /// Search action jobs according to filter conditions
     ///
     pub fn admin_search_run_jobs(
         &self,
@@ -446,11 +513,11 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
-    /// Get an global actions runner registration token
-    pub fn admin_get_runner_registration_token(
+    /// Get a runner registration token for registering global runners
+    pub fn admin_get_registration_token(
         &self,
-    ) -> Request<'_, endpoints::AdminGetRunnerRegistrationToken, RegistrationToken> {
-        endpoints::AdminGetRunnerRegistrationToken {}
+    ) -> Request<'_, endpoints::AdminGetRegistrationToken, RegistrationToken> {
+        endpoints::AdminGetRegistrationToken {}
             .make_request()
             .wrap::<_, _>(self)
     }
@@ -917,6 +984,34 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
+    /// Get the organization's runners
+    ///
+    /// - `org`: name of the organization
+    pub fn get_org_runners(
+        &self,
+        org: &str,
+        query: GetOrgRunnersQuery,
+    ) -> Request<'_, endpoints::GetOrgRunners<'_>, (ActionRunnerListHeaders, Vec<ActionRunner>)>
+    {
+        endpoints::GetOrgRunners { org, query }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Register a new organization-level runner
+    ///
+    /// - `org`: name of the organization
+    /// - `body`: See [`RegisterRunnerOptions`]
+    pub fn register_org_runner(
+        &self,
+        org: &str,
+        body: RegisterRunnerOptions,
+    ) -> Request<'_, endpoints::RegisterOrgRunner<'_>, RegisterRunnerResponse> {
+        endpoints::RegisterOrgRunner { org, body: body }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
     /// Search for organization's action jobs according filter conditions
     ///
     /// - `org`: name of the organization
@@ -930,7 +1025,7 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
-    /// Get an organization's actions runner registration token
+    /// Get the organization's runner registration token
     ///
     /// - `org`: name of the organization
     pub fn org_get_runner_registration_token(
@@ -938,6 +1033,34 @@ impl crate::Forgejo {
         org: &str,
     ) -> Request<'_, endpoints::OrgGetRunnerRegistrationToken<'_>, RegistrationToken> {
         endpoints::OrgGetRunnerRegistrationToken { org }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Get a particular runner that belongs to the organization
+    ///
+    /// - `org`: name of the organization
+    /// - `runner_id`: ID of the runner
+    pub fn get_org_runner(
+        &self,
+        org: &str,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::GetOrgRunner<'_>, ActionRunner> {
+        endpoints::GetOrgRunner { org, runner_id }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Delete a particular runner that belongs to the organization
+    ///
+    /// - `org`: name of the organization
+    /// - `runner_id`: ID of the runner
+    pub fn delete_org_runner(
+        &self,
+        org: &str,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::DeleteOrgRunner<'_>, ()> {
+        endpoints::DeleteOrgRunner { org, runner_id }
             .make_request()
             .wrap::<_, _>(self)
     }
@@ -1741,6 +1864,42 @@ impl crate::Forgejo {
         .wrap::<_, _>(self)
     }
 
+    /// Get runners belonging to the repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub fn get_repo_runners(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: GetRepoRunnersQuery,
+    ) -> Request<'_, endpoints::GetRepoRunners<'_>, (ActionRunnerListHeaders, Vec<ActionRunner>)>
+    {
+        endpoints::GetRepoRunners { owner, repo, query }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Register a new repository-level runner
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `body`: See [`RegisterRunnerOptions`]
+    pub fn register_repo_runner(
+        &self,
+        owner: &str,
+        repo: &str,
+        body: RegisterRunnerOptions,
+    ) -> Request<'_, endpoints::RegisterRepoRunner<'_>, RegisterRunnerResponse> {
+        endpoints::RegisterRepoRunner {
+            owner,
+            repo,
+            body: body,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
     /// Search for repository's action jobs according filter conditions
     ///
     /// - `owner`: owner of the repo
@@ -1756,7 +1915,7 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
-    /// Get a repository's actions runner registration token
+    /// Get a repository's runner registration token
     ///
     /// - `owner`: owner of the repo
     /// - `repo`: name of the repo
@@ -1768,6 +1927,46 @@ impl crate::Forgejo {
         endpoints::RepoGetRunnerRegistrationToken { owner, repo }
             .make_request()
             .wrap::<_, _>(self)
+    }
+
+    /// Get a particular runner that belongs to the repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `runner_id`: ID of the runner
+    pub fn get_repo_runner(
+        &self,
+        owner: &str,
+        repo: &str,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::GetRepoRunner<'_>, ActionRunner> {
+        endpoints::GetRepoRunner {
+            owner,
+            repo,
+            runner_id,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// Delete a particular runner that belongs to a repository
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `runner_id`: ID of the runner
+    pub fn delete_repo_runner(
+        &self,
+        owner: &str,
+        repo: &str,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::DeleteRepoRunner<'_>, ()> {
+        endpoints::DeleteRepoRunner {
+            owner,
+            repo,
+            runner_id,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
     }
 
     /// List a repository's action runs
@@ -1870,8 +2069,9 @@ impl crate::Forgejo {
         &self,
         owner: &str,
         repo: &str,
+        query: ListActionTasksQuery,
     ) -> Request<'_, endpoints::ListActionTasks<'_>, ActionTaskResponse> {
-        endpoints::ListActionTasks { owner, repo }
+        endpoints::ListActionTasks { owner, repo, query }
             .make_request()
             .wrap::<_, _>(self)
     }
@@ -6601,6 +6801,29 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
+    /// Get the user's runners
+    ///
+    pub fn get_user_runners(
+        &self,
+        query: GetUserRunnersQuery,
+    ) -> Request<'_, endpoints::GetUserRunners, (ActionRunnerListHeaders, Vec<ActionRunner>)> {
+        endpoints::GetUserRunners { query }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Register a new user-level runner
+    ///
+    /// - `body`: See [`RegisterRunnerOptions`]
+    pub fn register_user_runner(
+        &self,
+        body: RegisterRunnerOptions,
+    ) -> Request<'_, endpoints::RegisterUserRunner, RegisterRunnerResponse> {
+        endpoints::RegisterUserRunner { body: body }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
     /// Search for user's action jobs according filter conditions
     ///
     pub fn user_search_run_jobs(
@@ -6612,11 +6835,35 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
-    /// Get an user's actions runner registration token
+    /// Get the user's runner registration token
     pub fn user_get_runner_registration_token(
         &self,
     ) -> Request<'_, endpoints::UserGetRunnerRegistrationToken, RegistrationToken> {
         endpoints::UserGetRunnerRegistrationToken {}
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Get a particular runner that belongs to the user
+    ///
+    /// - `runner_id`: ID of the runner
+    pub fn get_user_runner(
+        &self,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::GetUserRunner<'_>, ActionRunner> {
+        endpoints::GetUserRunner { runner_id }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Delete a particular user-level runner
+    ///
+    /// - `runner_id`: ID of the runner
+    pub fn delete_user_runner(
+        &self,
+        runner_id: &str,
+    ) -> Request<'_, endpoints::DeleteUserRunner<'_>, ()> {
+        endpoints::DeleteUserRunner { runner_id }
             .make_request()
             .wrap::<_, _>(self)
     }

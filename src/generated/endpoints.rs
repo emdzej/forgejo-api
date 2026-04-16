@@ -363,6 +363,193 @@ impl Endpoint for ActivitypubPersonFeed {
     }
 }
 
+pub struct GetAdminRunners {
+    pub query: GetAdminRunnersQuery,
+}
+
+impl Sealed for GetAdminRunners {}
+impl Endpoint for GetAdminRunners {
+    type Response = (ActionRunnerListHeaders, Vec<ActionRunner>);
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: "/api/v1/admin/actions/runners".into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RegisterAdminRunner {
+    pub body: RegisterRunnerOptions,
+}
+
+impl Sealed for RegisterAdminRunner {}
+impl Endpoint for RegisterAdminRunner {
+    type Response = RegisterRunnerResponse;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: "/api/v1/admin/actions/runners".into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct AdminGetActionRunJobs {
+    pub query: AdminGetActionRunJobsQuery,
+}
+
+impl Sealed for AdminGetActionRunJobs {}
+impl Endpoint for AdminGetActionRunJobs {
+    type Response = Vec<ActionRunJob>;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: "/api/v1/admin/actions/runners/jobs".into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct AdminGetRunnerRegistrationToken {}
+
+impl Sealed for AdminGetRunnerRegistrationToken {}
+impl Endpoint for AdminGetRunnerRegistrationToken {
+    type Response = RegistrationToken;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: "/api/v1/admin/actions/runners/registration-token".into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct GetAdminRunner<'a> {
+    pub runner_id: &'a str,
+}
+
+impl Sealed for GetAdminRunner<'_> {}
+impl Endpoint for GetAdminRunner<'_> {
+    type Response = ActionRunner;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/admin/actions/runners/{runner_id}",
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct DeleteAdminRunner<'a> {
+    pub runner_id: &'a str,
+}
+
+impl Sealed for DeleteAdminRunner<'_> {}
+impl Endpoint for DeleteAdminRunner<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!(
+                "/api/v1/admin/actions/runners/{runner_id}",
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct AdminCronList {}
 
 impl Sealed for AdminCronList {}
@@ -1171,10 +1358,10 @@ impl Endpoint for AdminSearchRunJobs {
     }
 }
 
-pub struct AdminGetRunnerRegistrationToken {}
+pub struct AdminGetRegistrationToken {}
 
-impl Sealed for AdminGetRunnerRegistrationToken {}
-impl Endpoint for AdminGetRunnerRegistrationToken {
+impl Sealed for AdminGetRegistrationToken {}
+impl Endpoint for AdminGetRegistrationToken {
     type Response = RegistrationToken;
     fn make_request(self) -> RawRequest {
         RawRequest {
@@ -2406,6 +2593,80 @@ impl Endpoint for OrgEdit<'_> {
     }
 }
 
+pub struct GetOrgRunners<'a> {
+    pub org: &'a str,
+    pub query: GetOrgRunnersQuery,
+}
+
+impl Sealed for GetOrgRunners<'_> {}
+impl Endpoint for GetOrgRunners<'_> {
+    type Response = (ActionRunnerListHeaders, Vec<ActionRunner>);
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/orgs/{org}/actions/runners",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RegisterOrgRunner<'a> {
+    pub org: &'a str,
+    pub body: RegisterRunnerOptions,
+}
+
+impl Sealed for RegisterOrgRunner<'_> {}
+impl Endpoint for RegisterOrgRunner<'_> {
+    type Response = RegisterRunnerResponse;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/orgs/{org}/actions/runners",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct OrgSearchRunJobs<'a> {
     pub org: &'a str,
     pub query: OrgSearchRunJobsQuery,
@@ -2465,6 +2726,78 @@ impl Endpoint for OrgGetRunnerRegistrationToken<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct GetOrgRunner<'a> {
+    pub org: &'a str,
+    pub runner_id: &'a str,
+}
+
+impl Sealed for GetOrgRunner<'_> {}
+impl Endpoint for GetOrgRunner<'_> {
+    type Response = ActionRunner;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/orgs/{org}/actions/runners/{runner_id}",
+                org = urlencoding::encode(self.org),
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct DeleteOrgRunner<'a> {
+    pub org: &'a str,
+    pub runner_id: &'a str,
+}
+
+impl Sealed for DeleteOrgRunner<'_> {}
+impl Endpoint for DeleteOrgRunner<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!(
+                "/api/v1/orgs/{org}/actions/runners/{runner_id}",
+                org = urlencoding::encode(self.org),
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4402,6 +4735,84 @@ impl Endpoint for RepoEdit<'_> {
     }
 }
 
+pub struct GetRepoRunners<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub query: GetRepoRunnersQuery,
+}
+
+impl Sealed for GetRepoRunners<'_> {}
+impl Endpoint for GetRepoRunners<'_> {
+    type Response = (ActionRunnerListHeaders, Vec<ActionRunner>);
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/actions/runners",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RegisterRepoRunner<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub body: RegisterRunnerOptions,
+}
+
+impl Sealed for RegisterRepoRunner<'_> {}
+impl Endpoint for RegisterRepoRunner<'_> {
+    type Response = RegisterRunnerResponse;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/actions/runners",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct RepoSearchRunJobs<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
@@ -4465,6 +4876,82 @@ impl Endpoint for RepoGetRunnerRegistrationToken<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct GetRepoRunner<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub runner_id: &'a str,
+}
+
+impl Sealed for GetRepoRunner<'_> {}
+impl Endpoint for GetRepoRunner<'_> {
+    type Response = ActionRunner;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/actions/runners/{runner_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct DeleteRepoRunner<'a> {
+    pub owner: &'a str,
+    pub repo: &'a str,
+    pub runner_id: &'a str,
+}
+
+impl Sealed for DeleteRepoRunner<'_> {}
+impl Endpoint for DeleteRepoRunner<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!(
+                "/api/v1/repos/{owner}/{repo}/actions/runners/{runner_id}",
+                owner = urlencoding::encode(self.owner),
+                repo = urlencoding::encode(self.repo),
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -4667,6 +5154,7 @@ impl Endpoint for DeleteRepoSecret<'_> {
 pub struct ListActionTasks<'a> {
     pub owner: &'a str,
     pub repo: &'a str,
+    pub query: ListActionTasksQuery,
 }
 
 impl Sealed for ListActionTasks<'_> {}
@@ -4681,7 +5169,7 @@ impl Endpoint for ListActionTasks<'_> {
                 repo = urlencoding::encode(self.repo)
             )
             .into(),
-            query: None,
+            query: Some(self.query.into_list()),
             body: RequestBody::None,
             page: None,
             limit: None,
@@ -7500,6 +7988,7 @@ impl Endpoint for IssueListIssues<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -9636,7 +10125,9 @@ impl Endpoint for IssueTrackedTimes<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -10543,6 +11034,7 @@ impl Endpoint for RepoListPullRequests<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
@@ -11021,6 +11513,7 @@ impl Endpoint for RepoCreatePullReviewRequests<'_> {
     fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
         match response.status_code.as_u16() {
             201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
             422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
@@ -13166,6 +13659,7 @@ impl Endpoint for RepoListTeams<'_> {
         match response.status_code.as_u16() {
             200 => Ok((response, true)),
             404 => Err(json_error::<APINotFound>(&response)),
+            405 => Err(json_error::<APIError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -13320,6 +13814,7 @@ impl Endpoint for RepoTrackedTimes<'_> {
             400 => Err(json_error::<APIError>(&response)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
             404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
@@ -14552,6 +15047,71 @@ impl Endpoint for UserGetCurrent {
     }
 }
 
+pub struct GetUserRunners {
+    pub query: GetUserRunnersQuery,
+}
+
+impl Sealed for GetUserRunners {}
+impl Endpoint for GetUserRunners {
+    type Response = (ActionRunnerListHeaders, Vec<ActionRunner>);
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: "/api/v1/user/actions/runners".into(),
+            query: Some(self.query.into_list()),
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct RegisterUserRunner {
+    pub body: RegisterRunnerOptions,
+}
+
+impl Sealed for RegisterUserRunner {}
+impl Endpoint for RegisterUserRunner {
+    type Response = RegisterRunnerResponse;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: "/api/v1/user/actions/runners".into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct UserSearchRunJobs {
     pub query: UserSearchRunJobsQuery,
 }
@@ -14603,6 +15163,76 @@ impl Endpoint for UserGetRunnerRegistrationToken {
             200 => Ok((response, true)),
             401 => Err(json_error::<APIUnauthorizedError>(&response)),
             403 => Err(json_error::<APIForbiddenError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct GetUserRunner<'a> {
+    pub runner_id: &'a str,
+}
+
+impl Sealed for GetUserRunner<'_> {}
+impl Endpoint for GetUserRunner<'_> {
+    type Response = ActionRunner;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/user/actions/runners/{runner_id}",
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct DeleteUserRunner<'a> {
+    pub runner_id: &'a str,
+}
+
+impl Sealed for DeleteUserRunner<'_> {}
+impl Endpoint for DeleteUserRunner<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!(
+                "/api/v1/user/actions/runners/{runner_id}",
+                runner_id = urlencoding::encode(self.runner_id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            400 => Err(json_error::<APIError>(&response)),
+            401 => Err(json_error::<APIUnauthorizedError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
             _ => Err(ForgejoError::UnexpectedStatusCode(
                 response.status_code.clone(),
             )),
