@@ -665,8 +665,7 @@ pub struct CommitStatus {
     pub description: Option<String>,
     pub id: Option<i64>,
     pub status: Option<CommitStatusState>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub target_url: Option<url::Url>,
+    pub target_url: Option<String>,
     #[serde(with = "time::serde::rfc3339::option")]
     pub updated_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
@@ -1157,8 +1156,7 @@ pub struct CreateStatusOption {
     pub context: Option<String>,
     pub description: Option<String>,
     pub state: Option<CommitStatusState>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
-    pub target_url: Option<url::Url>,
+    pub target_url: Option<String>,
 }
 
 /// CreateTagOption options when creating a tag
