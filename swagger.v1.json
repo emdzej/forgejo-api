@@ -21296,7 +21296,6 @@
         },
         "target_url": {
           "type": "string",
-          "format": "url",
           "x-go-name": "TargetURL"
         },
         "updated_at": {
@@ -22364,7 +22363,6 @@
         },
         "target_url": {
           "type": "string",
-          "format": "url",
           "x-go-name": "TargetURL"
         }
       },

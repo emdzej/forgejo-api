@@ -869,6 +869,30 @@ fn ssh_url_deserialization() {
     assert!(null_url_de.url.is_none());
 }
 
+// Regression: Forgejo in-house Actions emit server-relative target_url
+// like "/owner/repo/actions/runs/N/jobs/M". CommitStatus.target_url is
+// kept as a plain String (no "format": "url" in the spec) so callers can
+// access either an absolute or relative value.
+#[test]
+fn commit_status_relative_target_url_deserializes() {
+    let payload = r#"{
+        "context": "ci/build",
+        "created_at": null,
+        "creator": null,
+        "description": "",
+        "id": 1,
+        "status": "pending",
+        "target_url": "/owner/repo/actions/runs/187/jobs/0",
+        "updated_at": null,
+        "url": "https://example.com/api/v1/repos/owner/repo/statuses/abc"
+    }"#;
+    let cs: structs::CommitStatus = serde_json::from_str(payload).unwrap();
+    assert_eq!(
+        cs.target_url.as_deref(),
+        Some("/owner/repo/actions/runs/187/jobs/0")
+    );
+}
+
 impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {
     fn from(value: structs::DefaultMergeStyle) -> Self {
         match value {
