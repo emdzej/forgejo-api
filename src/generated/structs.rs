@@ -69,7 +69,14 @@ pub struct APIValidationError {
 impl_from_response!(APIValidationError);
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct APRemoteFollowOption {
+    pub target: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub created_at: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub name: Option<String>,
     /// Indicates that an access token only has access to the specified repositories.  Will be null if the access token
@@ -82,6 +89,31 @@ pub struct AccessToken {
 }
 
 impl_from_response!(AccessToken);
+
+/// ActionArtifact represents an artifact of a workflow run
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionArtifact {
+    /// the URL to download the artifact zip archive
+    pub archive_download_url: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub created_at: Option<time::OffsetDateTime>,
+    /// whether the artifact has expired
+    pub expired: Option<bool>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub expires_at: Option<time::OffsetDateTime>,
+    /// the artifact's ID
+    pub id: Option<i64>,
+    /// the artifact's name
+    pub name: Option<String>,
+    /// the ID of the workflow run that produced this artifact
+    pub run_id: Option<i64>,
+    /// the total size of the artifact in bytes
+    pub size_in_bytes: Option<i64>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub updated_at: Option<time::OffsetDateTime>,
+}
+
+impl_from_response!(ActionArtifact);
 
 /// ActionRun represents an action run
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -156,6 +188,8 @@ pub struct ActionRunJob {
     pub owner_id: Option<i64>,
     /// the repository id
     pub repo_id: Option<i64>,
+    /// Identifier of the workflow run this job belongs to.
+    pub run_id: Option<i64>,
     /// the action run job labels to run on
     pub runs_on: Option<Vec<String>>,
     /// the action run job status
@@ -520,6 +554,8 @@ pub struct ChangeFilesOptions {
     pub dates: Option<CommitDateOptions>,
     /// list of file operations
     pub files: Vec<ChangeFileOperation>,
+    /// (optional) will do a force-push if the new branch already exists
+    pub force_overwrite_new_branch: Option<bool>,
     /// message (optional) for the commit of this file. if not supplied, a default message will be used
     pub message: Option<String>,
     /// new_branch (optional) will make a new branch from `branch` before creating the file
@@ -676,7 +712,7 @@ impl_from_response!(CommitStatus);
 
 /// CommitStatusState holds the state of a CommitStatus
 ///
-/// It can be "pending", "success", "error", "failure" and "warning"
+/// It can be "pending", "success", "error", "failure", "warning", or "skipped"
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CommitStatusState {
@@ -690,6 +726,8 @@ pub enum CommitStatusState {
     Failure,
     #[serde(rename = "warning")]
     Warning,
+    #[serde(rename = "skipped")]
+    Skipped,
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitUser {
@@ -816,6 +854,8 @@ pub struct CreateFileOptions {
     /// content must be base64 encoded
     pub content: String,
     pub dates: Option<CommitDateOptions>,
+    /// (optional) will do a force-push if the new branch already exists
+    pub force_overwrite_new_branch: Option<bool>,
     /// message (optional) for the commit of this file. if not supplied, a default message will be used
     pub message: Option<String>,
     /// new_branch (optional) will make a new branch from `branch` before creating the file
@@ -1016,6 +1056,8 @@ pub struct CreatePullRequestOption {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreatePullReviewComment {
     pub body: Option<String>,
+    /// number of additional lines after the commented line (0 = single line comment)
+    pub extra_lines_count: Option<i64>,
     /// if comment to new file line or 0
     pub new_position: Option<i64>,
     /// if comment to old file line or 0
@@ -1118,7 +1160,7 @@ pub struct CreateRepoOption {
     pub default_branch: Option<String>,
     /// Description of the repository to create
     pub description: Option<String>,
-    /// Gitignores to use
+    /// Gitignores to use, separated by commas
     pub gitignores: Option<String>,
     /// Label-Set to use
     pub issue_labels: Option<String>,
@@ -1281,6 +1323,8 @@ pub struct DeleteFileOptions {
     pub branch: Option<String>,
     pub committer: Option<Identity>,
     pub dates: Option<CommitDateOptions>,
+    /// (optional) will do a force-push if the new branch already exists
+    pub force_overwrite_new_branch: Option<bool>,
     /// message (optional) for the commit of this file. if not supplied, a default message will be used
     pub message: Option<String>,
     /// new_branch (optional) will make a new branch from `branch` before creating the file
@@ -2159,31 +2203,15 @@ impl_from_response!(ListActionRunResponse);
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct MarkdownOption {
     /// Context to render
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Context")]
     pub context: Option<String>,
     /// Mode to render (comment, gfm, markdown)
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Mode")]
     pub mode: Option<String>,
     /// Text markdown to render
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Text")]
     pub text: Option<String>,
     /// Is it a wiki page ?
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Wiki")]
     pub wiki: Option<bool>,
 }
@@ -2192,45 +2220,21 @@ pub struct MarkdownOption {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct MarkupOption {
     /// The current branch path where the form gets posted
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "BranchPath")]
     pub branch_path: Option<String>,
     /// Context to render
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Context")]
     pub context: Option<String>,
     /// File path for detecting extension in file mode
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "FilePath")]
     pub file_path: Option<String>,
     /// Mode to render (comment, gfm, markdown, file)
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Mode")]
     pub mode: Option<String>,
     /// Text markup to render
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Text")]
     pub text: Option<String>,
     /// Is it a wiki page ?
-    ///
-    ///
-    ///
-    /// in: body
     #[serde(rename = "Wiki")]
     pub wiki: Option<bool>,
 }
@@ -2492,6 +2496,8 @@ pub enum ObjectFormatName {
 pub struct Organization {
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub avatar_url: Option<url::Url>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub created: Option<time::OffsetDateTime>,
     pub description: Option<String>,
     pub email: Option<String>,
     pub full_name: Option<String>,
@@ -2620,9 +2626,12 @@ pub struct PublicKey {
     pub key_type: Option<String>,
     pub read_only: Option<bool>,
     pub title: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub updated_at: Option<time::OffsetDateTime>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub url: Option<url::Url>,
     pub user: Option<User>,
+    pub verified: Option<bool>,
 }
 
 impl_from_response!(PublicKey);
@@ -2727,6 +2736,8 @@ pub struct PullReviewComment {
     #[serde(with = "time::serde::rfc3339::option")]
     pub created_at: Option<time::OffsetDateTime>,
     pub diff_hunk: Option<String>,
+    /// number of additional lines after the commented line (0 = single line comment)
+    pub extra_lines_count: Option<i64>,
     #[serde(deserialize_with = "crate::none_if_blank_url")]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
@@ -3413,6 +3424,8 @@ pub struct UpdateFileOptions {
     /// content must be base64 encoded
     pub content: String,
     pub dates: Option<CommitDateOptions>,
+    /// (optional) will do a force-push if the new branch already exists
+    pub force_overwrite_new_branch: Option<bool>,
     /// from_path (optional) is the path of the original file which will be moved/renamed to the path in the URL
     pub from_path: Option<String>,
     /// message (optional) for the commit of this file. if not supplied, a default message will be used
@@ -4951,6 +4964,8 @@ pub struct AdminSearchUsersQuery {
     pub source_id: Option<i64>,
     /// user's login name to search for
     pub login_name: Option<String>,
+    /// whether or not to filter users with the 2fa enabled
+    pub is_2fa_enabled: Option<bool>,
     /// sort order of results
     pub sort: Option<AdminSearchUsersQuerySort>,
 }
@@ -4963,6 +4978,9 @@ impl AdminSearchUsersQuery {
         }
         if let Some(login_name) = self.login_name {
             list.push(("login_name", login_name));
+        }
+        if let Some(is_2fa_enabled) = self.is_2fa_enabled {
+            list.push(("is_2fa_enabled", is_2fa_enabled.to_string()));
         }
         if let Some(sort) = self.sort {
             list.push(("sort", sort.as_str().to_string()));
@@ -5572,7 +5590,7 @@ pub struct RepoSearchQuery {
     pub private: Option<bool>,
     /// show only public, private or all repositories (defaults to all)
     pub is_private: Option<bool>,
-    /// include template repositories this user has access to (defaults to true)
+    /// show only template, non-template or all repositories (defaults to all)
     pub template: Option<bool>,
     /// show only archived, non-archived or all repositories (defaults to all)
     pub archived: Option<bool>,
@@ -5693,6 +5711,40 @@ impl RepoSearchQueryOrder {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ListActionArtifactsQuery {
+    /// filter by artifact name
+    pub name: Option<String>,
+}
+
+impl ListActionArtifactsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(name) = self.name {
+            list.push(("name", name));
+        }
+
+        list
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RepoGetActionJobLogsQuery {
+    /// 1-based attempt number matching the value of `attempt` in the job listing; omit to fetch the latest attempt of the job
+    pub attempt: Option<i64>,
+}
+
+impl RepoGetActionJobLogsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(attempt) = self.attempt {
+            list.push(("attempt", attempt.to_string()));
+        }
+
+        list
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct GetRepoRunnersQuery {
     /// whether to include all visible runners (true) or only those that are directly owned by the repository (false)
@@ -5821,6 +5873,23 @@ impl ListActionRunsQueryStatus {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ListActionRunArtifactsQuery {
+    /// filter by artifact name
+    pub name: Option<String>,
+}
+
+impl ListActionRunArtifactsQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(name) = self.name {
+            list.push(("name", name));
+        }
+
+        list
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct ListActionTasksQuery {
     /// Returns workflow tasks with the check run status or conclusion that is specified.
@@ -6732,6 +6801,10 @@ pub struct RepoListPullRequestsQuery {
     pub labels: Option<Vec<i64>>,
     /// Filter by pull request author
     pub poster: Option<String>,
+    /// Filter by base branch name
+    pub base: Option<String>,
+    /// Filter by head branch name
+    pub head: Option<String>,
 }
 
 impl RepoListPullRequestsQuery {
@@ -6755,6 +6828,12 @@ impl RepoListPullRequestsQuery {
         }
         if let Some(poster) = self.poster {
             list.push(("poster", poster));
+        }
+        if let Some(base) = self.base {
+            list.push(("base", base));
+        }
+        if let Some(head) = self.head {
+            list.push(("head", head));
         }
 
         list

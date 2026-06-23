@@ -6,6 +6,13 @@ use bytes::Bytes;
 use std::collections::BTreeMap;
 
 impl crate::sync::Forgejo {
+    /// Get a workflow run associated with a token
+    pub fn get_actions_run(&self) -> crate::sync::Request<'_, endpoints::GetActionsRun, ActionRun> {
+        endpoints::GetActionsRun {}
+            .make_request()
+            .wrap_sync::<_, _>(self)
+    }
+
     /// Returns the instance's Actor
     pub fn activitypub_instance_actor(
         &self,
@@ -780,6 +787,53 @@ impl crate::sync::Forgejo {
         }
         .make_request()
         .wrap_sync::<_, _>(self)
+    }
+
+    /// List the specified user's access tokens
+    ///
+    /// - `username`: username of user
+    pub fn admin_list_user_access_tokens(
+        &self,
+        username: &str,
+    ) -> crate::sync::Request<
+        '_,
+        endpoints::AdminListUserAccessTokens<'_>,
+        (AccessTokenListHeaders, Vec<AccessToken>),
+    > {
+        endpoints::AdminListUserAccessTokens { username }
+            .make_request()
+            .wrap_sync::<_, _>(self)
+    }
+
+    /// Create an access token for the specified user
+    ///
+    /// - `username`: username of user
+    /// - `body`: See [`CreateAccessTokenOption`]
+    pub fn admin_create_user_access_token(
+        &self,
+        username: &str,
+        body: CreateAccessTokenOption,
+    ) -> crate::sync::Request<'_, endpoints::AdminCreateUserAccessToken<'_>, AccessToken> {
+        endpoints::AdminCreateUserAccessToken {
+            username,
+            body: body,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// Delete an access token for the specified user
+    ///
+    /// - `username`: username of user
+    /// - `token`: token to be deleted, identified by ID and if not available by name
+    pub fn admin_delete_user_access_token(
+        &self,
+        username: &str,
+        token: &str,
+    ) -> crate::sync::Request<'_, endpoints::AdminDeleteUserAccessToken<'_>, ()> {
+        endpoints::AdminDeleteUserAccessToken { username, token }
+            .make_request()
+            .wrap_sync::<_, _>(self)
     }
 
     /// Returns a list of all gitignore templates
@@ -1942,6 +1996,103 @@ impl crate::sync::Forgejo {
         .wrap_sync::<_, _>(self)
     }
 
+    /// List a repository's artifacts
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    pub fn list_action_artifacts(
+        &self,
+        owner: &str,
+        repo: &str,
+        query: ListActionArtifactsQuery,
+    ) -> crate::sync::Request<'_, endpoints::ListActionArtifacts<'_>, Vec<ActionArtifact>> {
+        endpoints::ListActionArtifacts { owner, repo, query }
+            .make_request()
+            .wrap_sync::<_, _>(self)
+    }
+
+    /// Get an artifact by ID
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `artifact_id`: ID of the artifact
+    pub fn get_action_artifact(
+        &self,
+        owner: &str,
+        repo: &str,
+        artifact_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::GetActionArtifact<'_>, ActionArtifact> {
+        endpoints::GetActionArtifact {
+            owner,
+            repo,
+            artifact_id,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// Mark an artifact for deletion
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `artifact_id`: ID of the artifact
+    pub fn delete_action_artifact(
+        &self,
+        owner: &str,
+        repo: &str,
+        artifact_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::DeleteActionArtifact<'_>, ()> {
+        endpoints::DeleteActionArtifact {
+            owner,
+            repo,
+            artifact_id,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// Download an artifact
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `artifact_id`: ID of the artifact
+    pub fn download_action_artifact(
+        &self,
+        owner: &str,
+        repo: &str,
+        artifact_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::DownloadActionArtifact<'_>, Bytes> {
+        endpoints::DownloadActionArtifact {
+            owner,
+            repo,
+            artifact_id,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// Download the plaintext logs of an action job
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `job_id`: ID of the workflow job
+    pub fn repo_get_action_job_logs(
+        &self,
+        owner: &str,
+        repo: &str,
+        job_id: i64,
+        query: RepoGetActionJobLogsQuery,
+    ) -> crate::sync::Request<'_, endpoints::RepoGetActionJobLogs<'_>, String> {
+        endpoints::RepoGetActionJobLogs {
+            owner,
+            repo,
+            job_id,
+            query,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
     /// Get runners belonging to the repository
     ///
     /// - `owner`: owner of the repo
@@ -2078,6 +2229,109 @@ impl crate::sync::Forgejo {
         run_id: i64,
     ) -> crate::sync::Request<'_, endpoints::GetActionRun<'_>, ActionRun> {
         endpoints::GetActionRun {
+            owner,
+            repo,
+            run_id,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// Delete a completed workflow run.
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `run_id`: id of the action run
+    pub fn delete_action_run(
+        &self,
+        owner: &str,
+        repo: &str,
+        run_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::DeleteActionRun<'_>, ()> {
+        endpoints::DeleteActionRun {
+            owner,
+            repo,
+            run_id,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// List artifacts of a workflow run
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `run_id`: ID of the workflow run
+    pub fn list_action_run_artifacts(
+        &self,
+        owner: &str,
+        repo: &str,
+        run_id: i64,
+        query: ListActionRunArtifactsQuery,
+    ) -> crate::sync::Request<'_, endpoints::ListActionRunArtifacts<'_>, Vec<ActionArtifact>> {
+        endpoints::ListActionRunArtifacts {
+            owner,
+            repo,
+            run_id,
+            query,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// Cancel a pending or running workflow run.
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `run_id`: ID of the workflow run
+    pub fn cancel_action_run(
+        &self,
+        owner: &str,
+        repo: &str,
+        run_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::CancelActionRun<'_>, ()> {
+        endpoints::CancelActionRun {
+            owner,
+            repo,
+            run_id,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// List jobs of a workflow run
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `run_id`: ID of the workflow run
+    pub fn list_action_run_jobs(
+        &self,
+        owner: &str,
+        repo: &str,
+        run_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::ListActionRunJobs<'_>, Vec<ActionRunJob>> {
+        endpoints::ListActionRunJobs {
+            owner,
+            repo,
+            run_id,
+        }
+        .make_request()
+        .wrap_sync::<_, _>(self)
+    }
+
+    /// Download a ZIP of plaintext logs for every job in an action run
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `run_id`: ID of the workflow run. The ZIP contains the latest attempt of each job in the run, with each entry named `{job-name}-{job-id}-attempt-{N}.log` (the job ID prevents collisions when two jobs share a name; the attempt number records which run the log came from). The run itself has no attempt number — jobs are re-run independently, so use the per-job logs endpoint with `?attempt` to fetch a specific historical attempt of one job.
+
+    pub fn repo_get_action_run_logs(
+        &self,
+        owner: &str,
+        repo: &str,
+        run_id: i64,
+    ) -> crate::sync::Request<'_, endpoints::RepoGetActionRunLogs<'_>, Bytes> {
+        endpoints::RepoGetActionRunLogs {
             owner,
             repo,
             run_id,
@@ -7140,6 +7394,18 @@ impl crate::sync::Forgejo {
         variablename: &str,
     ) -> crate::sync::Request<'_, endpoints::DeleteUserVariable<'_>, ()> {
         endpoints::DeleteUserVariable { variablename }
+            .make_request()
+            .wrap_sync::<_, _>(self)
+    }
+
+    /// Follow a remote activitypub account
+    ///
+    /// - `body`: See [`APRemoteFollowOption`]
+    pub fn user_current_activity_pub_follow(
+        &self,
+        body: APRemoteFollowOption,
+    ) -> crate::sync::Request<'_, endpoints::UserCurrentActivityPubFollow, ()> {
+        endpoints::UserCurrentActivityPubFollow { body: body }
             .make_request()
             .wrap_sync::<_, _>(self)
     }
