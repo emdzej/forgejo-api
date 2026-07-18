@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct APIError {
     pub message: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -75,7 +75,7 @@ pub struct APRemoteFollowOption {
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AccessToken {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub name: Option<String>,
@@ -95,11 +95,11 @@ impl_from_response!(AccessToken);
 pub struct ActionArtifact {
     /// the URL to download the artifact zip archive
     pub archive_download_url: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     /// whether the artifact has expired
     pub expired: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub expires_at: Option<time::OffsetDateTime>,
     /// the artifact's ID
     pub id: Option<i64>,
@@ -109,7 +109,7 @@ pub struct ActionArtifact {
     pub run_id: Option<i64>,
     /// the total size of the artifact in bytes
     pub size_in_bytes: Option<i64>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
@@ -125,7 +125,7 @@ pub struct ActionRun {
     pub approved_by: Option<i64>,
     /// the commit sha the action run ran on
     pub commit_sha: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// when the action run was created
     pub created: Option<time::OffsetDateTime>,
     pub duration: Option<i64>,
@@ -133,7 +133,7 @@ pub struct ActionRun {
     pub event: Option<String>,
     /// the payload of the webhook event that causes the workflow to run
     pub event_payload: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// the url of this action run
     pub html_url: Option<url::Url>,
     /// the action run id
@@ -149,12 +149,12 @@ pub struct ActionRun {
     /// the commit/tag/… the action run ran on
     pub prettyref: Option<String>,
     pub repository: Option<Repository>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// when the action run was started
     pub started: Option<time::OffsetDateTime>,
     /// the current status of this run
     pub status: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// when the action run was stopped
     pub stopped: Option<time::OffsetDateTime>,
     /// the action run's title
@@ -162,7 +162,7 @@ pub struct ActionRun {
     /// the trigger event defined in the `on` configuration of the triggered workflow
     pub trigger_event: Option<String>,
     pub trigger_user: Option<User>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// when the action run was last updated
     pub updated: Option<time::OffsetDateTime>,
     /// the name of workflow file
@@ -245,7 +245,7 @@ pub enum ActionRunnerStatus {
 /// ActionTask represents a ActionTask
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ActionTask {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub display_title: Option<String>,
     pub event: Option<String>,
@@ -254,12 +254,12 @@ pub struct ActionTask {
     pub id: Option<i64>,
     pub name: Option<String>,
     pub run_number: Option<i64>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub run_started_at: Option<time::OffsetDateTime>,
     pub status: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub workflow_id: Option<String>,
 }
@@ -295,7 +295,7 @@ pub struct Activity {
     pub comment: Option<Comment>,
     pub comment_id: Option<i64>,
     pub content: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub is_private: Option<bool>,
@@ -395,7 +395,7 @@ pub enum AddCollaboratorOptionPermission {
 /// AddTimeOption options for adding time to an issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct AddTimeOption {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     /// time in seconds
     pub time: i64,
@@ -412,7 +412,7 @@ pub struct AnnotatedTag {
     pub sha: Option<String>,
     pub tag: Option<String>,
     pub tagger: Option<CommitUser>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub verification: Option<PayloadCommitVerification>,
 }
@@ -425,16 +425,16 @@ pub struct AnnotatedTagObject {
     pub sha: Option<String>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
 /// Attachment a generic attachment
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Attachment {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub browser_download_url: Option<url::Url>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub download_count: Option<i64>,
     pub id: Option<i64>,
@@ -457,7 +457,7 @@ pub enum AttachmentType {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct BlockedUser {
     pub block_id: Option<i64>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
 }
 
@@ -490,7 +490,7 @@ pub struct BranchProtection {
     pub block_on_rejected_reviews: Option<bool>,
     /// Deprecated: true
     pub branch_name: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub dismiss_stale_approvals: Option<bool>,
     pub enable_approvals_whitelist: Option<bool>,
@@ -510,7 +510,7 @@ pub struct BranchProtection {
     pub rule_name: Option<String>,
     pub status_check_contexts: Option<Vec<String>>,
     pub unprotected_file_patterns: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
@@ -569,14 +569,14 @@ pub struct ChangeFilesOptions {
 pub struct ChangedFile {
     pub additions: Option<i64>,
     pub changes: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub contents_url: Option<url::Url>,
     pub deletions: Option<i64>,
     pub filename: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub previous_filename: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub raw_url: Option<url::Url>,
     pub status: Option<String>,
 }
@@ -586,14 +586,14 @@ impl_from_response!(ChangedFile);
 /// CombinedStatus holds the combined state of several statuses for a single commit
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CombinedStatus {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub commit_url: Option<url::Url>,
     pub repository: Option<Repository>,
     pub sha: Option<String>,
     pub state: Option<CommitStatusState>,
     pub statuses: Option<Vec<CommitStatus>>,
     pub total_count: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -613,25 +613,25 @@ pub struct Comment {
     pub assets: Option<Vec<Attachment>>,
     /// The body of the comment
     pub body: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// The time of the comment's creation
     pub created_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// The HTML URL of the comment
     pub html_url: Option<url::Url>,
     /// The identifier of the comment
     pub id: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// The HTML URL of the issue if the comment is posted on an issue, else empty string
     pub issue_url: Option<url::Url>,
     /// The original author that posted the comment if it was not posted locally, else empty string
     pub original_author: Option<String>,
     /// The ID of the original author that posted the comment if it was not posted locally, else 0
     pub original_author_id: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// The HTML URL of the pull request if the comment is posted on a pull request, else empty string
     pub pull_request_url: Option<url::Url>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// The time of the comment's update
     pub updated_at: Option<time::OffsetDateTime>,
     pub user: Option<User>,
@@ -644,15 +644,15 @@ pub struct Commit {
     pub author: Option<User>,
     pub commit: Option<RepoCommit>,
     pub committer: Option<User>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub files: Option<Vec<CommitAffectedFiles>>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub parents: Option<Vec<CommitMeta>>,
     pub sha: Option<String>,
     pub stats: Option<CommitStats>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -668,18 +668,18 @@ pub struct CommitAffectedFiles {
 /// CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitDateOptions {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub author: Option<time::OffsetDateTime>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub committer: Option<time::OffsetDateTime>,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitMeta {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub sha: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -695,16 +695,16 @@ pub struct CommitStats {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitStatus {
     pub context: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub creator: Option<User>,
     pub description: Option<String>,
     pub id: Option<i64>,
     pub status: Option<CommitStatusState>,
     pub target_url: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -731,7 +731,7 @@ pub enum CommitStatusState {
 }
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CommitUser {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub date: Option<time::OffsetDateTime>,
     pub email: Option<String>,
     pub name: Option<String>,
@@ -753,22 +753,22 @@ pub struct ContentsResponse {
     pub links: Option<FileLinksResponse>,
     /// `content` is populated when `type` is `file`, otherwise null
     pub content: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub download_url: Option<url::Url>,
     /// `encoding` is populated when `type` is `file`, otherwise null
     pub encoding: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub git_url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub last_commit_sha: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub last_commit_when: Option<time::OffsetDateTime>,
     pub name: Option<String>,
     pub path: Option<String>,
     pub sha: Option<String>,
     pub size: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// `submodule_git_url` is populated when `type` is `submodule`, otherwise null
     pub submodule_git_url: Option<url::Url>,
     /// `target` is populated when `type` is `symlink`, otherwise null
@@ -776,7 +776,7 @@ pub struct ContentsResponse {
     /// `type` will be `file`, `dir`, `symlink`, or `submodule`
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -934,7 +934,7 @@ pub struct CreateHookOptionConfig {
 pub struct CreateIssueCommentOption {
     /// The body of the comment
     pub body: String,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// The time of the comment's update, needs admin or repository owner permission
     pub updated_at: Option<time::OffsetDateTime>,
 }
@@ -947,7 +947,7 @@ pub struct CreateIssueOption {
     pub assignees: Option<Vec<String>>,
     pub body: Option<String>,
     pub closed: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_date: Option<time::OffsetDateTime>,
     /// list of label ids
     pub labels: Option<Vec<i64>>,
@@ -983,7 +983,7 @@ pub struct CreateLabelOption {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateMilestoneOption {
     pub description: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_on: Option<time::OffsetDateTime>,
     pub state: Option<CreateMilestoneOptionState>,
     pub title: Option<String>,
@@ -1044,7 +1044,7 @@ pub struct CreatePullRequestOption {
     pub assignees: Option<Vec<String>>,
     pub base: Option<String>,
     pub body: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_date: Option<time::OffsetDateTime>,
     pub head: Option<String>,
     pub labels: Option<Vec<i64>>,
@@ -1241,7 +1241,7 @@ pub enum CreateTeamOptionPermission {
 /// CreateUserOption create user options
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateUserOption {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// For explicitly setting the user creation timestamp. Useful when users are
     ///
     /// migrated from other systems. When omitted, the user's creation timestamp
@@ -1284,9 +1284,9 @@ pub struct CreateWikiPageOptions {
 pub struct Cron {
     pub exec_times: Option<i64>,
     pub name: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub next: Option<time::OffsetDateTime>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub prev: Option<time::OffsetDateTime>,
     pub schedule: Option<String>,
 }
@@ -1338,14 +1338,14 @@ pub struct DeleteFileOptions {
 /// DeleteLabelOption options for deleting a label
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct DeleteLabelsOption {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
 /// DeployKey a deploy key
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct DeployKey {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub fingerprint: Option<String>,
     pub id: Option<i64>,
@@ -1354,7 +1354,7 @@ pub struct DeployKey {
     pub read_only: Option<bool>,
     pub repository: Option<Repository>,
     pub title: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -1395,7 +1395,7 @@ impl_from_response!(DispatchWorkflowRun);
 /// EditAttachmentOptions options for editing attachments
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditAttachmentOptions {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// (Can only be set if existing attachment is of external type)
     pub browser_download_url: Option<url::Url>,
     pub name: Option<String>,
@@ -1457,7 +1457,7 @@ pub struct EditHookOption {
 pub struct EditIssueCommentOption {
     /// The body of the comment
     pub body: String,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     /// The time of the comment's update, needs admin or repository owner permission
     pub updated_at: Option<time::OffsetDateTime>,
 }
@@ -1469,7 +1469,7 @@ pub struct EditIssueOption {
     pub assignee: Option<String>,
     pub assignees: Option<Vec<String>>,
     pub body: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_date: Option<time::OffsetDateTime>,
     pub milestone: Option<i64>,
     #[serde(rename = "ref")]
@@ -1477,7 +1477,7 @@ pub struct EditIssueOption {
     pub state: Option<String>,
     pub title: Option<String>,
     pub unset_due_date: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
@@ -1495,7 +1495,7 @@ pub struct EditLabelOption {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditMilestoneOption {
     pub description: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_on: Option<time::OffsetDateTime>,
     pub state: Option<String>,
     pub title: Option<String>,
@@ -1533,7 +1533,7 @@ pub struct EditPullRequestOption {
     pub assignees: Option<Vec<String>>,
     pub base: Option<String>,
     pub body: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_date: Option<time::OffsetDateTime>,
     pub labels: Option<Vec<i64>>,
     pub milestone: Option<i64>,
@@ -1717,7 +1717,7 @@ pub struct ExternalTracker {
     pub external_tracker_regexp_pattern: Option<String>,
     /// External Issue Tracker Number Format, either `numeric`, `alphanumeric`, or `regexp`
     pub external_tracker_style: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// URL of external issue tracker.
     pub external_tracker_url: Option<url::Url>,
 }
@@ -1725,7 +1725,7 @@ pub struct ExternalTracker {
 /// ExternalWiki represents setting for external wiki
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ExternalWiki {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// URL of external wiki.
     pub external_wiki_url: Option<url::Url>,
 }
@@ -1734,15 +1734,15 @@ pub struct ExternalWiki {
 pub struct FileCommitResponse {
     pub author: Option<CommitUser>,
     pub committer: Option<CommitUser>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub message: Option<String>,
     pub parents: Option<Vec<CommitMeta>>,
     pub sha: Option<String>,
     pub tree: Option<CommitMeta>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -1802,10 +1802,10 @@ pub struct GPGKey {
     pub can_encrypt_comms: Option<bool>,
     pub can_encrypt_storage: Option<bool>,
     pub can_sign: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub emails: Option<Vec<GPGKeyEmail>>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub expires_at: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub key_id: Option<String>,
@@ -1906,7 +1906,7 @@ pub struct GitBlob {
     pub encoding: Option<String>,
     pub sha: Option<String>,
     pub size: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -1921,7 +1921,7 @@ pub struct GitEntry {
     pub size: Option<i64>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -1940,7 +1940,7 @@ pub struct GitObject {
     pub sha: Option<String>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -1952,7 +1952,7 @@ pub struct GitTreeResponse {
     pub total_count: Option<i64>,
     pub tree: Option<Vec<GitEntry>>,
     pub truncated: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -1976,16 +1976,16 @@ pub struct Hook {
     /// Deprecated: use Metadata instead
     pub config: Option<BTreeMap<String, String>>,
     pub content_type: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub events: Option<Vec<String>>,
     pub id: Option<i64>,
     pub metadata: Option<serde_json::Value>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2016,14 +2016,14 @@ pub struct Issue {
     pub assignee: Option<User>,
     pub assignees: Option<Vec<User>>,
     pub body: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub closed_at: Option<time::OffsetDateTime>,
     pub comments: Option<i64>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_date: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub is_locked: Option<bool>,
@@ -2039,9 +2039,9 @@ pub struct Issue {
     pub repository: Option<RepositoryMeta>,
     pub state: Option<StateType>,
     pub title: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub user: Option<User>,
 }
@@ -2060,7 +2060,7 @@ impl_from_response!(IssueConfig);
 pub struct IssueConfigContactLink {
     pub about: Option<String>,
     pub name: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2075,7 +2075,7 @@ impl_from_response!(IssueConfigValidation);
 /// IssueDeadline represents an issue deadline
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueDeadline {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_date: Option<time::OffsetDateTime>,
 }
 
@@ -2112,7 +2112,7 @@ pub struct IssueLabelsOption {
     ///
     /// or a list of strings representing label names
     pub labels: Option<Vec<serde_json::Value>>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
@@ -2149,7 +2149,7 @@ pub struct Label {
     pub id: Option<i64>,
     pub is_archived: Option<bool>,
     pub name: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2173,7 +2173,7 @@ pub struct LicenseTemplateInfo {
     pub implementation: Option<String>,
     pub key: Option<String>,
     pub name: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2184,7 +2184,7 @@ impl_from_response!(LicenseTemplateInfo);
 pub struct LicensesTemplateListEntry {
     pub key: Option<String>,
     pub name: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2322,19 +2322,19 @@ pub enum MigrateRepoOptionsService {
 /// Milestone milestone is a collection of issues on one repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Milestone {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub closed_at: Option<time::OffsetDateTime>,
     pub closed_issues: Option<i64>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub description: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_on: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub open_issues: Option<i64>,
     pub state: Option<StateType>,
     pub title: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
@@ -2425,17 +2425,17 @@ impl_from_response!(NotificationCount);
 /// NotificationSubject contains the notification subject (Issue/Pull/Commit)
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct NotificationSubject {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub latest_comment_html_url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub latest_comment_url: Option<url::Url>,
     pub state: Option<StateType>,
     pub title: Option<String>,
     #[serde(rename = "type")]
     pub r#type: Option<NotifySubjectType>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2447,9 +2447,9 @@ pub struct NotificationThread {
     pub repository: Option<Repository>,
     pub subject: Option<NotificationSubject>,
     pub unread: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2473,7 +2473,7 @@ pub struct OAuth2Application {
     pub client_id: Option<String>,
     pub client_secret: Option<String>,
     pub confidential_client: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub name: Option<String>,
@@ -2494,9 +2494,9 @@ pub enum ObjectFormatName {
 /// Organization represents an organization
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Organization {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub avatar_url: Option<url::Url>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub description: Option<String>,
     pub email: Option<String>,
@@ -2539,10 +2539,10 @@ pub struct PRBranchInfo {
 /// Package represents a package
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Package {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub creator: Option<User>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub name: Option<String>,
@@ -2581,9 +2581,9 @@ pub struct PayloadCommit {
     pub message: Option<String>,
     pub modified: Option<Vec<String>>,
     pub removed: Option<Vec<String>>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub timestamp: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub verification: Option<PayloadCommitVerification>,
 }
@@ -2618,7 +2618,7 @@ pub struct Permission {
 /// PublicKey publickey is a user key to push code to repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PublicKey {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub fingerprint: Option<String>,
     pub id: Option<i64>,
@@ -2626,9 +2626,9 @@ pub struct PublicKey {
     pub key_type: Option<String>,
     pub read_only: Option<bool>,
     pub title: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub user: Option<User>,
     pub verified: Option<bool>,
@@ -2646,20 +2646,20 @@ pub struct PullRequest {
     pub base: Option<PRBranchInfo>,
     pub body: Option<String>,
     pub changed_files: Option<i64>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub closed_at: Option<time::OffsetDateTime>,
     pub comments: Option<i64>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub deletions: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub diff_url: Option<url::Url>,
     pub draft: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub due_date: Option<time::OffsetDateTime>,
     pub flow: Option<i64>,
     pub head: Option<PRBranchInfo>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub is_locked: Option<bool>,
@@ -2668,12 +2668,12 @@ pub struct PullRequest {
     pub merge_commit_sha: Option<String>,
     pub mergeable: Option<bool>,
     pub merged: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub merged_at: Option<time::OffsetDateTime>,
     pub merged_by: Option<User>,
     pub milestone: Option<Milestone>,
     pub number: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub patch_url: Option<url::Url>,
     pub pin_order: Option<i64>,
     #[serde(deserialize_with = "crate::requested_reviewers_ignore_null")]
@@ -2683,9 +2683,9 @@ pub struct PullRequest {
     pub review_comments: Option<i64>,
     pub state: Option<StateType>,
     pub title: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub user: Option<User>,
 }
@@ -2696,10 +2696,10 @@ impl_from_response!(PullRequest);
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PullRequestMeta {
     pub draft: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub merged: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub merged_at: Option<time::OffsetDateTime>,
 }
 
@@ -2710,18 +2710,18 @@ pub struct PullReview {
     pub comments_count: Option<i64>,
     pub commit_id: Option<String>,
     pub dismissed: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub official: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub pull_request_url: Option<url::Url>,
     pub stale: Option<bool>,
     pub state: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub submitted_at: Option<time::OffsetDateTime>,
     pub team: Option<Team>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
     pub user: Option<User>,
 }
@@ -2733,12 +2733,12 @@ impl_from_response!(PullReview);
 pub struct PullReviewComment {
     pub body: Option<String>,
     pub commit_id: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub diff_hunk: Option<String>,
     /// number of additional lines after the commented line (0 = single line comment)
     pub extra_lines_count: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub original_commit_id: Option<String>,
@@ -2746,10 +2746,10 @@ pub struct PullReviewComment {
     pub path: Option<String>,
     pub position: Option<u64>,
     pub pull_request_review_id: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub pull_request_url: Option<url::Url>,
     pub resolver: Option<User>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
     pub user: Option<User>,
 }
@@ -2767,11 +2767,11 @@ pub struct PullReviewRequestOptions {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PushMirror {
     pub branch_filter: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub interval: Option<String>,
     pub last_error: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub last_update: Option<time::OffsetDateTime>,
     pub public_key: Option<String>,
     pub remote_address: Option<String>,
@@ -2824,7 +2824,7 @@ pub struct QuotaUsed {
 /// QuotaUsedArtifact represents an artifact counting towards a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedArtifact {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// HTML URL to the action run containing the artifact
     pub html_url: Option<url::Url>,
     /// Name of the artifact
@@ -2838,7 +2838,7 @@ impl_from_response!(QuotaUsedArtifact);
 /// QuotaUsedAttachment represents an attachment counting towards a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedAttachment {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// API URL for the attachment
     pub api_url: Option<url::Url>,
     /// Context for the attachment: URLs to the containing object
@@ -2854,10 +2854,10 @@ impl_from_response!(QuotaUsedAttachment);
 /// Context for the attachment: URLs to the containing object
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedAttachmentContainedIn {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// API URL for the object that contains this attachment
     pub api_url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// HTML URL for the object that contains this attachment
     pub html_url: Option<url::Url>,
 }
@@ -2865,7 +2865,7 @@ pub struct QuotaUsedAttachmentContainedIn {
 /// QuotaUsedPackage represents a package counting towards a user's quota
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct QuotaUsedPackage {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// HTML URL to the package version
     pub html_url: Option<url::Url>,
     /// Name of the package
@@ -2935,7 +2935,7 @@ pub struct QuotaUsedSizeRepos {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Reaction {
     pub content: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub user: Option<User>,
 }
@@ -2947,7 +2947,7 @@ pub struct Reference {
     pub object: Option<GitObject>,
     #[serde(rename = "ref")]
     pub r#ref: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -2987,26 +2987,26 @@ pub struct Release {
     pub assets: Option<Vec<Attachment>>,
     pub author: Option<User>,
     pub body: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub draft: Option<bool>,
     pub hide_archive_links: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub name: Option<String>,
     pub prerelease: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub published_at: Option<time::OffsetDateTime>,
     pub tag_name: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub tarball_url: Option<url::Url>,
     pub target_commitish: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub upload_url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub zipball_url: Option<url::Url>,
 }
 
@@ -3048,7 +3048,7 @@ pub struct RepoCommit {
     pub committer: Option<CommitUser>,
     pub message: Option<String>,
     pub tree: Option<CommitMeta>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub verification: Option<PayloadCommitVerification>,
 }
@@ -3086,13 +3086,13 @@ pub struct Repository {
     pub allow_rebase_update: Option<bool>,
     pub allow_squash_merge: Option<bool>,
     pub archived: Option<bool>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub archived_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub avatar_url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub clone_url: Option<url::Url>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub default_allow_maintainer_edit: Option<bool>,
     pub default_branch: Option<String>,
@@ -3117,25 +3117,25 @@ pub struct Repository {
     pub has_wiki: Option<bool>,
     /// have wiki pages ever been created
     pub has_wiki_contents: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
     pub ignore_whitespace_conflicts: Option<bool>,
     pub internal: Option<bool>,
     pub internal_tracker: Option<InternalTracker>,
     pub language: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub languages_url: Option<url::Url>,
     pub link: Option<String>,
     pub mirror: Option<bool>,
     pub mirror_interval: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub mirror_updated: Option<time::OffsetDateTime>,
     pub name: Option<String>,
     pub object_format_name: Option<ObjectFormatName>,
     pub open_issues_count: Option<i64>,
     pub open_pr_counter: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub original_url: Option<url::Url>,
     pub owner: Option<User>,
     pub parent: Option<Box<Repository>>,
@@ -3144,14 +3144,14 @@ pub struct Repository {
     pub release_counter: Option<i64>,
     pub repo_transfer: Option<RepoTransfer>,
     pub size: Option<i64>,
-    #[serde(deserialize_with = "crate::deserialize_optional_ssh_url")]
+    #[serde(deserialize_with = "crate::deserialize_optional_ssh_url", default)]
     pub ssh_url: Option<url::Url>,
     pub stars_count: Option<i64>,
     pub template: Option<bool>,
     pub topics: Option<Vec<String>>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
     pub watchers_count: Option<i64>,
     pub website: Option<String>,
@@ -3183,7 +3183,7 @@ impl_from_response!(SearchResults);
 /// Secret represents a secret
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Secret {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     /// the secret's name
     pub name: Option<String>,
@@ -3218,7 +3218,7 @@ pub enum StateType {
 /// StopWatch represent a running stopwatch
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct StopWatch {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub duration: Option<String>,
     pub issue_index: Option<i64>,
@@ -3256,9 +3256,9 @@ pub struct Tag {
     pub id: Option<String>,
     pub message: Option<String>,
     pub name: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub tarball_url: Option<url::Url>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub zipball_url: Option<url::Url>,
 }
 
@@ -3274,11 +3274,11 @@ pub struct TagArchiveDownloadCount {
 /// TagProtection represents a tag protection
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TagProtection {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub name_pattern: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
     pub whitelist_teams: Option<Vec<String>>,
     pub whitelist_usernames: Option<Vec<String>>,
@@ -3321,13 +3321,13 @@ pub struct TimelineComment {
     pub assignee: Option<User>,
     pub assignee_team: Option<Team>,
     pub body: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub dependent_issue: Option<Issue>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub id: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub issue_url: Option<url::Url>,
     pub label: Option<Label>,
     pub milestone: Option<Milestone>,
@@ -3338,7 +3338,7 @@ pub struct TimelineComment {
     pub old_ref: Option<String>,
     pub old_title: Option<String>,
     pub project_id: Option<i64>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub pull_request_url: Option<url::Url>,
     pub ref_action: Option<String>,
     pub ref_comment: Option<Comment>,
@@ -3352,7 +3352,7 @@ pub struct TimelineComment {
     pub tracked_time: Option<TrackedTime>,
     #[serde(rename = "type")]
     pub r#type: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated_at: Option<time::OffsetDateTime>,
     pub user: Option<User>,
 }
@@ -3370,19 +3370,19 @@ impl_from_response!(TopicName);
 /// TopicResponse for returning topics
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TopicResponse {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub repo_count: Option<i64>,
     pub topic_name: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub updated: Option<time::OffsetDateTime>,
 }
 
 /// TrackedTime worked time for an issue / pr
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct TrackedTime {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub issue: Option<Issue>,
@@ -3469,10 +3469,10 @@ pub struct UpdateVariableOption {
 pub struct User {
     /// Is user active
     pub active: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// URL to the user's avatar
     pub avatar_url: Option<url::Url>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created: Option<time::OffsetDateTime>,
     /// the user's description
     pub description: Option<String>,
@@ -3482,7 +3482,7 @@ pub struct User {
     pub following_count: Option<i64>,
     /// the user's full name
     pub full_name: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     /// URL to the user's profile page
     pub html_url: Option<url::Url>,
     /// the user's id
@@ -3491,7 +3491,7 @@ pub struct User {
     pub is_admin: Option<bool>,
     /// User locale
     pub language: Option<String>,
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub last_login: Option<time::OffsetDateTime>,
     /// the user's location
     pub location: Option<String>,
@@ -3574,14 +3574,14 @@ pub struct VerifyGPGKeyOption {
 /// WatchInfo represents an API watch status of one repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WatchInfo {
-    #[serde(with = "time::serde::rfc3339::option")]
+    #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
     pub ignored: Option<bool>,
     pub reason: Option<serde_json::Value>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub repository_url: Option<url::Url>,
     pub subscribed: Option<bool>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub url: Option<url::Url>,
 }
 
@@ -3612,7 +3612,7 @@ pub struct WikiPage {
     /// Page content, base64 encoded
     pub content_base64: Option<String>,
     pub footer: Option<String>,
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub last_commit: Option<WikiCommit>,
     pub sidebar: Option<String>,
@@ -3625,7 +3625,7 @@ impl_from_response!(WikiPage);
 /// WikiPageMetaData wiki page meta information
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WikiPageMetaData {
-    #[serde(deserialize_with = "crate::none_if_blank_url")]
+    #[serde(deserialize_with = "crate::none_if_blank_url", default)]
     pub html_url: Option<url::Url>,
     pub last_commit: Option<WikiCommit>,
     pub sub_url: Option<String>,

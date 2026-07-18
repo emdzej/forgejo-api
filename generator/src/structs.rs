@@ -98,7 +98,7 @@ pub fn create_object_struct(
                     "url" => {
                         if !is_required {
                             fields.push_str(
-                                "#[serde(deserialize_with = \"crate::none_if_blank_url\")]\n",
+                                "#[serde(deserialize_with = \"crate::none_if_blank_url\", default)]\n",
                             );
                         }
                     }
@@ -109,7 +109,7 @@ pub fn create_object_struct(
                             );
                         } else {
                             fields.push_str(
-                                "#[serde(deserialize_with = \"crate::deserialize_optional_ssh_url\")]\n",
+                                "#[serde(deserialize_with = \"crate::deserialize_optional_ssh_url\", default)]\n",
                             );
                         }
                     }
@@ -117,14 +117,18 @@ pub fn create_object_struct(
                         if is_required {
                             fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
                         } else {
-                            fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
+                            fields.push_str(
+                                "#[serde(with = \"time::serde::rfc3339::option\", default)]\n",
+                            );
                         }
                     }
                     "date" => {
                         if is_required {
                             fields.push_str("#[serde(with = \"time::serde::rfc3339\")]\n");
                         } else {
-                            fields.push_str("#[serde(with = \"time::serde::rfc3339::option\")]\n");
+                            fields.push_str(
+                                "#[serde(with = \"time::serde::rfc3339::option\", default)]\n",
+                            );
                         }
                     }
                     _ => (),
