@@ -893,6 +893,20 @@ fn commit_status_relative_target_url_deserializes() {
     );
 }
 
+#[test]
+fn missing_optional_fields() {
+    let raw_json = r#"
+        {}
+    "#;
+    serde_json::from_str::<structs::Repository>(raw_json).unwrap();
+    let raw_json = r#"
+        {
+            "avatar_url": "http://example.com"
+        }
+    "#;
+    serde_json::from_str::<structs::Repository>(raw_json).unwrap();
+}
+
 impl From<structs::DefaultMergeStyle> for structs::MergePullRequestOptionDo {
     fn from(value: structs::DefaultMergeStyle) -> Self {
         match value {
