@@ -48,6 +48,7 @@ async fn total_count() {
 
     let git = Git::new("./test_repos/header_test");
     common::basic_repo(&api, &git, "header_test").await;
+    #[allow(deprecated)]
     let body = CreateIssueOption {
         assignee: None,
         assignees: None,

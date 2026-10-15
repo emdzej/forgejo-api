@@ -480,6 +480,7 @@ async fn url_encoding_labels() {
     api.issue_create_label("TestingAdmin", "url-encoding-labels", opt)
         .await
         .unwrap();
+    #[allow(deprecated)]
     let opt = CreateIssueOption {
         assignee: None,
         assignees: None,
