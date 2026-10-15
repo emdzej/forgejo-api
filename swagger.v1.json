@@ -10,13 +10,13 @@
       "name": "This file is distributed under the MIT license for the purpose of interoperability",
       "url": "http://opensource.org/licenses/MIT"
     },
-    "version": "16.0.0-dev-505-6d5f904cb0+gitea-1.22.0"
+    "version": "17.0.0-dev-609-a14eb80977+gitea-1.22.0"
   },
   "basePath": "/api/v1",
   "paths": {
     "/actions/run": {
       "get": {
-        "description": "The automatic actions token must be used as the authentication mechanism (<code>Authorization: Bearer $&#x7b;&#x7b; forgejo.token &#x7d;&#x7d;</code>); other types of tokens cannot be used. The token is associated with the job, which must be still running for the request to this endpoint to succeed.\n",
+        "description": "The automatic actions token must be used as the authentication mechanism (\u003ccode\u003eAuthorization: Bearer $\u0026#x7b;\u0026#x7b; forgejo.token \u0026#x7d;\u0026#x7d;\u003c/code\u003e); other types of tokens cannot be used. The token is associated with the job, which must be still running for the request to this endpoint to succeed.\n",
         "produces": ["application/json"],
         "tags": ["miscellaneous"],
         "summary": "Get a workflow run associated with a token",
@@ -2138,7 +2138,7 @@
               "type": "string"
             },
             "collectionFormat": "multi",
-            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread & pinned.",
+            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread \u0026 pinned.",
             "name": "status-types",
             "in": "query"
           },
@@ -5145,10 +5145,57 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/actions/jobs/{job_id}": {
+      "get": {
+        "description": "Returns the workflow job plus the ordered list of steps that make up its execution. The `number` field on each step is the value accepted by the `?step=` filter on the job-logs endpoint; `number=0` is always \"Set up job\" and the last index is always \"Complete job\", with the workflow's real steps in between. A job that has never been picked up by a runner returns the job metadata with `steps` omitted.\n",
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Get a single workflow run job, including its step list",
+        "operationId": "repoGetActionJob",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "ID of the workflow job",
+            "name": "job_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ActionRunJob"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/actions/jobs/{job_id}/logs": {
       "get": {
-        "description": "Returns the plaintext log for the job. By default the log for the most recent attempt is returned (ActionRunJob.TaskID tracks the latest task). Pass `?attempt=N` to fetch the log for a specific historical attempt; the value matches the `attempt` field returned by the job listing endpoints.\n",
-        "produces": ["text/plain"],
+        "description": "Returns the plaintext log for the job. By default the log for the most recent attempt is returned (ActionRunJob.TaskID tracks the latest task). Pass `?attempt=N` to fetch the log for a specific historical attempt; the value matches the `attempt` field returned by the job listing endpoints. Pass `?step=N` to narrow to a single step (using the `number` field from `GET /actions/jobs/{job_id}`), `?q=` to substring-filter lines, and `?format=ndjson` for NDJSON output (one `{time, content}` object per line). When `q` or `format=ndjson` is set the response drops `Accept-Ranges` and does not support `Range:` since the total length isn't known until the scan finishes.\n",
+        "produces": ["text/plain", "application/x-ndjson"],
         "tags": ["repository"],
         "summary": "Download the plaintext logs of an action job",
         "operationId": "repoGetActionJobLogs",
@@ -5181,23 +5228,95 @@
             "description": "1-based attempt number matching the value of `attempt` in the job listing; omit to fetch the latest attempt of the job",
             "name": "attempt",
             "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Step number to filter to. Use the `number` field from `GET /repos/{owner}/{repo}/actions/jobs/{job_id}` — 0 is the \"Set up job\" entry, the last index is the \"Complete job\" entry, real steps are in between. Returns only that step's slice of the log. Range requests still work over the slice.\n",
+            "name": "step",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Substring filter applied to each line's content (the part after the timestamp prefix). Plain string match — regex is not supported. Setting `q` drops `Accept-Ranges` and disables `Range:` support; the full filtered body is always returned.\n",
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "Case-insensitive substring match (only meaningful when `q` is set).",
+            "name": "qi",
+            "in": "query"
+          },
+          {
+            "enum": ["text", "ndjson"],
+            "type": "string",
+            "description": "Response shape. `text` (default) returns log content as plaintext lines. `ndjson` returns one `{\"time\":\"...\",\"content\":\"...\"}` object per emitted line, separated by `\\n` (content-type `application/x-ndjson`). `format=ndjson` drops `Accept-Ranges` and disables `Range:` support.\n",
+            "name": "format",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Plaintext log content",
+            "description": "Plaintext log content (or NDJSON when `format=ndjson`)",
             "schema": {
               "type": "string"
             }
           },
           "206": {
-            "description": "Partial log content (Range request)",
+            "description": "Partial log content (Range request; not returned when `q` or `format=ndjson` is set)",
             "schema": {
               "type": "string"
             }
           },
           "401": {
             "$ref": "#/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/actions/jobs/{job_id}/rerun": {
+      "post": {
+        "description": "Rerun a particular workflow job and all jobs that depend on it. The workflow job must have completed (succeeded, failed, cancelled or skipped) for the operation to succeed. Otherwise, an error is returned.\n",
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Rerun a completed workflow job and its dependent jobs",
+        "operationId": "repoRerunActionJob",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "ID of the workflow job",
+            "name": "job_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Workflow job rerun has been started"
+          },
+          "400": {
+            "$ref": "#/responses/error"
           },
           "403": {
             "$ref": "#/responses/forbidden"
@@ -5851,6 +5970,53 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/actions/runs/{run_id}/rerun": {
+      "post": {
+        "description": "Rerun a particular workflow run. The workflow run must have completed (succeeded, failed, cancelled or skipped) for the operation to succeed. Otherwise, an error is returned.\n",
+        "produces": ["application/json"],
+        "tags": ["repository"],
+        "summary": "Rerun a finished (succeeded, failed, cancelled or skipped) workflow run.",
+        "operationId": "RerunActionRun",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "ID of the workflow run",
+            "name": "run_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Workflow rerun has been started"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/actions/secrets": {
       "get": {
         "produces": ["application/json"],
@@ -6335,6 +6501,9 @@
           },
           "204": {
             "$ref": "#/responses/empty"
+          },
+          "400": {
+            "$ref": "#/responses/error"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -7460,6 +7629,20 @@
             "name": "basehead",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "default": true,
+            "description": "include verification status for each commit",
+            "name": "verification",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": true,
+            "description": "include which files changed by a commit",
+            "name": "files",
+            "in": "query"
           }
         ],
         "responses": {
@@ -11300,6 +11483,101 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/issues/{index}/lock": {
+      "put": {
+        "tags": ["issue"],
+        "summary": "Lock an issue",
+        "operationId": "lockIssue",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "index of the issue to lock",
+            "name": "index",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/IssueLockOption"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/empty"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "409": {
+            "$ref": "#/responses/conflict"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["issue"],
+        "summary": "Unlock an issue",
+        "operationId": "unlockIssue",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "index of the issue to unlock",
+            "name": "index",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/empty"
+          },
+          "403": {
+            "$ref": "#/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "409": {
+            "$ref": "#/responses/conflict"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/issues/{index}/pin": {
       "post": {
         "tags": ["issue"],
@@ -13028,7 +13306,7 @@
               "type": "string"
             },
             "collectionFormat": "multi",
-            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread & pinned",
+            "description": "Show notifications with the provided status types. Options are: unread, read and/or pinned. Defaults to unread \u0026 pinned",
             "name": "status-types",
             "in": "query"
           },
@@ -17562,6 +17840,9 @@
           },
           "404": {
             "$ref": "#/responses/notFound"
+          },
+          "409": {
+            "$ref": "#/responses/forbidden"
           }
         }
       },
@@ -17999,6 +18280,39 @@
           },
           "400": {
             "$ref": "#/responses/error"
+          },
+          "401": {
+            "$ref": "#/responses/unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/user/actions/secrets": {
+      "get": {
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "List actions secrets of the current user",
+        "operationId": "userListActionsSecrets",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "page number of results to return (1-based)",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page size of results",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SecretList"
           },
           "401": {
             "$ref": "#/responses/unauthorized"
@@ -20977,6 +21291,11 @@
           "type": "string",
           "x-go-name": "Handle"
         },
+        "html_url": {
+          "description": "HTMLURL is the URL where a user can view the job using their browser.",
+          "type": "string",
+          "x-go-name": "HTMLURL"
+        },
         "id": {
           "description": "Identifier of this job.",
           "type": "integer",
@@ -21027,11 +21346,54 @@
           "type": "string",
           "x-go-name": "Status"
         },
+        "steps": {
+          "description": "the steps that make up this workflow job's execution, including the\n\"Set up job\" entry (number=0) and \"Complete job\" tail. Only populated by\nendpoints that return a single job (e.g. GET /repos/{owner}/{repo}/actions/jobs/{job_id}).",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ActionRunJobStep"
+          },
+          "x-go-name": "Steps"
+        },
         "task_id": {
           "description": "the action run job latest task id",
           "type": "integer",
           "format": "int64",
           "x-go-name": "TaskID"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
+    "ActionRunJobStep": {
+      "description": "ActionRunJobStep is a step in a workflow job's execution. The slice on\nActionRunJob.Steps always includes a \"Set up job\" entry at number=0 and a\n\"Complete job\" entry as the last element; the entries in between are the\nworkflow's real steps in declaration order. The Number field is the value\naccepted by the job-logs endpoint's `?step=` filter.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "step name (workflow YAML `name:` for real steps; \"Set up job\" and\n\"Complete job\" for the head and tail respectively)",
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "number": {
+          "description": "position in the job's step list. 0 is the \"Set up job\" entry; the last\nindex is the \"Complete job\" entry; real steps are numbered 1..N in\ndeclaration order.",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Number"
+        },
+        "started": {
+          "description": "when the step started",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Started"
+        },
+        "status": {
+          "description": "step status (success, failure, running, waiting, skipped, cancelled, ...)",
+          "type": "string",
+          "x-go-name": "Status"
+        },
+        "stopped": {
+          "description": "when the step stopped",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Stopped"
         }
       },
       "x-go-package": "forgejo.org/modules/structs"
@@ -21550,8 +21912,8 @@
           "x-go-name": "BlockOnRejectedReviews"
         },
         "branch_name": {
-          "description": "Deprecated: true",
           "type": "string",
+          "x-deprecated": true,
           "x-go-name": "BranchName"
         },
         "created_at": {
@@ -22278,8 +22640,8 @@
           "x-go-name": "BlockOnRejectedReviews"
         },
         "branch_name": {
-          "description": "Deprecated: true",
           "type": "string",
+          "x-deprecated": true,
           "x-go-name": "BranchName"
         },
         "dismiss_stale_approvals": {
@@ -22385,9 +22747,10 @@
           "x-go-name": "BranchName"
         },
         "old_branch_name": {
-          "description": "Deprecated: true\nName of the old branch to create from",
+          "description": "Name of the old branch to create from",
           "type": "string",
           "uniqueItems": true,
+          "x-deprecated": true,
           "x-go-name": "OldBranchName"
         },
         "old_ref_name": {
@@ -23210,10 +23573,12 @@
           "x-go-name": "Permission"
         },
         "units": {
+          "description": "\nDeprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.",
           "type": "array",
           "items": {
             "type": "string"
           },
+          "x-deprecated": true,
           "x-go-name": "Units",
           "example": [
             "repo.actions",
@@ -23253,7 +23618,7 @@
     "CreateUserOption": {
       "description": "CreateUserOption create user options",
       "type": "object",
-      "required": ["username", "email"],
+      "required": ["username"],
       "properties": {
         "created_at": {
           "description": "For explicitly setting the user creation timestamp. Useful when users are\nmigrated from other systems. When omitted, the user's creation timestamp\nwill be set to \"now\".",
@@ -24278,10 +24643,12 @@
           "x-go-name": "Permission"
         },
         "units": {
+          "description": "\nDeprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.",
           "type": "array",
           "items": {
             "type": "string"
           },
+          "x-deprecated": true,
           "x-go-name": "Units",
           "example": [
             "repo.code",
@@ -25042,6 +25409,7 @@
           "additionalProperties": {
             "type": "string"
           },
+          "x-deprecated": true,
           "x-go-name": "Config"
         },
         "content_type": {
@@ -25366,9 +25734,20 @@
       },
       "x-go-package": "forgejo.org/modules/structs"
     },
+    "IssueLockOption": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "x-go-name": "Reason"
+        }
+      },
+      "x-go-package": "forgejo.org/modules/structs"
+    },
     "IssueMeta": {
       "description": "IssueMeta basic issue information",
       "type": "object",
+      "required": ["index", "owner", "repo"],
       "properties": {
         "index": {
           "type": "integer",
@@ -25749,7 +26128,10 @@
             "gogs",
             "onedev",
             "gitbucket",
-            "codebase"
+            "codebase",
+            "forgejo",
+            "pagure",
+            "bitbucketdc"
           ],
           "x-go-name": "Service"
         },
@@ -27151,7 +27533,7 @@
       "type": "object",
       "properties": {
         "issues": {
-          "description": "Storage size used for the user's issue & comment attachments",
+          "description": "Storage size used for the user's issue \u0026 comment attachments",
           "type": "integer",
           "format": "int64",
           "x-go-name": "Issues"
@@ -27258,7 +27640,7 @@
           "x-go-name": "Description"
         },
         "ephemeral": {
-          "description": "Register as ephemeral runner https://forgejo.org/docs/latest/admin/actions/security/#ephemeral-runner",
+          "description": "Register as ephemeral runner https://forgejo.org/docs/latest/admin/actions/security/#ephemeral-runners",
           "type": "boolean",
           "x-go-name": "Ephemeral"
         },
@@ -28114,10 +28496,12 @@
           "x-go-name": "Permission"
         },
         "units": {
+          "description": "\nDeprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.",
           "type": "array",
           "items": {
             "type": "string"
           },
+          "x-deprecated": true,
           "x-go-name": "Units",
           "example": [
             "repo.code",
@@ -28954,6 +29338,12 @@
       "description": "ActionRun",
       "schema": {
         "$ref": "#/definitions/ActionRun"
+      }
+    },
+    "ActionRunJob": {
+      "description": "ActionRunJob is a single workflow run job",
+      "schema": {
+        "$ref": "#/definitions/ActionRunJob"
       }
     },
     "ActionRunJobList": {
@@ -30406,7 +30796,10 @@
       }
     },
     "boolean": {
-      "description": "Boolean"
+      "description": "Boolean",
+      "schema": {
+        "type": "boolean"
+      }
     },
     "conflict": {
       "description": "APIConflict is a conflict empty response"
