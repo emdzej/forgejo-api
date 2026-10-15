@@ -8,7 +8,7 @@ async fn user() {
 
     let user_opt = CreateUserOption {
         created_at: None,
-        email: "pipis@noreply.example.org".into(),
+        email: Some("pipis@noreply.example.org".into()),
         full_name: None,
         login_name: None,
         must_change_password: None,
@@ -66,7 +66,7 @@ async fn org() {
 
     let user_opt = CreateUserOption {
         created_at: None,
-        email: "org-owner@noreply.example.org".into(),
+        email: Some("org-owner@noreply.example.org".into()),
         full_name: None,
         login_name: None,
         must_change_password: None,
@@ -108,7 +108,7 @@ async fn key() {
 
     let user_opt = CreateUserOption {
         created_at: None,
-        email: "key-holder@noreply.example.org".into(),
+        email: Some("key-holder@noreply.example.org".into()),
         full_name: None,
         login_name: None,
         must_change_password: None,
@@ -192,7 +192,7 @@ async fn quota_group() {
 
     let user_opts = CreateUserOption {
         created_at: None,
-        email: "1997@example.com".into(),
+        email: Some("1997@example.com".into()),
         full_name: None,
         login_name: None,
         must_change_password: None,

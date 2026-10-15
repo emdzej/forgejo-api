@@ -1993,6 +1993,26 @@ impl crate::Forgejo {
         .wrap::<_, _>(self)
     }
 
+    /// Get a single workflow run job, including its step list
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `job_id`: ID of the workflow job
+    pub fn repo_get_action_job(
+        &self,
+        owner: &str,
+        repo: &str,
+        job_id: i64,
+    ) -> Request<'_, endpoints::RepoGetActionJob<'_>, ActionRunJob> {
+        endpoints::RepoGetActionJob {
+            owner,
+            repo,
+            job_id,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
     /// Download the plaintext logs of an action job
     ///
     /// - `owner`: owner of the repo
@@ -2004,12 +2024,32 @@ impl crate::Forgejo {
         repo: &str,
         job_id: i64,
         query: RepoGetActionJobLogsQuery,
-    ) -> Request<'_, endpoints::RepoGetActionJobLogs<'_>, String> {
+    ) -> Request<'_, endpoints::RepoGetActionJobLogs<'_>, Bytes> {
         endpoints::RepoGetActionJobLogs {
             owner,
             repo,
             job_id,
             query,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// Rerun a completed workflow job and its dependent jobs
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `job_id`: ID of the workflow job
+    pub fn repo_rerun_action_job(
+        &self,
+        owner: &str,
+        repo: &str,
+        job_id: i64,
+    ) -> Request<'_, endpoints::RepoRerunActionJob<'_>, ()> {
+        endpoints::RepoRerunActionJob {
+            owner,
+            repo,
+            job_id,
         }
         .make_request()
         .wrap::<_, _>(self)
@@ -2250,6 +2290,26 @@ impl crate::Forgejo {
         run_id: i64,
     ) -> Request<'_, endpoints::RepoGetActionRunLogs<'_>, Bytes> {
         endpoints::RepoGetActionRunLogs {
+            owner,
+            repo,
+            run_id,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// Rerun a finished (succeeded, failed, cancelled or skipped) workflow run.
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `run_id`: ID of the workflow run
+    pub fn rerun_action_run(
+        &self,
+        owner: &str,
+        repo: &str,
+        run_id: i64,
+    ) -> Request<'_, endpoints::RerunActionRun<'_>, ()> {
+        endpoints::RerunActionRun {
             owner,
             repo,
             run_id,
@@ -2908,11 +2968,13 @@ impl crate::Forgejo {
         owner: &str,
         repo: &str,
         basehead: &str,
+        query: RepoCompareDiffQuery,
     ) -> Request<'_, endpoints::RepoCompareDiff<'_>, Compare> {
         endpoints::RepoCompareDiff {
             owner,
             repo,
             basehead,
+            query,
         }
         .make_request()
         .wrap::<_, _>(self)
@@ -4469,6 +4531,45 @@ impl crate::Forgejo {
         }
         .make_request()
         .wrap::<_, _>(self)
+    }
+
+    /// Lock an issue
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `index`: index of the issue to lock
+    /// - `body`: See [`IssueLockOption`]
+    pub fn lock_issue(
+        &self,
+        owner: &str,
+        repo: &str,
+        index: i64,
+        body: IssueLockOption,
+    ) -> Request<'_, endpoints::LockIssue<'_>, ()> {
+        endpoints::LockIssue {
+            owner,
+            repo,
+            index,
+            body: body,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// Unlock an issue
+    ///
+    /// - `owner`: owner of the repo
+    /// - `repo`: name of the repo
+    /// - `index`: index of the issue to unlock
+    pub fn unlock_issue(
+        &self,
+        owner: &str,
+        repo: &str,
+        index: i64,
+    ) -> Request<'_, endpoints::UnlockIssue<'_>, ()> {
+        endpoints::UnlockIssue { owner, repo, index }
+            .make_request()
+            .wrap::<_, _>(self)
     }
 
     /// Pin an Issue
@@ -7118,6 +7219,16 @@ impl crate::Forgejo {
         runner_id: &str,
     ) -> Request<'_, endpoints::DeleteUserRunner<'_>, ()> {
         endpoints::DeleteUserRunner { runner_id }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// List actions secrets of the current user
+    ///
+    pub fn user_list_actions_secrets(
+        &self,
+    ) -> Request<'_, endpoints::UserListActionsSecrets, (SecretListHeaders, Vec<Secret>)> {
+        endpoints::UserListActionsSecrets {}
             .make_request()
             .wrap::<_, _>(self)
     }

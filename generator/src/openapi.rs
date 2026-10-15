@@ -1089,6 +1089,8 @@ pub struct Schema {
     pub external_docs: Option<ExternalDocs>,
     pub example: Option<serde_json::Value>,
 
+    #[serde(rename = "x-deprecated", default)]
+    pub deprecated: bool,
     #[serde(flatten)]
     pub extensions: BTreeMap<String, serde_json::Value>,
 }

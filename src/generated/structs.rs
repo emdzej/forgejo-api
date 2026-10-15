@@ -178,6 +178,8 @@ pub struct ActionRunJob {
     pub attempt: Option<i64>,
     /// Opaque identifier that uniquely identifies a single attempt of a job.
     pub handle: Option<String>,
+    /// HTMLURL is the URL where a user can view the job using their browser.
+    pub html_url: Option<String>,
     /// Identifier of this job.
     pub id: Option<i64>,
     /// the action run job name
@@ -194,11 +196,48 @@ pub struct ActionRunJob {
     pub runs_on: Option<Vec<String>>,
     /// the action run job status
     pub status: Option<String>,
+    /// the steps that make up this workflow job's execution, including the
+    ///
+    /// "Set up job" entry (number=0) and "Complete job" tail. Only populated by
+    ///
+    /// endpoints that return a single job (e.g. GET /repos/{owner}/{repo}/actions/jobs/{job_id}).
+    pub steps: Option<Vec<ActionRunJobStep>>,
     /// the action run job latest task id
     pub task_id: Option<i64>,
 }
 
 impl_from_response!(ActionRunJob);
+
+/// ActionRunJobStep is a step in a workflow job's execution. The slice on
+///
+/// ActionRunJob.Steps always includes a "Set up job" entry at number=0 and a
+///
+/// "Complete job" entry as the last element; the entries in between are the
+///
+/// workflow's real steps in declaration order. The Number field is the value
+///
+/// accepted by the job-logs endpoint's `?step=` filter.
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ActionRunJobStep {
+    /// step name (workflow YAML `name:` for real steps; "Set up job" and
+    ///
+    /// "Complete job" for the head and tail respectively)
+    pub name: Option<String>,
+    /// position in the job's step list. 0 is the "Set up job" entry; the last
+    ///
+    /// index is the "Complete job" entry; real steps are numbered 1..N in
+    ///
+    /// declaration order.
+    pub number: Option<i64>,
+    #[serde(with = "time::serde::rfc3339::option", default)]
+    /// when the step started
+    pub started: Option<time::OffsetDateTime>,
+    /// step status (success, failure, running, waiting, skipped, cancelled, ...)
+    pub status: Option<String>,
+    #[serde(with = "time::serde::rfc3339::option", default)]
+    /// when the step stopped
+    pub stopped: Option<time::OffsetDateTime>,
+}
 
 /// ActionRunner represents a runner
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -488,7 +527,7 @@ pub struct BranchProtection {
     pub block_on_official_review_requests: Option<bool>,
     pub block_on_outdated_branch: Option<bool>,
     pub block_on_rejected_reviews: Option<bool>,
-    /// Deprecated: true
+    #[deprecated]
     pub branch_name: Option<String>,
     #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
@@ -800,7 +839,7 @@ pub struct CreateBranchProtectionOption {
     pub block_on_official_review_requests: Option<bool>,
     pub block_on_outdated_branch: Option<bool>,
     pub block_on_rejected_reviews: Option<bool>,
-    /// Deprecated: true
+    #[deprecated]
     pub branch_name: Option<String>,
     pub dismiss_stale_approvals: Option<bool>,
     pub enable_approvals_whitelist: Option<bool>,
@@ -827,9 +866,8 @@ pub struct CreateBranchProtectionOption {
 pub struct CreateBranchRepoOption {
     /// Name of the branch to create
     pub new_branch_name: String,
-    /// Deprecated: true
-    ///
     /// Name of the old branch to create from
+    #[deprecated]
     pub old_branch_name: Option<String>,
     /// Name of the old branch/tag/commit to create from
     pub old_ref_name: Option<String>,
@@ -942,7 +980,7 @@ pub struct CreateIssueCommentOption {
 /// CreateIssueOption options to create one issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateIssueOption {
-    /// deprecated
+    #[deprecated]
     pub assignee: Option<String>,
     pub assignees: Option<Vec<String>>,
     pub body: Option<String>,
@@ -1225,6 +1263,10 @@ pub struct CreateTeamOption {
     pub includes_all_repositories: Option<bool>,
     pub name: String,
     pub permission: Option<CreateTeamOptionPermission>,
+    ///
+    ///
+    /// Deprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.
+    #[deprecated]
     pub units: Option<Vec<String>>,
     pub units_map: Option<BTreeMap<String, String>>,
 }
@@ -1248,7 +1290,7 @@ pub struct CreateUserOption {
     ///
     /// will be set to "now".
     pub created_at: Option<time::OffsetDateTime>,
-    pub email: String,
+    pub email: Option<String>,
     pub full_name: Option<String>,
     pub login_name: Option<String>,
     pub must_change_password: Option<bool>,
@@ -1465,7 +1507,7 @@ pub struct EditIssueCommentOption {
 /// EditIssueOption options for editing an issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditIssueOption {
-    /// deprecated
+    #[deprecated]
     pub assignee: Option<String>,
     pub assignees: Option<Vec<String>>,
     pub body: Option<String>,
@@ -1658,6 +1700,10 @@ pub struct EditTeamOption {
     pub includes_all_repositories: Option<bool>,
     pub name: String,
     pub permission: Option<EditTeamOptionPermission>,
+    ///
+    ///
+    /// Deprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.
+    #[deprecated]
     pub units: Option<Vec<String>>,
     pub units_map: Option<BTreeMap<String, String>>,
 }
@@ -1974,6 +2020,7 @@ pub struct Hook {
     pub authorization_header: Option<String>,
     pub branch_filter: Option<String>,
     /// Deprecated: use Metadata instead
+    #[deprecated]
     pub config: Option<BTreeMap<String, String>>,
     pub content_type: Option<String>,
     #[serde(with = "time::serde::rfc3339::option", default)]
@@ -2116,12 +2163,17 @@ pub struct IssueLabelsOption {
     pub updated_at: Option<time::OffsetDateTime>,
 }
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct IssueLockOption {
+    pub reason: Option<String>,
+}
+
 /// IssueMeta basic issue information
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct IssueMeta {
-    pub index: Option<i64>,
-    pub owner: Option<String>,
-    pub repo: Option<String>,
+    pub index: i64,
+    pub owner: String,
+    pub repo: String,
 }
 
 /// IssueTemplate represents an issue template for a repository
@@ -2295,7 +2347,7 @@ pub struct MigrateRepoOptions {
     /// Name of User or Organisation who will own Repo after migration
     pub repo_owner: Option<String>,
     pub service: Option<MigrateRepoOptionsService>,
-    /// deprecated (only for backwards compatibility)
+    #[deprecated]
     pub uid: Option<i64>,
     pub wiki: Option<bool>,
 }
@@ -2318,6 +2370,12 @@ pub enum MigrateRepoOptionsService {
     Gitbucket,
     #[serde(rename = "codebase")]
     Codebase,
+    #[serde(rename = "forgejo")]
+    Forgejo,
+    #[serde(rename = "pagure")]
+    Pagure,
+    #[serde(rename = "bitbucketdc")]
+    Bitbucketdc,
 }
 /// Milestone milestone is a collection of issues on one repository
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -2505,7 +2563,7 @@ pub struct Organization {
     pub location: Option<String>,
     pub name: Option<String>,
     pub repo_admin_change_team_access: Option<bool>,
-    /// deprecated
+    #[deprecated]
     pub username: Option<String>,
     pub visibility: Option<String>,
     pub website: Option<String>,
@@ -2957,7 +3015,7 @@ impl_from_response!(Reference);
 pub struct RegisterRunnerOptions {
     /// Description of the runner to register.
     pub description: Option<String>,
-    /// Register as ephemeral runner https://forgejo.org/docs/latest/admin/actions/security/#ephemeral-runner
+    /// Register as ephemeral runner https://forgejo.org/docs/latest/admin/actions/security/#ephemeral-runners
     pub ephemeral: Option<bool>,
     /// Name of the runner to register. The name of the runner does not have to be unique.
     pub name: String,
@@ -3296,6 +3354,10 @@ pub struct Team {
     pub name: Option<String>,
     pub organization: Option<Organization>,
     pub permission: Option<TeamPermission>,
+    ///
+    ///
+    /// Deprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.
+    #[deprecated]
     pub units: Option<Vec<String>>,
     pub units_map: Option<BTreeMap<String, String>>,
 }
@@ -3386,11 +3448,11 @@ pub struct TrackedTime {
     pub created: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub issue: Option<Issue>,
-    /// deprecated (only for backwards compatibility)
+    #[deprecated]
     pub issue_id: Option<i64>,
     /// Time in seconds
     pub time: Option<i64>,
-    /// deprecated (only for backwards compatibility)
+    #[deprecated]
     pub user_id: Option<i64>,
     pub user_name: Option<String>,
 }
@@ -5732,6 +5794,14 @@ impl ListActionArtifactsQuery {
 pub struct RepoGetActionJobLogsQuery {
     /// 1-based attempt number matching the value of `attempt` in the job listing; omit to fetch the latest attempt of the job
     pub attempt: Option<i64>,
+    /// Step number to filter to. Use the `number` field from `GET /repos/{owner}/{repo}/actions/jobs/{job_id}` — 0 is the "Set up job" entry, the last index is the "Complete job" entry, real steps are in between. Returns only that step's slice of the log. Range requests still work over the slice.
+    pub step: Option<u32>,
+    /// Substring filter applied to each line's content (the part after the timestamp prefix). Plain string match — regex is not supported. Setting `q` drops `Accept-Ranges` and disables `Range:` support; the full filtered body is always returned.
+    pub q: Option<String>,
+    /// Case-insensitive substring match (only meaningful when `q` is set).
+    pub qi: Option<bool>,
+    /// Response shape. `text` (default) returns log content as plaintext lines. `ndjson` returns one `{"time":"...","content":"..."}` object per emitted line, separated by `\n` (content-type `application/x-ndjson`). `format=ndjson` drops `Accept-Ranges` and disables `Range:` support.
+    pub format: Option<RepoGetActionJobLogsQueryFormat>,
 }
 
 impl RepoGetActionJobLogsQuery {
@@ -5740,11 +5810,39 @@ impl RepoGetActionJobLogsQuery {
         if let Some(attempt) = self.attempt {
             list.push(("attempt", attempt.to_string()));
         }
+        if let Some(step) = self.step {
+            list.push(("step", step.to_string()));
+        }
+        if let Some(q) = self.q {
+            list.push(("q", q));
+        }
+        if let Some(qi) = self.qi {
+            list.push(("qi", qi.to_string()));
+        }
+        if let Some(format) = self.format {
+            list.push(("format", format.as_str().to_string()));
+        }
 
         list
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum RepoGetActionJobLogsQueryFormat {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "ndjson")]
+    Ndjson,
+}
+
+impl RepoGetActionJobLogsQueryFormat {
+    fn as_str(&self) -> &'static str {
+        match self {
+            RepoGetActionJobLogsQueryFormat::Text => "text",
+            RepoGetActionJobLogsQueryFormat::Ndjson => "ndjson",
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct GetRepoRunnersQuery {
     /// whether to include all visible runners (true) or only those that are directly owned by the repository (false)
@@ -6084,6 +6182,28 @@ impl RepoListStatusesByRefQueryState {
         }
     }
 }
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RepoCompareDiffQuery {
+    /// include verification status for each commit
+    pub verification: Option<bool>,
+    /// include which files changed by a commit
+    pub files: Option<bool>,
+}
+
+impl RepoCompareDiffQuery {
+    pub(crate) fn into_list(self) -> Vec<(&'static str, String)> {
+        let mut list = Vec::new();
+        if let Some(verification) = self.verification {
+            list.push(("verification", verification.to_string()));
+        }
+        if let Some(files) = self.files {
+            list.push(("files", files.to_string()));
+        }
+
+        list
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct RepoGetContentsListQuery {
     /// The name of the commit/branch/tag. Default the repository’s default branch (usually master)
