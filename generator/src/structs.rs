@@ -84,17 +84,18 @@ pub fn create_object_struct(
     let mut fields = String::new();
     let required = schema.required.as_deref().unwrap_or_default();
     if let Some(properties) = &schema.properties {
-        for (prop_name, prop_schema) in properties {
-            let prop_ty = crate::schema_ref_type_name(spec, prop_schema)?;
+        for (prop_name, prop_schema_ref) in properties {
+            let prop_ty = crate::schema_ref_type_name(spec, prop_schema_ref)?;
             let field_name = crate::sanitize_ident(prop_name);
             let mut field_ty = prop_ty.clone();
-            if let MaybeRef::Value { value } = &prop_schema {
+            if let MaybeRef::Value { value } = &prop_schema_ref {
                 crate::schema_subtype_name(spec, name, prop_name, value, &mut field_ty)?;
                 crate::schema_subtypes(spec, name, prop_name, value, &mut subtypes, false)?;
             }
             let is_required = required.contains(prop_name);
-            if let Some(format) = &prop_schema.deref(spec)?.format {
-                match &**format {
+            let prop_schema = &prop_schema_ref.deref(spec)?;
+            if let Some(format) = prop_schema.format.as_deref() {
+                match format {
                     "url" => {
                         if !is_required {
                             fields.push_str(
@@ -145,7 +146,7 @@ pub fn create_object_struct(
                 fields.push_str(parse_method);
                 fields.push_str("\")]\n");
             }
-            if let MaybeRef::Value { value } = &prop_schema {
+            if let MaybeRef::Value { value } = &prop_schema_ref {
                 if let Some(desc) = &value.description {
                     let desc = desc.replace("gitea", "Forgejo").replace("Gitea", "Forgejo");
                     for line in desc.lines() {
@@ -162,6 +163,9 @@ pub fn create_object_struct(
                 fields.push_str("#[serde(rename = \"");
                 fields.push_str(prop_name);
                 fields.push_str("\")]\n");
+            }
+            if prop_schema.deprecated {
+                fields.push_str("#[deprecated]\n");
             }
             fields.push_str("pub ");
             fields.push_str(&field_name);

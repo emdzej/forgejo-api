@@ -527,6 +527,7 @@ pub struct BranchProtection {
     pub block_on_official_review_requests: Option<bool>,
     pub block_on_outdated_branch: Option<bool>,
     pub block_on_rejected_reviews: Option<bool>,
+    #[deprecated]
     pub branch_name: Option<String>,
     #[serde(with = "time::serde::rfc3339::option", default)]
     pub created_at: Option<time::OffsetDateTime>,
@@ -838,6 +839,7 @@ pub struct CreateBranchProtectionOption {
     pub block_on_official_review_requests: Option<bool>,
     pub block_on_outdated_branch: Option<bool>,
     pub block_on_rejected_reviews: Option<bool>,
+    #[deprecated]
     pub branch_name: Option<String>,
     pub dismiss_stale_approvals: Option<bool>,
     pub enable_approvals_whitelist: Option<bool>,
@@ -865,6 +867,7 @@ pub struct CreateBranchRepoOption {
     /// Name of the branch to create
     pub new_branch_name: String,
     /// Name of the old branch to create from
+    #[deprecated]
     pub old_branch_name: Option<String>,
     /// Name of the old branch/tag/commit to create from
     pub old_ref_name: Option<String>,
@@ -1263,6 +1266,7 @@ pub struct CreateTeamOption {
     ///
     ///
     /// Deprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.
+    #[deprecated]
     pub units: Option<Vec<String>>,
     pub units_map: Option<BTreeMap<String, String>>,
 }
@@ -1699,6 +1703,7 @@ pub struct EditTeamOption {
     ///
     ///
     /// Deprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.
+    #[deprecated]
     pub units: Option<Vec<String>>,
     pub units_map: Option<BTreeMap<String, String>>,
 }
@@ -2015,6 +2020,7 @@ pub struct Hook {
     pub authorization_header: Option<String>,
     pub branch_filter: Option<String>,
     /// Deprecated: use Metadata instead
+    #[deprecated]
     pub config: Option<BTreeMap<String, String>>,
     pub content_type: Option<String>,
     #[serde(with = "time::serde::rfc3339::option", default)]
@@ -3351,6 +3357,7 @@ pub struct Team {
     ///
     ///
     /// Deprecated: This variable should be replaced by UnitsMap and will be dropped in later versions.
+    #[deprecated]
     pub units: Option<Vec<String>>,
     pub units_map: Option<BTreeMap<String, String>>,
 }
