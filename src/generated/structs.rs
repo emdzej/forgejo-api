@@ -980,7 +980,7 @@ pub struct CreateIssueCommentOption {
 /// CreateIssueOption options to create one issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateIssueOption {
-    /// deprecated
+    #[deprecated]
     pub assignee: Option<String>,
     pub assignees: Option<Vec<String>>,
     pub body: Option<String>,
@@ -1507,7 +1507,7 @@ pub struct EditIssueCommentOption {
 /// EditIssueOption options for editing an issue
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct EditIssueOption {
-    /// deprecated
+    #[deprecated]
     pub assignee: Option<String>,
     pub assignees: Option<Vec<String>>,
     pub body: Option<String>,
@@ -2347,7 +2347,7 @@ pub struct MigrateRepoOptions {
     /// Name of User or Organisation who will own Repo after migration
     pub repo_owner: Option<String>,
     pub service: Option<MigrateRepoOptionsService>,
-    /// deprecated (only for backwards compatibility)
+    #[deprecated]
     pub uid: Option<i64>,
     pub wiki: Option<bool>,
 }
@@ -2563,7 +2563,7 @@ pub struct Organization {
     pub location: Option<String>,
     pub name: Option<String>,
     pub repo_admin_change_team_access: Option<bool>,
-    /// deprecated
+    #[deprecated]
     pub username: Option<String>,
     pub visibility: Option<String>,
     pub website: Option<String>,
@@ -3448,11 +3448,11 @@ pub struct TrackedTime {
     pub created: Option<time::OffsetDateTime>,
     pub id: Option<i64>,
     pub issue: Option<Issue>,
-    /// deprecated (only for backwards compatibility)
+    #[deprecated]
     pub issue_id: Option<i64>,
     /// Time in seconds
     pub time: Option<i64>,
-    /// deprecated (only for backwards compatibility)
+    #[deprecated]
     pub user_id: Option<i64>,
     pub user_name: Option<String>,
 }

@@ -22950,8 +22950,8 @@
       "required": ["title"],
       "properties": {
         "assignee": {
-          "description": "deprecated",
           "type": "string",
+          "x-deprecated": true,
           "x-go-name": "Assignee"
         },
         "assignees": {
@@ -24154,8 +24154,8 @@
       "type": "object",
       "properties": {
         "assignee": {
-          "description": "deprecated",
           "type": "string",
+          "x-deprecated": true,
           "x-go-name": "Assignee"
         },
         "assignees": {
@@ -26136,9 +26136,9 @@
           "x-go-name": "Service"
         },
         "uid": {
-          "description": "deprecated (only for backwards compatibility)",
           "type": "integer",
           "format": "int64",
+          "x-deprecated": true,
           "x-go-name": "RepoOwnerID"
         },
         "wiki": {
@@ -26541,8 +26541,8 @@
           "x-go-name": "RepoAdminChangeTeamAccess"
         },
         "username": {
-          "description": "deprecated",
           "type": "string",
+          "x-deprecated": true,
           "x-go-name": "UserName"
         },
         "visibility": {
@@ -28728,9 +28728,9 @@
           "$ref": "#/definitions/Issue"
         },
         "issue_id": {
-          "description": "deprecated (only for backwards compatibility)",
           "type": "integer",
           "format": "int64",
+          "x-deprecated": true,
           "x-go-name": "IssueID"
         },
         "time": {
@@ -28740,9 +28740,9 @@
           "x-go-name": "Time"
         },
         "user_id": {
-          "description": "deprecated (only for backwards compatibility)",
           "type": "integer",
           "format": "int64",
+          "x-deprecated": true,
           "x-go-name": "UserID"
         },
         "user_name": {
