@@ -1050,6 +1050,16 @@ pub struct CreateOrUpdateSecretOption {
     pub data: String,
 }
 
+/// CreateOrgBotOption options for creating a bot owned by an organization
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct CreateOrgBotOption {
+    pub description: Option<String>,
+    pub full_name: Option<String>,
+    /// IDs of teams of the organization to add the bot to
+    pub team_ids: Option<Vec<i64>>,
+    pub username: String,
+}
+
 /// CreateOrgOption options for creating an organization
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateOrgOption {
@@ -1290,6 +1300,7 @@ pub struct CreateUserOption {
     ///
     /// will be set to "now".
     pub created_at: Option<time::OffsetDateTime>,
+    /// Required unless `user_type` is `bot`. Bots created without an email get a no-reply address.
     pub email: Option<String>,
     pub full_name: Option<String>,
     pub login_name: Option<String>,
@@ -1298,10 +1309,29 @@ pub struct CreateUserOption {
     pub restricted: Option<bool>,
     pub send_notify: Option<bool>,
     pub source_id: Option<i64>,
+    /// Type of the account. A `bot` has no password and cannot sign in to the web UI; it
+    ///
+    /// authenticates with access tokens or SSH keys only. `password`, `must_change_password`,
+    ///
+    /// `source_id` and `login_name` must not be set for bots.
+    pub user_type: Option<CreateUserOptionUserType>,
     pub username: String,
     pub visibility: Option<String>,
 }
 
+/// Type of the account. A `bot` has no password and cannot sign in to the web UI; it
+///
+/// authenticates with access tokens or SSH keys only. `password`, `must_change_password`,
+///
+/// `source_id` and `login_name` must not be set for bots.
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum CreateUserOptionUserType {
+    #[serde(rename = "individual")]
+    Individual,
+    #[serde(rename = "bot")]
+    Bot,
+}
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CreateVariableOption {
     /// Value of the variable to create. Special characters will be retained. Line endings will be normalized to LF to
@@ -1541,6 +1571,13 @@ pub struct EditMilestoneOption {
     pub due_on: Option<time::OffsetDateTime>,
     pub state: Option<String>,
     pub title: Option<String>,
+}
+
+/// EditOrgBotOption options for editing a bot owned by an organization
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct EditOrgBotOption {
+    pub description: Option<String>,
+    pub full_name: Option<String>,
 }
 
 /// EditOrgOption options for editing an organization
@@ -3551,6 +3588,8 @@ pub struct User {
     pub id: Option<i64>,
     /// Is the user an administrator
     pub is_admin: Option<bool>,
+    /// Is the account a bot (token / SSH key authentication only)
+    pub is_bot: Option<bool>,
     /// User locale
     pub language: Option<String>,
     #[serde(with = "time::serde::rfc3339::option", default)]

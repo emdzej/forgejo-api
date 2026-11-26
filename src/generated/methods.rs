@@ -1297,6 +1297,184 @@ impl crate::Forgejo {
             .wrap::<_, _>(self)
     }
 
+    /// List the bots owned by an organization
+    ///
+    /// - `org`: name of the organization
+    pub fn org_list_bots(
+        &self,
+        org: &str,
+    ) -> Request<'_, endpoints::OrgListBots<'_>, (UserListHeaders, Vec<User>)> {
+        endpoints::OrgListBots { org }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Create a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `body`: See [`CreateOrgBotOption`]
+    pub fn org_create_bot(
+        &self,
+        org: &str,
+        body: CreateOrgBotOption,
+    ) -> Request<'_, endpoints::OrgCreateBot<'_>, User> {
+        endpoints::OrgCreateBot { org, body: body }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Get a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    pub fn org_get_bot(
+        &self,
+        org: &str,
+        username: &str,
+    ) -> Request<'_, endpoints::OrgGetBot<'_>, User> {
+        endpoints::OrgGetBot { org, username }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Delete a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    pub fn org_delete_bot(
+        &self,
+        org: &str,
+        username: &str,
+    ) -> Request<'_, endpoints::OrgDeleteBot<'_>, ()> {
+        endpoints::OrgDeleteBot { org, username }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Edit a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    /// - `body`: See [`EditOrgBotOption`]
+    pub fn org_edit_bot(
+        &self,
+        org: &str,
+        username: &str,
+        body: EditOrgBotOption,
+    ) -> Request<'_, endpoints::OrgEditBot<'_>, User> {
+        endpoints::OrgEditBot {
+            org,
+            username,
+            body: body,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// List the SSH keys of a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    pub fn org_list_bot_keys(
+        &self,
+        org: &str,
+        username: &str,
+    ) -> Request<'_, endpoints::OrgListBotKeys<'_>, (PublicKeyListHeaders, Vec<PublicKey>)> {
+        endpoints::OrgListBotKeys { org, username }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Add an SSH key to a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    /// - `body`: See [`CreateKeyOption`]
+    pub fn org_create_bot_key(
+        &self,
+        org: &str,
+        username: &str,
+        body: CreateKeyOption,
+    ) -> Request<'_, endpoints::OrgCreateBotKey<'_>, PublicKey> {
+        endpoints::OrgCreateBotKey {
+            org,
+            username,
+            body: body,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// Delete an SSH key of a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    /// - `id`: id of the key to delete
+    pub fn org_delete_bot_key(
+        &self,
+        org: &str,
+        username: &str,
+        id: i64,
+    ) -> Request<'_, endpoints::OrgDeleteBotKey<'_>, ()> {
+        endpoints::OrgDeleteBotKey { org, username, id }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// List the access tokens of a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    pub fn org_list_bot_access_tokens(
+        &self,
+        org: &str,
+        username: &str,
+    ) -> Request<
+        '_,
+        endpoints::OrgListBotAccessTokens<'_>,
+        (AccessTokenListHeaders, Vec<AccessToken>),
+    > {
+        endpoints::OrgListBotAccessTokens { org, username }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
+    /// Create an access token for a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    /// - `body`: See [`CreateAccessTokenOption`]
+    pub fn org_create_bot_access_token(
+        &self,
+        org: &str,
+        username: &str,
+        body: CreateAccessTokenOption,
+    ) -> Request<'_, endpoints::OrgCreateBotAccessToken<'_>, AccessToken> {
+        endpoints::OrgCreateBotAccessToken {
+            org,
+            username,
+            body: body,
+        }
+        .make_request()
+        .wrap::<_, _>(self)
+    }
+
+    /// Delete an access token of a bot owned by an organization
+    ///
+    /// - `org`: name of the organization
+    /// - `username`: username of the bot
+    /// - `id`: token ID or name
+    pub fn org_delete_bot_access_token(
+        &self,
+        org: &str,
+        username: &str,
+        id: &str,
+    ) -> Request<'_, endpoints::OrgDeleteBotAccessToken<'_>, ()> {
+        endpoints::OrgDeleteBotAccessToken { org, username, id }
+            .make_request()
+            .wrap::<_, _>(self)
+    }
+
     /// List an organization's webhooks
     ///
     /// - `org`: name of the organization

@@ -3379,6 +3379,424 @@ impl Endpoint for OrgBlockUser<'_> {
     }
 }
 
+pub struct OrgListBots<'a> {
+    pub org: &'a str,
+}
+
+impl Sealed for OrgListBots<'_> {}
+impl Endpoint for OrgListBots<'_> {
+    type Response = (UserListHeaders, Vec<User>);
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/orgs/{org}/bots",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgCreateBot<'a> {
+    pub org: &'a str,
+    pub body: CreateOrgBotOption,
+}
+
+impl Sealed for OrgCreateBot<'_> {}
+impl Endpoint for OrgCreateBot<'_> {
+    type Response = User;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/orgs/{org}/bots",
+                org = urlencoding::encode(self.org)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgGetBot<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+}
+
+impl Sealed for OrgGetBot<'_> {}
+impl Endpoint for OrgGetBot<'_> {
+    type Response = User;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgDeleteBot<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+}
+
+impl Sealed for OrgDeleteBot<'_> {}
+impl Endpoint for OrgDeleteBot<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgEditBot<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+    pub body: EditOrgBotOption,
+}
+
+impl Sealed for OrgEditBot<'_> {}
+impl Endpoint for OrgEditBot<'_> {
+    type Response = User;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::PATCH,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgListBotKeys<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+}
+
+impl Sealed for OrgListBotKeys<'_> {}
+impl Endpoint for OrgListBotKeys<'_> {
+    type Response = (PublicKeyListHeaders, Vec<PublicKey>);
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}/keys",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgCreateBotKey<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+    pub body: CreateKeyOption,
+}
+
+impl Sealed for OrgCreateBotKey<'_> {}
+impl Endpoint for OrgCreateBotKey<'_> {
+    type Response = PublicKey;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}/keys",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIValidationError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgDeleteBotKey<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+    pub id: i64,
+}
+
+impl Sealed for OrgDeleteBotKey<'_> {}
+impl Endpoint for OrgDeleteBotKey<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}/keys/{id}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username),
+                id = self.id
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgListBotAccessTokens<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+}
+
+impl Sealed for OrgListBotAccessTokens<'_> {}
+impl Endpoint for OrgListBotAccessTokens<'_> {
+    type Response = (AccessTokenListHeaders, Vec<AccessToken>);
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::GET,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}/tokens",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            200 => Ok((response, true)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgCreateBotAccessToken<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+    pub body: CreateAccessTokenOption,
+}
+
+impl Sealed for OrgCreateBotAccessToken<'_> {}
+impl Endpoint for OrgCreateBotAccessToken<'_> {
+    type Response = AccessToken;
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::POST,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}/tokens",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::Json(Bytes::from(
+                serde_json::to_vec(&self.body)
+                    .expect("failed to serialize value. This is probably a bug in forgejo-api"),
+            )),
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            201 => Ok((response, true)),
+            400 => Err(json_error::<APIError>(&response)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
+pub struct OrgDeleteBotAccessToken<'a> {
+    pub org: &'a str,
+    pub username: &'a str,
+    pub id: &'a str,
+}
+
+impl Sealed for OrgDeleteBotAccessToken<'_> {}
+impl Endpoint for OrgDeleteBotAccessToken<'_> {
+    type Response = ();
+    fn make_request(self) -> RawRequest {
+        RawRequest {
+            method: Method::DELETE,
+            path: format!(
+                "/api/v1/orgs/{org}/bots/{username}/tokens/{id}",
+                org = urlencoding::encode(self.org),
+                username = urlencoding::encode(self.username),
+                id = urlencoding::encode(self.id)
+            )
+            .into(),
+            query: None,
+            body: RequestBody::None,
+            page: None,
+            limit: None,
+        }
+    }
+
+    fn handle_error(response: ApiResponse) -> Result<(ApiResponse, bool), ForgejoError> {
+        match response.status_code.as_u16() {
+            204 => Ok((response, false)),
+            403 => Err(json_error::<APIForbiddenError>(&response)),
+            404 => Err(json_error::<APINotFound>(&response)),
+            422 => Err(json_error::<APIError>(&response)),
+            _ => Err(ForgejoError::UnexpectedStatusCode(
+                response.status_code.clone(),
+            )),
+        }
+    }
+}
+
 pub struct OrgListHooks<'a> {
     pub org: &'a str,
 }
